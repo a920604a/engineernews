@@ -43,15 +43,10 @@ function projectDescription(description) {
             {projectDescription(project.data.description)}
           </p>
 
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-            <div class="tags">
-              {project.data.tags.map((tag) => (
-                <span class="tag">#{tag}</span>
-              ))}
-            </div>
-            <a href={`/tags/${project.data.tag}`} style="font-size: 13px; color: var(--accent); text-decoration: none;">
-              相關文章 →
-            </a>
+          <div class="tags">
+            {project.data.tags.map((tag) => (
+              <span class="tag">#{tag}</span>
+            ))}
           </div>
         </div>
       ))}
