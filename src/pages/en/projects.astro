@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const projects = await getCollection('projects');
+const sorted = projects.sort((a, b) => {
+  if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
+  return a.data.title.localeCompare(b.data.title);
+});
+---
+
+<BaseLayout title="Portfolio">
+  <section>
+    <h1>Portfolio</h1>
+    <p style="color: var(--label-secondary); margin-bottom: 2rem;">
+      Side projects and personal work.
+    </p>
+
+    <div style="display: grid; gap: 1.5rem;">
+      {sorted.map((project) => (
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem;">
+            <h2 style="margin: 0; font-size: 20px;">{project.data.title}</h2>
+            <div style="display: flex; gap: 0.5rem;">
+              {project.data.github && (
+                <a href={project.data.github} target="_blank" rel="noopener" class="btn-primary" style="font-size: 12px;">
+                  GitHub
+                </a>
+              )}
+              {project.data.url && (
+                <a href={project.data.url} target="_blank" rel="noopener" class="btn-primary" style="font-size: 12px;">
+                  Website
+                </a>
+              )}
+            </div>
+          </div>
+
+          <p style="margin: 0.75rem 0; color: var(--label-secondary); font-size: 15px;">
+            {project.data.description}
+          </p>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <div class="tags">
+              {project.data.tags.map((tag) => (
+                <span class="tag">#{tag}</span>
+              ))}
+            </div>
+            <a href={`/en/tags/${project.data.tag}`} style="font-size: 13px; color: var(--accent-color); text-decoration: none;">
+              Related posts →
+            </a>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

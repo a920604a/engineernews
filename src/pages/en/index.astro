@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Search from '../../components/Search';
+import PostCard from '../../components/PostCard.astro';
 
 const allPosts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'en');
 const posts = allPosts.sort((a, b) => {
@@ -25,21 +26,18 @@ const posts = allPosts.sort((a, b) => {
     ) : (
       <div class="feed">
         {posts.map((post) => (
-          <article style="margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--separator);">
-            <div style="font-size: 0.8rem; color: #8b949e; margin-bottom: 0.5rem;">
-              {post.data.date.toLocaleDateString('en-US')} · {post.data.category}
-              {post.data.type && <span style="margin-left: 8px; color: var(--accent-color);">[{post.data.type}]</span>}
-            </div>
-            <h2 style="margin: 0 0 0.5rem 0;">
-              <a href={`/en/posts/${post.id}`}>{post.data.title}</a>
-            </h2>
-            <p style="margin: 0 0 1rem 0; font-size: 0.95rem;">{post.data.tldr || post.data.description}</p>
-            <div class="tags">
-              {post.data.tags.map((tag) => (
-                <a href={`/en/tags/${tag}`} class="tag">#{tag}</a>
-              ))}
-            </div>
-          </article>
+          <PostCard
+            id={post.id}
+            title={post.data.title}
+            date={post.data.date}
+            category={post.data.category}
+            tags={post.data.tags}
+            description={post.data.description}
+            tldr={post.data.tldr}
+            type={post.data.type}
+            pinned={post.data.pinned}
+            lang="en"
+          />
         ))}
       </div>
     )}

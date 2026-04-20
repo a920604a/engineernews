@@ -1,0 +1,44 @@
+---
+interface Props {
+  id: string;
+  title: string;
+  date: Date;
+  category: string;
+  tags: string[];
+  description?: string;
+  tldr?: string;
+  type?: string;
+  pinned?: boolean;
+  lang?: string;
+}
+
+const { id, title, date, category, tags, description, tldr, type, pinned = false, lang = 'zh-TW' } = Astro.props;
+
+const isEn = lang === 'en';
+const postPath = isEn ? `/en/posts/${id}` : `/posts/${id}`;
+const tagPath = (tag: string) => isEn ? `/en/tags/${tag}` : `/tags/${tag}`;
+const dateStr = date.toLocaleDateString(isEn ? 'en-US' : 'zh-TW');
+---
+
+<article style="margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--separator);">
+  {pinned && (
+    <div style="font-size: 11px; color: var(--accent-color); font-weight: 600; margin-bottom: 4px; letter-spacing: 0.05em;">
+      置頂
+    </div>
+  )}
+  <div style="font-size: 0.8rem; color: var(--label-secondary); margin-bottom: 0.5rem;">
+    {dateStr} · {category}
+    {type && <span style="margin-left: 8px; color: var(--accent-color);">[{type}]</span>}
+  </div>
+  <h2 style="margin: 0 0 0.5rem 0; font-size: 20px;">
+    <a href={postPath} style="color: var(--label-primary); text-decoration: none;">{title}</a>
+  </h2>
+  <p style="margin: 0 0 1rem 0; font-size: 0.95rem; color: var(--label-secondary);">
+    {tldr || description}
+  </p>
+  <div class="tags">
+    {tags.map((tag) => (
+      <a href={tagPath(tag)} class="tag">#{tag}</a>
+    ))}
+  </div>
+</article>

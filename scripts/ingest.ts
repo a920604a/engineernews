@@ -3,6 +3,22 @@ import path from 'node:path';
 import readline from 'node:readline';
 
 const CONTENT_DIR = path.join(process.cwd(), 'src/content/posts');
+
+const SECRET_PATTERNS: Array<[RegExp, string]> = [
+  [/\b(sk-[a-zA-Z0-9]{20,})\b/g, '[REDACTED_API_KEY]'],
+  [/\b(Bearer\s+[a-zA-Z0-9\-._~+/]+=*)\b/gi, 'Bearer [REDACTED]'],
+  [/\b([a-f0-9]{32,64})\b/g, '[REDACTED_TOKEN]'],
+  [/(password|passwd|secret|token|api[_-]?key)\s*[:=]\s*\S+/gi, '$1=[REDACTED]'],
+  [/https?:\/\/[^@\s]+:[^@\s]+@/g, 'https://[REDACTED]@'],
+];
+
+function redactSecrets(text: string): string {
+  let result = text;
+  for (const [pattern, replacement] of SECRET_PATTERNS) {
+    result = result.replace(pattern, replacement);
+  }
+  return result;
+}
 const ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID;
 const API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
 
@@ -68,8 +84,10 @@ async function ingest() {
     process.exit(1);
   }
 
-  const conversation = fs.readFileSync(inputFile, 'utf-8');
-  console.log(`\n讀取對話紀錄... (${conversation.length} 字元)`);
+  const raw = fs.readFileSync(inputFile, 'utf-8');
+  const conversation = redactSecrets(raw);
+  const redacted = raw.length - conversation.replace(/\[REDACTED[^\]]*\]/g, '').length;
+  console.log(`\n讀取對話紀錄... (${conversation.length} 字元)${redacted > 0 ? ` ⚠️  已脫敏 ${redacted} 字元` : ''}`);
 
   console.log('正在用 Workers AI 分析對話...');
   const meta = await summarize(conversation);
