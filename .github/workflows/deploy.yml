@@ -43,7 +43,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: d1 migrations apply engineer-news-db --remote
+          command: d1 migrations apply engineer-news-db --remote --yes
 
       - name: Sync Markdown to D1 & Vectorize
         run: pnpm sync:prod
