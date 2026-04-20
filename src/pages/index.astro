@@ -39,23 +39,53 @@ function projectDescription(description) {
         <p style="margin:0;">{t('feed.empty')}</p>
       </div>
     ) : (
-      <div class="feed">
-        {posts.map((post) => (
-          <PostCard
-            id={post.id}
-            title={post.data.title}
-            date={post.data.date}
-            category={post.data.category}
-            tags={post.data.tags}
-            description={post.data.description}
-            tldr={post.data.tldr}
-            type={post.data.type}
-            pinned={post.data.pinned}
-            readingTime={post.data.readingTime}
-            lang="zh-TW"
-          />
-        ))}
-      </div>
+      <>
+        <div class="feed">
+          {posts.map((post) => (
+            <PostCard
+              id={post.id}
+              title={post.data.title}
+              date={post.data.date}
+              category={post.data.category}
+              tags={post.data.tags}
+              description={post.data.description}
+              tldr={post.data.tldr}
+              type={post.data.type}
+              pinned={post.data.pinned}
+              readingTime={post.data.readingTime}
+              lang="zh-TW"
+            />
+          ))}
+        </div>
+
+        <section style="margin-top: 40px;">
+          <h2 style="margin:0 0 12px;">最新專案</h2>
+          <div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+            {projects.map((project) => (
+              <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.5rem;">
+                  <h3 style="margin:0; font-size:16px;">{project.data.title}</h3>
+                  <div style="display:flex; gap:0.5rem;">
+                    {project.data.github && (
+                      <a href={project.data.github} target="_blank" rel="noopener" class="btn-primary" style="font-size:12px;">GitHub</a>
+                    )}
+                    {project.data.url && (
+                      <a href={project.data.url} target="_blank" rel="noopener" class="btn-primary" style="font-size:12px;">網站</a>
+                    )}
+                  </div>
+                </div>
+
+                <p style="margin:0.5rem 0; color:var(--label-secondary);">{projectDescription(project.data.description)}</p>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                  <div class="tags">{(project.data.tags || []).map((tag) => <span class="tag">#{tag}</span>)}</div>
+                  <a href={`/projects/${project.id}`} style="font-size:13px; color:var(--accent-color); text-decoration:none;">查看 →</a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </>
     )}
   </section>
 </BaseLayout>

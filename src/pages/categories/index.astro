@@ -6,11 +6,20 @@ import { useTranslations } from '../../i18n/utils';
 const t = useTranslations('zh-TW');
 
 const posts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'zh-TW');
+const allProjects = await getCollection('projects');
 
 const categoryMap = posts.reduce<Record<string, number>>((acc, post) => {
   acc[post.data.category] = (acc[post.data.category] ?? 0) + 1;
   return acc;
 }, {});
+
+// include project tags as additional categories
+allProjects.forEach((p) => {
+  (p.data.tags || []).forEach((tag) => {
+    acc = categoryMap; // hint for typings
+    categoryMap[tag] = (categoryMap[tag] ?? 0) + 1;
+  });
+});
 
 const categories = Object.entries(categoryMap)
   .sort((a, b) => b[1] - a[1]);

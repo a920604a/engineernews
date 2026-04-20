@@ -1,0 +1,48 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  "headline": project.data.title,
+  "description": typeof project.data.description === 'string' ? project.data.description : (project.data.description && project.data.description.background) || '',
+  "keywords": (project.data.tags || []).join(', '),
+};
+---
+
+<BaseLayout title={project.data.title} description={typeof project.data.description === 'string' ? project.data.description : (project.data.description && project.data.description.background) || ''} jsonLd={jsonLd}>
+  <article>
+    <header style="padding: 28px 0 18px; border-bottom:0.5px solid var(--separator); margin-bottom:20px;">
+      <div style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--label-secondary); margin-bottom:12px; flex-wrap:wrap;">
+        {project.data.github && <a href={project.data.github} target="_blank" rel="noopener" class="btn-primary" style="font-size:12px;">GitHub</a>}
+        {project.data.url && <a href={project.data.url} target="_blank" rel="noopener" class="btn-primary" style="font-size:12px;">網站</a>}
+      </div>
+
+      <h1 style="margin:0 0 12px;">{project.data.title}</h1>
+
+      {typeof project.data.description !== 'string' && project.data.description?.outcome && (
+        <p style="margin:0.5rem 0; color:var(--label-secondary);">{project.data.description.outcome}</p>
+      )}
+    </header>
+
+    <div class="prose"><Content /></div>
+
+    {(project.data.tags || []).length > 0 && (
+      <div style="margin-top:36px; padding-top:18px; border-top:0.5px solid var(--separator);">
+        <p style="font-size:11px; color:var(--label-tertiary); margin:0 0 8px; text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">Tags</p>
+        <div class="tags">{(project.data.tags || []).map((t) => <a href={`/tags/${t}`} class="tag">#{t}</a>)}</div>
+      </div>
+    )}
+  </article>
+</BaseLayout>
