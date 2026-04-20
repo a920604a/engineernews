@@ -1,7 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Search from '../components/Search';
 import PostCard from '../components/PostCard.astro';
 import { useTranslations } from '../i18n/utils';
 
@@ -10,76 +9,69 @@ const t = useTranslations('zh-TW');
 const allPosts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'zh-TW');
 const allProjects = await getCollection('projects');
 
-function projectDescription(description) {
-  return typeof description === 'string' ? description : (description && description.background) ? description.background : '';
+function projectDesc(description: unknown): string {
+  if (typeof description === 'string') return description;
+  if (description && typeof description === 'object' && 'background' in description) {
+    return (description as { background: string }).background ?? '';
+  }
+  return '';
 }
 
 type FeedItem =
-  | { kind: 'post'; pinned: boolean; date: Date; post: (typeof allPosts)[number] }
-  | { kind: 'project'; pinned: boolean; date: Date | undefined; project: (typeof allProjects)[number] };
+  | { kind: 'post'; pinned: boolean; date: Date; item: (typeof allPosts)[number] }
+  | { kind: 'project'; pinned: boolean; date: Date | undefined; item: (typeof allProjects)[number] };
 
 const feed: FeedItem[] = [
-  ...allPosts.map((p) => ({ kind: 'post' as const, pinned: p.data.pinned, date: p.data.date, post: p })),
-  ...allProjects.map((p) => ({ kind: 'project' as const, pinned: p.data.pinned, date: p.data.date, project: p })),
+  ...allPosts.map((p) => ({ kind: 'post' as const, pinned: !!p.data.pinned, date: p.data.date, item: p })),
+  ...allProjects.map((p) => ({ kind: 'project' as const, pinned: !!p.data.pinned, date: p.data.date, item: p })),
 ];
 
 feed.sort((a, b) => {
   if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
-  const aTime = a.date?.valueOf() ?? 0;
-  const bTime = b.date?.valueOf() ?? 0;
-  return bTime - aTime;
+  return (b.date?.valueOf() ?? 0) - (a.date?.valueOf() ?? 0);
 });
 ---
 
 <BaseLayout title={t('nav.home')}>
   <section style="padding-top: 40px;">
-    <p style="font-size:15px; color:var(--label-secondary); margin:0 0 32px; line-height:1.6;">
+    <p style="font-size:15px; color:var(--label-secondary); margin:0 0 36px; line-height:1.7;">
       {t('site.tagline')}
     </p>
 
-    <Search client:load />
-
     {feed.length === 0 ? (
-      <div style="border: 0.5px dashed var(--separator); padding: 40px; text-align: center; border-radius: var(--radius-lg); color: var(--label-secondary);">
+      <div style="border: 0.5px dashed var(--separator); padding: 48px; text-align: center; border-radius: var(--radius-lg); color: var(--label-secondary);">
         <p style="margin:0;">{t('feed.empty')}</p>
       </div>
     ) : (
-      <div class="feed">
-        {feed.map((item) =>
-          item.kind === 'post' ? (
+      <div class="card-grid">
+        {feed.map((entry) =>
+          entry.kind === 'post' ? (
             <PostCard
-              id={item.post.id}
-              title={item.post.data.title}
-              date={item.post.data.date}
-              category={item.post.data.category}
-              tags={item.post.data.tags}
-              description={item.post.data.description}
-              tldr={item.post.data.tldr}
-              type={item.post.data.type}
-              pinned={item.post.data.pinned}
-              readingTime={item.post.data.readingTime}
+              id={entry.item.id}
+              title={entry.item.data.title}
+              date={entry.item.data.date}
+              category={entry.item.data.category}
+              tags={entry.item.data.tags}
+              description={entry.item.data.description}
+              tldr={entry.item.data.tldr}
+              type={entry.item.data.type}
+              pinned={entry.item.data.pinned}
+              readingTime={entry.item.data.readingTime}
               lang="zh-TW"
+              kind="post"
             />
           ) : (
-            <article class="postcard">
-              <div class="postcard-meta">
-                <div class="postcard-badges">
-                  {item.project.data.pinned && <span class="badge badge-pinned">置頂</span>}
-                  <span class="badge badge-project">專案</span>
-                </div>
-              </div>
-              <h2 class="postcard-title">
-                <a href={`/projects/${item.project.id}`}>{item.project.data.title}</a>
-              </h2>
-              <p class="postcard-excerpt">{projectDescription(item.project.data.description)}</p>
-              {(item.project.data.tags || []).length > 0 && (
-                <div class="postcard-tags">
-                  {item.project.data.tags.map((tag) => (
-                    <a href={`/tags/${tag}`} class="postcard-tag">#{tag}</a>
-                  ))}
-                </div>
-              )}
-            </article>
+            <PostCard
+              id={entry.item.id}
+              title={entry.item.data.title}
+              date={entry.item.data.date}
+              category={entry.item.data.category ?? 'project'}
+              tags={entry.item.data.tags ?? []}
+              description={projectDesc(entry.item.data.description)}
+              pinned={entry.item.data.pinned}
+              lang="zh-TW"
+              kind="project"
+            />
           )
         )}
       </div>
@@ -88,17 +80,13 @@ feed.sort((a, b) => {
 </BaseLayout>
 
 <style>
-  .badge-project {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 9px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    background: color-mix(in srgb, var(--color-orange, #ff9f0a) 12%, transparent);
-    color: var(--color-orange, #ff9f0a);
-    border: 0.5px solid color-mix(in srgb, var(--color-orange, #ff9f0a) 30%, transparent);
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  @media (max-width: 520px) {
+    .card-grid { grid-template-columns: 1fr; }
   }
 </style>

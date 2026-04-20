@@ -13,78 +13,113 @@ interface Props {
   pinned?: boolean;
   readingTime?: number;
   lang?: Lang;
+  kind?: 'post' | 'project';
 }
 
-const { id, title, date, category, tags, description, tldr, type, pinned = false, readingTime, lang = 'zh-TW' } = Astro.props;
+const {
+  id, title, date, category, tags,
+  description, tldr, type, pinned = false,
+  readingTime, lang = 'zh-TW', kind = 'post',
+} = Astro.props;
 
 const isEn = lang === 'en';
-const postHref = isEn ? `/en/posts/${id}` : `/posts/${id}`;
+const postHref = kind === 'project'
+  ? (isEn ? `/en/projects/${id}` : `/projects/${id}`)
+  : (isEn ? `/en/posts/${id}` : `/posts/${id}`);
 const catHref  = isEn ? `/en/categories/${category}` : `/categories/${category}`;
-const typeHref = isEn ? `/en/categories/${category}?type=${type}` : `/categories/${category}?type=${type}`;
 const tagHref  = (t: string) => isEn ? `/en/tags/${t}` : `/tags/${t}`;
 
-const dateStr = date.toLocaleDateString(isEn ? 'en-US' : 'zh-TW', {
-  year: 'numeric', month: 'short', day: 'numeric'
-});
+const dateStr = date?.toLocaleDateString(isEn ? 'en-US' : 'zh-TW', {
+  year: 'numeric', month: 'long', day: 'numeric',
+}) ?? '';
+
 const excerpt = tldr || description || '';
 ---
 
-<article class="postcard">
-  <!-- Meta row -->
-  <div class="postcard-meta">
-    <div class="postcard-badges">
+<article class="card">
+  <div class="card-header">
+    <div class="card-badges">
       {pinned && <span class="badge badge-pinned">置頂</span>}
       <a href={catHref} class="badge badge-cat">{category}</a>
-      {type && <a href={typeHref} class="badge badge-type">{type}</a>}
+      {kind === 'project' && <span class="badge badge-project">專案</span>}
+      {type && <span class="badge badge-type">{type}</span>}
     </div>
-    <time class="postcard-date">
-      {dateStr}
-      {readingTime && <span class="postcard-rt"> · {readingTime} min</span>}
-    </time>
+    <div class="card-meta">
+      {date && <time class="card-date">{dateStr}</time>}
+      {readingTime && <span class="card-rt">{readingTime} 分鐘</span>}
+    </div>
   </div>
 
-  <!-- Title -->
-  <h2 class="postcard-title">
+  <h2 class="card-title">
     <a href={postHref}>{title}</a>
   </h2>
 
-  <!-- Excerpt -->
-  {excerpt && <p class="postcard-excerpt">{excerpt}</p>}
+  {excerpt && <p class="card-excerpt">{excerpt}</p>}
 
-  <!-- Tags -->
   {tags.length > 0 && (
-    <div class="postcard-tags">
+    <div class="card-tags">
       {tags.map((tag) => (
-        <a href={tagHref(tag)} class="postcard-tag">#{tag}</a>
+        <a href={tagHref(tag)} class="card-tag">#{tag}</a>
       ))}
     </div>
   )}
 </article>
 
 <style>
-  .postcard {
-    padding: 22px 0;
-    border-bottom: 0.5px solid var(--separator);
+  .card {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--separator);
+    border-radius: var(--radius-lg);
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+    cursor: pointer;
   }
-  .postcard:last-child { border-bottom: none; }
+  .card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--accent) 30%, var(--separator));
+  }
 
-  /* Meta row */
-  .postcard-meta {
+  .card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 10px;
+    gap: 8px;
     flex-wrap: wrap;
   }
 
-  .postcard-badges {
+  .card-badges {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+
+  .card-meta {
     display: flex;
     align-items: center;
     gap: 6px;
-    flex-wrap: wrap;
+    flex-shrink: 0;
   }
 
+  .card-date {
+    font-size: 12px;
+    color: var(--label-tertiary);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .card-rt {
+    font-size: 12px;
+    color: var(--label-tertiary);
+    white-space: nowrap;
+  }
+  .card-rt::before { content: '· '; }
+
+  /* Badges */
   .badge {
     display: inline-flex;
     align-items: center;
@@ -102,55 +137,45 @@ const excerpt = tldr || description || '';
   .badge-pinned {
     background: color-mix(in srgb, var(--accent) 18%, transparent);
     color: var(--accent);
-  }
-
-  .badge-cat {
-    background: color-mix(in srgb, var(--accent) 12%, transparent);
-    color: var(--accent);
     border: 0.5px solid color-mix(in srgb, var(--accent) 30%, transparent);
   }
-
+  .badge-cat {
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    color: var(--accent);
+    border: 0.5px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  }
   .badge-type {
-    background: color-mix(in srgb, var(--color-green, #30d158) 12%, transparent);
+    background: color-mix(in srgb, var(--color-green, #30d158) 10%, transparent);
     color: var(--color-green, #30d158);
-    border: 0.5px solid color-mix(in srgb, var(--color-green, #30d158) 30%, transparent);
+    border: 0.5px solid color-mix(in srgb, var(--color-green, #30d158) 25%, transparent);
   }
-
-  .postcard-date {
-    font-size: 12px;
-    color: var(--label-secondary);
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  .postcard-rt {
-    opacity: 0.7;
+  .badge-project {
+    background: color-mix(in srgb, #ff9f0a 10%, transparent);
+    color: #ff9f0a;
+    border: 0.5px solid color-mix(in srgb, #ff9f0a 25%, transparent);
   }
 
   /* Title */
-  .postcard-title {
-    font-size: 20px;
-    font-weight: 650;
-    letter-spacing: -0.02em;
-    line-height: 1.3;
-    margin: 0 0 8px;
+  .card-title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.35;
+    margin: 0;
   }
-
-  .postcard-title a {
+  .card-title a {
     color: var(--label);
     text-decoration: none;
     transition: color 0.15s;
   }
-
-  .postcard-title a:hover { color: var(--accent); }
+  .card-title a:hover { color: var(--accent); }
 
   /* Excerpt */
-  .postcard-excerpt {
+  .card-excerpt {
     font-size: 14px;
     color: var(--label-secondary);
-    line-height: 1.6;
-    margin: 0 0 12px;
+    line-height: 1.65;
+    margin: 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -158,17 +183,17 @@ const excerpt = tldr || description || '';
   }
 
   /* Tags */
-  .postcard-tags {
+  .card-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
+    margin-top: 2px;
   }
-
-  .postcard-tag {
+  .card-tag {
     font-size: 12px;
-    color: var(--label-secondary);
+    color: var(--label-tertiary);
     text-decoration: none;
     transition: color 0.15s;
   }
-  .postcard-tag:hover { color: var(--accent); }
+  .card-tag:hover { color: var(--accent); }
 </style>
