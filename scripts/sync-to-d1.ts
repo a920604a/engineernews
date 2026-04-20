@@ -3,140 +3,172 @@ import path from 'node:path';
 import matter from 'gray-matter';
 import { execSync } from 'node:child_process';
 
-const CONTENT_DIR = path.join(process.cwd(), 'src/content/posts');
+const POSTS_DIR = path.join(process.cwd(), 'src/content/posts');
+const PROJECTS_DIR = path.join(process.cwd(), 'src/content/projects');
 const DB_NAME = 'engineer-news-db';
 const VECTOR_INDEX = 'engineer-news-index';
 const ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID;
 const API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
+const isProd = process.argv.includes('--prod');
+const remoteFlag = isProd ? '--remote' : '--local';
 
-interface Post {
-  id: string;
-  slug: string;
-  title: string;
-  category: string;
-  lang: string;
-  description: string;
-  tldr: string;
-  content: string;
-  tags: string;
-  created_at: string;
-  updated_at: string;
+function walkMdFiles(dir: string): string[] {
+  if (!fs.existsSync(dir)) return [];
+  const results: string[] = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) results.push(...walkMdFiles(full));
+    else if (entry.name.endsWith('.md')) results.push(full);
+  }
+  return results;
 }
 
-// 簡單的分塊邏輯：按段落切割，每塊不超過 1000 字
+function esc(s: string) {
+  return s.replace(/'/g, "''");
+}
+
+function runSql(sql: string) {
+  const tmp = path.join(process.cwd(), `.tmp_sync_${Date.now()}.sql`);
+  fs.writeFileSync(tmp, sql);
+  try {
+    execSync(`wrangler d1 execute ${DB_NAME} ${remoteFlag} --file=${tmp} --yes`, { stdio: 'inherit' });
+  } finally {
+    fs.unlinkSync(tmp);
+  }
+}
+
 function chunkText(text: string, maxLength = 1000): string[] {
   const paragraphs = text.split(/\n\n+/);
   const chunks: string[] = [];
-  let currentChunk = "";
-
+  let current = '';
   for (const p of paragraphs) {
-    if ((currentChunk + p).length > maxLength) {
-      if (currentChunk) chunks.push(currentChunk.trim());
-      currentChunk = p;
+    if ((current + p).length > maxLength) {
+      if (current) chunks.push(current.trim());
+      current = p;
     } else {
-      currentChunk += (currentChunk ? "\n\n" : "") + p;
+      current += (current ? '\n\n' : '') + p;
     }
   }
-  if (currentChunk) chunks.push(currentChunk.trim());
+  if (current) chunks.push(current.trim());
   return chunks;
 }
 
-async function getEmbedding(text: string) {
+async function getEmbedding(text: string): Promise<number[] | null> {
   if (!ACCOUNT_ID || !API_TOKEN) return null;
-
-  const response = await fetch(
+  const res = await fetch(
     `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/ai/run/@cf/baai/bge-small-en-v1.5`,
     {
       method: 'POST',
       headers: { Authorization: `Bearer ${API_TOKEN}` },
-      body: JSON.stringify({ text })
+      body: JSON.stringify({ text }),
     }
   );
-  const json = await response.json();
-  return json.result?.data?.[0];
+  const json: any = await res.json();
+  return json.result?.data?.[0] ?? null;
 }
 
-async function sync() {
-  console.log('🚀 Starting sync to D1 and Vectorize...');
-
-  if (!fs.existsSync(CONTENT_DIR)) {
-    console.log('⚠️ Content directory does not exist. Skipping.');
-    return;
-  }
-
-  const files = fs.readdirSync(CONTENT_DIR).filter(f => f.endsWith('.md'));
+async function syncPosts() {
+  const files = walkMdFiles(POSTS_DIR);
   console.log(`Found ${files.length} posts.`);
 
-  for (const file of files) {
-    const filePath = path.join(CONTENT_DIR, file);
-    const fileContent = fs.readFileSync(filePath, 'utf-8');
-    const { data, content } = matter(fileContent);
-    const slug = file.replace('.md', '');
-    const postId = data.id || slug;
+  for (const filePath of files) {
+    const rel = path.relative(POSTS_DIR, filePath);           // e.g. tech/2026-04-20-foo.md
+    const id = rel.replace(/\.md$/, '');                      // e.g. tech/2026-04-20-foo
+    const { data, content } = matter(fs.readFileSync(filePath, 'utf-8'));
 
-    const post: Post = {
-      id: postId,
-      slug: data.slug || slug,
-      title: data.title || 'Untitled',
-      category: data.category || 'tech',
-      lang: data.lang || 'zh-tw',
-      description: data.description || '',
-      tldr: data.tldr || '',
-      content: content,
-      tags: JSON.stringify(data.tags || []),
-      created_at: data.date ? new Date(data.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-      updated_at: new Date().toISOString().split('T')[0],
-    };
+    const slug = data.slug || path.basename(id);
+    const title = data.title || 'Untitled';
+    const category = data.category || id.split('/')[0] || 'tech';
+    const lang = data.lang || 'zh-TW';
+    const description = data.description || '';
+    const tldr = data.tldr || '';
+    const tags = JSON.stringify(data.tags || []);
+    const created_at = data.date
+      ? new Date(data.date).toISOString().split('T')[0]
+      : new Date().toISOString().split('T')[0];
+    const updated_at = new Date().toISOString().split('T')[0];
 
-    console.log(`Syncing post: ${post.title} (${post.slug})`);
+    console.log(`  post: ${id}`);
 
-    // 1. 同步到 posts 表
-    const sql = `
+    runSql(`
       INSERT INTO posts (id, slug, title, category, lang, description, tldr, content, tags, created_at, updated_at)
-      VALUES ('${post.id}', '${post.slug}', '${post.title}', '${post.category}', '${post.lang}', '${post.description.replace(/'/g, "''")}', '${post.tldr.replace(/'/g, "''")}', '${post.content.replace(/'/g, "''")}', '${post.tags}', '${post.created_at}', '${post.updated_at}')
-      ON CONFLICT(id) DO UPDATE SET slug=excluded.slug, title=excluded.title, updated_at=excluded.updated_at;
-    `;
+      VALUES ('${esc(id)}','${esc(slug)}','${esc(title)}','${esc(category)}','${esc(lang)}',
+              '${esc(description)}','${esc(tldr)}','${esc(content)}','${esc(tags)}',
+              '${created_at}','${updated_at}')
+      ON CONFLICT(id) DO UPDATE SET
+        slug=excluded.slug, title=excluded.title, content=excluded.content,
+        description=excluded.description, tldr=excluded.tldr, tags=excluded.tags,
+        updated_at=excluded.updated_at;
+    `);
 
-    const isProd = process.argv.includes('--prod');
-    const remoteFlag = isProd ? '--remote' : '--local';
-    const tempSqlFile = path.join(process.cwd(), `.temp_sync_${post.id}.sql`);
-    fs.writeFileSync(tempSqlFile, sql);
-    execSync(`wrangler d1 execute ${DB_NAME} ${remoteFlag} --file=${tempSqlFile} --yes`, { stdio: 'inherit' });
-    fs.unlinkSync(tempSqlFile);
+    // chunks
+    execSync(
+      `wrangler d1 execute ${DB_NAME} ${remoteFlag} --command="DELETE FROM post_chunks WHERE post_id='${esc(id)}'" --yes`,
+      { stdio: 'inherit' }
+    );
 
-    // 2. 同步內容塊 (Chunks)
-    console.log(`  - Generating chunks and embeddings...`);
     const chunks = chunkText(content);
-    
-    // 先刪除舊的 chunks
-    execSync(`wrangler d1 execute ${DB_NAME} ${remoteFlag} --command="DELETE FROM post_chunks WHERE post_id='${post.id}'" --yes`, { stdio: 'inherit' });
-
     for (let i = 0; i < chunks.length; i++) {
-      const chunkId = `${post.id}-chunk-${i}`;
-      const chunkContent = chunks[i];
+      const chunkId = `${id}-chunk-${i}`;
+      runSql(
+        `INSERT INTO post_chunks (id, post_id, chunk_index, content)
+         VALUES ('${esc(chunkId)}','${esc(id)}',${i},'${esc(chunks[i])}')`
+      );
 
-      // 存入 D1 post_chunks
-      const chunkSql = `INSERT INTO post_chunks (id, post_id, chunk_index, content) VALUES ('${chunkId}', '${post.id}', ${i}, '${chunkContent.replace(/'/g, "''")}')`;
-      fs.writeFileSync(tempSqlFile, chunkSql);
-      execSync(`wrangler d1 execute ${DB_NAME} ${remoteFlag} --file=${tempSqlFile} --yes`, { stdio: 'inherit' });
-      fs.unlinkSync(tempSqlFile);
-
-      // 如果有 API Token，則同步到 Vectorize (僅支援遠端)
       if (isProd && ACCOUNT_ID && API_TOKEN) {
-        const vector = await getEmbedding(chunkContent);
+        const vector = await getEmbedding(chunks[i]);
         if (vector) {
-          // 使用 wrangler 直接 upsert 向量
-          const vectorData = JSON.stringify({ id: chunkId, values: vector, metadata: { post_id: post.id, slug: post.slug, title: post.title } });
-          const tempVectorFile = path.join(process.cwd(), `.temp_vector_${chunkId}.json`);
-          fs.writeFileSync(tempVectorFile, vectorData);
-          execSync(`wrangler vectorize insert ${VECTOR_INDEX} --file=${tempVectorFile}`, { stdio: 'inherit' });
-          fs.unlinkSync(tempVectorFile);
+          const tmp = path.join(process.cwd(), `.tmp_vec_${Date.now()}.json`);
+          fs.writeFileSync(tmp, JSON.stringify({ id: chunkId, values: vector, metadata: { post_id: id, slug, title } }));
+          try {
+            execSync(`wrangler vectorize insert ${VECTOR_INDEX} --file=${tmp}`, { stdio: 'inherit' });
+          } finally {
+            fs.unlinkSync(tmp);
+          }
         }
       }
     }
   }
-
-  console.log('✅ Sync and Vectorization complete.');
 }
 
-sync();
+async function syncProjects() {
+  const files = walkMdFiles(PROJECTS_DIR);
+  console.log(`Found ${files.length} projects.`);
+
+  for (const filePath of files) {
+    const id = path.basename(filePath, '.md');
+    const { data, content } = matter(fs.readFileSync(filePath, 'utf-8'));
+
+    const title = data.title || id;
+    const desc = typeof data.description === 'string'
+      ? data.description
+      : data.description?.background || '';
+    const tags = JSON.stringify(data.tags || []);
+    const github = data.github || '';
+    const url = data.url || '';
+    const tag = data.tag || '';
+    const pinned = data.pinned ? 1 : 0;
+    const updated_at = new Date().toISOString().split('T')[0];
+
+    console.log(`  project: ${id}`);
+
+    runSql(`
+      INSERT INTO projects (id, title, description, tags, github, url, tag, pinned, content, updated_at)
+      VALUES ('${esc(id)}','${esc(title)}','${esc(desc)}','${esc(tags)}',
+              '${esc(github)}','${esc(url)}','${esc(tag)}',${pinned},'${esc(content)}','${updated_at}')
+      ON CONFLICT(id) DO UPDATE SET
+        title=excluded.title, description=excluded.description, tags=excluded.tags,
+        github=excluded.github, url=excluded.url, tag=excluded.tag,
+        pinned=excluded.pinned, content=excluded.content, updated_at=excluded.updated_at;
+    `);
+  }
+}
+
+async function main() {
+  console.log(`🚀 Syncing to D1 (${isProd ? 'remote' : 'local'})...`);
+  await syncPosts();
+  await syncProjects();
+  console.log('✅ Done.');
+}
+
+main();
