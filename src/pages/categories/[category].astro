@@ -1,0 +1,104 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'zh-TW');
+  const categories = [...new Set(allPosts.map((p) => p.data.category))];
+
+  return categories.map((category) => {
+    const posts = allPosts
+      .filter((p) => p.data.category === category)
+      .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+    return { params: { category }, props: { posts } };
+  });
+}
+
+const { category } = Astro.params;
+const { posts } = Astro.props;
+
+const types = [...new Set(posts.flatMap((p) => p.data.type ? [p.data.type] : []))];
+---
+
+<BaseLayout title={`分類：${category}`}>
+  <section style="padding-top: 32px;">
+    <a href="/categories" style="font-size:13px; color:var(--label-secondary); text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:16px;">
+      ← 所有分類
+    </a>
+    <h1 style="margin-bottom: 4px;">{category}</h1>
+    <p style="color:var(--label-secondary); font-size:15px; margin:0 0 24px;">{posts.length} 篇文章</p>
+
+    {types.length > 0 && (
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px;" id="type-filters">
+        <button
+          class="type-btn active"
+          data-type="all"
+          onclick="filterPosts('all')"
+        >全部</button>
+        {types.map((type) => (
+          <button
+            class="type-btn"
+            data-type={type}
+            onclick={`filterPosts('${type}')`}
+          >{type}</button>
+        ))}
+      </div>
+    )}
+
+    <div class="feed" id="posts-feed">
+      {posts.map((post) => (
+        <div data-type={post.data.type ?? 'none'} class="post-item">
+          <PostCard
+            id={post.id}
+            title={post.data.title}
+            date={post.data.date}
+            category={post.data.category}
+            tags={post.data.tags}
+            description={post.data.description}
+            tldr={post.data.tldr}
+            type={post.data.type}
+            lang="zh-TW"
+          />
+        </div>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .type-btn {
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: 0.5px solid var(--separator);
+    background: transparent;
+    color: var(--label-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .type-btn:hover, .type-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+</style>
+
+<script>
+  function filterPosts(type: string) {
+    const items = document.querySelectorAll<HTMLElement>('.post-item');
+    items.forEach((item) => {
+      item.style.display = (type === 'all' || item.dataset.type === type) ? '' : 'none';
+    });
+    document.querySelectorAll<HTMLElement>('.type-btn').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.type === type);
+    });
+  }
+  // support ?type= query param
+  const params = new URLSearchParams(window.location.search);
+  const t = params.get('type');
+  if (t) filterPosts(t);
+</script>

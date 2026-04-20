@@ -11,7 +11,7 @@ export const ui = {
   'zh-TW': {
     'nav.home': 'Engineer News',
     'nav.projects': '作品集',
-    'nav.tags': '標籤',
+    'nav.tags': '分類',
     'site.tagline': '捕捉工程對話中的精華，轉化為結構化的技術知識庫。',
     'post.tldr': 'TL;DR',
     'post.tags': '相關標籤',

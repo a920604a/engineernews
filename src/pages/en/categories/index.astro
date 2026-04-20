@@ -1,0 +1,36 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const posts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'en');
+
+const categoryMap = posts.reduce<Record<string, number>>((acc, post) => {
+  acc[post.data.category] = (acc[post.data.category] ?? 0) + 1;
+  return acc;
+}, {});
+
+const categories = Object.entries(categoryMap).sort((a, b) => b[1] - a[1]);
+---
+
+<BaseLayout title="Categories">
+  <section style="padding-top: 32px;">
+    <h1 style="margin-bottom: 4px;">Categories</h1>
+    <p style="color:var(--label-secondary); font-size:15px; margin:0 0 32px;">{categories.length} categories</p>
+
+    <div style="display:flex; flex-wrap:wrap; gap:12px;">
+      {categories.map(([cat, count]) => (
+        <a
+          href={`/en/categories/${cat}`}
+          style="display:flex; align-items:center; gap:10px; padding:14px 20px; background:var(--bg-secondary); border:0.5px solid var(--separator); border-radius:12px; text-decoration:none; transition:border-color 0.15s;"
+          onmouseover="this.style.borderColor='var(--accent)'"
+          onmouseout="this.style.borderColor='var(--separator)'"
+        >
+          <span style="font-size:16px; font-weight:600; color:var(--label);">{cat}</span>
+          <span style="font-size:12px; font-weight:600; color:var(--accent); background:color-mix(in srgb,var(--accent) 12%,transparent); padding:2px 8px; border-radius:999px;">
+            {count}
+          </span>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

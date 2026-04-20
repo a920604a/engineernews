@@ -1,21 +1,27 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
 import { useTranslations } from '../../i18n/utils';
+import { getRelatedPosts } from '../../utils/relatedPosts';
+import { getSeriesNav } from '../../utils/seriesNav';
 
 export const prerender = true;
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'zh-TW');
+  const allPosts = await getCollection('posts');
   return posts.map(post => ({
     params: { slug: post.id },
-    props: { post },
+    props: { post, allPosts },
   }));
 }
 
-const { post } = Astro.props;
+const { post, allPosts } = Astro.props;
 const { Content } = await render(post);
 const t = useTranslations('zh-TW');
+const related = getRelatedPosts(post, allPosts);
+const series = getSeriesNav(post, allPosts);
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -26,47 +32,85 @@ const jsonLd = {
   "keywords": post.data.tags.join(", "),
 };
 
-const dateStr = post.data.date.toLocaleDateString('zh-TW', {
-  year: 'numeric', month: 'long', day: 'numeric'
-});
+const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' });
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description} jsonLd={jsonLd}>
   <article>
     <!-- Header -->
     <header style="padding: 32px 0 24px; border-bottom: 0.5px solid var(--separator); margin-bottom: 32px;">
-      <div style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--label-secondary); margin-bottom:12px;">
+      <div style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--label-secondary); margin-bottom:12px; flex-wrap:wrap;">
         <time>{dateStr}</time>
         <span style="opacity:0.4;">·</span>
-        <span>{post.data.category}</span>
+        <a href={`/categories/${post.data.category}`} style="color:var(--label-secondary); text-decoration:none;">{post.data.category}</a>
         {post.data.type && <span class="badge badge-type">{post.data.type}</span>}
+        {post.data.readingTime && (
+          <>
+            <span style="opacity:0.4;">·</span>
+            <span>{post.data.readingTime} {t('post.readingTime')}</span>
+          </>
+        )}
       </div>
 
       <h1 style="margin:0 0 16px;">{post.data.title}</h1>
 
       {post.data.tldr && (
-        <div style="background:var(--glass); border:0.5px solid var(--separator); border-left: 3px solid var(--accent); border-radius:var(--radius-md); padding:14px 18px; margin-top:16px;">
+        <div style="background:var(--glass); border:0.5px solid var(--separator); border-left:3px solid var(--accent); border-radius:var(--radius-md); padding:14px 18px; margin-top:16px;">
           <p style="font-size:12px; font-weight:600; color:var(--accent); margin:0 0 4px; text-transform:uppercase; letter-spacing:0.05em;">{t('post.tldr')}</p>
           <p style="margin:0; font-size:15px; color:var(--label-secondary); line-height:1.55;">{post.data.tldr}</p>
         </div>
       )}
     </header>
 
+    <!-- Series nav (top) -->
+    {series && (
+      <div style="background:var(--bg-secondary); border:0.5px solid var(--separator); border-radius:var(--radius-md); padding:14px 18px; margin-bottom:28px; font-size:13px;">
+        <p style="margin:0 0 8px; font-weight:600; color:var(--label-secondary); text-transform:uppercase; letter-spacing:0.05em; font-size:11px;">
+          系列：{series.name}（{series.current}/{series.total}）
+        </p>
+        <div style="display:flex; justify-content:space-between; gap:12px;">
+          {series.prev
+            ? <a href={`/posts/${series.prev.id}`} style="color:var(--accent); text-decoration:none; font-size:13px;">← {series.prev.title}</a>
+            : <span />}
+          {series.next && <a href={`/posts/${series.next.id}`} style="color:var(--accent); text-decoration:none; font-size:13px;">{series.next.title} →</a>}
+        </div>
+      </div>
+    )}
+
     <!-- Content -->
-    <div class="prose">
-      <Content />
-    </div>
+    <div class="prose"><Content /></div>
 
     <!-- Tags -->
     {post.data.tags.length > 0 && (
-      <footer style="margin-top:40px; padding-top:24px; border-top:0.5px solid var(--separator);">
-        <p style="font-size:12px; color:var(--label-tertiary); margin:0 0 10px; text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">{t('post.tags')}</p>
+      <div style="margin-top:40px; padding-top:24px; border-top:0.5px solid var(--separator);">
+        <p style="font-size:11px; color:var(--label-tertiary); margin:0 0 10px; text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">{t('post.tags')}</p>
         <div class="tags">
           {post.data.tags.map((tag) => (
             <a href={`/tags/${tag}`} class="tag">#{tag}</a>
           ))}
         </div>
-      </footer>
+      </div>
+    )}
+
+    <!-- Related posts -->
+    {related.length > 0 && (
+      <div style="margin-top:48px; padding-top:32px; border-top:0.5px solid var(--separator);">
+        <h3 style="font-size:13px; color:var(--label-secondary); margin:0 0 16px; text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">相關文章</h3>
+        <div class="feed">
+          {related.map((p) => (
+            <PostCard
+              id={p.id}
+              title={p.data.title}
+              date={p.data.date}
+              category={p.data.category}
+              tags={p.data.tags}
+              tldr={p.data.tldr}
+              description={p.data.description}
+              lang="zh-TW"
+            />
+          ))}
+        </div>
+      </div>
     )}
   </article>
 </BaseLayout>
