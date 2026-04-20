@@ -5,6 +5,7 @@ import PostCard from '../../components/PostCard.astro';
 import { useTranslations } from '../../i18n/utils';
 import { getRelatedPosts } from '../../utils/relatedPosts';
 import { getSeriesNav } from '../../utils/seriesNav';
+import { calcReadingTime } from '../../utils/readingTime';
 
 export const prerender = true;
 
@@ -23,6 +24,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 const t = useTranslations('zh-TW');
 const related = getRelatedPosts(post, allPosts);
 const series = getSeriesNav(post, allPosts);
+const readingTime = post.data.readingTime ?? calcReadingTime(post.body ?? '');
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -39,26 +41,29 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
 <BaseLayout title={post.data.title} description={post.data.description} jsonLd={jsonLd}>
   <article>
     <!-- Header -->
-    <header style="padding: 32px 0 24px; border-bottom: 0.5px solid var(--separator); margin-bottom: 32px;">
-      <div style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--label-secondary); margin-bottom:12px; flex-wrap:wrap;">
-        <time>{dateStr}</time>
-        <span style="opacity:0.4;">·</span>
-        <a href={`/categories/${post.data.category}`} style="color:var(--label-secondary); text-decoration:none;">{post.data.category}</a>
-        {post.data.type && <span class="badge badge-type">{post.data.type}</span>}
-        {post.data.readingTime && (
+    <header style="padding: 40px 0 28px; border-bottom: 0.5px solid var(--separator); margin-bottom: 36px;">
+      <div style="margin-bottom: 10px;">
+        <a href={`/categories/${post.data.category}`} class="badge badge-type" style="text-decoration:none;">{post.data.category}</a>
+      </div>
+
+      <h1 style="margin:0 0 20px; font-size:clamp(26px,5vw,36px); font-weight:900; line-height:1.15; letter-spacing:-0.02em;">{post.data.title}</h1>
+
+      <div style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--label-secondary); flex-wrap:wrap;">
+        <time style="font-variant-numeric: tabular-nums;">{dateStr}</time>
+        <span style="opacity:0.35;">·</span>
+        <span>{readingTime} 分鐘閱讀</span>
+        {post.data.type && (
           <>
-            <span style="opacity:0.4;">·</span>
-            <span>{post.data.readingTime} {t('post.readingTime')}</span>
+            <span style="opacity:0.35;">·</span>
+            <span class="badge badge-type">{post.data.type}</span>
           </>
         )}
       </div>
 
-      <h1 style="margin:0 0 16px;">{post.data.title}</h1>
-
       {post.data.tldr && (
-        <div style="background:var(--glass); border:0.5px solid var(--separator); border-left:3px solid var(--accent); border-radius:var(--radius-md); padding:14px 18px; margin-top:16px;">
-          <p style="font-size:12px; font-weight:600; color:var(--accent); margin:0 0 4px; text-transform:uppercase; letter-spacing:0.05em;">{t('post.tldr')}</p>
-          <p style="margin:0; font-size:15px; color:var(--label-secondary); line-height:1.55;">{post.data.tldr}</p>
+        <div style="background:color-mix(in srgb, var(--accent) 7%, transparent); border:0.5px solid color-mix(in srgb, var(--accent) 20%, transparent); border-left:3px solid var(--accent); border-radius:var(--radius-md); padding:16px 20px; margin-top:24px;">
+          <p style="font-size:11px; font-weight:700; color:var(--accent); margin:0 0 6px; text-transform:uppercase; letter-spacing:0.06em;">{t('post.tldr')}</p>
+          <p style="margin:0; font-size:15px; color:var(--label); line-height:1.7;">{post.data.tldr}</p>
         </div>
       )}
     </header>
