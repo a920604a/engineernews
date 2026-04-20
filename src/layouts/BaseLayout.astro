@@ -426,5 +426,90 @@ const siteJsonLd = {
     <footer class="site-footer">
       &copy; {new Date().getFullYear()} Engineer News &mdash; {t('footer.built')}
     </footer>
+
+    <!-- Mermaid client-side rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.4.0/dist/mermaid.min.js"></script>
+    <script is:inline>
+      (function () {
+        function log() { try { console.debug('[mermaid]'); } catch (e) {} }
+        function initMermaidOnce() {
+          try {
+            if (!window.mermaid) { console.error('mermaid not loaded'); return; }
+            // pick theme based on page theme
+            var theme = document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark';
+            mermaid.initialize({ startOnLoad: false, theme: theme });
+
+            // match various code block classnames
+            var selectors = ['pre > code.language-mermaid', 'pre > code.lang-mermaid', 'code.language-mermaid', 'code.lang-mermaid', 'pre[data-language="mermaid"]'];
+            var nodes = document.querySelectorAll(selectors.join(','));
+            if (!nodes || nodes.length === 0) {
+              // nothing to do
+              return;
+            }
+
+            nodes.forEach(function (node) {
+              // node may be a <code> inside <pre>, or the <pre> itself
+              var pre = (node.tagName && node.tagName.toLowerCase() === 'pre') ? node : (node.parentElement && node.parentElement.tagName.toLowerCase() === 'pre' ? node.parentElement : null);
+              var text = '';
+              if (pre) {
+                text = pre.textContent || '';
+              } else if (node) {
+                text = node.textContent || '';
+              }
+
+              var container = document.createElement('div');
+              container.className = 'mermaid';
+              container.textContent = text;
+
+              // insert after pre (safer than replace)
+              if (pre && pre.parentNode) {
+                if (pre.nextSibling) pre.parentNode.insertBefore(container, pre.nextSibling);
+                else pre.parentNode.appendChild(container);
+                // hide original pre to keep semantics for copy/paste
+                pre.style.display = 'none';
+              } else if (node && node.parentNode) {
+                if (node.nextSibling) node.parentNode.insertBefore(container, node.nextSibling);
+                else node.parentNode.appendChild(container);
+                node.style.display = 'none';
+              }
+            });
+
+            // init mermaid on the newly created containers
+            mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+          } catch (e) {
+            console.error('Mermaid render failed', e);
+          }
+        }
+
+        function loadMermaidIfNeeded(callback) {
+          if (window.mermaid) return callback();
+          // inject script dynamically to avoid Vite inlining/rewriting imports
+          var CDN = 'https://cdn.jsdelivr.net/npm/mermaid@10.4.0/dist/mermaid.min.js';
+          try {
+            var existing = document.querySelector('script[src="' + CDN + '"]');
+            if (existing) {
+              existing.addEventListener('load', callback);
+              existing.addEventListener('error', function () { console.error('Failed to load mermaid from CDN'); });
+              return;
+            }
+            var s = document.createElement('script');
+            s.src = CDN;
+            s.async = true;
+            s.crossOrigin = 'anonymous';
+            s.onload = callback;
+            s.onerror = function () { console.error('Failed to load mermaid from CDN', CDN); };
+            document.head.appendChild(s);
+          } catch (e) {
+            console.error('Mermaid injection failed', e);
+          }
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function () { loadMermaidIfNeeded(initMermaidOnce); });
+        } else {
+          loadMermaidIfNeeded(initMermaidOnce);
+        }
+      })();
+    </script>
   </body>
 </html>
