@@ -1,11 +1,11 @@
 ---
 import { getCollection, render } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
 
 export const prerender = true;
 
 export async function getStaticPaths() {
-  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  const posts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'en');
   return posts.map(post => ({
     params: { slug: post.id },
     props: { post },
@@ -30,7 +30,7 @@ const jsonLd = {
     <div style="margin-bottom: 2rem;">
       <h1 style="margin-bottom: 0.5rem;">{post.data.title}</h1>
       <div style="color: var(--label-secondary); font-size: 14px; margin-bottom: 1rem;">
-        {post.data.date.toLocaleDateString('zh-TW')} · {post.data.category}
+        {post.data.date.toLocaleDateString('en-US')} · {post.data.category}
         {post.data.type && <span style="margin-left: 8px;">· {post.data.type}</span>}
       </div>
 
@@ -47,10 +47,10 @@ const jsonLd = {
     </div>
 
     <div style="margin-top: 4rem; padding-top: 2rem; border-top: 0.5px solid var(--separator);">
-      <h3 style="font-size: 14px; color: var(--label-secondary); margin-bottom: 1rem;">相關標籤</h3>
+      <h3 style="font-size: 14px; color: var(--label-secondary); margin-bottom: 1rem;">Tags</h3>
       <div class="tags">
         {post.data.tags.map((tag) => (
-          <a href={`/tags/${tag}`} class="tag">#{tag}</a>
+          <a href={`/en/tags/${tag}`} class="tag">#{tag}</a>
         ))}
       </div>
     </div>
@@ -58,25 +58,8 @@ const jsonLd = {
 </BaseLayout>
 
 <style is:global>
-  .markdown-body {
-    font-size: 17px;
-    line-height: 1.6;
-    color: var(--label-primary);
-  }
-  .markdown-body h2 {
-    margin-top: 2rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 0.5px solid var(--separator);
-  }
-  .markdown-body pre {
-    background: #1c1c1e;
-    padding: 16px;
-    border-radius: 12px;
-    overflow-x: auto;
-    border: 0.5px solid var(--separator);
-  }
-  .markdown-body code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
-    font-size: 0.9em;
-  }
+  .markdown-body { font-size: 17px; line-height: 1.6; color: var(--label-primary); }
+  .markdown-body h2 { margin-top: 2rem; padding-bottom: 0.5rem; border-bottom: 0.5px solid var(--separator); }
+  .markdown-body pre { background: #1c1c1e; padding: 16px; border-radius: 12px; overflow-x: auto; border: 0.5px solid var(--separator); }
+  .markdown-body code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace; font-size: 0.9em; }
 </style>

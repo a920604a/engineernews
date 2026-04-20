@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Search from '../../components/Search';
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'en');
+const posts = allPosts.sort((a, b) => {
+  if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
+  return b.data.date.valueOf() - a.data.date.valueOf();
+});
+---
+
+<BaseLayout title="Engineering Decisions as Documentation">
+  <section>
+    <p style="color: var(--label-secondary); font-style: italic; margin-bottom: 2rem;">
+      Capturing the essence of engineering conversations into a structured technical knowledge base.
+    </p>
+
+    <Search client:load />
+
+    {posts.length === 0 ? (
+      <div style="border: 1px dashed var(--separator); padding: 2rem; text-align: center; border-radius: 8px;">
+        <p>No posts yet. Add English posts with <code>lang: en</code> in frontmatter.</p>
+      </div>
+    ) : (
+      <div class="feed">
+        {posts.map((post) => (
+          <article style="margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--separator);">
+            <div style="font-size: 0.8rem; color: #8b949e; margin-bottom: 0.5rem;">
+              {post.data.date.toLocaleDateString('en-US')} · {post.data.category}
+              {post.data.type && <span style="margin-left: 8px; color: var(--accent-color);">[{post.data.type}]</span>}
+            </div>
+            <h2 style="margin: 0 0 0.5rem 0;">
+              <a href={`/en/posts/${post.id}`}>{post.data.title}</a>
+            </h2>
+            <p style="margin: 0 0 1rem 0; font-size: 0.95rem;">{post.data.tldr || post.data.description}</p>
+            <div class="tags">
+              {post.data.tags.map((tag) => (
+                <a href={`/en/tags/${tag}`} class="tag">#{tag}</a>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    )}
+  </section>
+</BaseLayout>

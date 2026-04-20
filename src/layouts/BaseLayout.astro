@@ -2,10 +2,19 @@
 interface Props {
 	title: string;
 	description?: string;
+	jsonLd?: object;
 }
 
-const { title, description = "Engineer News - 技術決策即文件" } = Astro.props;
+const { title, description = "Engineer News - 技術決策即文件", jsonLd } = Astro.props;
 const { currentLocale } = Astro;
+
+const siteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Engineer News",
+  "description": description,
+  "url": Astro.site?.toString() ?? "/",
+};
 ---
 
 <!doctype html>
@@ -17,6 +26,7 @@ const { currentLocale } = Astro;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title} | Engineer News</title>
+		<script type="application/ld+json" set:html={JSON.stringify(jsonLd ?? siteJsonLd)} />
 		<style is:global>
 			:root {
 				/* Apple Semantic Colors (Dark Mode) */
