@@ -7,7 +7,7 @@ lang: zh-TW
 description: "實作指南：從空專案開始，用 Astro 建靜態前端、Cloudflare Workers / Pages 做後端與部署，減少開發摩擦的實作步驟與注意事項。"
 tldr: "以 Astro 做內容與 UI，Cloudflare Workers 提供 API 與邊緣處理，Cloudflare Pages 做靜態部署；關鍵在於 routes、環境變數與 D1/kv 的運用。"
 draft: false
-pinned: false
+pinned: true
 ---
 
 ## TL;DR
