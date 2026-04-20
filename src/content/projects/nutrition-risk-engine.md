@@ -2,13 +2,11 @@
 title: "Nutrition Risk Engine"
 description:
   background: "多族群飲食風險管理系統，提供食物查詢、個人化飲食建議與 AI 驗證的飲食分析。"
-  challenge: "需將食物標籤與疾病風險對應，並在前端呈現即時查詢、飲食日記與 AI 分析，同時儲存與同步使用者資料。"
-  solution: "以 Cloudflare Workers 提供 API 與 D1 做為食物資料庫，前端使用 React + TypeScript + Tailwind，並以 Workers AI 做個人化分析與 PDF 匯出。"
+  challenge: "請補充挑戰描述。"
+  solution: "請補充解法摘要。"
   core_contributions:
-    - "設計 riskEngine.ts，透過標籤（tag）系統對不同疾病進行分數評估與建議。"
-    - "實作 Worker API（/api/foods 等）與 D1 schema 與 seed，維護 140 種食物與對應標籤。"
-    - "整合 Workers AI 進行飲食日記分析，並在前端提供 React 組件與 react-pdf 匯出功能。"
-  outcome: "完成可部署的示範系統，支援前端查詢、日記記錄、AI 分析與 PDF 報告，並以 Cloudflare 無伺服器資源達成低成本運營。"
+    - "補充：列出 3–6 項核心貢獻或實作細項。"
+  outcome: "請補充專案成果或量化指標。"
 tags: ["nutrition", "health", "ml"]
 skills: ["react", "typescript", "tailwindcss", "cloudflare-workers", "d1", "firestore", "workers-ai", "react-pdf"]
 github: "https://github.com/a920604a/nutrition-risk-engine"
