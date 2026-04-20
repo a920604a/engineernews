@@ -8,22 +8,27 @@ import { useTranslations } from '../i18n/utils';
 const t = useTranslations('zh-TW');
 
 const allPosts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'zh-TW');
-const posts = allPosts.sort((a, b) => {
-  if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
-  return b.data.date.valueOf() - a.data.date.valueOf();
-});
-
 const allProjects = await getCollection('projects');
-const projects = allProjects
-  .sort((a, b) => {
-    if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
-    return a.data.title.localeCompare(b.data.title);
-  })
-  .slice(0, 4);
 
 function projectDescription(description) {
   return typeof description === 'string' ? description : (description && description.background) ? description.background : '';
 }
+
+type FeedItem =
+  | { kind: 'post'; pinned: boolean; date: Date; post: (typeof allPosts)[number] }
+  | { kind: 'project'; pinned: boolean; date: Date | undefined; project: (typeof allProjects)[number] };
+
+const feed: FeedItem[] = [
+  ...allPosts.map((p) => ({ kind: 'post' as const, pinned: p.data.pinned, date: p.data.date, post: p })),
+  ...allProjects.map((p) => ({ kind: 'project' as const, pinned: p.data.pinned, date: p.data.date, project: p })),
+];
+
+feed.sort((a, b) => {
+  if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+  const aTime = a.date?.valueOf() ?? 0;
+  const bTime = b.date?.valueOf() ?? 0;
+  return bTime - aTime;
+});
 ---
 
 <BaseLayout title={t('nav.home')}>
@@ -34,58 +39,66 @@ function projectDescription(description) {
 
     <Search client:load />
 
-    {posts.length === 0 ? (
+    {feed.length === 0 ? (
       <div style="border: 0.5px dashed var(--separator); padding: 40px; text-align: center; border-radius: var(--radius-lg); color: var(--label-secondary);">
         <p style="margin:0;">{t('feed.empty')}</p>
       </div>
     ) : (
-      <>
-        <div class="feed">
-          {posts.map((post) => (
+      <div class="feed">
+        {feed.map((item) =>
+          item.kind === 'post' ? (
             <PostCard
-              id={post.id}
-              title={post.data.title}
-              date={post.data.date}
-              category={post.data.category}
-              tags={post.data.tags}
-              description={post.data.description}
-              tldr={post.data.tldr}
-              type={post.data.type}
-              pinned={post.data.pinned}
-              readingTime={post.data.readingTime}
+              id={item.post.id}
+              title={item.post.data.title}
+              date={item.post.data.date}
+              category={item.post.data.category}
+              tags={item.post.data.tags}
+              description={item.post.data.description}
+              tldr={item.post.data.tldr}
+              type={item.post.data.type}
+              pinned={item.post.data.pinned}
+              readingTime={item.post.data.readingTime}
               lang="zh-TW"
             />
-          ))}
-        </div>
-
-        <section style="margin-top: 40px;">
-          <h2 style="margin:0 0 12px;">最新專案</h2>
-          <div style="display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
-            {projects.map((project) => (
-              <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.5rem;">
-                  <h3 style="margin:0; font-size:16px;">{project.data.title}</h3>
-                  <div style="display:flex; gap:0.5rem;">
-                    {project.data.github && (
-                      <a href={project.data.github} target="_blank" rel="noopener" class="btn-primary" style="font-size:12px;">GitHub</a>
-                    )}
-                    {project.data.url && (
-                      <a href={project.data.url} target="_blank" rel="noopener" class="btn-primary" style="font-size:12px;">網站</a>
-                    )}
-                  </div>
-                </div>
-
-                <p style="margin:0.5rem 0; color:var(--label-secondary);">{projectDescription(project.data.description)}</p>
-
-                <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; flex-wrap:wrap;">
-                  <div class="tags">{(project.data.tags || []).map((tag) => <span class="tag">#{tag}</span>)}</div>
-                  <a href={`/projects/${project.id}`} style="font-size:13px; color:var(--accent); text-decoration:none;">查看 →</a>
+          ) : (
+            <article class="postcard">
+              <div class="postcard-meta">
+                <div class="postcard-badges">
+                  {item.project.data.pinned && <span class="badge badge-pinned">置頂</span>}
+                  <span class="badge badge-project">專案</span>
                 </div>
               </div>
-            ))}
-          </div>
-        </section>
-      </>
+              <h2 class="postcard-title">
+                <a href={`/projects/${item.project.id}`}>{item.project.data.title}</a>
+              </h2>
+              <p class="postcard-excerpt">{projectDescription(item.project.data.description)}</p>
+              {(item.project.data.tags || []).length > 0 && (
+                <div class="postcard-tags">
+                  {item.project.data.tags.map((tag) => (
+                    <a href={`/tags/${tag}`} class="postcard-tag">#{tag}</a>
+                  ))}
+                </div>
+              )}
+            </article>
+          )
+        )}
+      </div>
     )}
   </section>
 </BaseLayout>
+
+<style>
+  .badge-project {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    background: color-mix(in srgb, var(--color-orange, #ff9f0a) 12%, transparent);
+    color: var(--color-orange, #ff9f0a);
+    border: 0.5px solid color-mix(in srgb, var(--color-orange, #ff9f0a) 30%, transparent);
+  }
+</style>

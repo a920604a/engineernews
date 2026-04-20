@@ -36,7 +36,7 @@ CREATE INDEX IF NOT EXISTS idx_projects_tag ON projects(tag);
 CREATE INDEX IF NOT EXISTS idx_projects_pinned ON projects(pinned);
 
 -- 統一 chunk 表（posts + projects，供 RAG / Vectorize 使用）
-CREATE TABLE IF NOT EXISTS chunks (
+CREATE TABLE IF NOT EXISTS doc_chunks (
   id TEXT PRIMARY KEY,
   source_id TEXT NOT NULL,
   source_type TEXT NOT NULL CHECK (source_type IN ('post', 'project')),
@@ -46,16 +46,4 @@ CREATE TABLE IF NOT EXISTS chunks (
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
-CREATE INDEX IF NOT EXISTS idx_chunks_source ON chunks(source_id, source_type);
-
--- 外部文件 chunk 表（爬蟲使用）
-CREATE TABLE IF NOT EXISTS doc_chunks (
-  id TEXT PRIMARY KEY,
-  source_url TEXT NOT NULL,
-  source_name TEXT,
-  chunk_index INTEGER NOT NULL,
-  content TEXT NOT NULL,
-  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
-
-CREATE INDEX IF NOT EXISTS idx_doc_source ON doc_chunks(source_url);
+CREATE INDEX IF NOT EXISTS idx_doc_chunks_source ON doc_chunks(source_id, source_type);

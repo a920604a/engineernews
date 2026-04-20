@@ -9,6 +9,7 @@ description:
     - "建立 React + Vite 範例前端，展示上傳音訊、即時辨識與播放 TTS 結果。"
     - "以 Dockerfile 與 docker-compose 組合開發環境，簡化啟動流程並方便 CI/CD 測試。"
   outcome: "提供一套可復用的 STT/TTS 範例與工具，方便在其他專案整合多種語音模型與優化延遲。"
+date: 2026-03-28
 tags: ["speech", "stt", "tts"]
 skills: ["fastapi", "react", "vite", "whisper", "tts", "docker", "docker-compose", "sqlite"]
 github: "https://github.com/a920604a/stt-tts-unified"

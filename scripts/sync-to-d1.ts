@@ -74,7 +74,7 @@ async function syncChunks(
   meta: { slug: string; title: string }
 ) {
   execSync(
-    `wrangler d1 execute ${DB_NAME} ${remoteFlag} --command="DELETE FROM chunks WHERE source_id='${esc(sourceId)}' AND source_type='${sourceType}'" --yes`,
+    `wrangler d1 execute ${DB_NAME} ${remoteFlag} --command="DELETE FROM doc_chunks WHERE source_id='${esc(sourceId)}' AND source_type='${sourceType}'" --yes`,
     { stdio: 'inherit' }
   );
 
@@ -83,7 +83,7 @@ async function syncChunks(
     const chunkId = `${sourceType}:${sourceId}-chunk-${i}`;
     const updated_at = new Date().toISOString().split('T')[0];
     runSql(
-      `INSERT INTO chunks (id, source_id, source_type, chunk_index, content, updated_at)
+      `INSERT INTO doc_chunks (id, source_id, source_type, chunk_index, content, updated_at)
        VALUES ('${esc(chunkId)}','${esc(sourceId)}','${sourceType}',${i},'${esc(parts[i])}','${updated_at}')
        ON CONFLICT(id) DO UPDATE SET content=excluded.content, updated_at=excluded.updated_at`
     );
