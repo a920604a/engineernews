@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "engineer-news",
+  "compatibility_date": "2024-04-01",
+  "pages_build_output_dir": "./dist",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "engineer-news-db",
+      "database_id": "0bec497e-9de7-4069-bc90-7d0da0f72e9a"
+    }
+  ],
+  "vectorize": [
+    {
+      "binding": "VECTORIZE",
+      "index_name": "engineer-news-index"
+    }
+  ],
+  "ai": {
+    "binding": "AI"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "engineer-news",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "sync": "tsx scripts/sync-to-d1.ts",
+    "sync:prod": "tsx scripts/sync-to-d1.ts --prod"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^12.6.13",
+    "@astrojs/react": "^4.4.2",
+    "astro": "^5.18.1",
+    "gray-matter": "^4.0.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tsx": "^4.21.0",
+    "wrangler": "^4.83.0"
+  }
+}
