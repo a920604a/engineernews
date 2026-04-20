@@ -11,103 +11,164 @@ interface Props {
   tldr?: string;
   type?: string;
   pinned?: boolean;
+  readingTime?: number;
   lang?: Lang;
 }
 
-const { id, title, date, category, tags, description, tldr, type, pinned = false, lang = 'zh-TW' } = Astro.props;
+const { id, title, date, category, tags, description, tldr, type, pinned = false, readingTime, lang = 'zh-TW' } = Astro.props;
 
 const isEn = lang === 'en';
 const postHref = isEn ? `/en/posts/${id}` : `/posts/${id}`;
-const tagHref = (tag: string) => isEn ? `/en/tags/${tag}` : `/tags/${tag}`;
+const catHref  = isEn ? `/en/categories/${category}` : `/categories/${category}`;
+const typeHref = isEn ? `/en/categories/${category}?type=${type}` : `/categories/${category}?type=${type}`;
+const tagHref  = (t: string) => isEn ? `/en/tags/${t}` : `/tags/${t}`;
+
 const dateStr = date.toLocaleDateString(isEn ? 'en-US' : 'zh-TW', {
   year: 'numeric', month: 'short', day: 'numeric'
 });
 const excerpt = tldr || description || '';
 ---
 
-<article class="post-card">
-  <div class="post-meta">
-    {pinned && <span class="pinned-dot" aria-label="置頂" />}
-    <time class="post-date">{dateStr}</time>
-    <span class="meta-sep">·</span>
-    <span class="post-category">{category}</span>
-    {type && <span class="badge badge-type">{type}</span>}
+<article class="postcard">
+  <!-- Meta row -->
+  <div class="postcard-meta">
+    <div class="postcard-badges">
+      {pinned && <span class="badge badge-pinned">置頂</span>}
+      <a href={catHref} class="badge badge-cat">{category}</a>
+      {type && <a href={typeHref} class="badge badge-type">{type}</a>}
+    </div>
+    <time class="postcard-date">
+      {dateStr}
+      {readingTime && <span class="postcard-rt"> · {readingTime} min</span>}
+    </time>
   </div>
 
-  <h2 class="post-title">
+  <!-- Title -->
+  <h2 class="postcard-title">
     <a href={postHref}>{title}</a>
   </h2>
 
-  {excerpt && <p class="post-excerpt">{excerpt}</p>}
+  <!-- Excerpt -->
+  {excerpt && <p class="postcard-excerpt">{excerpt}</p>}
 
+  <!-- Tags -->
   {tags.length > 0 && (
-    <div class="tags">
+    <div class="postcard-tags">
       {tags.map((tag) => (
-        <a href={tagHref(tag)} class="tag">#{tag}</a>
+        <a href={tagHref(tag)} class="postcard-tag">#{tag}</a>
       ))}
     </div>
   )}
 </article>
 
 <style>
-  .post-card {
-    padding: 20px 0;
+  .postcard {
+    padding: 22px 0;
     border-bottom: 0.5px solid var(--separator);
-    transition: opacity 0.15s;
+  }
+  .postcard:last-child { border-bottom: none; }
+
+  /* Meta row */
+  .postcard-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
   }
 
-  .post-card:last-child { border-bottom: none; }
-  .post-card:hover { opacity: 0.85; }
-
-  .post-meta {
+  .postcard-badges {
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-bottom: 8px;
-    font-size: 13px;
-    color: var(--label-secondary);
+    flex-wrap: wrap;
   }
 
-  .pinned-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: opacity 0.15s;
+  }
+  .badge:hover { opacity: 0.75; }
+
+  .badge-pinned {
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    color: var(--accent);
+  }
+
+  .badge-cat {
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--accent);
+    border: 0.5px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+
+  .badge-type {
+    background: color-mix(in srgb, var(--color-green, #30d158) 12%, transparent);
+    color: var(--color-green, #30d158);
+    border: 0.5px solid color-mix(in srgb, var(--color-green, #30d158) 30%, transparent);
+  }
+
+  .postcard-date {
+    font-size: 12px;
+    color: var(--label-secondary);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
     flex-shrink: 0;
   }
 
-  .post-date { font-variant-numeric: tabular-nums; }
-  .meta-sep { opacity: 0.4; }
-
-  .post-category {
-    font-weight: 500;
-    text-transform: lowercase;
+  .postcard-rt {
+    opacity: 0.7;
   }
 
-  .post-title {
-    font-size: 19px;
-    font-weight: 600;
-    letter-spacing: -0.015em;
+  /* Title */
+  .postcard-title {
+    font-size: 20px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
     line-height: 1.3;
     margin: 0 0 8px;
   }
 
-  .post-title a {
+  .postcard-title a {
     color: var(--label);
     text-decoration: none;
     transition: color 0.15s;
   }
 
-  .post-title a:hover { color: var(--accent); }
+  .postcard-title a:hover { color: var(--accent); }
 
-  .post-excerpt {
-    font-size: 15px;
+  /* Excerpt */
+  .postcard-excerpt {
+    font-size: 14px;
     color: var(--label-secondary);
-    line-height: 1.55;
+    line-height: 1.6;
     margin: 0 0 12px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+
+  /* Tags */
+  .postcard-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .postcard-tag {
+    font-size: 12px;
+    color: var(--label-secondary);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .postcard-tag:hover { color: var(--accent); }
 </style>

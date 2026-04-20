@@ -39,11 +39,9 @@ const siteJsonLd = {
     <meta name="generator" content={Astro.generator} />
     <title>{title} | {siteName}</title>
 
-    <!-- hreflang -->
     <link rel="alternate" hreflang="zh-TW" href={`${canonicalURL.origin}${isEn ? Astro.url.pathname.replace(/^\/en/, '') || '/' : Astro.url.pathname}`} />
     <link rel="alternate" hreflang="en" href={`${canonicalURL.origin}/en${isEn ? Astro.url.pathname : Astro.url.pathname}`} />
 
-    <!-- Open Graph -->
     <meta property="og:site_name" content={siteName} />
     <meta property="og:title" content={`${title} | ${siteName}`} />
     <meta property="og:description" content={siteDescription} />
@@ -54,67 +52,111 @@ const siteJsonLd = {
     <meta name="twitter:title" content={`${title} | ${siteName}`} />
     <meta name="twitter:description" content={siteDescription} />
 
-    <!-- JSON-LD -->
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd ?? siteJsonLd)} />
 
     <style is:global>
-      /* ── Apple Design System ─────────────────────────── */
+      /* ─── Theme Variables ─────────────────────────────── */
+
+      /* Default: Apple Dark */
       :root {
-        --bg: #000;
+        --bg: #000000;
         --bg-secondary: #1c1c1e;
         --bg-tertiary: #2c2c2e;
-        --label: #fff;
-        --label-secondary: #ebebf599;
-        --label-tertiary: #ebebf54d;
+        --label: #ffffff;
+        --label-secondary: rgba(235,235,245,0.6);
+        --label-tertiary: rgba(235,235,245,0.3);
         --separator: rgba(84,84,88,0.65);
         --accent: #0a84ff;
         --accent-hover: #409cff;
-        --success: #30d158;
-        --warning: #ffd60a;
-        --card-bg: rgba(28,28,30,0.72);
+        --color-green: #30d158;
+        --card-bg: rgba(28,28,30,0.8);
         --glass: rgba(255,255,255,0.06);
-        --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
-        --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
-        --radius-sm: 8px;
-        --radius-md: 12px;
-        --radius-lg: 18px;
-        --radius-full: 9999px;
+        --shadow-md: 0 4px 20px rgba(0,0,0,0.6);
+        --radius-sm: 8px; --radius-md: 12px;
+        --radius-lg: 18px; --radius-full: 9999px;
       }
 
+      /* Apple Light */
+      :root[data-theme="light"] {
+        --bg: #f2f2f7;
+        --bg-secondary: #ffffff;
+        --bg-tertiary: #e5e5ea;
+        --label: #000000;
+        --label-secondary: rgba(60,60,67,0.6);
+        --label-tertiary: rgba(60,60,67,0.3);
+        --separator: rgba(60,60,67,0.29);
+        --accent: #007aff;
+        --accent-hover: #0056d6;
+        --color-green: #34c759;
+        --card-bg: rgba(255,255,255,0.8);
+        --glass: rgba(0,0,0,0.04);
+        --shadow-md: 0 4px 20px rgba(0,0,0,0.1);
+      }
+
+      /* Nord — Arctic blue-grey */
+      :root[data-theme="nord"] {
+        --bg: #2e3440;
+        --bg-secondary: #3b4252;
+        --bg-tertiary: #434c5e;
+        --label: #eceff4;
+        --label-secondary: rgba(216,222,233,0.75);
+        --label-tertiary: rgba(216,222,233,0.4);
+        --separator: rgba(76,86,106,0.8);
+        --accent: #88c0d0;
+        --accent-hover: #81a1c1;
+        --color-green: #a3be8c;
+        --card-bg: rgba(59,66,82,0.85);
+        --glass: rgba(236,239,244,0.05);
+        --shadow-md: 0 4px 20px rgba(0,0,0,0.4);
+      }
+
+      /* Catppuccin Mocha — warm pastel dark */
+      :root[data-theme="catppuccin"] {
+        --bg: #1e1e2e;
+        --bg-secondary: #313244;
+        --bg-tertiary: #45475a;
+        --label: #cdd6f4;
+        --label-secondary: rgba(186,194,222,0.75);
+        --label-tertiary: rgba(186,194,222,0.4);
+        --separator: rgba(69,71,90,0.9);
+        --accent: #89b4fa;
+        --accent-hover: #b4befe;
+        --color-green: #a6e3a1;
+        --card-bg: rgba(49,50,68,0.85);
+        --glass: rgba(205,214,244,0.05);
+        --shadow-md: 0 4px 20px rgba(0,0,0,0.5);
+      }
+
+      /* Tokyo Night — purple-blue */
+      :root[data-theme="tokyo"] {
+        --bg: #1a1b2e;
+        --bg-secondary: #24253a;
+        --bg-tertiary: #2d2f45;
+        --label: #c0caf5;
+        --label-secondary: rgba(154,165,206,0.8);
+        --label-tertiary: rgba(154,165,206,0.4);
+        --separator: rgba(65,72,104,0.8);
+        --accent: #7aa2f7;
+        --accent-hover: #bb9af7;
+        --color-green: #9ece6a;
+        --card-bg: rgba(36,37,58,0.88);
+        --glass: rgba(192,202,245,0.05);
+        --shadow-md: 0 4px 20px rgba(0,0,0,0.55);
+      }
+
+      /* System light fallback */
       @media (prefers-color-scheme: light) {
-        :root:not([data-theme="dark"]) {
-          --bg: #f2f2f7;
-          --bg-secondary: #fff;
-          --bg-tertiary: #e5e5ea;
-          --label: #000;
-          --label-secondary: #3c3c4399;
-          --label-tertiary: #3c3c434d;
-          --separator: rgba(60,60,67,0.29);
-          --accent: #007aff;
-          --accent-hover: #0051a8;
-          --card-bg: rgba(255,255,255,0.72);
-          --glass: rgba(0,0,0,0.04);
-          --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-          --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+        :root:not([data-theme]) {
+          --bg: #f2f2f7; --bg-secondary: #ffffff; --bg-tertiary: #e5e5ea;
+          --label: #000000; --label-secondary: rgba(60,60,67,0.6);
+          --label-tertiary: rgba(60,60,67,0.3); --separator: rgba(60,60,67,0.29);
+          --accent: #007aff; --accent-hover: #0056d6; --color-green: #34c759;
+          --card-bg: rgba(255,255,255,0.8); --glass: rgba(0,0,0,0.04);
+          --shadow-md: 0 4px 20px rgba(0,0,0,0.1);
         }
       }
 
-      :root[data-theme="light"] {
-        --bg: #f2f2f7;
-        --bg-secondary: #fff;
-        --bg-tertiary: #e5e5ea;
-        --label: #000;
-        --label-secondary: #3c3c4399;
-        --label-tertiary: #3c3c434d;
-        --separator: rgba(60,60,67,0.29);
-        --accent: #007aff;
-        --accent-hover: #0051a8;
-        --card-bg: rgba(255,255,255,0.72);
-        --glass: rgba(0,0,0,0.04);
-        --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-        --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
-      }
-
+      /* ─── Base ────────────────────────────────────────── */
       *, *::before, *::after { box-sizing: border-box; }
 
       body {
@@ -126,19 +168,14 @@ const siteJsonLd = {
         letter-spacing: -0.022em;
         -webkit-font-smoothing: antialiased;
         margin: 0;
+        transition: background 0.25s, color 0.25s;
       }
 
-      main {
-        max-width: 720px;
-        margin: 0 auto;
-        padding: 0 20px 80px;
-      }
+      main { max-width: 720px; margin: 0 auto; padding: 0 20px 80px; }
 
-      /* ── Nav ─────────────────────────────────────────── */
+      /* ─── Nav ─────────────────────────────────────────── */
       .site-header {
-        position: sticky;
-        top: 0;
-        z-index: 100;
+        position: sticky; top: 0; z-index: 100;
         background: var(--card-bg);
         backdrop-filter: saturate(180%) blur(24px);
         -webkit-backdrop-filter: saturate(180%) blur(24px);
@@ -146,235 +183,138 @@ const siteJsonLd = {
       }
 
       .nav-inner {
-        max-width: 720px;
-        margin: 0 auto;
-        padding: 0 20px;
-        height: 48px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
+        max-width: 720px; margin: 0 auto; padding: 0 20px;
+        height: 48px; display: flex; align-items: center;
+        justify-content: space-between; gap: 16px;
       }
 
       .nav-brand {
-        font-size: 15px;
-        font-weight: 600;
-        color: var(--label);
-        text-decoration: none;
-        letter-spacing: -0.01em;
-        white-space: nowrap;
+        font-size: 15px; font-weight: 600; color: var(--label);
+        text-decoration: none; letter-spacing: -0.01em; white-space: nowrap;
       }
 
-      .nav-links {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        flex: 1;
-      }
+      .nav-links { display: flex; align-items: center; gap: 4px; flex: 1; }
 
       .nav-link {
-        font-size: 14px;
-        color: var(--label-secondary);
-        text-decoration: none;
-        padding: 5px 10px;
-        border-radius: var(--radius-sm);
-        transition: color 0.15s, background 0.15s;
-        white-space: nowrap;
+        font-size: 14px; color: var(--label-secondary); text-decoration: none;
+        padding: 5px 10px; border-radius: var(--radius-sm);
+        transition: color 0.15s, background 0.15s; white-space: nowrap;
       }
-
-      .nav-link:hover {
-        color: var(--label);
-        background: var(--glass);
-      }
+      .nav-link:hover { color: var(--label); background: var(--glass); }
 
       .lang-btn {
-        font-size: 13px;
-        font-weight: 500;
-        color: var(--accent);
-        text-decoration: none;
-        padding: 5px 12px;
-        border-radius: var(--radius-full);
-        border: 1px solid var(--accent);
-        transition: background 0.15s, color 0.15s;
+        font-size: 13px; font-weight: 500; color: var(--accent);
+        text-decoration: none; padding: 5px 12px; border-radius: var(--radius-full);
+        border: 1px solid var(--accent); transition: background 0.15s, color 0.15s;
         white-space: nowrap;
       }
+      .lang-btn:hover { background: var(--accent); color: #fff; }
 
-      .lang-btn:hover {
-        background: var(--accent);
-        color: #fff;
-      }
+      /* ─── Theme Picker ────────────────────────────────── */
+      .theme-picker { position: relative; }
 
       .theme-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: var(--radius-full);
-        border: 0.5px solid var(--separator);
-        background: transparent;
-        color: var(--label-secondary);
-        cursor: pointer;
-        transition: background 0.15s, color 0.15s;
-        flex-shrink: 0;
+        display: flex; align-items: center; gap: 5px;
+        padding: 4px 10px; border-radius: var(--radius-full);
+        border: 0.5px solid var(--separator); background: transparent;
+        color: var(--label-secondary); font-size: 12px; font-weight: 500;
+        cursor: pointer; transition: background 0.15s, color 0.15s;
+        white-space: nowrap;
+      }
+      .theme-btn:hover { background: var(--glass); color: var(--label); }
+
+      .theme-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--accent); flex-shrink: 0;
       }
 
-      .theme-btn:hover {
-        background: var(--glass);
-        color: var(--label);
+      .theme-menu {
+        display: none; position: absolute; right: 0; top: calc(100% + 6px);
+        background: var(--bg-secondary); border: 0.5px solid var(--separator);
+        border-radius: var(--radius-md); padding: 6px;
+        min-width: 160px; box-shadow: var(--shadow-md);
+        z-index: 200;
+      }
+      .theme-menu.open { display: block; }
+
+      .theme-option {
+        display: flex; align-items: center; gap: 10px;
+        width: 100%; padding: 8px 12px; border-radius: 8px;
+        background: transparent; border: none; cursor: pointer;
+        font-size: 13px; font-weight: 500; color: var(--label-secondary);
+        text-align: left; transition: background 0.12s, color 0.12s;
+      }
+      .theme-option:hover { background: var(--glass); color: var(--label); }
+      .theme-option.active { color: var(--label); }
+
+      .theme-swatch {
+        width: 14px; height: 14px; border-radius: 50%;
+        flex-shrink: 0; border: 1.5px solid var(--separator);
       }
 
-      .theme-icon-dark { display: none; }
-      .theme-icon-light { display: block; }
-      :root[data-theme="dark"] .theme-icon-dark { display: block; }
-      :root[data-theme="dark"] .theme-icon-light { display: none; }
-      @media (prefers-color-scheme: dark) {
-        :root:not([data-theme="light"]) .theme-icon-dark { display: block; }
-        :root:not([data-theme="light"]) .theme-icon-light { display: none; }
-      }
-
-      /* ── Typography ──────────────────────────────────── */
-      h1 {
-        font-size: 34px;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        line-height: 1.15;
-        margin: 0 0 0.4em;
-      }
-
-      h2 {
-        font-size: 22px;
-        font-weight: 600;
-        letter-spacing: -0.01em;
-        line-height: 1.25;
-        margin: 0 0 0.25em;
-      }
-
+      /* ─── Typography ──────────────────────────────────── */
+      h1 { font-size: 34px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; margin: 0 0 0.4em; }
+      h2 { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; margin: 0 0 0.25em; }
       a { color: var(--accent); }
       a:hover { color: var(--accent-hover); }
 
-      /* ── Cards ───────────────────────────────────────── */
+      /* ─── Card ────────────────────────────────────────── */
       .card {
-        background: var(--bg-secondary);
-        border: 0.5px solid var(--separator);
-        border-radius: var(--radius-lg);
-        padding: 20px 24px;
+        background: var(--bg-secondary); border: 0.5px solid var(--separator);
+        border-radius: var(--radius-lg); padding: 20px 24px;
         transition: box-shadow 0.2s, transform 0.2s;
       }
+      .card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
 
-      .card:hover {
-        box-shadow: var(--shadow-md);
-        transform: translateY(-1px);
-      }
-
-      /* ── Tags ────────────────────────────────────────── */
-      .tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-      }
-
+      /* ─── Tags ────────────────────────────────────────── */
+      .tags { display: flex; flex-wrap: wrap; gap: 6px; }
       .tag {
-        display: inline-flex;
-        align-items: center;
-        padding: 3px 10px;
-        background: var(--glass);
-        border: 0.5px solid var(--separator);
-        border-radius: var(--radius-full);
-        font-size: 12px;
-        font-weight: 500;
-        color: var(--accent);
-        text-decoration: none;
-        transition: background 0.15s, border-color 0.15s;
-        letter-spacing: 0;
+        display: inline-flex; align-items: center; padding: 3px 10px;
+        background: var(--glass); border: 0.5px solid var(--separator);
+        border-radius: var(--radius-full); font-size: 12px; font-weight: 500;
+        color: var(--accent); text-decoration: none; transition: background 0.15s;
       }
+      .tag:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
 
-      .tag:hover {
-        background: color-mix(in srgb, var(--accent) 12%, transparent);
-        border-color: var(--accent);
-        color: var(--accent);
-      }
-
-      /* ── Badge ───────────────────────────────────────── */
+      /* ─── Badge ───────────────────────────────────────── */
       .badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 2px 8px;
-        border-radius: var(--radius-full);
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.02em;
-        text-transform: uppercase;
+        display: inline-flex; align-items: center; padding: 2px 8px;
+        border-radius: var(--radius-full); font-size: 11px; font-weight: 600;
+        letter-spacing: 0.02em; text-transform: uppercase; text-decoration: none;
       }
-
       .badge-type {
         background: color-mix(in srgb, var(--accent) 15%, transparent);
         color: var(--accent);
       }
 
-      /* ── Feed ────────────────────────────────────────── */
-      .feed {
-        display: flex;
-        flex-direction: column;
-        gap: 1px;
-      }
+      /* ─── Feed ────────────────────────────────────────── */
+      .feed { display: flex; flex-direction: column; }
 
-      /* ── Footer ──────────────────────────────────────── */
+      /* ─── Footer ──────────────────────────────────────── */
       .site-footer {
-        text-align: center;
-        padding: 32px 20px;
-        color: var(--label-tertiary);
-        font-size: 13px;
-        border-top: 0.5px solid var(--separator);
-        margin-top: 60px;
+        text-align: center; padding: 32px 20px;
+        color: var(--label-tertiary); font-size: 13px;
+        border-top: 0.5px solid var(--separator); margin-top: 60px;
       }
 
-      /* ── Markdown body ───────────────────────────────── */
-      .prose {
-        font-size: 17px;
-        line-height: 1.65;
-        color: var(--label);
-      }
-
-      .prose h2 {
-        margin-top: 2.5rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 0.5px solid var(--separator);
-        font-size: 24px;
-      }
-
+      /* ─── Prose ───────────────────────────────────────── */
+      .prose { font-size: 17px; line-height: 1.65; color: var(--label); }
+      .prose h2 { margin-top: 2.5rem; padding-bottom: 0.5rem; border-bottom: 0.5px solid var(--separator); font-size: 24px; }
       .prose h3 { font-size: 20px; margin-top: 2rem; }
-
       .prose pre {
-        background: var(--bg-tertiary);
-        border: 0.5px solid var(--separator);
-        border-radius: var(--radius-md);
-        padding: 16px 20px;
-        overflow-x: auto;
-        font-size: 14px;
-        line-height: 1.6;
+        background: var(--bg-tertiary); border: 0.5px solid var(--separator);
+        border-radius: var(--radius-md); padding: 16px 20px;
+        overflow-x: auto; font-size: 14px; line-height: 1.6;
       }
-
-      .prose code {
-        font-family: 'SF Mono', ui-monospace, 'Cascadia Code', Menlo, Monaco, monospace;
-        font-size: 0.88em;
-      }
-
+      .prose code { font-family: 'SF Mono', ui-monospace, Menlo, Monaco, monospace; font-size: 0.88em; }
       .prose :not(pre) > code {
-        background: var(--glass);
-        border: 0.5px solid var(--separator);
-        border-radius: 5px;
-        padding: 2px 6px;
+        background: var(--glass); border: 0.5px solid var(--separator);
+        border-radius: 5px; padding: 2px 6px;
       }
-
       .prose blockquote {
-        border-left: 3px solid var(--accent);
-        margin: 0;
-        padding: 0.5rem 1rem;
-        color: var(--label-secondary);
-        font-style: italic;
+        border-left: 3px solid var(--accent); margin: 0;
+        padding: 0.5rem 1rem; color: var(--label-secondary); font-style: italic;
       }
-
       .prose a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
       .prose img { max-width: 100%; border-radius: var(--radius-md); }
       .prose table { width: 100%; border-collapse: collapse; font-size: 15px; }
@@ -383,6 +323,15 @@ const siteJsonLd = {
     </style>
   </head>
   <body>
+    <!-- Anti-flash: apply theme before paint -->
+    <script is:inline>
+      (function () {
+        var t = localStorage.getItem('theme') ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
+
     <header class="site-header">
       <div class="nav-inner">
         <a class="nav-brand" href={isEn ? '/en' : '/'}>{t('nav.home')}</a>
@@ -391,17 +340,35 @@ const siteJsonLd = {
           <a class="nav-link" href={isEn ? '/en/projects' : '/projects'}>{t('nav.projects')}</a>
         </nav>
         <div style="display:flex; align-items:center; gap:8px;">
-          <button class="theme-btn" id="theme-toggle" aria-label="Toggle theme">
-            <svg class="theme-icon-light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-              <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-            </svg>
-            <svg class="theme-icon-dark" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-            </svg>
-          </button>
+          <!-- Theme picker -->
+          <div class="theme-picker">
+            <button class="theme-btn" id="theme-btn" aria-label="Select theme">
+              <span class="theme-dot"></span>
+              <span id="theme-label">Theme</span>
+            </button>
+            <div class="theme-menu" id="theme-menu">
+              <button class="theme-option" data-theme="dark">
+                <span class="theme-swatch" style="background:#1c1c1e; border-color:#3a3a3c;"></span>
+                Apple Dark
+              </button>
+              <button class="theme-option" data-theme="light">
+                <span class="theme-swatch" style="background:#f2f2f7; border-color:#c6c6c8;"></span>
+                Apple Light
+              </button>
+              <button class="theme-option" data-theme="nord">
+                <span class="theme-swatch" style="background:#3b4252; border-color:#88c0d0;"></span>
+                Nord
+              </button>
+              <button class="theme-option" data-theme="catppuccin">
+                <span class="theme-swatch" style="background:#313244; border-color:#89b4fa;"></span>
+                Catppuccin
+              </button>
+              <button class="theme-option" data-theme="tokyo">
+                <span class="theme-swatch" style="background:#24253a; border-color:#7aa2f7;"></span>
+                Tokyo Night
+              </button>
+            </div>
+          </div>
           <a class="lang-btn" href={switchURL}>{t('lang.switch')}</a>
         </div>
       </div>
@@ -409,19 +376,44 @@ const siteJsonLd = {
 
     <script is:inline>
       (function () {
-        const stored = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const theme = stored ?? (prefersDark ? 'dark' : 'light');
-        document.documentElement.setAttribute('data-theme', theme);
+        var labels = {
+          dark: 'Apple Dark', light: 'Apple Light',
+          nord: 'Nord', catppuccin: 'Catppuccin', tokyo: 'Tokyo Night'
+        };
+
+        function applyTheme(theme) {
+          document.documentElement.setAttribute('data-theme', theme);
+          localStorage.setItem('theme', theme);
+          var lbl = document.getElementById('theme-label');
+          if (lbl) lbl.textContent = labels[theme] || theme;
+          document.querySelectorAll('.theme-option').forEach(function(btn) {
+            btn.classList.toggle('active', btn.dataset.theme === theme);
+          });
+        }
 
         document.addEventListener('DOMContentLoaded', function () {
-          const btn = document.getElementById('theme-toggle');
-          if (!btn) return;
-          btn.addEventListener('click', function () {
-            const current = document.documentElement.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            localStorage.setItem('theme', next);
+          var current = localStorage.getItem('theme') ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          applyTheme(current);
+
+          var btn = document.getElementById('theme-btn');
+          var menu = document.getElementById('theme-menu');
+
+          btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            menu.classList.toggle('open');
+          });
+
+          document.addEventListener('click', function () {
+            menu.classList.remove('open');
+          });
+
+          document.querySelectorAll('.theme-option').forEach(function (opt) {
+            opt.addEventListener('click', function (e) {
+              e.stopPropagation();
+              applyTheme(opt.dataset.theme);
+              menu.classList.remove('open');
+            });
           });
         });
       })();

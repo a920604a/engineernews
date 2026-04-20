@@ -60,6 +60,7 @@ const types = [...new Set(posts.flatMap((p) => p.data.type ? [p.data.type] : [])
             description={post.data.description}
             tldr={post.data.tldr}
             type={post.data.type}
+            readingTime={post.data.readingTime}
             lang="zh-TW"
           />
         </div>
