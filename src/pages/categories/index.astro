@@ -16,7 +16,6 @@ const categoryMap = posts.reduce<Record<string, number>>((acc, post) => {
 // include project tags as additional categories
 allProjects.forEach((p) => {
   (p.data.tags || []).forEach((tag) => {
-    acc = categoryMap; // hint for typings
     categoryMap[tag] = (categoryMap[tag] ?? 0) + 1;
   });
 });
