@@ -34,7 +34,7 @@ feed.sort((a, b) => {
 
 <BaseLayout title={t('nav.home')}>
   <section style="padding-top: 40px;">
-    <p style="font-size:15px; color:var(--label-secondary); margin:0 0 36px; line-height:1.7;">
+    <p style="font-size:15px; color:var(--label-secondary); margin:0 0 32px; line-height:1.7;">
       {t('site.tagline')}
     </p>
 
@@ -43,7 +43,7 @@ feed.sort((a, b) => {
         <p style="margin:0;">{t('feed.empty')}</p>
       </div>
     ) : (
-      <div class="card-grid">
+      <div class="feed">
         {feed.map((entry) =>
           entry.kind === 'post' ? (
             <PostCard
@@ -80,13 +80,9 @@ feed.sort((a, b) => {
 </BaseLayout>
 
 <style>
-  .card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 16px;
-  }
-
-  @media (max-width: 520px) {
-    .card-grid { grid-template-columns: 1fr; }
+  .feed {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
 </style>

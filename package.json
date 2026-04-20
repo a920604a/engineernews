@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && pagefind --site dist",
     "preview": "astro preview",
     "astro": "astro",
     "sync": "tsx scripts/sync-to-d1.ts",
@@ -26,5 +26,8 @@
     "react-dom": "^18.3.1",
     "tsx": "^4.21.0",
     "wrangler": "^4.83.0"
+  },
+  "devDependencies": {
+    "pagefind": "^1.5.2"
   }
 }

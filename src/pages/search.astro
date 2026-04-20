@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+export const prerender = true;
+---
+
+<BaseLayout title="搜尋">
+  <section style="padding-top: 40px;">
+    <h1 style="font-size:28px; font-weight:900; margin:0 0 8px;">搜尋</h1>
+    <p style="font-size:14px; color:var(--label-secondary); margin:0 0 32px;">
+      全文關鍵字搜尋 &mdash; 或試試 <a href="/ai-search">AI 語義搜尋</a>
+    </p>
+
+    <div id="search"></div>
+  </section>
+</BaseLayout>
+
+<link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
+<script src="/pagefind/pagefind-ui.js" is:inline></script>
+<script is:inline>
+  window.addEventListener('DOMContentLoaded', () => {
+    new PagefindUI({
+      element: '#search',
+      showSubResults: true,
+      translations: {
+        placeholder: '搜尋文章...',
+        zero_results: '找不到「[SEARCH_TERM]」的相關結果',
+      },
+    });
+  });
+</script>
+
+<style is:global>
+  .pagefind-ui {
+    --pagefind-ui-font: 'Noto Sans TC', -apple-system, sans-serif;
+    --pagefind-ui-primary: var(--accent);
+    --pagefind-ui-text: var(--label);
+    --pagefind-ui-background: var(--bg-secondary);
+    --pagefind-ui-border: var(--separator);
+    --pagefind-ui-border-width: 0.5px;
+    --pagefind-ui-border-radius: 10px;
+    --pagefind-ui-input-background: var(--bg-secondary);
+    --pagefind-ui-tag: var(--bg-tertiary);
+  }
+  .pagefind-ui__search-input {
+    font-size: 16px !important;
+  }
+  .pagefind-ui__result {
+    border-bottom: 0.5px solid var(--separator) !important;
+    padding: 20px 0 !important;
+  }
+  .pagefind-ui__result-title {
+    font-weight: 700 !important;
+    font-size: 17px !important;
+  }
+</style>

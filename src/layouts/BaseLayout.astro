@@ -444,7 +444,7 @@ const siteJsonLd = {
 
     <div id="reading-progress"></div>
 
-    <header class="site-header">
+    <header class="site-header" data-pagefind-ignore>
       <div class="nav-inner">
         <a class="nav-brand" href={isEn ? '/en' : '/'}>{t('nav.home')}</a>
         <nav class="nav-links">
@@ -452,6 +452,10 @@ const siteJsonLd = {
           <a class="nav-link" href={isEn ? '/en/projects' : '/projects'}>{t('nav.projects')}</a>
         </nav>
         <div style="display:flex; align-items:center; gap:8px;">
+          <!-- Search -->
+          <a href="/search" aria-label="搜尋" style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:var(--radius-sm); color:var(--label-secondary); text-decoration:none; transition:background 0.15s, color 0.15s;" onmouseover="this.style.background='var(--glass)';this.style.color='var(--label)'" onmouseout="this.style.background='';this.style.color='var(--label-secondary)'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </a>
           <!-- Theme picker -->
           <div class="theme-picker">
             <button class="theme-btn" id="theme-btn" aria-label="Select theme">
@@ -531,11 +535,11 @@ const siteJsonLd = {
       })();
     </script>
 
-    <main>
+    <main data-pagefind-body>
       <slot />
     </main>
 
-    <footer class="site-footer">
+    <footer class="site-footer" data-pagefind-ignore>
       &copy; {new Date().getFullYear()} Engineer News &mdash; {t('footer.built')}
     </footer>
 

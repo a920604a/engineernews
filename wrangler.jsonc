@@ -14,11 +14,6 @@
 		{
 			"binding": "VECTORIZE",
 			"index_name": "engineer-news-index"
-		},
-		{
-			"binding": "VECTORIZE",
-			"index_name": "engineer-news-index",
-			"remote": true
 		}
 	],
 	"ai": {
