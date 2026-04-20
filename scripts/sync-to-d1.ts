@@ -84,7 +84,7 @@ async function sync() {
       tldr: data.tldr || '',
       content: content,
       tags: JSON.stringify(data.tags || []),
-      created_at: data.pubDate || new Date().toISOString().split('T')[0],
+      created_at: data.date ? new Date(data.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
       updated_at: new Date().toISOString().split('T')[0],
     };
 
