@@ -1,21 +1,19 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
 import { getCollection } from 'astro:content';
 
 export const prerender = true;
 
 export async function getStaticPaths() {
-  const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+  const allPosts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'zh-TW');
   const uniqueTags = [...new Set(allPosts.flatMap((post) => post.data.tags))];
 
   return uniqueTags.map((tag) => {
     const filteredPosts = allPosts
       .filter((post) => post.data.tags.includes(tag))
       .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-    return {
-      params: { tag },
-      props: { posts: filteredPosts },
-    };
+    return { params: { tag }, props: { posts: filteredPosts } };
   });
 }
 
@@ -23,32 +21,25 @@ const { tag } = Astro.params;
 const { posts } = Astro.props;
 ---
 
-<BaseLayout title={`標籤: #${tag}`}>
-  <h1>#{tag}</h1>
-  <p style="color: var(--label-secondary); margin-bottom: 2rem;">
-    找到 {posts.length} 篇相關文章
-  </p>
+<BaseLayout title={`#${tag}`}>
+  <section style="padding-top: 32px;">
+    <h1 style="margin-bottom: 4px;">#{tag}</h1>
+    <p style="color:var(--label-secondary); font-size:15px; margin:0 0 32px;">{posts.length} 篇文章</p>
 
-  <div class="feed">
-    {posts.map((post) => (
-      <article class="card">
-        <div style="font-size: 12px; color: var(--label-secondary); margin-bottom: 8px;">
-          {post.data.date.toLocaleDateString('zh-TW')} · {post.data.category}
-        </div>
-        <h2 style="margin: 0 0 8px 0;">
-          <a href={`/posts/${post.id}`} style="color: var(--label-primary); text-decoration: none;">
-            {post.data.title}
-          </a>
-        </h2>
-        <p style="margin: 0 0 16px 0; font-size: 14px; color: var(--label-secondary);">
-          {post.data.description}
-        </p>
-        <div class="tags">
-          {post.data.tags.map((t) => (
-            <a href={`/tags/${t}`} class="tag">#{t}</a>
-          ))}
-        </div>
-      </article>
-    ))}
-  </div>
+    <div class="feed">
+      {posts.map((post) => (
+        <PostCard
+          id={post.id}
+          title={post.data.title}
+          date={post.data.date}
+          category={post.data.category}
+          tags={post.data.tags}
+          description={post.data.description}
+          tldr={post.data.tldr}
+          type={post.data.type}
+          lang="zh-TW"
+        />
+      ))}
+    </div>
+  </section>
 </BaseLayout>

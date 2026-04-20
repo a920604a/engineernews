@@ -1,4 +1,6 @@
 ---
+import type { Lang } from '../i18n/ui';
+
 interface Props {
   id: string;
   title: string;
@@ -9,36 +11,103 @@ interface Props {
   tldr?: string;
   type?: string;
   pinned?: boolean;
-  lang?: string;
+  lang?: Lang;
 }
 
 const { id, title, date, category, tags, description, tldr, type, pinned = false, lang = 'zh-TW' } = Astro.props;
 
 const isEn = lang === 'en';
-const postPath = isEn ? `/en/posts/${id}` : `/posts/${id}`;
-const tagPath = (tag: string) => isEn ? `/en/tags/${tag}` : `/tags/${tag}`;
-const dateStr = date.toLocaleDateString(isEn ? 'en-US' : 'zh-TW');
+const postHref = isEn ? `/en/posts/${id}` : `/posts/${id}`;
+const tagHref = (tag: string) => isEn ? `/en/tags/${tag}` : `/tags/${tag}`;
+const dateStr = date.toLocaleDateString(isEn ? 'en-US' : 'zh-TW', {
+  year: 'numeric', month: 'short', day: 'numeric'
+});
+const excerpt = tldr || description || '';
 ---
 
-<article style="margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--separator);">
-  {pinned && (
-    <div style="font-size: 11px; color: var(--accent-color); font-weight: 600; margin-bottom: 4px; letter-spacing: 0.05em;">
-      置頂
+<article class="post-card">
+  <div class="post-meta">
+    {pinned && <span class="pinned-dot" aria-label="置頂" />}
+    <time class="post-date">{dateStr}</time>
+    <span class="meta-sep">·</span>
+    <span class="post-category">{category}</span>
+    {type && <span class="badge badge-type">{type}</span>}
+  </div>
+
+  <h2 class="post-title">
+    <a href={postHref}>{title}</a>
+  </h2>
+
+  {excerpt && <p class="post-excerpt">{excerpt}</p>}
+
+  {tags.length > 0 && (
+    <div class="tags">
+      {tags.map((tag) => (
+        <a href={tagHref(tag)} class="tag">#{tag}</a>
+      ))}
     </div>
   )}
-  <div style="font-size: 0.8rem; color: var(--label-secondary); margin-bottom: 0.5rem;">
-    {dateStr} · {category}
-    {type && <span style="margin-left: 8px; color: var(--accent-color);">[{type}]</span>}
-  </div>
-  <h2 style="margin: 0 0 0.5rem 0; font-size: 20px;">
-    <a href={postPath} style="color: var(--label-primary); text-decoration: none;">{title}</a>
-  </h2>
-  <p style="margin: 0 0 1rem 0; font-size: 0.95rem; color: var(--label-secondary);">
-    {tldr || description}
-  </p>
-  <div class="tags">
-    {tags.map((tag) => (
-      <a href={tagPath(tag)} class="tag">#{tag}</a>
-    ))}
-  </div>
 </article>
+
+<style>
+  .post-card {
+    padding: 20px 0;
+    border-bottom: 0.5px solid var(--separator);
+    transition: opacity 0.15s;
+  }
+
+  .post-card:last-child { border-bottom: none; }
+  .post-card:hover { opacity: 0.85; }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: var(--label-secondary);
+  }
+
+  .pinned-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .post-date { font-variant-numeric: tabular-nums; }
+  .meta-sep { opacity: 0.4; }
+
+  .post-category {
+    font-weight: 500;
+    text-transform: lowercase;
+  }
+
+  .post-title {
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.3;
+    margin: 0 0 8px;
+  }
+
+  .post-title a {
+    color: var(--label);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .post-title a:hover { color: var(--accent); }
+
+  .post-excerpt {
+    font-size: 15px;
+    color: var(--label-secondary);
+    line-height: 1.55;
+    margin: 0 0 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

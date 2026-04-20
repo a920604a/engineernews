@@ -3,6 +3,9 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Search from '../../components/Search';
 import PostCard from '../../components/PostCard.astro';
+import { useTranslations } from '../../i18n/utils';
+
+const t = useTranslations('en');
 
 const allPosts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'en');
 const posts = allPosts.sort((a, b) => {
@@ -11,17 +14,17 @@ const posts = allPosts.sort((a, b) => {
 });
 ---
 
-<BaseLayout title="Engineering Decisions as Documentation">
-  <section>
-    <p style="color: var(--label-secondary); font-style: italic; margin-bottom: 2rem;">
-      Capturing the essence of engineering conversations into a structured technical knowledge base.
+<BaseLayout title={t('nav.home')}>
+  <section style="padding-top: 40px;">
+    <p style="font-size:15px; color:var(--label-secondary); margin:0 0 32px; line-height:1.6;">
+      {t('site.tagline')}
     </p>
 
     <Search client:load />
 
     {posts.length === 0 ? (
-      <div style="border: 1px dashed var(--separator); padding: 2rem; text-align: center; border-radius: 8px;">
-        <p>No posts yet. Add English posts with <code>lang: en</code> in frontmatter.</p>
+      <div style="border: 0.5px dashed var(--separator); padding: 40px; text-align: center; border-radius: var(--radius-lg); color: var(--label-secondary);">
+        <p style="margin:0;">{t('feed.empty')}</p>
       </div>
     ) : (
       <div class="feed">

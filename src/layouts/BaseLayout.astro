@@ -1,5 +1,5 @@
 ---
-import { ui } from '../i18n/ui';
+import { getLangFromUrl, useTranslations, getLangSwitchUrl } from '../i18n/utils';
 
 interface Props {
   title: string;
@@ -8,20 +8,21 @@ interface Props {
   ogImage?: string;
 }
 
-const { title, description = "Engineer News - 技術決策即文件", jsonLd, ogImage } = Astro.props;
-const { currentLocale } = Astro;
-const lang = currentLocale ?? 'zh-tw';
-const t = ui[lang as keyof typeof ui] ?? ui['zh-tw'];
+const { title, description, jsonLd, ogImage } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 
-const isEn = lang === 'en';
+const siteName = 'Engineer News';
+const siteDescription = description ?? t('site.tagline');
 const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://engineer-news.pages.dev');
-const ogImageURL = ogImage ?? `${canonicalURL.origin}/og-default.png`;
+const switchURL = getLangSwitchUrl(Astro.url, lang);
+const isEn = lang === 'en';
 
 const siteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "Engineer News",
-  "description": description,
+  "name": siteName,
+  "description": siteDescription,
   "url": canonicalURL.origin,
 };
 ---
@@ -30,156 +31,329 @@ const siteJsonLd = {
 <html lang={lang}>
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={siteDescription} />
     <link rel="canonical" href={canonicalURL} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title={siteName} href="/rss.xml" />
     <meta name="generator" content={Astro.generator} />
-    <title>{title} | Engineer News</title>
+    <title>{title} | {siteName}</title>
+
+    <!-- hreflang -->
+    <link rel="alternate" hreflang="zh-TW" href={`${canonicalURL.origin}${isEn ? Astro.url.pathname.replace(/^\/en/, '') || '/' : Astro.url.pathname}`} />
+    <link rel="alternate" hreflang="en" href={`${canonicalURL.origin}/en${isEn ? Astro.url.pathname : Astro.url.pathname}`} />
 
     <!-- Open Graph -->
-    <meta property="og:title" content={`${title} | Engineer News`} />
-    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={`${title} | ${siteName}`} />
+    <meta property="og:description" content={siteDescription} />
     <meta property="og:url" content={canonicalURL} />
-    <meta property="og:image" content={ogImageURL} />
     <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={`${title} | Engineer News`} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImageURL} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={`${title} | ${siteName}`} />
+    <meta name="twitter:description" content={siteDescription} />
 
     <!-- JSON-LD -->
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd ?? siteJsonLd)} />
 
     <style is:global>
+      /* ── Apple Design System ─────────────────────────── */
       :root {
-        --bg-color: #000000;
-        --secondary-bg: #1c1c1e;
-        --label-primary: #ffffff;
-        --label-secondary: #8e8e93;
-        --accent-color: #0a84ff;
-        --separator: #38383a;
-        --card-bg: rgba(28, 28, 30, 0.8);
-        --glass-bg: rgba(255, 255, 255, 0.05);
+        --bg: #000;
+        --bg-secondary: #1c1c1e;
+        --bg-tertiary: #2c2c2e;
+        --label: #fff;
+        --label-secondary: #ebebf599;
+        --label-tertiary: #ebebf54d;
+        --separator: rgba(84,84,88,0.65);
+        --accent: #0a84ff;
+        --accent-hover: #409cff;
+        --success: #30d158;
+        --warning: #ffd60a;
+        --card-bg: rgba(28,28,30,0.72);
+        --glass: rgba(255,255,255,0.06);
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+        --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 18px;
+        --radius-full: 9999px;
       }
 
       @media (prefers-color-scheme: light) {
         :root {
-          --bg-color: #f2f2f7;
-          --secondary-bg: #ffffff;
-          --label-primary: #000000;
-          --label-secondary: #8e8e93;
-          --accent-color: #007aff;
-          --separator: #c6c6c8;
-          --card-bg: rgba(255, 255, 255, 0.8);
-          --glass-bg: rgba(0, 0, 0, 0.05);
+          --bg: #f2f2f7;
+          --bg-secondary: #fff;
+          --bg-tertiary: #e5e5ea;
+          --label: #000;
+          --label-secondary: #3c3c4399;
+          --label-tertiary: #3c3c434d;
+          --separator: rgba(60,60,67,0.29);
+          --accent: #007aff;
+          --accent-hover: #0051a8;
+          --card-bg: rgba(255,255,255,0.72);
+          --glass: rgba(0,0,0,0.04);
+          --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+          --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
         }
       }
 
+      *, *::before, *::after { box-sizing: border-box; }
+
       body {
-        background-color: var(--bg-color);
-        color: var(--label-primary);
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-        margin: 0;
-        padding: 0;
-        line-height: 1.47059;
-        font-weight: 400;
+        background: var(--bg);
+        color: var(--label);
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+        font-size: 17px;
+        line-height: 1.5;
         letter-spacing: -0.022em;
         -webkit-font-smoothing: antialiased;
+        margin: 0;
       }
 
       main {
-        max-width: 980px;
+        max-width: 720px;
         margin: 0 auto;
-        padding: 0 20px;
+        padding: 0 20px 80px;
       }
 
-      header {
+      /* ── Nav ─────────────────────────────────────────── */
+      .site-header {
         position: sticky;
         top: 0;
         z-index: 100;
         background: var(--card-bg);
-        backdrop-filter: saturate(180%) blur(20px);
+        backdrop-filter: saturate(180%) blur(24px);
+        -webkit-backdrop-filter: saturate(180%) blur(24px);
         border-bottom: 0.5px solid var(--separator);
-        margin-bottom: 40px;
       }
 
-      .nav-container {
-        max-width: 980px;
+      .nav-inner {
+        max-width: 720px;
         margin: 0 auto;
-        height: 52px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
         padding: 0 20px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
       }
 
-      nav a {
-        color: var(--label-primary);
+      .nav-brand {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--label);
         text-decoration: none;
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex: 1;
+      }
+
+      .nav-link {
         font-size: 14px;
-        font-weight: 400;
-        opacity: 0.8;
-        transition: opacity 0.2s;
+        color: var(--label-secondary);
+        text-decoration: none;
+        padding: 5px 10px;
+        border-radius: var(--radius-sm);
+        transition: color 0.15s, background 0.15s;
+        white-space: nowrap;
       }
 
-      nav a:hover { opacity: 1; }
+      .nav-link:hover {
+        color: var(--label);
+        background: var(--glass);
+      }
 
+      .lang-btn {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--accent);
+        text-decoration: none;
+        padding: 5px 12px;
+        border-radius: var(--radius-full);
+        border: 1px solid var(--accent);
+        transition: background 0.15s, color 0.15s;
+        white-space: nowrap;
+      }
+
+      .lang-btn:hover {
+        background: var(--accent);
+        color: #fff;
+      }
+
+      /* ── Typography ──────────────────────────────────── */
+      h1 {
+        font-size: 34px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+        margin: 0 0 0.4em;
+      }
+
+      h2 {
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        line-height: 1.25;
+        margin: 0 0 0.25em;
+      }
+
+      a { color: var(--accent); }
+      a:hover { color: var(--accent-hover); }
+
+      /* ── Cards ───────────────────────────────────────── */
       .card {
-        background: var(--secondary-bg);
-        border-radius: 18px;
-        padding: 24px;
-        margin-bottom: 24px;
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: var(--bg-secondary);
         border: 0.5px solid var(--separator);
+        border-radius: var(--radius-lg);
+        padding: 20px 24px;
+        transition: box-shadow 0.2s, transform 0.2s;
       }
 
-      h1 { font-size: 40px; font-weight: 700; letter-spacing: -0.009em; margin-bottom: 0.5em; }
-      h2 { font-size: 24px; font-weight: 600; letter-spacing: 0.007em; }
+      .card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+      }
+
+      /* ── Tags ────────────────────────────────────────── */
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
 
       .tag {
-        display: inline-block;
-        padding: 4px 10px;
-        background: var(--glass-bg);
-        border-radius: 100px;
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 10px;
+        background: var(--glass);
+        border: 0.5px solid var(--separator);
+        border-radius: var(--radius-full);
         font-size: 12px;
         font-weight: 500;
-        color: var(--accent-color);
-        margin-right: 8px;
+        color: var(--accent);
         text-decoration: none;
+        transition: background 0.15s, border-color 0.15s;
+        letter-spacing: 0;
       }
 
-      .btn-primary {
-        background-color: var(--accent-color);
-        color: white;
-        padding: 8px 16px;
-        border-radius: 980px;
-        font-size: 14px;
-        font-weight: 500;
-        text-decoration: none;
-        display: inline-block;
+      .tag:hover {
+        background: color-mix(in srgb, var(--accent) 12%, transparent);
+        border-color: var(--accent);
+        color: var(--accent);
       }
+
+      /* ── Badge ───────────────────────────────────────── */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 8px;
+        border-radius: var(--radius-full);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+      }
+
+      .badge-type {
+        background: color-mix(in srgb, var(--accent) 15%, transparent);
+        color: var(--accent);
+      }
+
+      /* ── Feed ────────────────────────────────────────── */
+      .feed {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+
+      /* ── Footer ──────────────────────────────────────── */
+      .site-footer {
+        text-align: center;
+        padding: 32px 20px;
+        color: var(--label-tertiary);
+        font-size: 13px;
+        border-top: 0.5px solid var(--separator);
+        margin-top: 60px;
+      }
+
+      /* ── Markdown body ───────────────────────────────── */
+      .prose {
+        font-size: 17px;
+        line-height: 1.65;
+        color: var(--label);
+      }
+
+      .prose h2 {
+        margin-top: 2.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 0.5px solid var(--separator);
+        font-size: 24px;
+      }
+
+      .prose h3 { font-size: 20px; margin-top: 2rem; }
+
+      .prose pre {
+        background: var(--bg-tertiary);
+        border: 0.5px solid var(--separator);
+        border-radius: var(--radius-md);
+        padding: 16px 20px;
+        overflow-x: auto;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .prose code {
+        font-family: 'SF Mono', ui-monospace, 'Cascadia Code', Menlo, Monaco, monospace;
+        font-size: 0.88em;
+      }
+
+      .prose :not(pre) > code {
+        background: var(--glass);
+        border: 0.5px solid var(--separator);
+        border-radius: 5px;
+        padding: 2px 6px;
+      }
+
+      .prose blockquote {
+        border-left: 3px solid var(--accent);
+        margin: 0;
+        padding: 0.5rem 1rem;
+        color: var(--label-secondary);
+        font-style: italic;
+      }
+
+      .prose a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+      .prose img { max-width: 100%; border-radius: var(--radius-md); }
+      .prose table { width: 100%; border-collapse: collapse; font-size: 15px; }
+      .prose th, .prose td { padding: 8px 12px; border: 0.5px solid var(--separator); }
+      .prose th { background: var(--glass); font-weight: 600; }
     </style>
   </head>
   <body>
-    <header>
-      <div class="nav-container">
-        <nav style="display: flex; gap: 24px; align-items: center;">
-          <a href={isEn ? '/en' : '/'} style="font-weight: 600; opacity: 1;">Engineer News</a>
-          <a href={isEn ? '/en/projects' : '/projects'}>{t['nav.projects']}</a>
+    <header class="site-header">
+      <div class="nav-inner">
+        <a class="nav-brand" href={isEn ? '/en' : '/'}>{t('nav.home')}</a>
+        <nav class="nav-links">
+          <a class="nav-link" href={isEn ? '/en/projects' : '/projects'}>{t('nav.projects')}</a>
         </nav>
-        <div>
-          <a href={isEn ? '/' : '/en'} class="btn-primary">
-            {isEn ? '繁體中文' : 'English'}
-          </a>
-        </div>
+        <a class="lang-btn" href={switchURL}>{t('lang.switch')}</a>
       </div>
     </header>
+
     <main>
       <slot />
-      <footer style="margin-top: 80px; padding-bottom: 40px; text-align: center; color: var(--label-secondary); font-size: 12px;">
-        &copy; {new Date().getFullYear()} Engineer News &mdash; {t['footer.built']}
-      </footer>
     </main>
+
+    <footer class="site-footer">
+      &copy; {new Date().getFullYear()} Engineer News &mdash; {t('footer.built')}
+    </footer>
   </body>
 </html>
