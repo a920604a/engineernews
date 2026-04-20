@@ -1,35 +1,53 @@
 # 撰寫文章指南
 
-文章存放位置：
+## 文章生命週期
+
+```mermaid
+stateDiagram-v2
+  [*] --> 草稿: 新增 .md，draft: true
+  草稿 --> 審閱: 內容完成
+  審閱 --> 發佈: draft: false + git push
+  發佈 --> 同步: CI sync-to-d1.ts
+  同步 --> [*]: D1 + Vectorize 更新完畢
+```
+
+## 目錄結構
 
 ```
-src/content/posts/<category>/YYYY-MM-DD-<slug>.md
+src/content/
+├── posts/
+│   ├── tech/
+│   ├── ai/
+│   ├── climbing/
+│   └── <category>/
+│       └── YYYY-MM-DD-<slug>.md
+└── projects/
+    └── <slug>.md
 ```
 
-必要 frontmatter 範例：
+## Frontmatter
 
 ```yaml
 ---
 title: ""
 date: YYYY-MM-DD
-category: ""    # 請在下列支援分類中選擇
+category: ""
 tags: []
-lang: zh-TW
-description: ""
-tldr: ""
+lang: zh-TW          # zh-TW | en
+description: ""      # SEO meta
+tldr: ""             # 一句話摘要（tech / ai 必填）
 draft: false
 ---
 ```
 
-支援分類： tech / climbing / surf / film / life / coffee / learning / ai / product / marketing / travel / design / education / policy / anime / career
+### 支援分類
 
-寫作風格與結構建議請參閱專案內的 AGENTS.md 與 README 中的快速導覽。
+`tech` / `ai` / `climbing` / `surf` / `film` / `life` / `coffee` / `learning` / `product` / `marketing` / `travel` / `design` / `education` / `policy` / `anime` / `career`
 
-Commit 格式（新增文章）：
+## Commit 格式
 
 ```
 post(<category>): <標題摘要>
 ```
 
-範例： `post(tech): Cloudflare D1 batch timeout 踩坑記錄`
-
+範例：`post(tech): Cloudflare D1 batch timeout 踩坑`

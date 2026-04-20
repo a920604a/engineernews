@@ -1,12 +1,53 @@
-# 對話攝取工具
+# 對話攝取與 Sync 工具
 
-對話攝取腳本位於 `scripts/ingest.ts`，用途是把對話或筆記轉成文章草稿並存入 `src/content`。
+## 工作流程
 
-常見工作流程：
+```mermaid
+flowchart LR
+  Conv[對話 / 筆記] --> Ingest[scripts/ingest.ts<br/>產生 Markdown + frontmatter]
+  Ingest --> MD[src/content/posts/category/date-slug.md]
+  MD --> Review[人工 review / 編輯]
+  Review --> Commit[git commit + push]
+  Commit --> CI[GitHub Actions]
+  CI --> Sync[scripts/sync-to-d1.ts]
+  Sync --> D1[(D1: posts, post_chunks)]
+  Sync --> Vec[(Vectorize: embeddings)]
+```
 
-1. 跟 Claude / GPT 產出文章草稿
-2. 透過 ingest 腳本將草稿轉成 Markdown 並加入 frontmatter
-3. 使用 `scripts/sync-to-d1.ts` 同步到 D1 並建立向量索引
+## sync-to-d1.ts 邏輯
 
-參數與範例請查看 scripts 內的說明註解。
+```mermaid
+flowchart TD
+  Start[main] --> SyncPosts[syncPosts]
+  Start --> SyncProjects[syncProjects]
 
+  SyncPosts --> Walk[walkMdFiles 遞迴讀取<br/>src/content/posts/**/*.md]
+  Walk --> UpsertPost[UPSERT posts]
+  UpsertPost --> DeleteChunks[DELETE 舊 post_chunks]
+  DeleteChunks --> ChunkLoop[for each chunk]
+  ChunkLoop --> InsertChunk[INSERT post_chunks]
+  ChunkLoop --> Embed{isProd?}
+  Embed -->|yes| GetEmbed[Workers AI embedding]
+  GetEmbed --> VecInsert[vectorize insert]
+  Embed -->|no| Skip[skip]
+
+  SyncProjects --> WalkP[walkMdFiles<br/>src/content/projects/*.md]
+  WalkP --> UpsertProject[UPSERT projects]
+```
+
+## 指令
+
+```bash
+# 本地 sync（開發用）
+pnpm sync
+
+# 遠端 sync（含 Vectorize）
+pnpm sync:prod
+
+# 攝取對話草稿
+pnpm ingest
+
+# 爬取外部文件到 doc_chunks
+pnpm crawl
+pnpm crawl:prod
+```
