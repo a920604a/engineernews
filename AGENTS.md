@@ -12,7 +12,6 @@ src/content/posts/<category>/YYYY-MM-DD-<slug>.md
 
 slug 用英文 kebab-case，取關鍵詞，例如：
 - `src/content/posts/tech/2026-03-12-d1-batch-timeout.md`
-- `src/content/posts/climbing/2026-03-15-first-outdoor-lead.md`
 
 ### Frontmatter
 
@@ -31,7 +30,7 @@ draft: false        # 選填，true 時不顯示
 
 ### 支援的分類
 
-`tech` / `climbing` / `surf` / `film` / `life` / `coffee` / `learning` / `ai` / `product` / `marketing` / `travel` / `design` / `education` / `policy` / `anime` / `career`
+`tech` / `surf` / `film` / `life` / `coffee` / `learning` / `ai` / `product` / `marketing` / `travel` / `design` / `education` / `policy` / `anime` / `career`
 
 ### 文章結構模板
 
@@ -58,7 +57,6 @@ draft: false        # 選填，true 時不顯示
 - 寫給「一週後的自己」，也寫給遇到同樣事情的人
 - 直接，不客套，可以有情緒，不需要介紹自己
 - tech：標題包含關鍵錯誤或技術名稱，具體 > 抽象
-- climbing：臨場感，路線名稱、岩場地點、身體感受
 - film：不劇透開頭，說清楚為什麼值得看（或不值得）
 - career：誠實，包含猶豫和失敗的部分
 

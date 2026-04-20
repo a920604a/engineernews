@@ -18,7 +18,6 @@ src/content/
 ├── posts/
 │   ├── tech/
 │   ├── ai/
-│   ├── climbing/
 │   └── <category>/
 │       └── YYYY-MM-DD-<slug>.md
 └── projects/
@@ -42,7 +41,7 @@ draft: false
 
 ### 支援分類
 
-`tech` / `ai` / `climbing` / `surf` / `film` / `life` / `coffee` / `learning` / `product` / `marketing` / `travel` / `design` / `education` / `policy` / `anime` / `career`
+`tech` / `ai` / `surf` / `film` / `life` / `coffee` / `learning` / `product` / `marketing` / `travel` / `design` / `education` / `policy` / `anime` / `career`
 
 ## Commit 格式
 

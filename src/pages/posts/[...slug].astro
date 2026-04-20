@@ -18,7 +18,8 @@ export async function getStaticPaths() {
 }
 
 const { post, allPosts } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
+const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 const t = useTranslations('zh-TW');
 const related = getRelatedPosts(post, allPosts);
 const series = getSeriesNav(post, allPosts);
@@ -75,6 +76,22 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
           {series.next && <a href={`/posts/${series.next.id}`} style="color:var(--accent); text-decoration:none; font-size:13px;">{series.next.title} →</a>}
         </div>
       </div>
+    )}
+
+    <!-- Table of Contents -->
+    {tocHeadings.length > 2 && (
+      <details class="toc-block" open>
+        <summary>目錄</summary>
+        <nav>
+          <ol>
+            {tocHeadings.map(h => (
+              <li style={h.depth === 3 ? 'margin-left:1.2em;' : ''}>
+                <a href={`#${h.slug}`}>{h.text}</a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      </details>
     )}
 
     <!-- Content -->

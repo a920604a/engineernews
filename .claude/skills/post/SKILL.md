@@ -13,11 +13,11 @@ description: Convert a conversation, notes, or experience into a structured post
 |---------|------|
 | 「寫成文章」、「記錄一下」、「write post」 | `templates/tech-post.md`（踩坑/問題解決） |
 | 「寫成介紹文」、「寫成深入介紹」、「deep dive」 | `templates/tech-deep-dive.md`（工具/技術/架構介紹） |
-| 其他分類（climbing、film、life...） | `templates/general-post.md` |
+| 其他分類（film、life...） | `templates/general-post.md` |
 
 ## 支援的分類
 
-`tech` / `climbing` / `surf` / `film` / `life` / `coffee` / `learning` / `ai` / `product` / `marketing` / `travel` / `design` / `education` / `policy` / `anime` / `career`
+`tech` / `surf` / `film` / `life` / `coffee` / `learning` / `ai` / `product` / `marketing` / `travel` / `design` / `education` / `policy` / `anime` / `career`
 
 ## 執行步驟
 
