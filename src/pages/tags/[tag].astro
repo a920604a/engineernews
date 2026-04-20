@@ -7,24 +7,36 @@ export const prerender = true;
 
 export async function getStaticPaths() {
   const allPosts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'zh-TW');
-  const uniqueTags = [...new Set(allPosts.flatMap((post) => post.data.tags))];
+  const allProjects = await getCollection('projects');
+
+  const uniqueTags = [
+    ...new Set([
+      ...allPosts.flatMap((post) => post.data.tags),
+      ...allProjects.flatMap((project) => project.data.tags || []),
+    ]),
+  ];
 
   return uniqueTags.map((tag) => {
     const filteredPosts = allPosts
       .filter((post) => post.data.tags.includes(tag))
       .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-    return { params: { tag }, props: { posts: filteredPosts } };
+
+    const filteredProjects = allProjects
+      .filter((project) => (project.data.tags || []).includes(tag))
+      .sort((a, b) => (a.data.pinned === b.data.pinned ? a.data.title.localeCompare(b.data.title) : (a.data.pinned ? -1 : 1)));
+
+    return { params: { tag }, props: { posts: filteredPosts, projects: filteredProjects } };
   });
 }
 
 const { tag } = Astro.params;
-const { posts } = Astro.props;
+const { posts = [], projects = [] } = Astro.props;
 ---
 
 <BaseLayout title={`#${tag}`}>
   <section style="padding-top: 32px;">
     <h1 style="margin-bottom: 4px;">#{tag}</h1>
-    <p style="color:var(--label-secondary); font-size:15px; margin:0 0 32px;">{posts.length} 篇文章</p>
+    <p style="color:var(--label-secondary); font-size:15px; margin:0 0 32px;">{posts.length + projects.length} 項結果</p>
 
     <div class="feed">
       {posts.map((post) => (
@@ -40,6 +52,35 @@ const { posts } = Astro.props;
           readingTime={post.data.readingTime}
           lang="zh-TW"
         />
+      ))}
+
+      {projects.map((project) => (
+        <div class="card" style="margin-top: 1rem;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem;">
+            <h2 style="margin:0;font-size:20px;">{project.data.title}</h2>
+            <div style="display:flex;gap:0.5rem;">
+              {project.data.github && (
+                <a href={project.data.github} target="_blank" rel="noopener" class="btn-primary" style="font-size:12px;">GitHub</a>
+              )}
+              {project.data.url && (
+                <a href={project.data.url} target="_blank" rel="noopener" class="btn-primary" style="font-size:12px;">網站</a>
+              )}
+            </div>
+          </div>
+
+          <p style="margin:0.75rem 0;color:var(--label-secondary);font-size:15px;">
+            {typeof project.data.description === 'string' ? project.data.description : (project.data.description && project.data.description.background) || ''}
+          </p>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+            <div class="tags">
+              {(project.data.tags || []).map((tag) => (
+                <span class="tag">#{tag}</span>
+              ))}
+            </div>
+            <a href={`/tags/${project.data.tag}`} style="font-size:13px;color:var(--accent-color);text-decoration:none;">相關文章 →</a>
+          </div>
+        </div>
       ))}
     </div>
   </section>

@@ -12,6 +12,18 @@ const posts = allPosts.sort((a, b) => {
   if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
   return b.data.date.valueOf() - a.data.date.valueOf();
 });
+
+const allProjects = await getCollection('projects');
+const projects = allProjects
+  .sort((a, b) => {
+    if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
+    return a.data.title.localeCompare(b.data.title);
+  })
+  .slice(0, 4);
+
+function projectDescription(description) {
+  return typeof description === 'string' ? description : (description && description.background) ? description.background : '';
+}
 ---
 
 <BaseLayout title={t('nav.home')}>

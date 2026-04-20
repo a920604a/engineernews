@@ -7,6 +7,10 @@ const sorted = projects.sort((a, b) => {
   if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
   return a.data.title.localeCompare(b.data.title);
 });
+
+function projectDescription(description) {
+  return typeof description === 'string' ? description : (description && description.background) ? description.background : '';
+}
 ---
 
 <BaseLayout title="作品集">
@@ -36,7 +40,7 @@ const sorted = projects.sort((a, b) => {
           </div>
 
           <p style="margin: 0.75rem 0; color: var(--label-secondary); font-size: 15px;">
-            {project.data.description}
+            {projectDescription(project.data.description)}
           </p>
 
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
