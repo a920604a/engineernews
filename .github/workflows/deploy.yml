@@ -38,12 +38,12 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy dist --project-name=engineer-news
 
-      - name: Apply D1 Migrations
+      - name: Apply D1 Schema
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: d1 migrations apply engineer-news-db --remote --yes
+          command: d1 execute engineer-news-db --remote --file=migrations/0001_initial.sql --yes
 
       - name: Sync Markdown to D1 & Vectorize
         run: pnpm sync:prod

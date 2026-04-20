@@ -1,5 +1,5 @@
 -- 文章主表
-CREATE TABLE posts (
+CREATE TABLE IF NOT EXISTS posts (
   id TEXT PRIMARY KEY,
   slug TEXT UNIQUE NOT NULL,
   title TEXT NOT NULL,
@@ -13,13 +13,13 @@ CREATE TABLE posts (
   updated_at TEXT NOT NULL
 );
 
-CREATE INDEX idx_posts_slug ON posts(slug);
-CREATE INDEX idx_posts_category ON posts(category);
-CREATE INDEX idx_posts_lang ON posts(lang);
-CREATE INDEX idx_posts_created ON posts(created_at);
+CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug);
+CREATE INDEX IF NOT EXISTS idx_posts_category ON posts(category);
+CREATE INDEX IF NOT EXISTS idx_posts_lang ON posts(lang);
+CREATE INDEX IF NOT EXISTS idx_posts_created ON posts(created_at);
 
 -- 專案主表
-CREATE TABLE projects (
+CREATE TABLE IF NOT EXISTS projects (
   id TEXT PRIMARY KEY,
   title TEXT NOT NULL,
   description TEXT,
@@ -32,11 +32,11 @@ CREATE TABLE projects (
   updated_at TEXT NOT NULL
 );
 
-CREATE INDEX idx_projects_tag ON projects(tag);
-CREATE INDEX idx_projects_pinned ON projects(pinned);
+CREATE INDEX IF NOT EXISTS idx_projects_tag ON projects(tag);
+CREATE INDEX IF NOT EXISTS idx_projects_pinned ON projects(pinned);
 
 -- 統一 chunk 表（posts + projects，供 RAG / Vectorize 使用）
-CREATE TABLE chunks (
+CREATE TABLE IF NOT EXISTS chunks (
   id TEXT PRIMARY KEY,
   source_id TEXT NOT NULL,
   source_type TEXT NOT NULL CHECK (source_type IN ('post', 'project')),
@@ -46,10 +46,10 @@ CREATE TABLE chunks (
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
-CREATE INDEX idx_chunks_source ON chunks(source_id, source_type);
+CREATE INDEX IF NOT EXISTS idx_chunks_source ON chunks(source_id, source_type);
 
 -- 外部文件 chunk 表（爬蟲使用）
-CREATE TABLE doc_chunks (
+CREATE TABLE IF NOT EXISTS doc_chunks (
   id TEXT PRIMARY KEY,
   source_url TEXT NOT NULL,
   source_name TEXT,
@@ -58,4 +58,4 @@ CREATE TABLE doc_chunks (
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
-CREATE INDEX idx_doc_source ON doc_chunks(source_url);
+CREATE INDEX IF NOT EXISTS idx_doc_source ON doc_chunks(source_url);
