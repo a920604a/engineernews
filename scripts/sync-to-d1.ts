@@ -126,7 +126,7 @@ async function sync() {
         const vector = await getEmbedding(chunkContent);
         if (vector) {
           // 使用 wrangler 直接 upsert 向量
-          const vectorData = JSON.stringify([{ id: chunkId, values: vector, metadata: { post_id: post.id, slug: post.slug, title: post.title } }]);
+          const vectorData = JSON.stringify({ id: chunkId, values: vector, metadata: { post_id: post.id, slug: post.slug, title: post.title } });
           const tempVectorFile = path.join(process.cwd(), `.temp_vector_${chunkId}.json`);
           fs.writeFileSync(tempVectorFile, vectorData);
           execSync(`wrangler vectorize insert ${VECTOR_INDEX} --file=${tempVectorFile}`, { stdio: 'inherit' });
