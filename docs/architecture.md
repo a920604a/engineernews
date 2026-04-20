@@ -70,12 +70,14 @@ erDiagram
     TEXT created_at
     TEXT updated_at
   }
-  post_chunks {
+  chunks {
     TEXT id PK
-    TEXT post_id FK
+    TEXT source_id
+    TEXT source_type
     INTEGER chunk_index
     TEXT content
     INTEGER token_count
+    TEXT updated_at
   }
   projects {
     TEXT id PK
@@ -98,5 +100,6 @@ erDiagram
     TEXT updated_at
   }
 
-  posts ||--o{ post_chunks : "has"
+  posts ||--o{ chunks : "source_type=post"
+  projects ||--o{ chunks : "source_type=project"
 ```

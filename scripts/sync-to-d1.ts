@@ -67,13 +67,53 @@ async function getEmbedding(text: string): Promise<number[] | null> {
   return json.result?.data?.[0] ?? null;
 }
 
+async function syncChunks(
+  sourceId: string,
+  sourceType: 'post' | 'project',
+  content: string,
+  meta: { slug: string; title: string }
+) {
+  execSync(
+    `wrangler d1 execute ${DB_NAME} ${remoteFlag} --command="DELETE FROM chunks WHERE source_id='${esc(sourceId)}' AND source_type='${sourceType}'" --yes`,
+    { stdio: 'inherit' }
+  );
+
+  const parts = chunkText(content);
+  for (let i = 0; i < parts.length; i++) {
+    const chunkId = `${sourceType}:${sourceId}-chunk-${i}`;
+    const updated_at = new Date().toISOString().split('T')[0];
+    runSql(
+      `INSERT INTO chunks (id, source_id, source_type, chunk_index, content, updated_at)
+       VALUES ('${esc(chunkId)}','${esc(sourceId)}','${sourceType}',${i},'${esc(parts[i])}','${updated_at}')
+       ON CONFLICT(id) DO UPDATE SET content=excluded.content, updated_at=excluded.updated_at`
+    );
+
+    if (isProd && ACCOUNT_ID && API_TOKEN) {
+      const vector = await getEmbedding(parts[i]);
+      if (vector) {
+        const tmp = path.join(process.cwd(), `.tmp_vec_${Date.now()}.json`);
+        fs.writeFileSync(tmp, JSON.stringify({
+          id: chunkId,
+          values: vector,
+          metadata: { source_id: sourceId, source_type: sourceType, slug: meta.slug, title: meta.title },
+        }));
+        try {
+          execSync(`wrangler vectorize insert ${VECTOR_INDEX} --file=${tmp}`, { stdio: 'inherit' });
+        } finally {
+          fs.unlinkSync(tmp);
+        }
+      }
+    }
+  }
+}
+
 async function syncPosts() {
   const files = walkMdFiles(POSTS_DIR);
   console.log(`Found ${files.length} posts.`);
 
   for (const filePath of files) {
-    const rel = path.relative(POSTS_DIR, filePath);           // e.g. tech/2026-04-20-foo.md
-    const id = rel.replace(/\.md$/, '');                      // e.g. tech/2026-04-20-foo
+    const rel = path.relative(POSTS_DIR, filePath);
+    const id = rel.replace(/\.md$/, '');
     const { data, content } = matter(fs.readFileSync(filePath, 'utf-8'));
 
     const slug = data.slug || path.basename(id);
@@ -101,33 +141,7 @@ async function syncPosts() {
         updated_at=excluded.updated_at;
     `);
 
-    // chunks
-    execSync(
-      `wrangler d1 execute ${DB_NAME} ${remoteFlag} --command="DELETE FROM post_chunks WHERE post_id='${esc(id)}'" --yes`,
-      { stdio: 'inherit' }
-    );
-
-    const chunks = chunkText(content);
-    for (let i = 0; i < chunks.length; i++) {
-      const chunkId = `${id}-chunk-${i}`;
-      runSql(
-        `INSERT INTO post_chunks (id, post_id, chunk_index, content)
-         VALUES ('${esc(chunkId)}','${esc(id)}',${i},'${esc(chunks[i])}')`
-      );
-
-      if (isProd && ACCOUNT_ID && API_TOKEN) {
-        const vector = await getEmbedding(chunks[i]);
-        if (vector) {
-          const tmp = path.join(process.cwd(), `.tmp_vec_${Date.now()}.json`);
-          fs.writeFileSync(tmp, JSON.stringify({ id: chunkId, values: vector, metadata: { post_id: id, slug, title } }));
-          try {
-            execSync(`wrangler vectorize insert ${VECTOR_INDEX} --file=${tmp}`, { stdio: 'inherit' });
-          } finally {
-            fs.unlinkSync(tmp);
-          }
-        }
-      }
-    }
+    await syncChunks(id, 'post', content, { slug, title });
   }
 }
 
@@ -161,6 +175,8 @@ async function syncProjects() {
         github=excluded.github, url=excluded.url, tag=excluded.tag,
         pinned=excluded.pinned, content=excluded.content, updated_at=excluded.updated_at;
     `);
+
+    await syncChunks(id, 'project', content, { slug: id, title });
   }
 }
 
