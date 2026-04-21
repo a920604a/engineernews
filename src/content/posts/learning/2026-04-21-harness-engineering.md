@@ -1,8 +1,8 @@
 ---
 title: "Harness Engineering：語言模型不是不夠聰明，只是缺乏引導"
 date: 2026-04-21
-category: ai
-tags: [harness-engineering, llm, ai-agent, prompt-engineering, context-engineering]
+category: learning
+tags: [ai, harness-engineering, llm, ai-agent, prompt-engineering, context-engineering]
 lang: zh-TW
 tldr: "AI 工程的第三階段——不再只是讓模型更聰明，而是透過流程設計、觀測與失敗恢復來確保輸出可靠。"
 description: "Harness Engineering 是繼 Prompt Engineering、Context Engineering 之後的 AI 工程第三階段，核心在於透過人類引導、流程驗證與失敗恢復來控制 LLM 的機率性輸出。"

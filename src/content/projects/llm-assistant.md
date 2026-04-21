@@ -8,6 +8,7 @@ description:
     - "補充：列出 3–6 項核心貢獻或實作細項。"
   outcome: "請補充專案成果或量化指標。"
 date: 2024-09-01
+category: product
 tags: ["llm", "assistant", "ai"]
 skills: ["fastapi", "qdrant", "postgresql", "minio", "docker-compose", "prefect", "ollama", "python", "react"]
 github: "https://github.com/a920604a/llm-assistant"

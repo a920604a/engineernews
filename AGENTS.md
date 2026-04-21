@@ -28,9 +28,24 @@ draft: false        # 選填，true 時不顯示
 ---
 ```
 
-### 支援的分類
+### 支援的分類（Category）
 
-`tech` / `surf` / `film` / `life` / `coffee` / `learning` / `ai` / `product` / `marketing` / `travel` / `design` / `education` / `policy` / `anime` / `career`
+`tech` / `product` / `learning` / `creative` / `life`
+
+| Category | 適用內容 |
+|----------|---------|
+| `tech` | 技術問題解決、工具介紹、架構設計、工程實踐 |
+| `product` | 產品設計、UX、功能開發、市場策略 |
+| `learning` | 概念解說、知識整理、AI/教育/政策主題 |
+| `creative` | 電影、動漫、設計、衝浪、咖啡、旅遊 |
+| `life` | 日常記錄、職涯、個人反思 |
+
+### 推薦 Tags
+
+**主題標籤**（原本的 category，現降為 tag）：
+`ai` / `marketing` / `design` / `film` / `anime` / `coffee` / `surf` / `travel` / `career` / `policy` / `education`
+
+**技術標籤**：依文章內容選用（如 `astro`、`cloudflare`、`llm`、`react` 等）
 
 ### 文章結構模板
 
@@ -65,7 +80,7 @@ draft: false        # 選填，true 時不顯示
 - 只要文章有明顯引用工具、框架、官方文件、論文、版本資訊、數據比較、外部說法，就要在文末補 `## 參考資料`
 - `## 參考資料` 至少要有 1 個有效 Markdown 連結；主題越廣，連結不能只放 1 個敷衍帶過
 - 參考資料要覆蓋文章主題本身，不是隨便貼幾個不相干連結
-- tech / ai / learning / education / policy / design / marketing / product 類文章，預設應該附參考資料
+- tech / learning / product 類文章，以及帶有 ai / policy / education / marketing tag 的文章，預設應該附參考資料
 - 可執行 `pnpm check:references` 檢查缺漏與覆蓋是否明顯不足
 
 ### Commit 格式

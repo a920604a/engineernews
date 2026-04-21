@@ -37,6 +37,7 @@ const projects = defineCollection({
         outcome: z.string().optional(),
       }),
     ]),
+    category: z.string().optional(),
     tags: z.array(z.string()),
     github: z.string().url().optional(),
     url: z.string().url().optional(),

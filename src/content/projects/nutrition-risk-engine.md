@@ -8,6 +8,7 @@ description:
     - "補充：列出 3–6 項核心貢獻或實作細項。"
   outcome: "請補充專案成果或量化指標。"
 date: 2026-04-01
+category: product
 tags: ["nutrition", "health", "ml"]
 skills: ["react", "typescript", "tailwindcss", "cloudflare-workers", "d1", "firestore", "workers-ai", "react-pdf"]
 github: "https://github.com/a920604a/nutrition-risk-engine"

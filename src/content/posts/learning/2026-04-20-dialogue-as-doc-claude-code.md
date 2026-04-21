@@ -1,8 +1,8 @@
 ---
 title: "對話即文件：用 Claude Code 把 Debug 過程直接變成文章"
 date: 2026-04-20
-category: "ai"
-tags: ["claude-code", "debugging", "writing-automation"]
+category: learning
+tags: ["ai", "claude-code", "debugging", "writing-automation"]
 lang: zh-TW
 description: "示範如何把對話與除錯歷程透過 Claude Code 自動整理為技術文章，包含 prompt 設計與常見調整技巧。"
 tldr: "把對話當成可寫成文章的材料：用結構化 prompt 與範本，讓 Claude Code 自動把 debugging thread 轉為可發佈的技術文章。"

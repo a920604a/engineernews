@@ -10,6 +10,7 @@ description:
     - "建置 FastAPI 推理服務，並整合 Evidently 與 Prometheus+Grafana 做指標與漂移監控。"
   outcome: "得到一套端到端的 MLOps 範例，可用於教學與實驗，並驗證模型運作與監控流程可行性。"
 date: 2024-05-01
+category: product
 tags: ["mlops", "finance", "stock"]
 skills: ["fastapi", "scikit-learn", "pandas", "mlflow", "prefect", "evidently", "prometheus", "grafana", "docker-compose", "python"]
 github: "https://github.com/a920604a/stock-mlops"

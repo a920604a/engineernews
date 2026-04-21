@@ -11,7 +11,8 @@ description:
     - "以 Docker 與 Docker Compose 管理本地開發環境，Postgres 作為資料庫，讓部署與測試可重複執行。"
   outcome: "完成端到端即時互動教學平台，支援即時糾錯、語音互動與課後報告，並具備可重複部署的 Dev/Prod 架構。"
 date: 2026-04-10
-tags: ["live-english", "tutor", "websocket"]
+category: product
+tags: ["live-english", "tutor", "websocket", "ai"]
 skills: ["react", "vite", "fastapi", "livekit", "webrtc", "firebase", "postgresql", "docker", "ollama", "google-gemini"]
 github: "https://github.com/a920604a/live-english-tutor"
 tag: "live-english-tutor"

@@ -44,8 +44,21 @@ description:
 
 "Live English Tutor 是一個以即時語音互動為核心的英語教學平台，完成端到端的即時糾錯與課後報告功能。系統的目標是讓學生能在自然對話中獲得即時回饋，並於課後收到自動生成的學習報告。面對低延遲與資料同步的挑戰，採用了 LiveKit self-hosted 處理 WebRTC 媒體，FastAPI 提供 API 層，agent worker 處理 LLM 與 TTS。核心貢獻包括：以 FastAPI 建置後端 token 與 session 管理；以 LiveKit agent 串接 Gemini 與 TTS 做即時互動；以 Docker/Terraform 規劃部署流程。最終系統可重複部署，並穩定支援多人同時課程。"
 
+## category 欄位
+
+每個 project 從以下 5 個 category 擇一：
+
+| Category | 適用 |
+|----------|------|
+| `tech` | 技術工具、基礎設施、工程平台 |
+| `product` | 面向用戶的產品、服務、應用 |
+| `learning` | 研究工具、教育平台、知識系統 |
+| `creative` | 創意媒體、設計工具、藝術類 |
+| `life` | 個人工具、日常輔助類 |
+
 ## skills 標準化
 - skills 建議 6–12 個短標籤（小寫、kebab-case），覆蓋 Languages / Frameworks / Infra / ML / DevOps。
+- 可附加主題 tag（如 `ai`、`design`、`education`）與技術標籤混用。
 - 若需要更詳盡分類，可在 frontmatter 新增 `tech_stack` mapping（languages/frameworks/infra/ml/devops），但 site 主要使用 `skills` 做搜尋索引。
 
 ## 執行步驟（自動化建議）
