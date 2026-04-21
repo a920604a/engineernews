@@ -36,7 +36,7 @@ const dateStr = date?.toLocaleDateString(isEn ? 'en-US' : 'zh-TW', {
 const excerpt = tldr || description || '';
 ---
 
-<article class="card">
+<article class={`card${pinned ? ' card--pinned' : ''}`}>
   <div class="card-header">
     <div class="card-badges">
       {pinned && <span class="badge badge-pinned">置頂</span>}
@@ -81,6 +81,13 @@ const excerpt = tldr || description || '';
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
     border-color: color-mix(in srgb, var(--accent) 30%, var(--separator));
+  }
+  .card--pinned {
+    border-color: #ff3b30;
+    border-width: 1.5px;
+  }
+  .card--pinned:hover {
+    border-color: #ff3b30;
   }
 
   .card-header {
