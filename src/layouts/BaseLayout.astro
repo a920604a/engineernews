@@ -465,7 +465,8 @@ const siteJsonLd = {
         cursor: grab;
         user-select: none;
         padding: 16px;
-        min-height: 80px;
+        min-height: 200px;
+        height: 420px;
       }
       .mermaid-viewport:active { cursor: grabbing; }
       .mermaid-viewport .mermaid {
@@ -703,6 +704,18 @@ const siteJsonLd = {
           function apply() {
             el.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + scale + ')';
           }
+          function fitAndCenter() {
+            var pad = 32;
+            var vpW = vp.clientWidth - pad;
+            var vpH = vp.clientHeight - pad;
+            var elW = el.scrollWidth;
+            var elH = el.scrollHeight;
+            scale = 1;
+            tx = Math.max(0, (vpW - elW) / 2);
+            ty = Math.max(0, (vpH - elH) / 2);
+            apply();
+          }
+          requestAnimationFrame(fitAndCenter);
 
           var fsBtn = toolbar.querySelector('[data-action="fullscreen"]');
           document.addEventListener('fullscreenchange', function () {
@@ -717,7 +730,7 @@ const siteJsonLd = {
             var action = btn.dataset.action;
             if (action === 'in') scale = Math.min(scale * 1.3, 5);
             else if (action === 'out') scale = Math.max(scale / 1.3, 0.2);
-            else if (action === 'reset') { scale = 1; tx = 0; ty = 0; }
+            else if (action === 'reset') { fitAndCenter(); return; }
             else if (action === 'fullscreen') {
               if (!document.fullscreenElement) {
                 wrap.requestFullscreen && wrap.requestFullscreen();
