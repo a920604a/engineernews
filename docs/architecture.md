@@ -14,24 +14,38 @@
 
 ```mermaid
 graph TD
-  subgraph Client
-    Browser
+  subgraph Client[瀏覽器]
+    Browser[使用者]
   end
 
-  subgraph Cloudflare
-    Pages[Cloudflare Pages<br/>靜態 Astro 輸出]
-    Workers[Cloudflare Workers<br/>API / LLM 入口]
-    D1[(D1 SQLite<br/>posts / projects / chunks)]
-    Vectorize[(Vectorize<br/>向量索引)]
-    WorkersAI[Workers AI<br/>embedding / inference]
+  subgraph CF[Cloudflare]
+    subgraph Frontend[前端靜態 Hosting]
+      Pages[Cloudflare Pages<br/>Astro 靜態輸出<br/>HTML / CSS / JS]
+    end
+
+    subgraph Backend[API 後端]
+      Workers[Cloudflare Workers<br/>src/pages/api/*.ts]
+    end
+
+    subgraph Storage[資料儲存]
+      D1[(Cloudflare D1<br/>SQLite<br/>posts / projects / doc_chunks)]
+    end
+
+    subgraph VectorSearch[語義搜尋]
+      Vectorize[(Cloudflare Vectorize<br/>向量索引)]
+    end
+
+    subgraph AI[AI 推理]
+      BGE[Workers AI<br/>bge-small-en-v1.5<br/>文字 → 向量 Embedding]
+    end
   end
 
-  Browser -->|靜態頁面| Pages
-  Browser -->|搜尋 / AI 查詢| Workers
-  Workers -->|SQL 查詢| D1
-  Workers -->|向量檢索| Vectorize
-  Workers -->|embedding / LLM| WorkersAI
-  Vectorize -.->|chunk metadata| D1
+  Browser -->|瀏覽頁面| Pages
+  Browser -->|/api/search 語義搜尋| Workers
+  Workers -->|查詢文章 / chunks| D1
+  Workers -->|向量相似度搜尋| Vectorize
+  Workers -->|將 query 轉成向量| BGE
+  Vectorize -.->|chunk 對應 metadata| D1
 ```
 
 ## 資料流
@@ -49,9 +63,31 @@ sequenceDiagram
   GH->>Pages: astro build + deploy
   GH->>Script: pnpm sync:prod
   Script->>D1: UPSERT posts / projects
-  Script->>D1: DELETE + INSERT post_chunks
+  Script->>D1: DELETE + INSERT doc_chunks
   Script->>Vec: vectorize insert (embeddings)
 ```
+
+## 搜尋功能
+
+網站提供兩種搜尋，入口分別在 `/search` 和 `/ai-search`：
+
+| | `/search` | `/ai-search` |
+|---|---|---|
+| 技術 | Pagefind（靜態全文索引） | Vectorize（語義向量搜尋） |
+| 運作方式 | build time 建立索引，純前端 JS 比對關鍵字 | 即時呼叫 `/api/search` → embedding → 向量相似度 |
+| 需要 Workers | 否（prerender） | 是 |
+| 搜尋能力 | 關鍵字完全比對 | 語義理解（同義詞、概念相近） |
+
+`/api/search` 流程：
+
+```
+用戶輸入
+  → Workers AI bge-small-en-v1.5（embedding）
+  → Vectorize.query()（top-5 相似 chunks）
+  → 回傳文章 slug / title / score
+```
+
+> 注意：這是語義搜尋（Semantic Search），不是 RAG。結果為文章列表，不會由 LLM 生成回答。
 
 ## D1 Schema
 
