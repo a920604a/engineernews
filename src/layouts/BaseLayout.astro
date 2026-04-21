@@ -704,13 +704,28 @@ const siteJsonLd = {
             el.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + scale + ')';
           }
 
+          var fsBtn = toolbar.querySelector('[data-action="fullscreen"]');
+          document.addEventListener('fullscreenchange', function () {
+            var isFs = document.fullscreenElement === wrap;
+            fsBtn.textContent = isFs ? '✕' : '⛶';
+            fsBtn.title = isFs ? 'Exit fullscreen' : 'Fullscreen';
+          });
+
           toolbar.addEventListener('click', function (e) {
             var btn = e.target.closest('[data-action]');
             if (!btn) return;
             var action = btn.dataset.action;
             if (action === 'in') scale = Math.min(scale * 1.3, 5);
             else if (action === 'out') scale = Math.max(scale / 1.3, 0.2);
-            else { scale = 1; tx = 0; ty = 0; }
+            else if (action === 'reset') { scale = 1; tx = 0; ty = 0; }
+            else if (action === 'fullscreen') {
+              if (!document.fullscreenElement) {
+                wrap.requestFullscreen && wrap.requestFullscreen();
+              } else {
+                document.exitFullscreen && document.exitFullscreen();
+              }
+              return;
+            }
             apply();
           });
 
