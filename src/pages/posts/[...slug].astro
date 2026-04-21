@@ -52,6 +52,8 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
         <time style="font-variant-numeric: tabular-nums;">{dateStr}</time>
         <span style="opacity:0.35;">·</span>
         <span>{readingTime} 分鐘閱讀</span>
+        <span style="opacity:0.35;">·</span>
+        <span id="view-count">－ 次閱讀</span>
         {post.data.type && (
           <>
             <span style="opacity:0.35;">·</span>
@@ -136,3 +138,20 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
     )}
   </article>
 </BaseLayout>
+
+<script define:vars={{ slug: post.id }}>
+  (async () => {
+    try {
+      const res = await fetch('/api/views', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug }),
+      });
+      const { count } = await res.json();
+      const el = document.getElementById('view-count');
+      if (el && count) el.textContent = `${count.toLocaleString()} 次閱讀`;
+    } catch {
+      // D1 不可用時靜默失敗，不影響頁面
+    }
+  })();
+</script>
