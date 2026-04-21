@@ -29,7 +29,7 @@ description: Convert a conversation, notes, or experience into a structured post
 
 ## 推薦 Tags
 
-**主題標籤**（原本是 category，現降為 tag）：
+**主題標籤**（原本是 category）：
 `ai` / `marketing` / `design` / `film` / `anime` / `coffee` / `surf` / `travel` / `career` / `policy` / `education`
 
 **技術標籤**：依文章內容選用（如 `astro`、`cloudflare`、`llm`、`react`、`docker` 等）

@@ -1,29 +1,153 @@
 ---
 title: "Stock MLOps"
-description:
-  background: "針對股票預測建立的 MLOps 專案，涵蓋資料擷取、特徵工程、模型訓練、部署與監控全流程。"
-  challenge: "需建立可重複的訓練/部署流程、實驗追蹤與模型監控，確保能處理資料漂移並自動化 retraining。"
-  solution: "以 Prefect 管理 ETL 與訓練流程，使用 MLflow 追蹤實驗，FastAPI 提供 inference API，並用 Evidently / Prometheus / Grafana 做模型與資料監控。"
-  core_contributions:
-    - "撰寫 ETL 與訓練流程，並以 Prefect 2 排程自動化流程執行。"
-    - "將實驗結果與模型版本登錄到 MLflow，並以 MinIO/Artifact 存放模型檔案。"
-    - "建置 FastAPI 推理服務，並整合 Evidently 與 Prometheus+Grafana 做指標與漂移監控。"
-  outcome: "得到一套端到端的 MLOps 範例，可用於教學與實驗，並驗證模型運作與監控流程可行性。"
-date: 2024-05-01
-category: product
-tags: ["mlops", "finance", "stock"]
-skills: ["fastapi", "scikit-learn", "pandas", "mlflow", "prefect", "evidently", "prometheus", "grafana", "docker-compose", "python"]
+description: "端到端股價預測 MLOps 系統，整合 MLflow 實驗追蹤、Prefect 排程 ETL、Evidently 資料漂移監控與 GitHub Actions CI/CD。"
+category: tech
+tags: ["python", "react", "docker", "postgresql", "redis", "mlflow", "prometheus", "grafana", "CICD"]
 github: "https://github.com/a920604a/stock-mlops"
-tag: "stock-mlops"
 pinned: false
 ---
 
-Stock MLOps 是一個將課程學到的 MLOps 實務整合成完整範例的專案，涵蓋資料擷取、特徵工程、模型訓練、部署與監控流程。
+Stock MLOps 以台股與美股歷史資料為基礎，實作完整的端到端 ML 系統，涵蓋 ETL 排程、模型訓練、版本管理、即時推理、漂移監控與 CI/CD，讓模型從訓練到部署全程可追蹤。
 
-背景：項目目標是建立可重複執行的 ML lifecycle，讓使用者能追蹤實驗、版本化模型並透過 API 提供推理服務。
+## 背景
 
-挑戰：需要自動化 ETL 與訓練流程、實驗追蹤、模型監控與資料漂移偵測，並在本地或容器化環境中穩定執行。
+機器學習課程中的模型往往停留在 Jupyter Notebook，缺乏生產化所需的版本管理、排程重訓與監控機制。這個專案以股價預測為主題，實作完整 MLOps 工作流，練習將實驗性代碼轉化為可維護的 ML 系統。
 
-解法與貢獻：以 Prefect 管理 ETL 與 retraining 流程；使用 MLflow 追蹤實驗與模型版本；搭配 FastAPI 建置推理服務，並以 Evidently + Prometheus + Grafana 做監控儀表板；提供 Docker Compose 範例以利部署。 
+## 挑戰
 
-成果：建立了一套可復現的 MLOps 教學範例，支援實驗追蹤、模型註冊與監控，方便教學與研究用途。
+需在單機 Docker Compose 環境中協調多個異質元件——Prefect 排程、Celery 非同步任務、Kafka 事件流、MLflow 模型版本管理、Evidently 漂移偵測與 Nginx 負載均衡——確保各元件在資料管線中正確串接，且推理與訓練請求能分流至不同後端。
+
+## 解法
+
+以 Docker Compose 統一部署，Nginx 負責路由分流，各元件職責單一：
+
+- 以 **MLflow** 追蹤每次訓練實驗，管理模型版本與 artifact（存放於 MinIO）
+- 以 **Prefect 2** 建置 ETL 排程，從 Yahoo Finance 爬取台股/美股資料並存入 ClickHouse
+- 以 **FastAPI + Scikit-learn** 建置容器化推理 API，Nginx 依路由分流至預測/訓練後端
+- 以 **Celery + Redis** 處理非同步訓練任務，Kafka 串接即時預測結果推送
+- 以 **Evidently + Prometheus + Grafana** 建置資料漂移偵測與模型效能監控看板
+- 以 **GitHub Actions** 建置 CI/CD，整合 pytest、Black、flake8 與 Discord 通知
+
+## 架構圖
+
+```mermaid
+graph TD
+  U[User Browser] -->|HTTP/WS Requests| NG[Nginx<br>Static + Reverse Proxy]
+  
+  subgraph Nginx_Proxy["Nginx Proxy"]
+    NG -->|/api/predict| UP1
+    NG -->|/api/train| UP2
+    NG -->|/api/| UP3
+    NG -->|/ws| W
+    NG -->|Static files| Static[React Build]
+  end
+  
+  subgraph Upstream_Pools["Upstream Pools"]
+    UP1["backend_predict<br>70% to backend1<br>30% to backend2"]
+    UP2["backend_train<br>30% to backend1<br>70% to backend2"]
+    UP3["backend_api<br>1:1 to backend1, backend2"]
+  end
+  
+  subgraph Backend_API["Backend API"]
+    B1[backend1:8000]
+    B2[backend2:8000]
+  end
+  
+  UP1 --> B1
+  UP1 --> B2
+  UP2 --> B1
+  UP2 --> B2
+  UP3 --> B1
+  UP3 --> B2
+  
+  subgraph Data_ETL["Data and ETL"]
+    P[Prefect Workflow] -->|ETL processing| D1[(raw_db<br>PostgreSQL)]
+    P -->|Cleaned data| D2[(OLAP<br>ClickHouse)]
+  end
+  
+  B1 -->|Query cleaned data| D2
+  B2 -->|Query cleaned data| D2
+  B1 -->|Push task| E[Redis]
+  B2 -->|Push task| E
+  
+  subgraph Model_Training["Model Training & MLflow"]
+    L[Celery Worker] -->|Read cleaned data| D2
+    L -->|Execute training| G[Model training logic]
+    G -->|Model version management| H[MLflow Registry]
+    G -->|Update model metadata| D3[(mlflow-db<br>PostgreSQL)]
+    H -->|Model Artifact| S[(MinIO<br>Model storage)]
+  end
+  
+  subgraph Monitoring["Monitoring & Real-time Push"]
+    W[ws_monitor<br>Kafka Consumer + WebSocket]
+    Q[metrics_publisher]
+    N1[Kafka - prediction topic] -->|Prediction result| W
+    N2[Kafka - metrics topic]
+    Q --> N2
+    N2 -->|Metrics| W
+    J[Prometheus]
+    J -->|Historical data| K[Grafana Dashboard]
+  end
+  
+  subgraph Async_Tasks["Async Task Queue"]
+    E --> |Execute| L
+  end
+```
+
+## 流程圖
+
+```mermaid
+graph TD
+  subgraph Users
+    A[Browser]
+  end
+  
+  subgraph Frontend
+    B[Vite + React]
+  end
+  
+  subgraph Backend
+    C[FastAPI API]
+    D[Model Training / Inference]
+    E[Celery Worker]
+    F[Prefect Flows]
+  end
+  
+  subgraph Storage
+    G[PostgreSQL as raw_db]
+    H[ClickHouse as cleaned data]
+    I[MinIO as Model Artifacts]
+    J[MLflow as Tracking DB]
+  end
+  
+  subgraph Monitoring
+    K[Prometheus]
+    L[Grafana]
+    M[Evidently]
+  end
+  
+  subgraph Messaging
+    N[Kafka]
+    O[Redis]
+  end
+  
+  A --> B
+  B --> C
+  C --> D
+  D --> E
+  E --> G
+  E --> H
+  D --> J
+  D --> I
+  F --> G
+  F --> H
+  M --> K
+  K --> L
+  D --> N
+  M --> N
+  E --> O
+```
+
+## 成果
+
+完成端到端 MLOps 工作流，涵蓋資料爬取、實驗追蹤、模型部署、漂移監控與 CI/CD，以台股（2330.TW）與美股（AAPL、TSM）為資料集驗證完整管線。

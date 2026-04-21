@@ -27,21 +27,11 @@ const projects = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.coerce.date().optional(),
-    description: z.union([
-      z.string(),
-      z.object({
-        background: z.string(),
-        challenge: z.string(),
-        solution: z.string().optional(),
-        core_contributions: z.array(z.string()).optional(),
-        outcome: z.string().optional(),
-      }),
-    ]),
-    category: z.string().optional(),
+    description: z.string().optional(),
+    category: z.string(),
     tags: z.array(z.string()),
     github: z.string().url().optional(),
     url: z.string().url().optional(),
-    tag: z.string(),
     pinned: z.boolean().default(false),
   }),
 });

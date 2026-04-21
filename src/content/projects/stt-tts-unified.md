@@ -1,29 +1,68 @@
 ---
 title: "STT-TTS Unified"
-description:
-  background: "整合語音辨識（STT）與語音合成（TTS）的工具集合與範例，包含前後端 demo 與處理流程。"
-  challenge: "必須支援多模型（如 Whisper、不同 TTS 引擎）與資料上傳/處理流程，同時盡量降低延遲並保護上傳音訊隱私。"
-  solution: "以 FastAPI 提供 STT / TTS / history API，React + Vite 作為示例前端，採用 Docker Compose 串接服務與 SQLite 做簡易儲存。"
-  core_contributions:
-    - "設計 FastAPI 路由與服務層（tts / stt / history），封裝模型呼叫與檔案處理邏輯。"
-    - "建立 React + Vite 範例前端，展示上傳音訊、即時辨識與播放 TTS 結果。"
-    - "以 Dockerfile 與 docker-compose 組合開發環境，簡化啟動流程並方便 CI/CD 測試。"
-  outcome: "提供一套可復用的 STT/TTS 範例與工具，方便在其他專案整合多種語音模型與優化延遲。"
-date: 2026-03-28
+description: "整合 Microsoft Edge TTS 與本地 OpenAI Whisper 的語音處理平台，支援 322 種語音合成與離線語音辨識，零 API 費用。"
 category: tech
-tags: ["speech", "stt", "tts"]
-skills: ["fastapi", "react", "vite", "whisper", "tts", "docker", "docker-compose", "sqlite"]
+tags: ["python", "typescript", "react", "fastapi", "docker"]
 github: "https://github.com/a920604a/stt-tts-unified"
-tag: "stt-tts-unified"
 pinned: false
 ---
 
-STT-TTS Unified 提供一套實作範例，展示如何把語音辨識（STT）與語音合成（TTS）整合到前後端流程中，包含模型呼叫、檔案上傳、歷史記錄與播放功能。
+STT-TTS Unified 是一個整合文字轉語音（TTS）與語音轉文字（STT）的 Web 平台，TTS 使用 Microsoft Edge 雲端神經語音（322 種語言），STT 使用本地 Whisper 離線推論，所有結果持久化至 SQLite，完全免費且無需 API Key。
 
-背景：專案包含 FastAPI 後端、React + Vite 前端，以及示範用的 SQLite/資料夾儲存結構，方便開發者快速跑起 STT/TTS 流程並測試多個模型。
+## 背景
 
-挑戰：需要支援多種 STT（如 Whisper）與 TTS 引擎，處理音訊上傳、長檔分段與延遲優化，並確保使用者資料（音訊）不會外洩。
+開發者與內容創作者需要在同一個介面完成語音合成與語音辨識，但現有工具各自獨立，且商業 API 有使用量費用。這個專案目標是打造一個零成本、可自架的一站式語音處理平台，TTS 借助 Edge TTS 免費語音，STT 則完全本地執行。
 
-解法與貢獻：設計 FastAPI 的路由與服務層（tts/stt/history）來封裝模型呼叫與檔案管理；提供 React 範例 UI 展示上傳、辨識結果與播放；使用 Dockerfile 與 docker-compose 簡化整體啟動流程，方便 CI 與本地測試。
+## 挑戰
 
-成果：提供一套可重複使用的 STT/TTS 範例，支援在其他專案中快速整合語音模型，並為性能優化提供測試場域。
+Whisper 語音辨識是 CPU-bound 任務，若在 FastAPI 主執行緒直接執行會造成整個服務阻塞，導致其他請求無法回應。同時需在同一個 Docker 容器中整合 Node.js 前端編譯與 Python 後端環境，並預先下載 Whisper 模型以避免首次啟動等待。
+
+## 解法
+
+採用異步架構將阻塞任務移出主執行緒，以 Multi-stage Docker 簡化部署：
+
+- 以 **React 19 + Vite + TypeScript** 建置前端，含 TTSPanel、STTPanel、HistoryPanel 三個主面板，支援 Apple HIG 深色模式
+- 以 **FastAPI + Uvicorn** 建置後端，整合 edge-tts（TTS）、openai-whisper（STT）與 aiosqlite（歷史紀錄）
+- 以 **asyncio.create_task() + ThreadPoolExecutor** 將 Whisper CPU-bound 推論移至背景執行，主執行緒不阻塞
+- 以 **SSE（Server-Sent Events）** 推送 STT 即時進度，前端每 2 秒輪詢直至完成
+- 以 **Multi-stage Docker Build** 整合 Node.js 前端編譯與 Python 環境，預載 Whisper 模型
+
+## 架構圖
+
+```mermaid
+graph LR
+  User["使用者"] --> FE["React 19 + Vite\nTTSPanel / STTPanel / HistoryPanel"]
+  FE -->|REST API| API["FastAPI + Uvicorn"]
+  API -->|edge-tts| MS["Microsoft Edge TTS\n(雲端 322 種語音)"]
+  API -->|ThreadPoolExecutor| Whisper["OpenAI Whisper\n(本地離線推論)"]
+  API --- DB[(SQLite\n歷史紀錄)]
+  MS -->|音訊檔| API
+  Whisper -->|轉錄結果| API
+```
+
+## 流程圖
+
+```mermaid
+flowchart TD
+  subgraph TTS
+    A([輸入文字]) --> B[語言自動偵測]
+    B --> C[edge-tts 請求 Microsoft]
+    C --> D[生成音訊檔]
+    D --> E[SQLite 儲存]
+    E --> F([播放 / 下載])
+  end
+
+  subgraph STT
+    G([上傳音檔]) --> H[後端立即回傳 task_id]
+    H --> I[ThreadPoolExecutor\n執行 Whisper 推論]
+    I --> J[前端輪詢狀態]
+    J --> K{完成?}
+    K -- 否 --> J
+    K -- 是 --> L[SQLite 儲存結果]
+    L --> M([顯示轉錄文字])
+  end
+```
+
+## 成果
+
+完成 TTS + STT 雙功能整合平台，支援 322 種語音合成語言與本地離線 Whisper 辨識，以 Docker Compose 一鍵啟動（`make up` → localhost:8008），完全免費且無需任何 API Key。

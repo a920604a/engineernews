@@ -1,30 +1,80 @@
 ---
 title: "Live English Tutor"
-description:
-  background: "設計並實作以即時語音為核心的 AI 英文家教平台，整合前端 WebRTC（LiveKit）、AI Agent、語音模型與後端服務。"
-  challenge: "需在低延遲的即時通訊環境下整合 WebRTC 媒體串流、AI Agent 任務流程與課後報告生成，同時處理驗證與可擴展部署。"
-  solution: "建立解耦式前後端與 agent 架構，採用 LiveKit self-hosted 作為即時媒體層，FastAPI 作為後端 API，Agent Worker 負責呼叫大模型與 TTS/報告生成。"
-  core_contributions:
-    - "以 **FastAPI** 建置後端（token 簽發、sessions 與 agent lifecycle 管理，含 Prometheus/Grafana 監控）。"
-    - "實作 **LiveKit agent worker**：串接 Google Gemini（或其他 LLM）做即時語音互動、VAD/STT/TTS 與課後報告生成（Ollama 作為選項）。"
-    - "前端採 **React + Vite** 並整合 LiveKit JS，處理麥克風/視訊發布及 UI 控制流程；使用 Firebase 做 Google Sign-In 驗證。"
-    - "以 Docker 與 Docker Compose 管理本地開發環境，Postgres 作為資料庫，讓部署與測試可重複執行。"
-  outcome: "完成端到端即時互動教學平台，支援即時糾錯、語音互動與課後報告，並具備可重複部署的 Dev/Prod 架構。"
-date: 2026-04-10
+description: "以 LiveKit WebRTC + Google Gemini 驅動的即時語音 AI 英文家教平台，支援即時糾錯與課後報告生成。"
 category: product
-tags: ["live-english", "tutor", "websocket", "ai"]
-skills: ["react", "vite", "fastapi", "livekit", "webrtc", "firebase", "postgresql", "docker", "ollama", "google-gemini"]
+tags: ["python", "typescript", "react", "fastapi", "docker", "postgresql", "firebase", "ai", "education"]
 github: "https://github.com/a920604a/live-english-tutor"
-tag: "live-english-tutor"
 pinned: false
 ---
 
-Live English Tutor 是一個以即時語音互動為核心的英語教學平台，完成端到端的即時糾錯與課後報告功能。系統目標是讓學生能在自然對話中獲得即時回饋，並在課後收到自動生成的中文學習報告。
+Live English Tutor 是一個以即時語音互動為核心的 AI 英文家教平台，學生透過麥克風與 AI 教師 Emma 進行對話練習，系統即時糾錯並於課後生成中文學習報告。
 
-背景：系統需在低延遲的即時通訊環境下，整合 WebRTC 媒體串流（LiveKit）、語音辨識、LLM 回應與語音合成。為了同時支援多人課程與穩定性，專案採用了 self-hosted LiveKit 配合 Docker/Compose，並以 Postgres 作為持久化資料存放。
+## 背景
 
-挑戰：主要問題包含即時音訊的延遲控制、Agent 任務協調（VAD → STT → LLM → TTS）與驗證／授權流程的安全性。系統須保證在多人同時上課時能維持流暢的互動體驗，並妥善保存與回放課程紀錄。
+學生缺乏低成本、隨時可用的口語練習管道，市面上語言學習工具大多以文字為主，難以在自然對話中提供即時語音回饋與糾錯。這個專案目標是打造一個能模擬真實家教互動的 AI 系統，讓學生在自然對話中練習英文並降低開口焦慮。
 
-解法與貢獻：以 FastAPI 建置後端提供 token 發放、session 管理與內部 agent 介面；以獨立的 LiveKit agent worker 實作即時語音處理與課後報告生成（可串接 Google Gemini / Ollama）；前端採用 React + Vite 與 LiveKit JS 處理媒體發布與 UI 控制；以 Docker 與 Docker Compose 做開發與測試環境，並以 Terraform/Ansible 為生產部署做 IaC 與自動化（若適用）。
+## 挑戰
 
-成果：系統已具備端到端的即時互動與報告生成功能，實驗環境能穩定支援多人課程與回放，部署流程可重複執行。
+需在低延遲環境中同時處理 WebRTC 媒體傳輸、Gemini Native Audio 推理與 STT/TTS 流程，任一環節延遲都會破壞對話流暢感。此外，Firebase ID token 需跨 FastAPI 與 LiveKit Agent 兩個服務正確驗證，確保 session 安全；Agent 狀態機（WARMUP → PRACTICE → CORRECTION → SUMMARY）需在同一 WebRTC 連線中無縫切換。
+
+## 解法
+
+採用解耦式架構，將媒體層、API 層與 AI Agent 層分離：
+
+- 以 **React 18 + LiveKit JS SDK** 建置前端，支援麥克風、鏡頭與螢幕分享
+- 以 **FastAPI + PostgreSQL** 建置後端 API 層，負責 Firebase token 驗證、LiveKit token 簽發與 session 管理
+- 以 **LiveKit Agents SDK + Google Gemini 2.5 Flash Native Audio** 實作即時語音對話、四階段狀態機與語法糾錯
+- 以 **Docker Compose** 自架 LiveKit Server，支援本地多裝置 WebRTC 連線
+- 以 **Ollama** 驅動課後中文報告生成服務，獨立於主對話流程
+
+## 架構圖
+
+```mermaid
+graph LR
+  FE["前端\n(React 18 + LiveKit SDK)"]
+  API["後端 API\n(FastAPI)"]
+  Agent["AI Agent Emma\n(LiveKit Agents + Gemini)"]
+  LK["LiveKit Server\n(Self-hosted WebRTC)"]
+  DB[(PostgreSQL)]
+  Ollama["報告生成\n(Ollama)"]
+  Firebase["Firebase Auth"]
+
+  FE -->|Google Sign-In| Firebase
+  FE -->|REST| API
+  API -->|token 簽發| LK
+  FE -->|WebRTC Audio/Video| LK
+  LK -->|Audio Stream| Agent
+  Agent -->|糾錯 / 對話訊息| FE
+  Agent -->|內部回調 API| API
+  API --- DB
+  API -->|Transcript + 糾錯| Ollama
+```
+
+## 流程圖
+
+```mermaid
+sequenceDiagram
+  participant 學生
+  participant 前端
+  participant 後端API
+  participant LiveKit
+  participant Emma
+
+  學生->>前端: Google Sign-In
+  前端->>後端API: 建立課程 / 取得 LiveKit Token
+  後端API->>LiveKit: 建立 Room + Dispatch Agent
+  LiveKit->>Emma: 啟動 Emma (WARMUP)
+  前端->>LiveKit: 加入 Room (WebRTC)
+  loop 對話練習 (PRACTICE)
+    學生->>Emma: 語音輸入
+    Emma->>學生: 回應 + 即時糾錯 (CORRECTION)
+  end
+  學生->>前端: 結束課程
+  前端->>後端API: 通知結束 (SUMMARY)
+  後端API->>Ollama: 觸發課後報告生成
+  後端API-->>前端: 課後中文報告
+```
+
+## 成果
+
+完成端到端即時語音互動教學系統，支援即時糾錯與課後中文報告，可在本地多裝置環境穩定運行。Agent 四階段狀態機完整實作，WebRTC 連線延遲在區網環境下維持流暢對話體驗。

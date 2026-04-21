@@ -44,6 +44,39 @@ frontmatter 範例與寫作規範請參考：docs/writing.md
 - docs/ingest.md — 對話攝取工具與同步流程
 - docs/writing.md — 文章格式、分類與 commit 規範
 
+## 資料管理（D1 + Vectorize）
+
+### 環境設定
+
+在 `.env` 設定（不提交 git）：
+
+```env
+CLOUDFLARE_API_TOKEN=...
+CLOUDFLARE_ACCOUNT_ID=...
+```
+
+### 全量重建 + 同步
+
+```bash
+make rebuild      # 重建 D1 表結構 + 重建 Vectorize index
+make sync-prod    # 同步所有 markdown → D1 + Vectorize
+```
+
+### 常用指令
+
+| 指令 | 說明 |
+|------|------|
+| `make install` | 安裝依賴 |
+| `make dev` | 啟動本地開發伺服器 |
+| `make d1-clear` | 清空 D1 資料（保留表結構） |
+| `make d1-rebuild` | DROP + 重建 D1 表結構 |
+| `make vec-rebuild` | 刪除 + 重建 Vectorize index |
+| `make rebuild` | `d1-rebuild` + `vec-rebuild` |
+| `make sync` | 同步至本地 D1 |
+| `make sync-prod` | 同步至遠端 D1 + Vectorize |
+
+> **注意**：所有 `make` 指令皆操作 Cloudflare 遠端資源，執行前請確認。
+
 ## 開發者指引
 
 - commit 標題: `post(<category>): <標題摘要>`（新文章）
