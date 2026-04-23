@@ -30,7 +30,11 @@ draft: false
 
 ## 整體架構（如果適合）
 
-{{ASCII 圖說明各工具如何組合}}
+{{用 Mermaid 說明各元件如何組合。流程用 flowchart，服務互動用 sequenceDiagram，純層次結構用 ASCII。}}
+
+```mermaid
+{{graph LR / flowchart / sequenceDiagram，視情境選用}}
+```
 
 ## 整體來說
 

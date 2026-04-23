@@ -41,7 +41,14 @@ description: Convert a conversation, notes, or experience into a structured post
 1. **判斷分類**：根據內容從上表選擇最適合的 category，並挑選相關 tags
 2. **選擇模板**：依觸發方式對應上表，不猜測
 3. **收集資訊**：從對話或筆記提取關鍵內容
-4. **產生檔案**：
+4. **評估視覺需求**：主動判斷是否需要圖解（不等用戶要求），參考 `references/writing-guide.md` 的「視覺輔助原則」
+   - 有流程 / 步驟 / 決策分支 → Mermaid flowchart
+   - 有元件互動 / 服務呼叫 → Mermaid sequenceDiagram
+   - 有架構 / 模組關係 → Mermaid graph
+   - 有前後對比 / 簡單層次 → ASCII
+   - 有多工具比較 → Markdown 表格
+   - `creative` / `life` 類、短文（< 500 字）→ 跳過
+5. **產生檔案**：
    - 遵守 `references/writing-guide.md`
    - 欄位說明見 `references/frontmatter-schema.md`
    - 檔名：`YYYY-MM-DD-<slug>.md`（slug 用英文 kebab-case）

@@ -8,7 +8,7 @@
 | 邊緣執行 | Cloudflare Workers |
 | 資料庫 | Cloudflare D1（SQLite） |
 | 向量索引 | Cloudflare Vectorize |
-| AI 推理 | Workers AI / 外部 LLM |
+| AI 推理 | Cloudflare Workers AI |
 
 ## 系統架構
 
@@ -19,75 +19,95 @@ graph TD
   end
 
   subgraph CF[Cloudflare]
-    subgraph Frontend[前端靜態 Hosting]
-      Pages[Cloudflare Pages<br/>Astro 靜態輸出<br/>HTML / CSS / JS]
+    subgraph Frontend[靜態 Hosting]
+      Pages[Cloudflare Pages\nAstro 靜態輸出]
     end
 
     subgraph Backend[API 後端]
-      Workers[Cloudflare Workers<br/>src/pages/api/*.ts]
+      Workers[Cloudflare Workers\nsrc/pages/api/*.ts]
     end
 
     subgraph Storage[資料儲存]
-      D1[(Cloudflare D1<br/>SQLite<br/>posts / projects / doc_chunks)]
+      D1[(Cloudflare D1\nposts / projects / doc_chunks)]
     end
 
     subgraph VectorSearch[語義搜尋]
-      Vectorize[(Cloudflare Vectorize<br/>向量索引)]
+      Vectorize[(Cloudflare Vectorize\n向量索引)]
     end
 
     subgraph AI[AI 推理]
-      BGE[Workers AI<br/>bge-small-en-v1.5<br/>文字 → 向量 Embedding]
+      BGE[Workers AI\nbge-small-en-v1.5\nembedding]
+      LLM[Workers AI\nllama-3.1-8b-instruct\ningest / crawl 摘要]
     end
   end
 
   Browser -->|瀏覽頁面| Pages
-  Browser -->|/api/search 語義搜尋| Workers
-  Workers -->|查詢文章 / chunks| D1
+  Browser -->|/api/search| Workers
+  Workers -->|查詢文章| D1
   Workers -->|向量相似度搜尋| Vectorize
-  Workers -->|將 query 轉成向量| BGE
-  Vectorize -.->|chunk 對應 metadata| D1
+  Workers -->|query → 向量| BGE
+  Vectorize -.->|chunk metadata| D1
 ```
 
-## 資料流
+## 內容資料流
+
+### 手動攝取（ingest）
 
 ```mermaid
 sequenceDiagram
   participant Dev as 開發者
+  participant Ingest as ingest.ts
+  participant LLM as Workers AI (llama)
+  participant Git as git
   participant GH as GitHub Actions
   participant Pages as Cloudflare Pages
-  participant Script as sync-to-d1.ts
+  participant Sync as sync-to-d1.ts
   participant D1
-  participant Vec as Vectorize
 
-  Dev->>GH: git push main
+  Dev->>Ingest: pnpm ingest file.txt --yes
+  Ingest->>LLM: 對話文字
+  LLM-->>Ingest: title / tldr / tags / category
+  Ingest->>Git: git commit + push
+  Git->>GH: 觸發 deploy.yml
   GH->>Pages: astro build + deploy
-  GH->>Script: pnpm sync:prod
-  Script->>D1: UPSERT posts / projects
-  Script->>D1: DELETE + INSERT doc_chunks
-  Script->>Vec: vectorize insert (embeddings)
+  GH->>Sync: pnpm sync:prod
+  Sync->>D1: UPSERT posts + doc_chunks
+```
+
+### 自動爬蟲（crawl）
+
+```mermaid
+sequenceDiagram
+  participant Cron as GitHub Actions cron
+  participant Crawl as crawl.ts
+  participant YT as yt-dlp
+  participant LLM as Workers AI (llama)
+  participant Git as git
+  participant GH as GitHub Actions
+  participant D1
+
+  Cron->>Crawl: 每天 UTC 02:00
+  loop 最多 3 支影片
+    Crawl->>YT: 列出新影片 + 下載字幕
+    YT-->>Crawl: 字幕文字（或 fallback）
+    Crawl->>LLM: 字幕 → 繁體中文摘要
+    LLM-->>Crawl: title / tldr / tags / summary
+    Crawl->>Git: 寫入 posts/crawled/VIDEO_ID.md
+  end
+  Git->>GH: git commit + push (author: a920604a)
+  GH->>GH: 觸發 deploy.yml → Pages + D1 sync
 ```
 
 ## 搜尋功能
 
-網站提供兩種搜尋，入口分別在 `/search` 和 `/ai-search`：
-
 | | `/search` | `/ai-search` |
 |---|---|---|
 | 技術 | Pagefind（靜態全文索引） | Vectorize（語義向量搜尋） |
-| 運作方式 | build time 建立索引，純前端 JS 比對關鍵字 | 即時呼叫 `/api/search` → embedding → 向量相似度 |
-| 需要 Workers | 否（prerender） | 是 |
-| 搜尋能力 | 關鍵字完全比對 | 語義理解（同義詞、概念相近） |
+| 運作方式 | build time 建立索引，純前端 JS 比對 | 即時呼叫 `/api/search` → embedding → 向量相似度 |
+| 需要 Workers | 否 | 是 |
+| 搜尋能力 | 關鍵字比對 | 語義理解（同義詞、概念相近） |
 
-`/api/search` 流程：
-
-```
-用戶輸入
-  → Workers AI bge-small-en-v1.5（embedding）
-  → Vectorize.query()（top-5 相似 chunks）
-  → 回傳文章 slug / title / score
-```
-
-> 注意：這是語義搜尋（Semantic Search），不是 RAG。結果為文章列表，不會由 LLM 生成回答。
+> 語義搜尋不是 RAG：回傳的是文章列表，不由 LLM 生成回答。
 
 ## D1 Schema
 
@@ -103,16 +123,9 @@ erDiagram
     TEXT tldr
     TEXT content
     TEXT tags
+    TEXT source
+    TEXT source_url
     TEXT created_at
-    TEXT updated_at
-  }
-  chunks {
-    TEXT id PK
-    TEXT source_id
-    TEXT source_type
-    INTEGER chunk_index
-    TEXT content
-    INTEGER token_count
     TEXT updated_at
   }
   projects {
@@ -129,13 +142,24 @@ erDiagram
   }
   doc_chunks {
     TEXT id PK
-    TEXT source_url
-    TEXT source_name
+    TEXT source_id
+    TEXT source_type
     INTEGER chunk_index
     TEXT content
+    INTEGER token_count
     TEXT updated_at
   }
 
-  posts ||--o{ chunks : "source_type=post"
-  projects ||--o{ chunks : "source_type=project"
+  posts ||--o{ doc_chunks : "source_type=post"
+  projects ||--o{ doc_chunks : "source_type=project"
 ```
+
+## 文章類型
+
+| type | 說明 | 來源 |
+|------|------|------|
+| `debug` | 踩坑記錄 | 手動 ingest |
+| `deep-dive` | 技術深度介紹 | 手動 ingest |
+| `guide` | 操作指南 | 手動 ingest |
+| `project` | 專案介紹 | 手動 ingest |
+| `crawled` | 自動爬取（YouTube） | crawl.ts 自動生成 |

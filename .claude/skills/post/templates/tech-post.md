@@ -33,6 +33,14 @@ draft: false
 {{code}}
 ```
 
+## 示意圖（選填）
+
+{{若流程或架構用文字說清楚要超過 3 句，加 Mermaid 圖。否則刪掉這個 section。}}
+
+```mermaid
+{{flowchart / sequenceDiagram / graph，視情境選用}}
+```
+
 ## 為什麼會這樣
 
 {{根本原因}}
