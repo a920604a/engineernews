@@ -13,6 +13,65 @@ const API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
 const isProd = process.argv.includes('--prod');
 const remoteFlag = isProd ? '--remote' : '--local';
 
+// ── Workflow report ───────────────────────────────────────────────────────────
+
+interface StageResult {
+  name: string;
+  durationMs: number;
+  error?: string;
+}
+
+const report = {
+  startTime: Date.now(),
+  stages: [] as StageResult[],
+  errors: [] as string[],
+
+  recordError(msg: string) {
+    this.errors.push(msg);
+  },
+
+  async runStage<T>(name: string, fn: () => Promise<T>): Promise<T> {
+    const t0 = Date.now();
+    try {
+      const result = await fn();
+      this.stages.push({ name, durationMs: Date.now() - t0 });
+      return result;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      this.stages.push({ name, durationMs: Date.now() - t0, error: msg });
+      this.errors.push(`[${name}] ${msg}`);
+      throw err;
+    }
+  },
+
+  print() {
+    const totalMs = Date.now() - this.startTime;
+    const fmt = (ms: number) =>
+      ms >= 1000 ? `${(ms / 1000).toFixed(2)}s` : `${ms}ms`;
+
+    console.log('\n' + '─'.repeat(60));
+    console.log('📊 Workflow Report');
+    console.log('─'.repeat(60));
+    console.log(`  Total time : ${fmt(totalMs)}`);
+    console.log(`  Stages     : ${this.stages.length}`);
+    console.log(`  Errors     : ${this.errors.length}`);
+    console.log('');
+    console.log('  Stage breakdown:');
+    for (const s of this.stages) {
+      const status = s.error ? '✗' : '✓';
+      console.log(`    ${status} ${s.name.padEnd(20)} ${fmt(s.durationMs)}${s.error ? `  ← ${s.error}` : ''}`);
+    }
+    if (this.errors.length > 0) {
+      console.log('');
+      console.log('  Error log:');
+      for (const e of this.errors) {
+        console.log(`    ✗ ${e}`);
+      }
+    }
+    console.log('─'.repeat(60));
+  },
+};
+
 // ── Utilities ────────────────────────────────────────────────────────────────
 
 function walkMdFiles(dir: string): string[] {
@@ -100,7 +159,9 @@ function deleteOldVectors(sourceId: string, sourceType: string) {
       { stdio: 'inherit' }
     );
   } catch (e) {
-    console.warn(`  ⚠️  vectorize delete-vectors 失敗（將忽略舊向量）：${(e as Error).message}`);
+    const msg = `vectorize delete-vectors 失敗（將忽略舊向量）：${(e as Error).message}`;
+    console.warn(`  ⚠️  ${msg}`);
+    report.recordError(msg);
   }
 }
 
@@ -208,6 +269,7 @@ async function syncPosts() {
   const existingHashes = loadExistingHashes('posts');
   const localIds = new Set<string>();
   let skipped = 0;
+  let synced = 0;
 
   console.log(`Found ${files.length} posts.`);
 
@@ -239,6 +301,12 @@ async function syncPosts() {
     console.log(`  post: ${id}`);
     deleteOldVectors(id, 'post');
 
+    // Remove any stale record that shares the same slug but has a different id
+    // (e.g. when a file is renamed). Without this step, the UNIQUE constraint on
+    // slug would reject the INSERT even though the id-based ON CONFLICT clause
+    // never fires for a brand-new id.
+    runSql(`DELETE FROM posts WHERE slug='${esc(slug)}' AND id!='${esc(id)}';`);
+
     runSql(`
       INSERT INTO posts (id, slug, title, category, lang, description, tldr, content, tags, content_hash, created_at, updated_at)
       VALUES ('${esc(id)}','${esc(slug)}','${esc(title)}','${esc(category)}','${esc(lang)}',
@@ -251,9 +319,10 @@ async function syncPosts() {
     `);
 
     await syncChunks(id, 'post', content, { slug, title });
+    synced++;
   }
 
-  console.log(`  ✓ ${files.length - skipped} synced, ${skipped} skipped (unchanged)`);
+  console.log(`  ✓ ${synced} synced, ${skipped} skipped (unchanged)`);
   await cleanupOrphans('posts', localIds);
 }
 
@@ -264,6 +333,7 @@ async function syncProjects() {
   const existingHashes = loadExistingHashes('projects');
   const localIds = new Set<string>();
   let skipped = 0;
+  let synced = 0;
 
   console.log(`Found ${files.length} projects.`);
 
@@ -305,9 +375,10 @@ async function syncProjects() {
     `);
 
     await syncChunks(id, 'project', content, { slug: id, title });
+    synced++;
   }
 
-  console.log(`  ✓ ${files.length - skipped} synced, ${skipped} skipped (unchanged)`);
+  console.log(`  ✓ ${synced} synced, ${skipped} skipped (unchanged)`);
   await cleanupOrphans('projects', localIds);
 }
 
@@ -315,8 +386,20 @@ async function syncProjects() {
 
 async function main() {
   console.log(`🚀 Syncing to D1 (${isProd ? 'remote' : 'local'})...`);
-  await syncPosts();
-  await syncProjects();
+
+  let success = true;
+  try {
+    await report.runStage('sync posts', syncPosts);
+    await report.runStage('sync projects', syncProjects);
+  } catch (err) {
+    success = false;
+  }
+
+  report.print();
+
+  if (!success) {
+    process.exit(1);
+  }
   console.log('✅ Done.');
 }
 
