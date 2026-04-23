@@ -1,5 +1,9 @@
 ---
 import { getLangFromUrl, useTranslations, getLangSwitchUrl } from '../i18n/utils';
+import '@fontsource/noto-sans-tc/400.css';
+import '@fontsource/noto-sans-tc/500.css';
+import '@fontsource/noto-sans-tc/700.css';
+import '@fontsource/noto-sans-tc/900.css';
 
 interface Props {
   title: string;
@@ -55,10 +59,6 @@ const siteJsonLd = {
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd ?? siteJsonLd)} />
 
     <style is:global>
-      @import '@fontsource/noto-sans-tc/400.css';
-      @import '@fontsource/noto-sans-tc/500.css';
-      @import '@fontsource/noto-sans-tc/700.css';
-      @import '@fontsource/noto-sans-tc/900.css';
 
       /* ─── Theme Variables ─────────────────────────────── */
 

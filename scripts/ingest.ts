@@ -1,8 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline';
+import { execSync } from 'node:child_process';
 
 const CONTENT_DIR = path.join(process.cwd(), 'src/content/posts');
+const YES_MODE = process.argv.includes('--yes');
 
 const SECRET_PATTERNS: Array<[RegExp, string]> = [
   [/\b(sk-[a-zA-Z0-9]{20,})\b/g, '[REDACTED_API_KEY]'],
@@ -19,6 +21,7 @@ function redactSecrets(text: string): string {
   }
   return result;
 }
+
 const ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID;
 const API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
 
@@ -71,11 +74,11 @@ function slugify(title: string): string {
 }
 
 async function ingest() {
-  const inputFile = process.argv[2];
+  const inputFile = process.argv.find(a => !a.startsWith('-') && a !== process.argv[0] && a !== process.argv[1]);
 
   if (!inputFile) {
-    console.log('Usage: pnpm ingest <conversation.txt>');
-    console.log('  conversation.txt: 貼上對話紀錄的純文字檔案');
+    console.log('Usage: pnpm ingest <conversation.txt> [--yes]');
+    console.log('  --yes: 跳過互動，自動 commit + push');
     process.exit(0);
   }
 
@@ -98,12 +101,15 @@ async function ingest() {
   console.log(`  標籤：${meta.tags.join(', ')}`);
   console.log(`  分類：${meta.category}`);
 
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-  const ask = (q: string) => new Promise<string>((resolve) => rl.question(q, resolve));
+  let finalTitle = meta.title;
 
-  const confirmTitle = await ask(`\n標題 (Enter 確認，或輸入新標題): `);
-  const finalTitle = confirmTitle.trim() || meta.title;
-  rl.close();
+  if (!YES_MODE) {
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+    const ask = (q: string) => new Promise<string>((resolve) => rl.question(q, resolve));
+    const confirmTitle = await ask(`\n標題 (Enter 確認，或輸入新標題): `);
+    finalTitle = confirmTitle.trim() || meta.title;
+    rl.close();
+  }
 
   const today = new Date().toISOString().split('T')[0];
   const slug = `${today}-${slugify(finalTitle)}`;
@@ -125,7 +131,21 @@ async function ingest() {
 
   fs.writeFileSync(outputPath, frontmatter);
   console.log(`\n✅ 文章已生成：${outputPath}`);
-  console.log('   執行 git add . && git push 即可發布。');
+
+  if (YES_MODE) {
+    console.log('自動 commit + push...');
+    try {
+      execSync(`git add "${outputPath}"`, { stdio: 'inherit' });
+      execSync(`git commit -m "post: add ${slug}"`, { stdio: 'inherit' });
+      execSync('git push', { stdio: 'inherit' });
+      console.log('✅ 已 push，CI 將自動部署並同步 D1。');
+    } catch (e) {
+      console.error('❌ git push 失敗，文章已生成，請手動 push。');
+      process.exit(1);
+    }
+  } else {
+    console.log('   執行 git add . && git push 即可發布。');
+  }
 }
 
 ingest();

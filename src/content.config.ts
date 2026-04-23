@@ -13,12 +13,14 @@ const posts = defineCollection({
     tldr: z.string().optional(),
     draft: z.boolean().default(false),
     pinned: z.boolean().default(false),
-    type: z.enum(['debug', 'deep-dive', 'guide', 'project']).optional(),
+    type: z.enum(['debug', 'deep-dive', 'guide', 'project', 'crawled']).optional(),
     readingTime: z.number().optional(),
     series: z.object({
       name: z.string(),
       order: z.number(),
     }).optional(),
+    source: z.string().optional(),
+    source_url: z.string().url().optional(),
   }),
 });
 
