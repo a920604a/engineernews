@@ -48,8 +48,27 @@ sync-prod:
 
 rebuild: d1-rebuild vec-rebuild
 
+# ── Content & Automation (New) ─────────────────────────────────────────────────
+
+## 在地端執行爬蟲：抓取新影片並產生 Markdown 檔案
+crawl:
+	pnpm crawl
+
+## 在地端執行對話攝取 (範例: make ingest FILE=file.txt)
+ingest:
+	pnpm ingest $(FILE) --yes
+
+## 遠端觸發 GitHub 爬蟲機器人
+remote-crawl:
+	gh workflow run crawl.yml
+
+## 遠端觸發 GitHub 部署與 D1 同步
+remote-deploy:
+	gh workflow run deploy.yml
+
 .PHONY: install dev \
-        d1-clear d1-drop d1-migrate d1-rebuild \
-        vec-rebuild \
-        sync sync-prod \
-        rebuild
+	d1-clear d1-drop d1-migrate d1-rebuild \
+	vec-rebuild \
+	sync sync-prod \
+	rebuild \
+	crawl ingest remote-crawl remote-deploy

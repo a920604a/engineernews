@@ -4,7 +4,7 @@ import os from 'node:os';
 import { execSync, spawnSync } from 'node:child_process';
 import { SOURCES, type Source } from './sources.js';
 
-const CRAWLED_DIR = path.join(process.cwd(), 'src/content/posts/crawled');
+const POSTS_BASE_DIR = path.join(process.cwd(), 'src/content/posts');
 const ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID;
 const API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
 const MAX_VIDEOS_PER_CHANNEL = 5;
@@ -13,7 +13,14 @@ const MAX_VIDEOS_PER_RUN = 3;
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function isAlreadyProcessed(videoId: string): boolean {
-  return fs.existsSync(path.join(CRAWLED_DIR, `${videoId}.md`));
+  const categories = ['tech', 'product', 'learning', 'career', 'life'];
+  for (const cat of categories) {
+    const dir = path.join(POSTS_BASE_DIR, cat);
+    if (!fs.existsSync(dir)) continue;
+    const files = fs.readdirSync(dir);
+    if (files.some(f => f.includes(videoId))) return true;
+  }
+  return false;
 }
 
 function slugify(text: string): string {
@@ -22,6 +29,51 @@ function slugify(text: string): string {
     .replace(/[^\w\s-]/g, '')
     .replace(/\s+/g, '-')
     .slice(0, 60);
+}
+
+// ── Mermaid Validator ────────────────────────────────────────────────────────
+
+function validateMermaid(code: string): { ok: boolean; error?: string } {
+  // 1. 檢查括號平衡
+  const stack: string[] = [];
+  const pairs: Record<string, string> = { '{': '}', '[': ']', '(': ')' };
+  for (const char of code) {
+    if (pairs[char]) stack.push(pairs[char]);
+    else if (Object.values(pairs).includes(char)) {
+      if (stack.pop() !== char) return { ok: false, error: '括號未對齊' };
+    }
+  }
+  if (stack.length > 0) return { ok: false, error: '括號未閉合' };
+
+  // 2. 基本關鍵字檢查
+  const validTypes = ['graph', 'flowchart', 'sequenceDiagram', 'classDiagram', 'stateDiagram', 'erDiagram', 'gantt', 'pie'];
+  const firstLine = code.trim().split('\n')[0].toLowerCase();
+  if (!validTypes.some(t => firstLine.includes(t))) {
+    return { ok: false, error: '無效的圖表類型' };
+  }
+
+  return { ok: true };
+}
+
+async function tryFixMermaid(badCode: string, reason: string): Promise<string> {
+  console.log(`  🔧 嘗試修復 Mermaid 語法 (${reason})...`);
+  const prompt = `你是一個 Mermaid 語法專家。以下這段代碼有語法錯誤（原因：${reason}），請修正它。
+只輸出修正後的代碼，不要有任何解釋文字，也不要包含 \`\`\`mermaid 標籤。
+
+錯誤代碼：
+${badCode}`;
+
+  const response = await fetch(
+    `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/ai/run/@cf/meta/llama-3.1-70b-instruct`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${API_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] }),
+    }
+  );
+
+  const json = await response.json() as any;
+  return (json.result?.response ?? badCode).replace(/```mermaid/g, '').replace(/```/g, '').trim();
 }
 
 // ── Video Discovery (yt-dlp) ─────────────────────────────────────────────────
@@ -76,10 +128,9 @@ function downloadSubtitles(videoUrl: string, tmpDir: string): string | null {
     'python3',
     [
       '-m', 'yt_dlp',
-      '--js-runtimes', 'node',
-      '--remote-components', 'ejs:github',
+      '--write-subs',
       '--write-auto-subs',
-      '--sub-lang', 'zh-TW,zh,en',
+      '--sub-lang', 'zh-TW,zh-Hant,zh,en',
       '--sub-format', 'vtt',
       '--skip-download',
       '--output', path.join(tmpDir, '%(id)s'),
@@ -89,10 +140,15 @@ function downloadSubtitles(videoUrl: string, tmpDir: string): string | null {
     { encoding: 'utf-8', timeout: 60000 }
   );
 
-  const vttFiles = fs.readdirSync(tmpDir).filter(f => f.endsWith('.vtt'));
+  const files = fs.readdirSync(tmpDir);
+  const vttFiles = files.filter(f => f.endsWith('.vtt'));
   if (vttFiles.length === 0) return null;
 
-  const preferred = vttFiles.find(f => f.includes('.zh-TW.') || f.includes('.zh.')) ?? vttFiles[0];
+  const preferred = vttFiles.find(f => f.includes('.zh-TW.')) ?? 
+                    vttFiles.find(f => f.includes('.zh-Hant.')) ??
+                    vttFiles.find(f => f.includes('.zh.')) ?? 
+                    vttFiles[0];
+
   const raw = fs.readFileSync(path.join(tmpDir, preferred), 'utf-8');
   return parseVtt(raw);
 }
@@ -105,7 +161,7 @@ function parseVtt(vtt: string): string {
     .replace(/<[^>]+>/g, '')
     .replace(/\s+/g, ' ')
     .trim()
-    .slice(0, 6000);
+    .slice(0, 4000);
 }
 
 // ── Workers AI Summarize ─────────────────────────────────────────────────────
@@ -123,59 +179,85 @@ async function summarize(content: string, sourceTags: string[], videoTitle: stri
     throw new Error('Missing CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_API_TOKEN');
   }
 
-  const prompt = `你是專為「engineer-news」平台服務的高級技術編輯，精通「post skill」寫作規範。
-請將以下 YouTube 影片內容轉換為高品質的繁體中文技術文章摘要。
+  const prompt = `你是一個專業的台灣技術主編。你的任務是將 YouTube 影片內容轉化為高品質的「台灣繁體中文」技術文章。
 
-規範要求：
-1. 分類 (Category) 邏輯：
-   - tech: 技術問題解決、工具介紹、架構設計、工程實踐
-   - learning: 概念解說、知識整理、AI、研究主題
-   - career: 職涯發展、個人成長
-2. 標題 (Title) 原則：
-   - 具體且直接。如果是 tech 類，標題需包含關鍵字；如果是介紹文，直接點出主題。
-3. 語氣與風格：
-   - 直接、具體、不客套。使用台灣繁體中文慣用語（如「資訊」、「內容」、「程式碼」）。
-4. 視覺輔助 (Mermaid)：
-   - **重要**：如果內容涉及「流程」、「架構關係」，請主動加入 Mermaid 圖表（flowchart/graph）。
+寫作規範（極重要）：
+1. 語言語言：必須完全使用「台灣繁體中文」輸出。
+2. 術語使用：嚴格使用台灣技術圈慣用語。例如：使用「資訊」而非「信息」、「程式碼」而非「代碼」、「框架」而非「架構(當指framework時)」、「專案」而非「項目」、「內容」而非「內容」。
+3. 結構：
+   - 開頭必須為「## TL;DR」。
+   - 涉及流程或架構時，必須使用 \`\`\`mermaid。
+4. 長度：約 600-1000 字。
+
+請嚴格按照以下格式輸出內容，不要輸出任何額外文字：
+
+---METADATA---
+{
+  "title": "繁體中文標題",
+  "tldr": "繁體中文重點摘要",
+  "tags": ["標籤1", "標籤2"],
+  "category": "tech | product | learning | career"
+}
+---CONTENT---
+[完整的繁體中文 Markdown 文章內容]
 
 <content>
 影片標題：${videoTitle}
-內容（字幕/簡介）：${content}
-</content>
-
-請輸出以下格式的 JSON（只輸出 JSON，不要其他文字）：
-{
-  "title": "符合規範的文章標題",
-  "tldr": "50字以內的一句話重點摘要",
-  "tags": ["標籤1", "標籤2", "標籤3"],
-  "category": "tech | learning | career",
-  "summary": "300到800字的詳細摘要，說明影片核心概念與學習重點，使用 Markdown 格式（可含 Mermaid）。"
-}`;
+內容：${content}
+</content>`;
 
   const response = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/ai/run/@cf/meta/llama-3.1-8b-instruct`,
+    `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/ai/run/@cf/meta/llama-3.1-70b-instruct`,
     {
       method: 'POST',
       headers: { Authorization: `Bearer ${API_TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] }),
+      body: JSON.stringify({ 
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 2500
+      }),
     }
   );
 
   const json = await response.json() as any;
   const text: string = json.result?.response ?? '';
 
+  if (!text || !text.includes('---METADATA---') || !text.includes('---CONTENT---')) {
+    console.error('  ❌ AI 輸出格式錯誤（缺少標籤）：', text.slice(0, 200));
+    throw new Error('Invalid AI response format');
+  }
+
   try {
-    const match = text.match(/\{[\s\S]*\}/);
-    const parsed = JSON.parse(match?.[0] ?? '{}');
+    const metaPart = text.split('---METADATA---')[1].split('---CONTENT---')[0].trim();
+    let contentPart = text.split('---CONTENT---')[1].trim();
+
+    const meta = JSON.parse(metaPart);
+    
+    // Mermaid 驗證與修復
+    const mermaidRegex = /```mermaid([\s\S]*?)```/g;
+    let match;
+    while ((match = mermaidRegex.exec(contentPart)) !== null) {
+      const originalCode = match[1].trim();
+      const validation = validateMermaid(originalCode);
+      if (!validation.ok) {
+        const fixedCode = await tryFixMermaid(originalCode, validation.error!);
+        contentPart = contentPart.replace(originalCode, fixedCode);
+      }
+    }
+
+    if (contentPart.length < 200) {
+      throw new Error('Content too short');
+    }
+
     return {
-      title: parsed.title || 'Untitled',
-      tldr: parsed.tldr || '',
-      tags: [...(parsed.tags || []), ...sourceTags].filter((v, i, a) => a.indexOf(v) === i),
-      category: parsed.category || 'tech',
-      summary: parsed.summary || '',
+      title: meta.title || 'Untitled',
+      tldr: meta.tldr || '',
+      tags: [...(meta.tags || []), ...sourceTags].filter((v, i, a) => a.indexOf(v) === i),
+      category: (meta.category || 'learning').toLowerCase(),
+      summary: contentPart,
     };
-  } catch {
-    return { title: 'Untitled', tldr: '', tags: sourceTags, category: 'tech', summary: '' };
+  } catch (e) {
+    console.error('  ❌ 解析失敗。Metadata 部份：', text.split('---CONTENT---')[0]);
+    throw e;
   }
 }
 
@@ -183,9 +265,13 @@ async function summarize(content: string, sourceTags: string[], videoTitle: stri
 
 function writePost(videoId: string, source: Source, video: VideoEntry, ai: AISummary): string {
   const today = new Date().toISOString().split('T')[0];
-  const outputPath = path.join(CRAWLED_DIR, `${today}-${slugify(video.title) || video.id}.md`);
+  const category = ['tech', 'product', 'learning', 'career', 'life'].includes(ai.category) ? ai.category : 'learning';
+  const categoryDir = path.join(POSTS_BASE_DIR, category);
+  if (!fs.existsSync(categoryDir)) fs.mkdirSync(categoryDir, { recursive: true });
 
-  // 強制補強參考資料
+  const fileName = `${today}-${slugify(video.title) || video.id}.md`;
+  const outputPath = path.join(categoryDir, fileName);
+
   let finalSummary = ai.summary;
   if (!finalSummary.includes('## 參考資料')) {
     finalSummary += `\n\n## 參考資料\n\n- [${video.title}](${video.url})`;
@@ -195,7 +281,7 @@ function writePost(videoId: string, source: Source, video: VideoEntry, ai: AISum
     '---',
     `title: "${ai.title.replace(/"/g, '\\"')}"`,
     `date: ${today}`,
-    `category: ${ai.category}`,
+    `category: ${category}`,
     `tags: [${ai.tags.map(t => `"${t}"`).join(', ')}]`,
     `lang: zh-TW`,
     `tldr: "${ai.tldr.replace(/"/g, '\\"')}"`,
@@ -221,10 +307,8 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 async function crawl() {
-  if (!fs.existsSync(CRAWLED_DIR)) fs.mkdirSync(CRAWLED_DIR, { recursive: true });
-
   const enabledSources = shuffle(SOURCES.filter(s => s.enabled && s.type === 'youtube'));
-  console.log(`\n🔍 爬蟲啟動，來源數：${enabledSources.length}，今日配額：${MAX_VIDEOS_PER_RUN} 支`);
+  console.log(`\n🔍 爬蟲啟動（70B 模型 + 結構化標籤模式），配額：${MAX_VIDEOS_PER_RUN} 支`);
 
   let newCount = 0;
 
@@ -236,7 +320,6 @@ async function crawl() {
 
     if (newVideos.length === 0) continue;
 
-    // 每個來源每次最多貢獻 1 支，讓不同頻道輪流出現
     const video = newVideos[0];
     console.log(`\n📺 ${source.name} → ${video.title}`);
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'crawl-'));
@@ -245,25 +328,18 @@ async function crawl() {
       const subtitles = downloadSubtitles(video.url, tmpDir);
       const content = subtitles ?? `標題：${video.title}\n簡介：${video.description}`;
 
-      if (!subtitles) console.log('  ⚠️  無字幕，使用標題+簡介 fallback');
-
       const ai = await summarize(content, source.tags, video.title);
       const outPath = writePost(video.id, source, video, ai);
       console.log(`  ✅ ${path.relative(process.cwd(), outPath)}`);
       newCount++;
     } catch (e) {
-      console.warn(`  ❌ 處理失敗，跳過：${(e as Error).message}`);
+      console.warn(`  ❌ 處理失敗：${(e as Error).message}`);
     } finally {
       fs.rmSync(tmpDir, { recursive: true, force: true });
     }
   }
 
-  if (newCount === 0) {
-    console.log('\n✓ 無新內容，結束。');
-    process.exit(0);
-  }
-
-  console.log(`\n✅ 今日生成 ${newCount} 篇文章。`);
+  console.log(`\n✅ 今日完成 ${newCount} 篇文章。`);
 }
 
 crawl().catch(e => {
