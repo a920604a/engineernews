@@ -13,6 +13,8 @@ const API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
 const isProd = process.argv.includes('--prod');
 const remoteFlag = isProd ? '--remote' : '--local';
 
+// ── Utilities ────────────────────────────────────────────────────────────────
+
 function walkMdFiles(dir: string): string[] {
   if (!fs.existsSync(dir)) return [];
   const results: string[] = [];
@@ -28,6 +30,20 @@ function esc(s: string) {
   return s.replace(/'/g, "''");
 }
 
+function computeHash(raw: string): string {
+  return createHash('sha256').update(raw).digest('hex');
+}
+
+function sourceHash(sourceId: string): string {
+  return createHash('sha1').update(sourceId).digest('hex').slice(0, 16);
+}
+
+function chunkId(sourceType: string, sourceId: string, index: number): string {
+  return `${sourceType}:${sourceHash(sourceId)}-${index}`;
+}
+
+// ── SQL helpers ───────────────────────────────────────────────────────────────
+
 function runSql(sql: string) {
   const tmp = path.join(process.cwd(), `.tmp_sync_${Date.now()}.sql`);
   fs.writeFileSync(tmp, sql);
@@ -35,6 +51,112 @@ function runSql(sql: string) {
     execSync(`wrangler d1 execute ${DB_NAME} ${remoteFlag} --file=${tmp} --yes`, { stdio: 'inherit' });
   } finally {
     fs.unlinkSync(tmp);
+  }
+}
+
+function querySql<T = any>(sql: string): T[] {
+  const tmp = path.join(process.cwd(), `.tmp_query_${Date.now()}.sql`);
+  fs.writeFileSync(tmp, sql);
+  try {
+    const out = execSync(
+      `wrangler d1 execute ${DB_NAME} ${remoteFlag} --file=${tmp} --yes --json`,
+      { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'inherit'] }
+    );
+    const parsed = JSON.parse(out);
+    return parsed?.[0]?.results ?? [];
+  } catch {
+    return [];
+  } finally {
+    fs.unlinkSync(tmp);
+  }
+}
+
+// ── Hash map loading ──────────────────────────────────────────────────────────
+
+function loadExistingHashes(table: 'posts' | 'projects'): Map<string, string | null> {
+  const rows = querySql<{ id: string; content_hash: string | null }>(
+    `SELECT id, content_hash FROM ${table};`
+  );
+  return new Map(rows.map(r => [r.id, r.content_hash]));
+}
+
+// ── Vectorize helpers ─────────────────────────────────────────────────────────
+
+function getChunkCount(sourceId: string, sourceType: string): number {
+  const rows = querySql<{ cnt: number }>(
+    `SELECT COUNT(*) as cnt FROM doc_chunks WHERE source_id='${esc(sourceId)}' AND source_type='${sourceType}';`
+  );
+  return rows[0]?.cnt ?? 0;
+}
+
+function deleteOldVectors(sourceId: string, sourceType: string) {
+  if (!isProd) return;
+  const oldCount = getChunkCount(sourceId, sourceType);
+  if (oldCount === 0) return;
+  const ids = Array.from({ length: oldCount }, (_, i) => chunkId(sourceType, sourceId, i));
+  try {
+    execSync(
+      `wrangler vectorize delete-vectors ${VECTOR_INDEX} --ids ${ids.join(' ')} --force`,
+      { stdio: 'inherit' }
+    );
+  } catch (e) {
+    console.warn(`  ⚠️  vectorize delete-vectors 失敗（將忽略舊向量）：${(e as Error).message}`);
+  }
+}
+
+async function getEmbedding(text: string): Promise<number[] | null> {
+  if (!ACCOUNT_ID || !API_TOKEN) return null;
+  const res = await fetch(
+    `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/ai/run/@cf/baai/bge-small-en-v1.5`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${API_TOKEN}` },
+      body: JSON.stringify({ text }),
+    }
+  );
+  const json: any = await res.json();
+  return json.result?.data?.[0] ?? null;
+}
+
+// ── Chunk sync ────────────────────────────────────────────────────────────────
+
+async function syncChunks(
+  sourceId: string,
+  sourceType: 'post' | 'project',
+  content: string,
+  meta: { slug: string; title: string }
+) {
+  execSync(
+    `wrangler d1 execute ${DB_NAME} ${remoteFlag} --command="DELETE FROM doc_chunks WHERE source_id='${esc(sourceId)}' AND source_type='${sourceType}'" --yes`,
+    { stdio: 'inherit' }
+  );
+
+  const parts = chunkText(content);
+  for (let i = 0; i < parts.length; i++) {
+    const cid = chunkId(sourceType, sourceId, i);
+    const updated_at = new Date().toISOString().split('T')[0];
+    runSql(
+      `INSERT INTO doc_chunks (id, source_id, source_type, chunk_index, content, updated_at)
+       VALUES ('${esc(cid)}','${esc(sourceId)}','${sourceType}',${i},'${esc(parts[i])}','${updated_at}')
+       ON CONFLICT(id) DO UPDATE SET content=excluded.content, updated_at=excluded.updated_at`
+    );
+
+    if (isProd && ACCOUNT_ID && API_TOKEN) {
+      const vector = await getEmbedding(parts[i]);
+      if (vector) {
+        const tmp = path.join(process.cwd(), `.tmp_vec_${Date.now()}.json`);
+        fs.writeFileSync(tmp, JSON.stringify({
+          id: cid,
+          values: vector,
+          metadata: { source_id: sourceId, source_type: sourceType, slug: meta.slug, title: meta.title },
+        }));
+        try {
+          execSync(`wrangler vectorize insert ${VECTOR_INDEX} --file=${tmp}`, { stdio: 'inherit' });
+        } finally {
+          fs.unlinkSync(tmp);
+        }
+      }
+    }
   }
 }
 
@@ -54,70 +176,54 @@ function chunkText(text: string, maxLength = 1000): string[] {
   return chunks;
 }
 
-async function getEmbedding(text: string): Promise<number[] | null> {
-  if (!ACCOUNT_ID || !API_TOKEN) return null;
-  const res = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/ai/run/@cf/baai/bge-small-en-v1.5`,
-    {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${API_TOKEN}` },
-      body: JSON.stringify({ text }),
-    }
-  );
-  const json: any = await res.json();
-  return json.result?.data?.[0] ?? null;
-}
+// ── Orphan cleanup ────────────────────────────────────────────────────────────
 
-async function syncChunks(
-  sourceId: string,
-  sourceType: 'post' | 'project',
-  content: string,
-  meta: { slug: string; title: string }
+async function cleanupOrphans(
+  table: 'posts' | 'projects',
+  localIds: Set<string>
 ) {
-  execSync(
-    `wrangler d1 execute ${DB_NAME} ${remoteFlag} --command="DELETE FROM doc_chunks WHERE source_id='${esc(sourceId)}' AND source_type='${sourceType}'" --yes`,
-    { stdio: 'inherit' }
-  );
+  const sourceType = table === 'posts' ? 'post' : 'project';
+  const rows = querySql<{ id: string }>(`SELECT id FROM ${table};`);
+  const d1Ids = new Set(rows.map(r => r.id));
 
-  const parts = chunkText(content);
-  for (let i = 0; i < parts.length; i++) {
-    const sourceHash = createHash('sha1').update(sourceId).digest('hex').slice(0, 16);
-    const chunkId = `${sourceType}:${sourceHash}-${i}`;
-    const updated_at = new Date().toISOString().split('T')[0];
-    runSql(
-      `INSERT INTO doc_chunks (id, source_id, source_type, chunk_index, content, updated_at)
-       VALUES ('${esc(chunkId)}','${esc(sourceId)}','${sourceType}',${i},'${esc(parts[i])}','${updated_at}')
-       ON CONFLICT(id) DO UPDATE SET content=excluded.content, updated_at=excluded.updated_at`
+  for (const id of d1Ids) {
+    if (localIds.has(id)) continue;
+    console.log(`  🗑️  orphan: ${id}`);
+    deleteOldVectors(id, sourceType);
+    execSync(
+      `wrangler d1 execute ${DB_NAME} ${remoteFlag} --command="DELETE FROM doc_chunks WHERE source_id='${esc(id)}' AND source_type='${sourceType}'" --yes`,
+      { stdio: 'inherit' }
     );
-
-    if (isProd && ACCOUNT_ID && API_TOKEN) {
-      const vector = await getEmbedding(parts[i]);
-      if (vector) {
-        const tmp = path.join(process.cwd(), `.tmp_vec_${Date.now()}.json`);
-        fs.writeFileSync(tmp, JSON.stringify({
-          id: chunkId,
-          values: vector,
-          metadata: { source_id: sourceId, source_type: sourceType, slug: meta.slug, title: meta.title },
-        }));
-        try {
-          execSync(`wrangler vectorize insert ${VECTOR_INDEX} --file=${tmp}`, { stdio: 'inherit' });
-        } finally {
-          fs.unlinkSync(tmp);
-        }
-      }
-    }
+    execSync(
+      `wrangler d1 execute ${DB_NAME} ${remoteFlag} --command="DELETE FROM ${table} WHERE id='${esc(id)}'" --yes`,
+      { stdio: 'inherit' }
+    );
   }
 }
 
+// ── Sync posts ────────────────────────────────────────────────────────────────
+
 async function syncPosts() {
   const files = walkMdFiles(POSTS_DIR);
+  const existingHashes = loadExistingHashes('posts');
+  const localIds = new Set<string>();
+  let skipped = 0;
+
   console.log(`Found ${files.length} posts.`);
 
   for (const filePath of files) {
+    const raw = fs.readFileSync(filePath, 'utf-8');
     const rel = path.relative(POSTS_DIR, filePath);
     const id = rel.replace(/\.md$/, '');
-    const { data, content } = matter(fs.readFileSync(filePath, 'utf-8'));
+    localIds.add(id);
 
+    const hash = computeHash(raw);
+    if (existingHashes.get(id) === hash) {
+      skipped++;
+      continue;
+    }
+
+    const { data, content } = matter(raw);
     const slug = data.slug || path.basename(id);
     const title = data.title || 'Untitled';
     const category = data.category || id.split('/')[0] || 'tech';
@@ -131,30 +237,48 @@ async function syncPosts() {
     const updated_at = new Date().toISOString().split('T')[0];
 
     console.log(`  post: ${id}`);
+    deleteOldVectors(id, 'post');
 
     runSql(`
-      INSERT INTO posts (id, slug, title, category, lang, description, tldr, content, tags, created_at, updated_at)
+      INSERT INTO posts (id, slug, title, category, lang, description, tldr, content, tags, content_hash, created_at, updated_at)
       VALUES ('${esc(id)}','${esc(slug)}','${esc(title)}','${esc(category)}','${esc(lang)}',
-              '${esc(description)}','${esc(tldr)}','${esc(content)}','${esc(tags)}',
+              '${esc(description)}','${esc(tldr)}','${esc(content)}','${esc(tags)}','${hash}',
               '${created_at}','${updated_at}')
       ON CONFLICT(id) DO UPDATE SET
         slug=excluded.slug, title=excluded.title, content=excluded.content,
         description=excluded.description, tldr=excluded.tldr, tags=excluded.tags,
-        updated_at=excluded.updated_at;
+        content_hash=excluded.content_hash, updated_at=excluded.updated_at;
     `);
 
     await syncChunks(id, 'post', content, { slug, title });
   }
+
+  console.log(`  ✓ ${files.length - skipped} synced, ${skipped} skipped (unchanged)`);
+  await cleanupOrphans('posts', localIds);
 }
+
+// ── Sync projects ─────────────────────────────────────────────────────────────
 
 async function syncProjects() {
   const files = walkMdFiles(PROJECTS_DIR);
+  const existingHashes = loadExistingHashes('projects');
+  const localIds = new Set<string>();
+  let skipped = 0;
+
   console.log(`Found ${files.length} projects.`);
 
   for (const filePath of files) {
+    const raw = fs.readFileSync(filePath, 'utf-8');
     const id = path.basename(filePath, '.md');
-    const { data, content } = matter(fs.readFileSync(filePath, 'utf-8'));
+    localIds.add(id);
 
+    const hash = computeHash(raw);
+    if (existingHashes.get(id) === hash) {
+      skipped++;
+      continue;
+    }
+
+    const { data, content } = matter(raw);
     const title = data.title || id;
     const desc = typeof data.description === 'string'
       ? data.description
@@ -167,20 +291,27 @@ async function syncProjects() {
     const updated_at = new Date().toISOString().split('T')[0];
 
     console.log(`  project: ${id}`);
+    deleteOldVectors(id, 'project');
 
     runSql(`
-      INSERT INTO projects (id, title, description, tags, github, url, tag, pinned, content, updated_at)
+      INSERT INTO projects (id, title, description, tags, github, url, tag, pinned, content, content_hash, updated_at)
       VALUES ('${esc(id)}','${esc(title)}','${esc(desc)}','${esc(tags)}',
-              '${esc(github)}','${esc(url)}','${esc(tag)}',${pinned},'${esc(content)}','${updated_at}')
+              '${esc(github)}','${esc(url)}','${esc(tag)}',${pinned},'${esc(content)}','${hash}','${updated_at}')
       ON CONFLICT(id) DO UPDATE SET
         title=excluded.title, description=excluded.description, tags=excluded.tags,
         github=excluded.github, url=excluded.url, tag=excluded.tag,
-        pinned=excluded.pinned, content=excluded.content, updated_at=excluded.updated_at;
+        pinned=excluded.pinned, content=excluded.content,
+        content_hash=excluded.content_hash, updated_at=excluded.updated_at;
     `);
 
     await syncChunks(id, 'project', content, { slug: id, title });
   }
+
+  console.log(`  ✓ ${files.length - skipped} synced, ${skipped} skipped (unchanged)`);
+  await cleanupOrphans('projects', localIds);
 }
+
+// ── Main ──────────────────────────────────────────────────────────────────────
 
 async function main() {
   console.log(`🚀 Syncing to D1 (${isProd ? 'remote' : 'local'})...`);
