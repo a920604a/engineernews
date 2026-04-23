@@ -1,65 +1,80 @@
 ---
-title: "從零開始：在新電腦上跑通 Claude Code 等所有 Agent 框架，支援三大作業系統"
+title: "從零開始跑通 Claude Code 等 Agent 框架：覆蓋三大作業系統"
 date: 2026-04-23
 category: tech
-tags: ["Claude Code", "Agent 框架", "作業系統", "新電腦設定", "科技", "工具"]
+tags: ["Claude Code", "Agent 框架", "三大作業系統", "科技", "工具"]
 lang: zh-TW
-tldr: "本文將介紹如何在新電腦上安裝並設定 Claude Code 等 Agent 框架，支援 Windows、macOS 和 Linux 作業系統。"
-description: "本文將介紹如何在新電腦上安裝並設定 Claude Code 等 Agent 框架，支援 Windows、macOS 和 Linux 作業系統。"
+tldr: "本文將介紹如何在新電腦上從零開始安裝和設定 Claude Code 等 Agent 框架，支援 Windows、macOS 和 Linux 三大作業系統。"
+description: "本文將介紹如何在新電腦上從零開始安裝和設定 Claude Code 等 Agent 框架，支援 Windows、macOS 和 Linux 三大作業系統。"
 original_url: "https://www.youtube.com/watch?v=7JltMHmSvuY"
 draft: false
 ---
 
 ## TL;DR
-本文將介紹如何在新電腦上安裝並設定 Claude Code 等 Agent 框架，支援 Windows、macOS 和 Linux 作業系統。
 
-在開始之前，我們需要了解一些基本概念。Agent 框架是一種軟體框架，允許開發人員在不同的作業系統上執行程式碼。Claude Code 是一種基於 Agent 框架的開發工具，提供了一系列的功能和工具，讓開發人員可以更容易地開發和測試程式碼。
+本文將介紹如何在新電腦上從零開始安裝和設定 Claude Code 等 Agent 框架，支援 Windows、macOS 和 Linux 三大作業系統。透過本文的指導，您將能夠順暢地跑通 Claude Code 等 Agent 框架，無論您使用的是哪一種作業系統。
 
-## 安裝 Claude Code
-首先，我們需要安裝 Claude Code。在 Windows 上，我們可以下載並安裝 Claude Code 的安裝程式。在 macOS 和 Linux 上，我們可以使用命令列工具安裝 Claude Code。
+### 前言
 
-### Windows
-下載並安裝 Claude Code 的安裝程式：
+如果您是程式開發者或是 DevOps 工程師，相信您一定曾經遇過要在不同作業系統上安裝和設定 Agent 框架的問題。尤其是當您需要在多個作業系統上跑通同一套程式時，設定 Agent 框架就變得更加複雜。因此，本文將一步一步地介紹如何在新電腦上從零開始安裝和設定 Claude Code 等 Agent 框架，支援 Windows、macOS 和 Linux 三大作業系統。
 
-1. 到 Claude Code 官網下載安裝程式。
-2. 執行安裝程式並按照提示安裝 Claude Code。
+### Windows 作業系統
 
-### macOS 和 Linux
-使用命令列工具安裝 Claude Code：
+在 Windows 作業系統上安裝和設定 Claude Code 等 Agent 框架的步驟如下：
 
-1. 開啟終端機。
-2. 執行以下命令安裝 Claude Code：
-```bash
-brew install claude-code
+```mermaid
+graph LR
+    A[下載 Claude Code 安裝程式] -->|下載完成後|> B[安裝 Claude Code]
+    B -->|安裝完成後|> C[設定 Claude Code]
+    C -->|設定完成後|> D[安裝 Agent 框架]
+    D -->|安裝完成後|> E[設定 Agent 框架]
 ```
-### 驗證安裝
-安裝完成後，我們需要驗證 Claude Code 是否已經安裝成功。可以使用以下命令檢查：
-```bash
-claude-code --version
+
+1. 下載 Claude Code 安裝程式：請前往 Claude Code 官網下載對應作業系統的安裝程式。
+2. 安裝 Claude Code：雙擊下載的安裝程式，按照安裝指示安裝 Claude Code。
+3. 設定 Claude Code：安裝完成後，請設定 Claude Code 的相關設定。
+4. 安裝 Agent 框架：安裝 Claude Code 後，請安裝 Agent 框架。
+5. 設定 Agent 框架：安裝 Agent 框架後，請設定 Agent 框架的相關設定。
+
+### macOS 作業系統
+
+在 macOS 作業系統上安裝和設定 Claude Code 等 Agent 框架的步驟如下：
+
+```mermaid
+graph LR
+    A[下載 Claude Code 安裝程式] -->|下載完成後|> B[安裝 Claude Code]
+    B -->|安裝完成後|> C[設定 Claude Code]
+    C -->|設定完成後|> D[安裝 Agent 框架]
+    D -->|安裝完成後|> E[設定 Agent 框架]
 ```
-如果安裝成功，會顯示 Claude Code 的版本號。
 
-## 設定 Agent 框架
-安裝 Claude Code 後，我們需要設定 Agent 框架。Agent 框架提供了一系列的功能和工具，讓開發人員可以更容易地開發和測試程式碼。
+1. 下載 Claude Code 安裝程式：請前往 Claude Code 官網下載對應作業系統的安裝程式。
+2. 安裝 Claude Code：雙擊下載的安裝程式，按照安裝指示安裝 Claude Code。
+3. 設定 Claude Code：安裝完成後，請設定 Claude Code 的相關設定。
+4. 安裝 Agent 框架：安裝 Claude Code 後，請安裝 Agent 框架。
+5. 設定 Agent 框架：安裝 Agent 框架後，請設定 Agent 框架的相關設定。
 
-### 設定 Agent 框架
-設定 Agent 框架的步驟如下：
+### Linux 作業系統
 
-1. 啟動 Claude Code。
-2. 點擊「設定」按鈕。
-3. 選擇「Agent 框架」選項。
-4. 選擇所需的 Agent 框架版本。
-5. 點擊「儲存」按鈕。
+在 Linux 作業系統上安裝和設定 Claude Code 等 Agent 框架的步驟如下：
 
-### 驗證設定
-設定 Agent 框架後，我們需要驗證設定是否已經生效。可以使用以下命令檢查：
-```bash
-claude-code --agent-version
+```mermaid
+graph LR
+    A[下載 Claude Code 安裝程式] -->|下載完成後|> B[安裝 Claude Code]
+    B -->|安裝完成後|> C[設定 Claude Code]
+    C -->|設定完成後|> D[安裝 Agent 框架]
+    D -->|安裝完成後|> E[設定 Agent 框架]
 ```
-如果設定成功，會顯示 Agent 框架的版本號。
 
-## 結論
-本文介紹了如何在新電腦上安裝並設定 Claude Code 等 Agent 框架，支援 Windows、macOS 和 Linux 作業系統。通過這些步驟，我們可以輕鬆地在新電腦上設定 Claude Code 和 Agent 框架，開始開發和測試程式碼。
+1. 下載 Claude Code 安裝程式：請前往 Claude Code 官網下載對應作業系統的安裝程式。
+2. 安裝 Claude Code：雙擊下載的安裝程式，按照安裝指示安裝 Claude Code。
+3. 設定 Claude Code：安裝完成後，請設定 Claude Code 的相關設定。
+4. 安裝 Agent 框架：安裝 Claude Code 後，請安裝 Agent 框架。
+5. 設定 Agent 框架：安裝 Agent 框架後，請設定 Agent 框架的相關設定。
+
+### 結論
+
+透過本文的指導，您現在可以在新電腦上從零開始安裝和設定 Claude Code 等 Agent 框架，支援 Windows、macOS 和 Linux 三大作業系統。只要按照本文的步驟進行，您就可以順暢地跑通 Claude Code 等 Agent 框架，無論您使用的是哪一種作業系統。
 
 ## 參考資料
 
