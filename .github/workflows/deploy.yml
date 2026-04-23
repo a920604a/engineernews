@@ -38,12 +38,6 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy dist --project-name=engineer-news
 
-      - name: Apply D1 Migrations
-        run: pnpm wrangler d1 migrations apply engineer-news-db --remote --yes
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
       - name: Sync to D1
         run: pnpm sync:prod
         env:
