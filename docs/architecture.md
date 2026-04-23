@@ -18,6 +18,15 @@ graph TD
     Browser[使用者]
   end
 
+  subgraph External[外部來源]
+    YouTube[YouTube / 字幕]
+  end
+
+  subgraph GHA[GitHub Actions]
+    Crawler[爬蟲機器人\nscripts/crawl.ts]
+    Deploy[部署流水線\ndeploy.yml]
+  end
+
   subgraph CF[Cloudflare]
     subgraph Frontend[靜態 Hosting]
       Pages[Cloudflare Pages\nAstro 靜態輸出]
@@ -41,12 +50,22 @@ graph TD
     end
   end
 
+  %% 使用者流程
   Browser -->|瀏覽頁面| Pages
   Browser -->|/api/search| Workers
   Workers -->|查詢文章| D1
   Workers -->|向量相似度搜尋| Vectorize
   Workers -->|query → 向量| BGE
   Vectorize -.->|chunk metadata| D1
+
+  %% 機器人流程
+  Crawler -->|抓取資訊| YouTube
+  Crawler -->|請求摘要與 Mermaid| LLM
+  Crawler -->|git push| Deploy
+  Deploy -->|構建與部署| Pages
+  Deploy -->|增量同步資料| D1
+  Deploy -->|同步向量索引| Vectorize
+  Deploy -->|產生內容 Embedding| BGE
 ```
 
 ## 內容資料流

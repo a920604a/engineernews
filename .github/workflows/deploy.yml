@@ -26,20 +26,34 @@ jobs:
           version: 10
 
       - name: Install dependencies
-        run: pnpm install
+        - name: Checkout
+          uses: actions/checkout@v4
+          with:
+            fetch-depth: 2
 
-      - name: Build
-        run: pnpm build
+        - name: Setup Node
+        ...
+        - name: Deploy to Cloudflare Pages
+          uses: cloudflare/wrangler-action@v3
+          with:
+            apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+            accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+            command: pages deploy dist --project-name=engineer-news
 
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=engineer-news
+        - name: Check for Content Changes
+          id: filter
+          run: |
+            if git diff --quiet HEAD^ HEAD -- src/content/ scripts/sync-to-d1.ts; then
+              echo "changed=false" >> $GITHUB_OUTPUT
+              echo "No content changes detected."
+            else
+              echo "changed=true" >> $GITHUB_OUTPUT
+              echo "Content or sync script changed."
+            fi
 
-      - name: Sync to D1
-        run: pnpm sync:prod
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        - name: Sync to D1
+          if: steps.filter.outputs.changed == 'true'
+          run: pnpm sync:prod
+          env:
+            CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+            CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
