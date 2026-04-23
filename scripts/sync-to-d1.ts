@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import matter from 'gray-matter';
 import { execSync } from 'node:child_process';
 
@@ -80,7 +81,8 @@ async function syncChunks(
 
   const parts = chunkText(content);
   for (let i = 0; i < parts.length; i++) {
-    const chunkId = `${sourceType}:${sourceId}-chunk-${i}`;
+    const sourceHash = createHash('sha1').update(sourceId).digest('hex').slice(0, 16);
+    const chunkId = `${sourceType}:${sourceHash}-${i}`;
     const updated_at = new Date().toISOString().split('T')[0];
     runSql(
       `INSERT INTO doc_chunks (id, source_id, source_type, chunk_index, content, updated_at)
