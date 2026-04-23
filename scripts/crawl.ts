@@ -8,7 +8,6 @@ const POSTS_BASE_DIR = path.join(process.cwd(), 'src/content/posts');
 const ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID;
 const API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
 const MAX_VIDEOS_PER_CHANNEL = 5;
-const MAX_VIDEOS_PER_RUN = 3;
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -308,17 +307,17 @@ function shuffle<T>(arr: T[]): T[] {
 
 async function crawl() {
   const enabledSources = shuffle(SOURCES.filter(s => s.enabled && s.type === 'youtube'));
-  console.log(`\n🔍 爬蟲啟動（70B 模型 + 結構化標籤模式），配額：${MAX_VIDEOS_PER_RUN} 支`);
+  console.log(`\n🔍 爬蟲啟動（隨機單頻道模式）`);
 
-  let newCount = 0;
-
+  // 依序嘗試隨機排列的頻道，找到第一個有新影片的就處理並結束
   for (const source of enabledSources) {
-    if (newCount >= MAX_VIDEOS_PER_RUN) break;
-
     const videos = getLatestVideos(source);
     const newVideos = videos.filter(v => !isAlreadyProcessed(v.id));
 
-    if (newVideos.length === 0) continue;
+    if (newVideos.length === 0) {
+      console.log(`  ⏭️  ${source.name} 無新影片，換下一個`);
+      continue;
+    }
 
     const video = newVideos[0];
     console.log(`\n📺 ${source.name} → ${video.title}`);
@@ -331,7 +330,8 @@ async function crawl() {
       const ai = await summarize(content, source.tags, video.title);
       const outPath = writePost(video.id, source, video, ai);
       console.log(`  ✅ ${path.relative(process.cwd(), outPath)}`);
-      newCount++;
+      console.log(`\n✅ 完成 1 篇文章。`);
+      return;
     } catch (e) {
       console.warn(`  ❌ 處理失敗：${(e as Error).message}`);
     } finally {
@@ -339,7 +339,7 @@ async function crawl() {
     }
   }
 
-  console.log(`\n✅ 今日完成 ${newCount} 篇文章。`);
+  console.log(`\n⚠️ 所有頻道均無新影片。`);
 }
 
 crawl().catch(e => {
