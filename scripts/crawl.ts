@@ -118,24 +118,38 @@ interface AISummary {
   summary: string;
 }
 
-async function summarize(content: string, sourceTags: string[]): Promise<AISummary> {
+async function summarize(content: string, sourceTags: string[], videoTitle: string): Promise<AISummary> {
   if (!ACCOUNT_ID || !API_TOKEN) {
     throw new Error('Missing CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_API_TOKEN');
   }
 
-  const prompt = `你是台灣工程師的學習助手。以下是 YouTube 影片的內容（字幕或簡介），請用繁體中文分析並輸出 JSON。
+  const prompt = `你是專為「engineer-news」平台服務的高級技術編輯，精通「post skill」寫作規範。
+請將以下 YouTube 影片內容轉換為高品質的繁體中文技術文章摘要。
+
+規範要求：
+1. 分類 (Category) 邏輯：
+   - tech: 技術問題解決、工具介紹、架構設計、工程實踐
+   - learning: 概念解說、知識整理、AI、研究主題
+   - career: 職涯發展、個人成長
+2. 標題 (Title) 原則：
+   - 具體且直接。如果是 tech 類，標題需包含關鍵字；如果是介紹文，直接點出主題。
+3. 語氣與風格：
+   - 直接、具體、不客套。使用台灣繁體中文慣用語（如「資訊」、「內容」、「程式碼」）。
+4. 視覺輔助 (Mermaid)：
+   - **重要**：如果內容涉及「流程」、「架構關係」，請主動加入 Mermaid 圖表（flowchart/graph）。
 
 <content>
-${content}
+影片標題：${videoTitle}
+內容（字幕/簡介）：${content}
 </content>
 
 請輸出以下格式的 JSON（只輸出 JSON，不要其他文字）：
 {
-  "title": "20字以內的繁體中文標題",
-  "tldr": "50字以內的一句話重點摘要（繁體中文）",
+  "title": "符合規範的文章標題",
+  "tldr": "50字以內的一句話重點摘要",
   "tags": ["標籤1", "標籤2", "標籤3"],
-  "category": "tech | career | learning | tool | other",
-  "summary": "300到500字的繁體中文詳細摘要，說明影片核心概念與學習重點"
+  "category": "tech | learning | career",
+  "summary": "300到800字的詳細摘要，說明影片核心概念與學習重點，使用 Markdown 格式（可含 Mermaid）。"
 }`;
 
   const response = await fetch(
@@ -169,23 +183,28 @@ ${content}
 
 function writePost(videoId: string, source: Source, video: VideoEntry, ai: AISummary): string {
   const today = new Date().toISOString().split('T')[0];
-  const outputPath = path.join(CRAWLED_DIR, `${videoId}.md`);
+  const outputPath = path.join(CRAWLED_DIR, `${today}-${slugify(video.title) || video.id}.md`);
+
+  // 強制補強參考資料
+  let finalSummary = ai.summary;
+  if (!finalSummary.includes('## 參考資料')) {
+    finalSummary += `\n\n## 參考資料\n\n- [${video.title}](${video.url})`;
+  }
 
   const frontmatter = [
     '---',
     `title: "${ai.title.replace(/"/g, '\\"')}"`,
-    `date: "${today}"`,
-    `category: "${ai.category}"`,
+    `date: ${today}`,
+    `category: ${ai.category}`,
     `tags: [${ai.tags.map(t => `"${t}"`).join(', ')}]`,
-    `lang: "zh-TW"`,
+    `lang: zh-TW`,
     `tldr: "${ai.tldr.replace(/"/g, '\\"')}"`,
-    `type: "crawled"`,
-    `source: "${source.id}"`,
-    `source_url: "${video.url}"`,
+    `description: "${ai.tldr.replace(/"/g, '\\"')}"`,
+    `original_url: "${video.url}"`,
     `draft: false`,
     '---',
     '',
-    ai.summary,
+    finalSummary,
   ].join('\n');
 
   fs.writeFileSync(outputPath, frontmatter);
@@ -228,7 +247,7 @@ async function crawl() {
 
       if (!subtitles) console.log('  ⚠️  無字幕，使用標題+簡介 fallback');
 
-      const ai = await summarize(content, source.tags);
+      const ai = await summarize(content, source.tags, video.title);
       const outPath = writePost(video.id, source, video, ai);
       console.log(`  ✅ ${path.relative(process.cwd(), outPath)}`);
       newCount++;
