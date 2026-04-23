@@ -90,11 +90,12 @@ sequenceDiagram
   loop 最多 3 支影片
     Crawl->>YT: 列出新影片 + 下載字幕
     YT-->>Crawl: 字幕文字（或 fallback）
-    Crawl->>LLM: 字幕 → 繁體中文摘要
-    LLM-->>Crawl: title / tldr / tags / summary
-    Crawl->>Git: 寫入 posts/crawled/VIDEO_ID.md
+    Crawl->>LLM: 字幕 → 繁體中文摘要 (Follow post skill)
+    LLM-->>Crawl: title / tldr / tags / summary / mermaid
+    Crawl->>Git: 寫入 posts/crawled/YYYY-MM-DD-slug.md
   end
-  Git->>GH: git commit + push (author: a920604a)
+  Git->>GH: git commit + push
+  GH->>GH: 手動觸發 deploy.yml (gh workflow run)
   GH->>GH: 觸發 deploy.yml → Pages + D1 sync
 ```
 
@@ -104,10 +105,8 @@ sequenceDiagram
 |---|---|---|
 | 技術 | Pagefind（靜態全文索引） | Vectorize（語義向量搜尋） |
 | 運作方式 | build time 建立索引，純前端 JS 比對 | 即時呼叫 `/api/search` → embedding → 向量相似度 |
+| 增量更新 | N/A | 基於 `content_hash` 的增量同步 (SHA256) |
 | 需要 Workers | 否 | 是 |
-| 搜尋能力 | 關鍵字比對 | 語義理解（同義詞、概念相近） |
-
-> 語義搜尋不是 RAG：回傳的是文章列表，不由 LLM 生成回答。
 
 ## D1 Schema
 
@@ -125,6 +124,7 @@ erDiagram
     TEXT tags
     TEXT source
     TEXT source_url
+    TEXT content_hash
     TEXT created_at
     TEXT updated_at
   }
@@ -138,6 +138,7 @@ erDiagram
     TEXT tag
     INTEGER pinned
     TEXT content
+    TEXT content_hash
     TEXT updated_at
   }
   doc_chunks {
@@ -149,7 +150,7 @@ erDiagram
     INTEGER token_count
     TEXT updated_at
   }
-
+```
   posts ||--o{ doc_chunks : "source_type=post"
   projects ||--o{ doc_chunks : "source_type=project"
 ```

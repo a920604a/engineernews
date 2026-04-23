@@ -105,27 +105,39 @@ flowchart TD
 
 ---
 
-## sync-to-d1.ts 邏輯
+## sync-to-d1.ts — 增量同步機制
 
-遞迴掃描 `src/content/posts/`（含子目錄 `crawled/`）與 `src/content/projects/`，UPSERT 至 D1，並在 `--prod` 模式下更新 Vectorize embedding。
+為了節省 API 呼叫額度並提升速度，`sync-to-d1.ts` 採用了基於 Hash 的增量更新機制。
+
+### 工作流程
 
 ```mermaid
 flowchart TD
-  Start[main] --> SyncPosts[syncPosts]
-  Start --> SyncProjects[syncProjects]
-
-  SyncPosts --> Walk[walkMdFiles\nsrc/content/posts/**/*.md]
-  Walk --> UpsertPost[UPSERT posts]
-  UpsertPost --> DeleteChunks[DELETE 舊 doc_chunks]
-  DeleteChunks --> InsertChunk[INSERT doc_chunks]
-  InsertChunk --> Embed{isProd?}
-  Embed -- yes --> GetEmbed[Workers AI embedding]
-  GetEmbed --> VecInsert[vectorize insert]
-  Embed -- no --> Skip[skip]
-
-  SyncProjects --> WalkP[walkMdFiles\nsrc/content/projects/*.md]
-  WalkP --> UpsertProject[UPSERT projects]
+  Start[啟動 Sync] --> LoadHashes[一次性載入 D1 所有 content_hash]
+  LoadHashes --> Loop[遍歷本地所有 MD 檔案]
+  Loop --> CalcHash[計算本地內容 SHA256 Hash]
+  CalcHash --> Compare{Hash 是否一致?}
+  
+  Compare -- 是 --> Skip[跳過該文章]
+  Compare -- 否 --> DeleteVec[刪除 Vectorize 舊向量\n依據舊 chunk 數量重建 IDs]
+  DeleteVec --> UpsertD1[UPSERT D1 紀錄\n更新 content_hash]
+  UpsertD1 --> SyncChunks[重新切割 Chunks 並寫入 D1]
+  SyncChunks --> Embed[重新產生 Embedding 並寫入 Vectorize]
+  
+  Skip --> Next[下一篇]
+  Embed --> Next
+  Next --> Loop
+  Loop -- 結束遍歷 --> Cleanup[孤立資料清理\nOrphan Cleanup]
+  Cleanup --> Done[完成]
 ```
+
+### 核心特性
+
+1.  **增量跳過**：內容未改動的文章完全不會觸發 D1 寫入或 AI 向量計算，大幅縮短 CI 執行時間。
+2.  **精準清理向量**：更新文章時，會先根據 D1 中記錄的舊 chunk 數量重建 chunk IDs（格式：`type:hash-index`），精準呼叫 `vectorize delete`，避免索引殘留。
+3.  **孤立資料處理 (Orphan Cleanup)**：
+    *   比對「本地檔案集合」與「D1 現有 ID 集合」。
+    *   若 D1 中存在但本地已刪除的 ID，會自動清除 D1 紀錄及其對應的所有向量。
 
 ---
 
@@ -138,4 +150,4 @@ flowchart TD
 | `pnpm crawl` | 本地爬蟲（不寫 Vectorize） |
 | `pnpm crawl:prod` | 遠端爬蟲（含 Vectorize） |
 | `pnpm sync` | 同步至本地 D1 |
-| `pnpm sync:prod` | 同步至遠端 D1 + Vectorize |
+| `pnpm sync:prod` | 同步至遠端 D1 + Vectorize（增量模式） |
