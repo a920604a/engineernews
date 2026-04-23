@@ -5,7 +5,6 @@ import matter from 'gray-matter';
 import { execSync } from 'node:child_process';
 
 const POSTS_DIR = path.join(process.cwd(), 'src/content/posts');
-const PROJECTS_DIR = path.join(process.cwd(), 'src/content/projects');
 const DB_NAME = 'engineer-news-db';
 const VECTOR_INDEX = 'engineer-news-index';
 const ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID;
@@ -326,61 +325,6 @@ async function syncPosts() {
   await cleanupOrphans('posts', localIds);
 }
 
-// ── Sync projects ─────────────────────────────────────────────────────────────
-
-async function syncProjects() {
-  const files = walkMdFiles(PROJECTS_DIR);
-  const existingHashes = loadExistingHashes('projects');
-  const localIds = new Set<string>();
-  let skipped = 0;
-  let synced = 0;
-
-  console.log(`Found ${files.length} projects.`);
-
-  for (const filePath of files) {
-    const raw = fs.readFileSync(filePath, 'utf-8');
-    const id = path.basename(filePath, '.md');
-    localIds.add(id);
-
-    const hash = computeHash(raw);
-    if (existingHashes.get(id) === hash) {
-      skipped++;
-      continue;
-    }
-
-    const { data, content } = matter(raw);
-    const title = data.title || id;
-    const desc = typeof data.description === 'string'
-      ? data.description
-      : data.description?.background || '';
-    const tags = JSON.stringify(data.tags || []);
-    const github = data.github || '';
-    const url = data.url || '';
-    const tag = data.tag || '';
-    const pinned = data.pinned ? 1 : 0;
-    const updated_at = new Date().toISOString().split('T')[0];
-
-    console.log(`  project: ${id}`);
-    deleteOldVectors(id, 'project');
-
-    runSql(`
-      INSERT INTO projects (id, title, description, tags, github, url, tag, pinned, content, content_hash, updated_at)
-      VALUES ('${esc(id)}','${esc(title)}','${esc(desc)}','${esc(tags)}',
-              '${esc(github)}','${esc(url)}','${esc(tag)}',${pinned},'${esc(content)}','${hash}','${updated_at}')
-      ON CONFLICT(id) DO UPDATE SET
-        title=excluded.title, description=excluded.description, tags=excluded.tags,
-        github=excluded.github, url=excluded.url, tag=excluded.tag,
-        pinned=excluded.pinned, content=excluded.content,
-        content_hash=excluded.content_hash, updated_at=excluded.updated_at;
-    `);
-
-    await syncChunks(id, 'project', content, { slug: id, title });
-    synced++;
-  }
-
-  console.log(`  ✓ ${synced} synced, ${skipped} skipped (unchanged)`);
-  await cleanupOrphans('projects', localIds);
-}
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
@@ -390,7 +334,6 @@ async function main() {
   let success = true;
   try {
     await report.runStage('sync posts', syncPosts);
-    await report.runStage('sync projects', syncProjects);
   } catch (err) {
     success = false;
   }

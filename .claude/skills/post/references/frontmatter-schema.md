@@ -51,6 +51,15 @@ category: tech
 tags: [astro, cloudflare-workers, deployment]
 ```
 
+## Case-Study 專用欄位
+
+| 欄位 | 型別 | 必填 | 說明 |
+|------|------|------|------|
+| `github` | string (URL) | ❌ | GitHub repo URL，`case-study` 類型強烈建議填寫 |
+| `url` | string (URL) | ❌ | 線上 demo / 服務 URL |
+
+`type` 可用值：`debug` / `deep-dive` / `guide` / `how-to` / `listicle` / `explainer` / `case-study` / `comparison` / `research` / `newsjacking`
+
 ## 檔名規則
 
 `YYYY-MM-DD-<slug>.md`

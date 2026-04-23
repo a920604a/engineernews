@@ -2,15 +2,13 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const projects = await getCollection('projects');
-const sorted = projects.sort((a, b) => {
+const posts = await getCollection('posts', ({ data }) =>
+  !data.draft && data.type === 'case-study' && data.lang === 'zh-TW'
+);
+const sorted = posts.sort((a, b) => {
   if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
   return a.data.title.localeCompare(b.data.title);
 });
-
-function projectDescription(description) {
-  return typeof description === 'string' ? description : (description && description.background) ? description.background : '';
-}
 ---
 
 <BaseLayout title="作品集">
@@ -21,33 +19,31 @@ function projectDescription(description) {
     </p>
 
     <div style="display: grid; gap: 1.5rem;">
-      {sorted.map((project) => (
+      {sorted.map((post) => (
         <div class="card">
           <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem;">
-            <h2 style="margin: 0; font-size: 20px;">{project.data.title}</h2>
+            <h2 style="margin: 0; font-size: 20px;">{post.data.title}</h2>
             <div style="display: flex; gap: 0.5rem;">
-              {project.data.github && (
-                <a href={project.data.github} target="_blank" rel="noopener" class="btn-primary" style="font-size: 12px;">
+              {post.data.github && (
+                <a href={post.data.github} target="_blank" rel="noopener" class="btn-primary" style="font-size: 12px;">
                   GitHub
                 </a>
               )}
-              {project.data.url && (
-                <a href={project.data.url} target="_blank" rel="noopener" class="btn-primary" style="font-size: 12px;">
+              {post.data.url && (
+                <a href={post.data.url} target="_blank" rel="noopener" class="btn-primary" style="font-size: 12px;">
                   網站
                 </a>
               )}
-              <a href={`/projects/${project.id}`} class="btn-primary" style="font-size: 12px;">
+              <a href={`/posts/${post.id}`} class="btn-primary" style="font-size: 12px;">
                 查看
               </a>
             </div>
           </div>
-
           <p style="margin: 0.75rem 0; color: var(--label-secondary); font-size: 15px;">
-            {projectDescription(project.data.description)}
+            {post.data.description}
           </p>
-
           <div class="tags">
-            {project.data.tags.map((tag) => (
+            {post.data.tags.map((tag) => (
               <span class="tag">#{tag}</span>
             ))}
           </div>

@@ -8,7 +8,7 @@ import { useTranslations } from '../../i18n/utils';
 const t = useTranslations('en');
 
 const allPosts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'en');
-const posts = allPosts.sort((a, b) => {
+allPosts.sort((a, b) => {
   if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
   return b.data.date.valueOf() - a.data.date.valueOf();
 });
@@ -22,28 +22,76 @@ const posts = allPosts.sort((a, b) => {
 
     <Search client:load />
 
-    {posts.length === 0 ? (
+    {allPosts.length === 0 ? (
       <div style="border: 0.5px dashed var(--separator); padding: 40px; text-align: center; border-radius: var(--radius-lg); color: var(--label-secondary);">
         <p style="margin:0;">{t('feed.empty')}</p>
       </div>
     ) : (
-      <div class="feed">
-        {posts.map((post) => (
-          <PostCard
-            id={post.id}
-            title={post.data.title}
-            date={post.data.date}
-            category={post.data.category}
-            tags={post.data.tags}
-            description={post.data.description}
-            tldr={post.data.tldr}
-            type={post.data.type}
-            pinned={post.data.pinned}
-            readingTime={post.data.readingTime}
-            lang="en"
-          />
-        ))}
+      <div class="feed-section">
+        <PostCard
+          id={allPosts[0].id}
+          title={allPosts[0].data.title}
+          date={allPosts[0].data.date}
+          category={allPosts[0].data.category}
+          tags={allPosts[0].data.tags}
+          description={allPosts[0].data.description}
+          tldr={allPosts[0].data.tldr}
+          type={allPosts[0].data.type}
+          pinned={allPosts[0].data.pinned}
+          readingTime={allPosts[0].data.readingTime}
+          github={allPosts[0].data.github}
+          url={allPosts[0].data.url}
+          lang="en"
+          featured={true}
+        />
+
+        {allPosts.length > 1 && (
+          <p class="feed-divider">Latest</p>
+        )}
+
+        <div class="feed">
+          {allPosts.slice(1).map((post) => (
+            <PostCard
+              id={post.id}
+              title={post.data.title}
+              date={post.data.date}
+              category={post.data.category}
+              tags={post.data.tags}
+              description={post.data.description}
+              tldr={post.data.tldr}
+              type={post.data.type}
+              pinned={post.data.pinned}
+              readingTime={post.data.readingTime}
+              github={post.data.github}
+              url={post.data.url}
+              lang="en"
+            />
+          ))}
+        </div>
       </div>
     )}
   </section>
 </BaseLayout>
+
+<style>
+  .feed-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .feed-divider {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--label-tertiary);
+    margin: 8px 0 4px;
+    padding-bottom: 8px;
+    border-bottom: 0.5px solid var(--separator);
+  }
+  .feed {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+</style>

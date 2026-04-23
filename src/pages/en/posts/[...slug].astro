@@ -14,7 +14,8 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
+const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 const t = useTranslations('en');
 
 const jsonLd = {
@@ -31,14 +32,15 @@ const dateStr = post.data.date.toLocaleDateString('en-US', {
 });
 ---
 
-<BaseLayout title={post.data.title} description={post.data.description} jsonLd={jsonLd}>
-  <article>
+<BaseLayout title={post.data.title} description={post.data.description} jsonLd={jsonLd} layout="article">
+  <div class="article-grid">
+  <article class="article-body">
     <header style="padding: 32px 0 24px; border-bottom: 0.5px solid var(--separator); margin-bottom: 32px;">
       <div style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--label-secondary); margin-bottom:12px;">
         <time>{dateStr}</time>
         <span style="opacity:0.4;">·</span>
         <span>{post.data.category}</span>
-        {post.data.type && <span class="badge badge-type">{post.data.type}</span>}
+        {post.data.type && <span class="badge badge-type" data-type={post.data.type}>{post.data.type}</span>}
       </div>
 
       <h1 style="margin:0 0 16px;">{post.data.title}</h1>
@@ -50,6 +52,21 @@ const dateStr = post.data.date.toLocaleDateString('en-US', {
         </div>
       )}
     </header>
+
+    {tocHeadings.length > 2 && (
+      <details class="toc-block toc-mobile" open>
+        <summary>Table of Contents</summary>
+        <nav>
+          <ol>
+            {tocHeadings.map(h => (
+              <li style={h.depth === 3 ? 'margin-left:1.2em;' : ''}>
+                <a href={`#${h.slug}`}>{h.text}</a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      </details>
+    )}
 
     <div class="prose">
       <Content />
@@ -66,4 +83,71 @@ const dateStr = post.data.date.toLocaleDateString('en-US', {
       </footer>
     )}
   </article>
+
+  {tocHeadings.length > 2 && (
+    <aside class="article-toc-sidebar">
+      <p class="toc-sidebar-title">Table of Contents</p>
+      <ol>
+        {tocHeadings.map(h => (
+          <li class={h.depth === 3 ? 'toc-item toc-item--sub' : 'toc-item'}>
+            <a href={`#${h.slug}`}>{h.text}</a>
+          </li>
+        ))}
+      </ol>
+    </aside>
+  )}
+  </div>
 </BaseLayout>
+
+<style>
+  .article-grid { display: block; }
+
+  @media (min-width: 1024px) {
+    .article-grid {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      gap: 48px;
+      align-items: start;
+    }
+    .toc-mobile { display: none; }
+  }
+
+  .article-toc-sidebar { display: none; }
+
+  @media (min-width: 1024px) {
+    .article-toc-sidebar {
+      display: block;
+      position: sticky;
+      top: 72px;
+      max-height: calc(100vh - 88px);
+      overflow-y: auto;
+      font-size: 13px;
+      padding: 16px 18px;
+      background: var(--bg-secondary);
+      border: 0.5px solid var(--separator);
+      border-radius: var(--radius-md);
+    }
+  }
+
+  .toc-sidebar-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--label-secondary);
+    margin: 0 0 10px;
+  }
+
+  .article-toc-sidebar ol { padding: 0; margin: 0; list-style: none; }
+  .toc-item + .toc-item { margin-top: 6px; }
+  .toc-item--sub { padding-left: 12px; }
+
+  .article-toc-sidebar a {
+    color: var(--label-secondary);
+    text-decoration: none;
+    line-height: 1.4;
+    transition: color 0.15s;
+    display: block;
+  }
+  .article-toc-sidebar a:hover { color: var(--accent); }
+</style>

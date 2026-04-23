@@ -7,22 +7,16 @@ export const prerender = true;
 
 export async function getStaticPaths() {
   const allPosts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'zh-TW');
-  const allProjects = await getCollection('projects');
 
   const categories = new Set<string>();
   allPosts.forEach((p) => categories.add(p.data.category));
-  allProjects.forEach((proj) => (proj.data.tags || []).forEach((t) => categories.add(t)));
 
   return Array.from(categories).map((category) => {
     const posts = allPosts
       .filter((p) => p.data.category === category)
       .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-    const projects = allProjects
-      .filter((proj) => (proj.data.tags || []).includes(category))
-      .sort((a, b) => (a.data.pinned === b.data.pinned ? a.data.title.localeCompare(b.data.title) : (a.data.pinned ? -1 : 1)));
-
-    return { params: { category }, props: { posts, projects } };
+    return { params: { category }, props: { posts } };
   });
 }
 

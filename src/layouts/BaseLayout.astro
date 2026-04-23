@@ -10,9 +10,10 @@ interface Props {
   description?: string;
   jsonLd?: object;
   ogImage?: string;
+  layout?: 'default' | 'article';
 }
 
-const { title, description, jsonLd, ogImage } = Astro.props;
+const { title, description, jsonLd, ogImage, layout = 'default' } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
@@ -184,6 +185,7 @@ const siteJsonLd = {
       }
 
       main { max-width: 720px; margin: 0 auto; padding: 0 24px 96px; }
+      main[data-layout="article"] { max-width: 1040px; }
 
       /* ─── Nav ─────────────────────────────────────────── */
       .site-header {
@@ -311,7 +313,7 @@ const siteJsonLd = {
       }
 
       /* ─── Prose ───────────────────────────────────────── */
-      .prose { font-size: 17px; line-height: 1.8; color: var(--label); }
+      .prose { font-size: 17px; line-height: 1.8; color: var(--label); max-width: 65ch; }
       .prose > * + * { margin-top: 1.25rem; }
       .prose p { margin: 0 0 1.25rem; }
 
@@ -592,7 +594,7 @@ const siteJsonLd = {
       })();
     </script>
 
-    <main data-pagefind-body>
+    <main data-pagefind-body data-layout={layout}>
       <slot />
     </main>
 

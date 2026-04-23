@@ -1,10 +1,15 @@
 ---
 title: "Live English Tutor"
-description: "以 LiveKit WebRTC + Google Gemini 驅動的即時語音 AI 英文家教平台，支援即時糾錯與課後報告生成。"
+date: 2026-04-23
 category: product
+type: case-study
 tags: ["python", "typescript", "react", "fastapi", "docker", "postgresql", "firebase", "ai", "education"]
+lang: zh-TW
+description: "以 LiveKit WebRTC + Google Gemini 驅動的即時語音 AI 英文家教平台，支援即時糾錯與課後報告生成。"
+tldr: "即時語音 AI 英文家教：WebRTC 麥克風互動 + Gemini 即時糾錯 + 課後中文報告。"
 github: "https://github.com/a920604a/live-english-tutor"
 pinned: false
+draft: false
 ---
 
 Live English Tutor 是一個以即時語音互動為核心的 AI 英文家教平台，學生透過麥克風與 AI 教師 Emma 進行對話練習，系統即時糾錯並於課後生成中文學習報告。

@@ -1,10 +1,15 @@
 ---
 title: "LLM Assistant"
-description: "以 RAG 架構建置的 arXiv 學術論文知識平台，整合每日自動爬取、混合向量搜尋、雙語 Q&A 與 Prometheus + Langfuse 可觀測性。"
+date: 2026-04-23
 category: tech
+type: case-study
 tags: ["python", "typescript", "react", "fastapi", "docker", "postgresql", "prometheus", "grafana", "ai"]
+lang: zh-TW
+description: "以 RAG 架構建置的 arXiv 學術論文知識平台，整合每日自動爬取、混合向量搜尋、雙語 Q&A 與 Prometheus + Langfuse 可觀測性。"
+tldr: "arXiv 論文 RAG 平台：每日自動爬取 + 混合向量搜尋 + 雙語 Q&A + Grafana 監控。"
 github: "https://github.com/a920604a/llm-assistant"
 pinned: false
+draft: false
 ---
 
 LLM Assistant 是一個 arXiv 學術論文知識平台，每日自動爬取論文並建立向量索引，使用者可用中英文提問，系統以混合搜尋 + 文件重排後由 Ollama LLM 回答，並支援 Email 訂閱與 Grafana 監控。
@@ -39,67 +44,48 @@ end
 Arxiv --> Ingest
 
 subgraph Ingest[Data Ingestion Pipeline]
-  Scheduler[Daily Schedule]:::scheduler
-  IngestFlow[Fetch + Parse + Chunk + Embed + Index]:::pipeline1
+  Scheduler[Daily Schedule]
+  IngestFlow[Fetch + Parse + Chunk + Embed + Index]
 end
 
 subgraph API[API Layer]
-  FastAPI[Client API for auth]:::api
-  NoteServer[RAG Service]:::service
+  FastAPI[Client API for auth]
+  NoteServer[RAG Service]
 end
 
 Client --> FastAPI
 FastAPI --> NoteServer
 
-Storage e3@ --> Retrieve
 subgraph Retrieve[Retrieve pipeline]
-    Search[Hybrid Search ] --> Rerank
+    Search[Hybrid Search] --> Rerank
     Rerank --> prompt
 end
 
-prompt e4@ --> LLM
-
 subgraph LLM[LLM Engines]
-  Ollama[Ollama]:::llm
+  Ollama[Ollama]
 end
 
 subgraph Storage[Storage]
-  MinIO[(MinIO : PDFs)]:::storage
-  PostgreSQL[(PostgreSQL : Metadata / )]:::storage
-  Qdrant[(Qdrant : Vectors)]:::storage
+  MinIO[(MinIO : PDFs)]
+  PostgreSQL[(PostgreSQL : Metadata)]
+  Qdrant[(Qdrant : Vectors)]
 end
 
-NoteServer e5@ --> Retrieve
+NoteServer --> Retrieve
+Storage --> Retrieve
+prompt --> LLM
 LLM --> API
 
 Scheduler --> IngestFlow
-IngestFlow e1@ --> Storage
+IngestFlow --> Storage
 
 subgraph Subscription[Email Subscription Pipeline]
-    direction LR
-  SubSched[Daily Schedule]:::scheduler
-  SubFlow[Filter → Fetch Paper → Summarize → Send]:::pipeline2
-    SubSched --> SubFlow
+  SubSched[Daily Schedule]
+  SubFlow[Filter → Fetch → Summarize → Send]
+  SubSched --> SubFlow
 end
 
-Storage e2@ --> Subscription
-
-e1@{ animation: slow }
-e2@{ animation: slow }
-e3@{ animation: fast }
-e4@{ animation: fast }
-e5@{ animation: fast }
-
-classDef frontend fill:#87CEEB,stroke:#333,stroke-width:1px
-classDef api fill:#FFA500,stroke:#333,stroke-width:1px
-classDef service fill:#7FFFD4,stroke:#333,stroke-width:1px
-classDef storage fill:#F08080,stroke:#333,stroke-width:1px
-classDef pipeline1 fill:#9370DB,stroke:#333,stroke-width:1px
-classDef pipeline2 fill:#40E0D0,stroke:#333,stroke-width:1px
-classDef scheduler fill:#BA55D3,stroke:#333,stroke-width:1px
-classDef llm fill:#90EE90,stroke:#333,stroke-width:1px
-classDef queue fill:#D2691E,stroke:#333,stroke-width:1px
-classDef data fill:#C0C0C0,stroke:#333,stroke-width:1px
+Storage --> Subscription
 ```
 
 ## 流程圖

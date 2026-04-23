@@ -1,11 +1,16 @@
 ---
 title: "Nutrition Guard"
-description: "以 Cloudflare Workers AI 驅動的多族群飲食風險管理系統，支援痛風、高血脂、糖尿病、高血壓四種病症的即時風險評分與個人化 AI 建議。"
+date: 2026-04-23
 category: product
+type: case-study
 tags: ["typescript", "react", "firebase", "cloudflare", "ai"]
+lang: zh-TW
+description: "以 Cloudflare Workers AI 驅動的多族群飲食風險管理系統，支援痛風、高血脂、糖尿病、高血壓四種病症的即時風險評分與個人化 AI 建議。"
+tldr: "140 種食物 × 4 種慢性病即時風險評分，Workers AI 個人化建議，零月費。"
 github: "https://github.com/a920604a/nutrition-risk-engine"
 url: "https://nutrition-risk-engine.pages.dev/"
 pinned: false
+draft: false
 ---
 
 Nutrition Guard 是一個零月費的飲食風險管理平台，140 種食物依病症標籤即時計算風險分數，登入後可記錄飲食日誌，並透過 Workers AI 生成個人化中文建議與 PDF 報告。

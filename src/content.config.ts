@@ -13,7 +13,18 @@ const posts = defineCollection({
     tldr: z.string().optional(),
     draft: z.boolean().default(false),
     pinned: z.boolean().default(false),
-    type: z.enum(['debug', 'deep-dive', 'guide', 'project', 'crawled']).optional(),
+    type: z.enum([
+      'debug',
+      'deep-dive',
+      'guide',
+      'how-to',
+      'listicle',
+      'explainer',
+      'case-study',
+      'comparison',
+      'research',
+      'newsjacking',
+    ]).optional(),
     readingTime: z.number().optional(),
     series: z.object({
       name: z.string(),
@@ -21,21 +32,9 @@ const posts = defineCollection({
     }).optional(),
     source: z.string().optional(),
     source_url: z.string().url().optional(),
-  }),
-});
-
-const projects = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
-  schema: z.object({
-    title: z.string(),
-    date: z.coerce.date().optional(),
-    description: z.string().optional(),
-    category: z.string(),
-    tags: z.array(z.string()),
     github: z.string().url().optional(),
     url: z.string().url().optional(),
-    pinned: z.boolean().default(false),
   }),
 });
 
-export const collections = { posts, projects };
+export const collections = { posts };

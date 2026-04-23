@@ -13,19 +13,20 @@ interface Props {
   pinned?: boolean;
   readingTime?: number;
   lang?: Lang;
-  kind?: 'post' | 'project';
+  github?: string;
+  url?: string;
+  featured?: boolean;
 }
 
 const {
   id, title, date, category, tags,
   description, tldr, type, pinned = false,
-  readingTime, lang = 'zh-TW', kind = 'post',
+  readingTime, lang = 'zh-TW',
+  github, url, featured = false,
 } = Astro.props;
 
 const isEn = lang === 'en';
-const postHref = kind === 'project'
-  ? (isEn ? `/en/projects/${id}` : `/projects/${id}`)
-  : (isEn ? `/en/posts/${id}` : `/posts/${id}`);
+const postHref = isEn ? `/en/posts/${id}` : `/posts/${id}`;
 const catHref  = isEn ? `/en/categories/${category}` : `/categories/${category}`;
 const tagHref  = (t: string) => isEn ? `/en/tags/${t}` : `/tags/${t}`;
 
@@ -36,13 +37,12 @@ const dateStr = date?.toLocaleDateString(isEn ? 'en-US' : 'zh-TW', {
 const excerpt = tldr || description || '';
 ---
 
-<article class={`card${pinned ? ' card--pinned' : ''}`}>
+<article class={`card${pinned ? ' card--pinned' : ''}${featured ? ' card--featured' : ''}`}>
   <div class="card-header">
     <div class="card-badges">
       {pinned && <span class="badge badge-pinned">置頂</span>}
       <a href={catHref} class="badge badge-cat">{category}</a>
-      {kind === 'project' && <span class="badge badge-project">專案</span>}
-      {type && <span class="badge badge-type">{type}</span>}
+      {type && <span class="badge badge-type" data-type={type}>{type}</span>}
     </div>
     <div class="card-meta">
       {date && <time class="card-date">{dateStr}</time>}
@@ -61,6 +61,21 @@ const excerpt = tldr || description || '';
       {tags.map((tag) => (
         <a href={tagHref(tag)} class="card-tag">#{tag}</a>
       ))}
+    </div>
+  )}
+
+  {type === 'case-study' && (github || url) && (
+    <div class="card-links">
+      {github && (
+        <a href={github} target="_blank" rel="noopener" class="card-link">
+          GitHub ↗
+        </a>
+      )}
+      {url && (
+        <a href={url} target="_blank" rel="noopener" class="card-link">
+          網站 ↗
+        </a>
+      )}
     </div>
   )}
 </article>
@@ -88,6 +103,23 @@ const excerpt = tldr || description || '';
   }
   .card--pinned:hover {
     border-color: #ff3b30;
+  }
+
+  .card--featured {
+    padding: 28px 32px;
+    border-width: 1px;
+    border-color: color-mix(in srgb, var(--accent) 20%, var(--separator));
+  }
+  .card--featured .card-title {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+  .card--featured .card-excerpt {
+    font-size: 15px;
+    -webkit-line-clamp: 3;
+    line-height: 1.7;
   }
 
   .card-header {
@@ -151,16 +183,24 @@ const excerpt = tldr || description || '';
     color: var(--accent);
     border: 0.5px solid color-mix(in srgb, var(--accent) 25%, transparent);
   }
+
+  /* type badge — default */
   .badge-type {
     background: color-mix(in srgb, var(--color-green, #30d158) 10%, transparent);
     color: var(--color-green, #30d158);
     border: 0.5px solid color-mix(in srgb, var(--color-green, #30d158) 25%, transparent);
   }
-  .badge-project {
-    background: color-mix(in srgb, #ff9f0a 10%, transparent);
-    color: #ff9f0a;
-    border: 0.5px solid color-mix(in srgb, #ff9f0a 25%, transparent);
-  }
+
+  /* type-specific overrides */
+  .badge-type[data-type="debug"]       { background:color-mix(in srgb,#ff5f57 10%,transparent); color:#ff5f57; border-color:color-mix(in srgb,#ff5f57 25%,transparent); }
+  .badge-type[data-type="how-to"]      { background:color-mix(in srgb,var(--color-green) 10%,transparent); color:var(--color-green); border-color:color-mix(in srgb,var(--color-green) 25%,transparent); }
+  .badge-type[data-type="listicle"]    { background:color-mix(in srgb,#ff9f0a 10%,transparent); color:#ff9f0a; border-color:color-mix(in srgb,#ff9f0a 25%,transparent); }
+  .badge-type[data-type="explainer"]   { background:color-mix(in srgb,var(--accent) 10%,transparent); color:var(--accent); border-color:color-mix(in srgb,var(--accent) 25%,transparent); }
+  .badge-type[data-type="case-study"]  { background:color-mix(in srgb,#bf5af2 10%,transparent); color:#bf5af2; border-color:color-mix(in srgb,#bf5af2 25%,transparent); }
+  .badge-type[data-type="comparison"]  { background:color-mix(in srgb,#64d2ff 10%,transparent); color:#64d2ff; border-color:color-mix(in srgb,#64d2ff 25%,transparent); }
+  .badge-type[data-type="research"]    { background:color-mix(in srgb,#ffd60a 10%,transparent); color:#b8960a; border-color:color-mix(in srgb,#ffd60a 25%,transparent); }
+  .badge-type[data-type="newsjacking"] { background:color-mix(in srgb,#ff6b81 10%,transparent); color:#ff6b81; border-color:color-mix(in srgb,#ff6b81 25%,transparent); }
+  .badge-type[data-type="deep-dive"]   { background:color-mix(in srgb,var(--accent) 15%,transparent); color:var(--accent); border-color:color-mix(in srgb,var(--accent) 30%,transparent); }
 
   /* Title */
   .card-title {
@@ -203,4 +243,25 @@ const excerpt = tldr || description || '';
     transition: color 0.15s;
   }
   .card-tag:hover { color: var(--accent); }
+
+  /* Case-study links */
+  .card-links {
+    display: flex;
+    gap: 8px;
+    margin-top: 2px;
+  }
+  .card-link {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+    padding: 3px 10px;
+    border: 0.5px solid color-mix(in srgb, var(--accent) 30%, transparent);
+    border-radius: var(--radius-full);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    transition: background 0.15s;
+  }
+  .card-link:hover {
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+  }
 </style>
