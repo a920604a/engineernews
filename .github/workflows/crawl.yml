@@ -44,7 +44,7 @@ jobs:
 
       - name: Commit and push new articles
         run: |
-          git add src/content/posts/crawled/
+          git add src/content/posts/
           if git diff --cached --quiet; then
             echo "無新文章，跳過 commit。"
           else
