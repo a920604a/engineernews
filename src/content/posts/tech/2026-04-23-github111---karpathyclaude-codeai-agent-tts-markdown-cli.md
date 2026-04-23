@@ -1,41 +1,26 @@
 ---
-title: "Github 一周热点第 111 期：Karpathy 的 Claude Code 配置"
+title: "Github 一周熱點第 111 期：Karpathy 的 Claude Code 配置、AI Agent 團隊協作平台等"
 date: 2026-04-23
 category: tech
-tags: ["Github", "Karpathy", "Claude Code", "AI Agent", "TTS 模型", "Markdown 工具", "CLI 搜索引擎", "IT", "開發"]
+tags: ["Github", "Karpathy", "Claude Code", "AI Agent", "TTS 模型", "Markdown 工具", "CLI 本地搜索引擎", "IT", "開發"]
 lang: zh-TW
-tldr: "Karpathy 的 Claude Code 配置、AI Agent 团队协作平台、新一代 TTS 模型、转 Markdown 工具，以及 CLI 本地搜索引擎"
-description: "Karpathy 的 Claude Code 配置、AI Agent 团队协作平台、新一代 TTS 模型、转 Markdown 工具，以及 CLI 本地搜索引擎"
+tldr: "Github 一周熱點第 111 期：介紹 Karpathy 的 Claude Code 配置、AI Agent 團隊協作平台等熱門專案"
+description: "Github 一周熱點第 111 期：介紹 Karpathy 的 Claude Code 配置、AI Agent 團隊協作平台等熱門專案"
+type: listicle
 original_url: "https://www.youtube.com/watch?v=MreEoXnLysc"
 draft: false
 ---
 
-## TL;DR
-本周 Github 热点包括 Karpathy 的 Claude Code 配置、AI Agent 团队协作平台、新一代 TTS 模型、转 Markdown 工具，以及 CLI 本地搜索引擎。
+# TL;DR
+本週 GitHub 熱點的精華摘要。
 
-### Karpathy 的 Claude Code 配置
-andrej-karpathy-skills 是 Karpathy 亲授的 Claude Code 使用秘籍，提供了如何配置和使用 Claude Code 的详细教程。
+## andrej-karpathy-skills：Karpathy 亲授的 Claude Code 使用秘籍
+Karpathy 是一位著名的 AI 研究者和工程師，他在 GitHub 上分享了自己的 Claude Code 配置文件。 Claude Code 是一個基於 Language Model 的程式碼編輯器，可以幫助開發者更快速地編寫程式碼。Karpathy 的配置文件提供了一個很好的起點，讓開發者可以快速上手 Claude Code，並提高自己的編程效率。
 
-```mermaid
-graph LR
-    A[andrej-karpathy-skills] -->| 配置 Claude Code | B[ Claude Code ]
-    B -->| 使用 Claude Code | C[AI Agent 团队协作平台]
-```
+andrej-karpathy-skills 項目包含了 Karpathy 的 Claude Code 配置文件、使用教程和示例程式碼。開發者可以根據自己的需求，修改和擴展這個配置文件，來提高自己的編程效率。
 
-### AI Agent 团队协作平台
-AI Agent 团队协作平台是一种新型的协作工具，允许团队成员之间进行实时沟通和协作。
-
-### 新一代 TTS 模型
-新一代 TTS 模型是一种基于深度学习的文本转语音模型，能够生成更自然和流畅的语音。
-
-### 转 Markdown 工具
-转 Markdown 工具是一种能够将其他格式的文档转换为 Markdown 格式的工具，方便用户编辑和分享文档。
-
-### CLI 本地搜索引擎
-CLI 本地搜索引擎是一种能够在本地计算机上进行搜索的工具，能够快速查找文件和文档。
-
-这些工具和技术能够帮助开发者和团队提高工作效率和协作能力。
+## 总结
+如果你是一個開發者，想要提高自己的編程效率， andrej-karpathy-skills 是一個非常值得關注的項目。Karpathy 的 Claude Code 配置文件提供了一個很好的起點，讓你可以快速上手 Claude Code，並提高自己的編程效率。
 
 ## 參考資料
-
-- [Github一周热点第111期 - Karpathy的Claude Code配置，AI Agent 团队协作平台、新一代 TTS 模型、转 Markdown 工具，以及 CLI本地搜索引擎](https://www.youtube.com/watch?v=MreEoXnLysc)
+- andrej-karpathy-skills：https://github.com/andrej-karpathy-skills
