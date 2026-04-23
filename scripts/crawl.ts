@@ -170,7 +170,213 @@ interface AISummary {
   tldr: string;
   tags: string[];
   category: string;
+  type: string;
   summary: string;
+}
+
+const VALID_TYPES = ['how-to', 'explainer', 'listicle', 'deep-dive', 'debug', 'case-study', 'comparison', 'research', 'newsjacking'] as const;
+
+const TYPE_STRUCTURES: Record<string, string> = {
+  'debug': `## TL;DR
+{{一句話說明問題與解法}}
+
+## 情境
+{{在做什麼時遇到這個問題}}
+
+## 問題
+{{錯誤訊息或異常行為，盡量引用原文}}
+
+## 嘗試過程
+{{試了什麼、為什麼沒用}}
+
+## 解法
+{{最終怎麼解的，程式碼要完整}}
+
+## 為什麼會這樣
+{{根本原因}}
+
+## 學到的事
+{{一句話總結}}
+
+## 參考資料
+{{相關連結}}`,
+
+  'how-to': `## TL;DR
+{{一句話說明這篇教什麼}}
+
+## 前置條件
+{{需要什麼環境、工具或知識}}
+
+## 步驟
+{{逐步說明，每步都要具體，有指令就放指令}}
+
+## 完整範例
+{{如果有程式碼，放完整可執行的版本}}
+
+## 常見問題
+{{容易卡住的地方}}
+
+## 參考資料
+{{相關連結}}`,
+
+  'explainer': `{{開頭 2-3 句：這篇要解釋什麼？讀者看完會理解什麼？}}
+
+## TL;DR
+{{核心概念一句話}}
+
+## 是什麼
+{{概念定義，說清楚，不要廢話}}
+
+## 為什麼重要
+{{解決了什麼問題，或帶來什麼改變}}
+
+## 怎麼運作
+{{原理說明。有流程就用 Mermaid flowchart，有服務互動就用 sequenceDiagram}}
+
+## 跟 {{相近概念}} 的差別
+{{比較，說清楚適用情境}}
+
+## 小結
+{{適合誰用、什麼情況下選它}}
+
+## 參考資料
+{{相關連結}}`,
+
+  'deep-dive': `{{開頭 2-4 句：這篇要深入介紹什麼，讀者看完會得到什麼}}
+
+## TL;DR
+{{核心重點}}
+
+## 設計哲學
+{{這個工具 / 技術為什麼這樣設計，解決什麼問題}}
+
+## 核心概念
+{{展開說明，架構圖用 Mermaid graph 或 sequenceDiagram}}
+
+## 跟常見替代方案比較
+{{為什麼選這個而不是 X，用表格或條列}}
+
+## 適合 / 不適合的情境
+{{具體說明}}
+
+## 整體來說
+{{核心取捨，適合什麼樣的專案或團隊}}
+
+## 參考資料
+{{相關連結}}`,
+
+  'listicle': `## TL;DR
+{{這份清單的核心價值一句話}}
+
+## {{項目 1：名稱}}
+{{說明，為什麼值得列進來}}
+
+## {{項目 2：名稱}}
+{{說明}}
+
+## {{項目 3～N：依內容增減}}
+{{說明}}
+
+## 總結
+{{怎麼選，或綜合建議}}
+
+## 參考資料
+{{相關連結}}`,
+
+  'comparison': `## TL;DR
+{{結論先說：推薦誰、用在什麼情境}}
+
+## 比較對象
+{{說明這次比較的是什麼，各自的定位}}
+
+## 功能比較
+{{用表格列出關鍵維度}}
+
+## 效能 / 成本
+{{如果影片有數據就引用}}
+
+## 適用情境
+{{A 適合哪種，B 適合哪種}}
+
+## 結論
+{{明確建議，不要模糊}}
+
+## 參考資料
+{{相關連結}}`,
+
+  'research': `{{開頭：這份研究 / 調查在看什麼}}
+
+## TL;DR
+{{最重要的發現}}
+
+## 研究背景
+{{為什麼有人做這個研究，問題是什麼}}
+
+## 關鍵發現
+{{數據、結論，有圖表就用表格或 Mermaid}}
+
+## 影響與意義
+{{對工程師 / 產品人 / 業界的意義}}
+
+## 限制與注意事項
+{{這份研究有什麼不足}}
+
+## 參考資料
+{{原始論文 / 報告連結}}`,
+
+  'newsjacking': `## TL;DR
+{{這件事是什麼、為什麼重要}}
+
+## 發生了什麼
+{{事件說明，具體時間、對象、影響}}
+
+## 為什麼這件事值得關注
+{{對工程師或產業的意義}}
+
+## 技術角度怎麼看
+{{從技術面解讀}}
+
+## 後續值得觀察的點
+{{還沒有答案但值得追蹤的問題}}
+
+## 參考資料
+{{新聞來源}}`,
+
+  'case-study': `{{開頭：這個案例要解決什麼問題}}
+
+## TL;DR
+{{一句話總結解法與成果}}
+
+## 背景與挑戰
+{{情境說明，為什麼這個問題不好解}}
+
+## 解法設計
+{{怎麼思考、怎麼決策。有架構就加 Mermaid graph}}
+
+## 實作細節
+{{關鍵的技術選擇與取捨}}
+
+## 成果
+{{數據或具體改善}}
+
+## 學到的事
+{{可以複用的洞察}}
+
+## 參考資料
+{{相關連結}}`,
+};
+
+async function callAI(prompt: string, maxTokens: number): Promise<string> {
+  const response = await fetch(
+    `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/ai/run/@cf/meta/llama-3.1-70b-instruct`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${API_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: [{ role: 'user', content: prompt }], max_tokens: maxTokens }),
+    }
+  );
+  const json = await response.json() as any;
+  return json.result?.response ?? '';
 }
 
 async function summarize(content: string, sourceTags: string[], videoTitle: string): Promise<AISummary> {
@@ -178,86 +384,87 @@ async function summarize(content: string, sourceTags: string[], videoTitle: stri
     throw new Error('Missing CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_API_TOKEN');
   }
 
-  const prompt = `你是一個專業的台灣技術主編。你的任務是將 YouTube 影片內容轉化為高品質的「台灣繁體中文」技術文章。
+  // ── Step 1：決定 metadata ────────────────────────────────────────────────────
+  const metaPrompt = `你是台灣技術主編。根據以下 YouTube 影片內容，輸出文章的 metadata。
 
-寫作規範（極重要）：
-1. 語言語言：必須完全使用「台灣繁體中文」輸出。
-2. 術語使用：嚴格使用台灣技術圈慣用語。例如：使用「資訊」而非「信息」、「程式碼」而非「代碼」、「框架」而非「架構(當指framework時)」、「專案」而非「項目」、「內容」而非「內容」。
-3. 結構：
-   - 開頭必須為「## TL;DR」。
-   - 涉及流程或架構時，必須使用 \`\`\`mermaid。
-4. 長度：約 600-1000 字。
-
-請嚴格按照以下格式輸出內容，不要輸出任何額外文字：
-
----METADATA---
+只能輸出一個 JSON，不要有任何其他文字：
 {
-  "title": "繁體中文標題",
-  "tldr": "繁體中文重點摘要",
+  "title": "台灣繁體中文標題",
+  "tldr": "一句話摘要（台灣繁體中文）",
   "tags": ["標籤1", "標籤2"],
-  "category": "tech | product | learning | career"
+  "category": "tech 或 product 或 learning 或 career 其中一個",
+  "type": "根據內容從以下選一個最符合的：how-to（教學步驟）、explainer（概念解釋）、listicle（清單介紹）、deep-dive（深入介紹工具或技術）、debug（問題排查）、case-study（案例分析）、comparison（工具或方案比較）、research（研究或調查）、newsjacking（時事評論）"
 }
----CONTENT---
-[完整的繁體中文 Markdown 文章內容]
+
+術語規範：使用「程式碼」非「代碼」、「框架」非「架構（指 framework 時）」、「專案」非「項目」。
 
 <content>
 影片標題：${videoTitle}
 內容：${content}
 </content>`;
 
-  const response = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/ai/run/@cf/meta/llama-3.1-70b-instruct`,
-    {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${API_TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        messages: [{ role: 'user', content: prompt }],
-        max_tokens: 2500
-      }),
-    }
-  );
+  const metaRaw = await callAI(metaPrompt, 400);
 
-  const json = await response.json() as any;
-  const text: string = json.result?.response ?? '';
-
-  if (!text || !text.includes('---METADATA---') || !text.includes('---CONTENT---')) {
-    console.error('  ❌ AI 輸出格式錯誤（缺少標籤）：', text.slice(0, 200));
-    throw new Error('Invalid AI response format');
-  }
-
+  let meta: any;
   try {
-    const metaPart = text.split('---METADATA---')[1].split('---CONTENT---')[0].trim();
-    let contentPart = text.split('---CONTENT---')[1].trim();
-
-    const meta = JSON.parse(metaPart);
-    
-    // Mermaid 驗證與修復
-    const mermaidRegex = /```mermaid([\s\S]*?)```/g;
-    let match;
-    while ((match = mermaidRegex.exec(contentPart)) !== null) {
-      const originalCode = match[1].trim();
-      const validation = validateMermaid(originalCode);
-      if (!validation.ok) {
-        const fixedCode = await tryFixMermaid(originalCode, validation.error!);
-        contentPart = contentPart.replace(originalCode, fixedCode);
-      }
-    }
-
-    if (contentPart.length < 200) {
-      throw new Error('Content too short');
-    }
-
-    return {
-      title: meta.title || 'Untitled',
-      tldr: meta.tldr || '',
-      tags: [...(meta.tags || []), ...sourceTags].filter((v, i, a) => a.indexOf(v) === i),
-      category: (meta.category || 'learning').toLowerCase(),
-      summary: contentPart,
-    };
+    const jsonMatch = metaRaw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON found');
+    meta = JSON.parse(jsonMatch[0]);
   } catch (e) {
-    console.error('  ❌ 解析失敗。Metadata 部份：', text.split('---CONTENT---')[0]);
-    throw e;
+    console.error('  ❌ Metadata 解析失敗：', metaRaw.slice(0, 200));
+    throw new Error('Invalid metadata response');
   }
+
+  const validType = VALID_TYPES.includes(meta.type as any) ? meta.type : 'explainer';
+  console.log(`  📌 type: ${validType} / category: ${meta.category}`);
+
+  // ── Step 2：根據 type 生成內容 ────────────────────────────────────────────────
+  const structure = TYPE_STRUCTURES[validType];
+
+  const contentPrompt = `你是台灣技術主編。將以下 YouTube 影片內容撰寫成一篇台灣繁體中文技術文章。
+
+【寫作規範】
+- 語言：全程使用台灣繁體中文。術語：「程式碼」非「代碼」、「框架」非「架構（指 framework 時）」、「專案」非「項目」。
+- 語氣：直接，不客套，可以有觀點，不需要介紹自己。
+- 長度：600–1000 字。
+- 圖表：有流程或架構時用 Mermaid（flowchart / sequenceDiagram / graph 依情境選用），不要為了加圖而加圖。Mermaid 箭頭格式：\`A --> B\` 或 \`A -->|label| B\`，不要用 \`|label|>\`。
+- 必須以此結構撰寫（將 {{...}} 替換為實際內容）：
+
+${structure}
+
+只輸出文章 Markdown 內容，不要輸出任何 frontmatter 或額外說明。
+
+<content>
+影片標題：${videoTitle}
+內容：${content}
+</content>`;
+
+  let articleContent = await callAI(contentPrompt, 2500);
+
+  if (!articleContent || articleContent.length < 200) {
+    throw new Error('Content too short');
+  }
+
+  // ── Mermaid 驗證與修復 ────────────────────────────────────────────────────────
+  const mermaidRegex = /```mermaid([\s\S]*?)```/g;
+  let match;
+  while ((match = mermaidRegex.exec(articleContent)) !== null) {
+    const originalCode = match[1].trim();
+    const validation = validateMermaid(originalCode);
+    if (!validation.ok) {
+      const fixedCode = await tryFixMermaid(originalCode, validation.error!);
+      articleContent = articleContent.replace(originalCode, fixedCode);
+    }
+  }
+
+  return {
+    title: meta.title || 'Untitled',
+    tldr: meta.tldr || '',
+    tags: [...(meta.tags || []), ...sourceTags].filter((v, i, a) => a.indexOf(v) === i),
+    category: (meta.category || 'learning').toLowerCase(),
+    type: validType,
+    summary: articleContent,
+  };
 }
 
 // ── Markdown Output ──────────────────────────────────────────────────────────
@@ -285,6 +492,7 @@ function writePost(videoId: string, source: Source, video: VideoEntry, ai: AISum
     `lang: zh-TW`,
     `tldr: "${ai.tldr.replace(/"/g, '\\"')}"`,
     `description: "${ai.tldr.replace(/"/g, '\\"')}"`,
+    `type: ${ai.type}`,
     `original_url: "${video.url}"`,
     `draft: false`,
     '---',
