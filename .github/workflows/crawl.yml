@@ -43,16 +43,24 @@ jobs:
           git config user.email "a920604a@gmail.com"
 
       - name: Commit and push new articles
+        id: commit
         run: |
           git add src/content/posts/
           if git diff --cached --quiet; then
             echo "無新文章，跳過 commit。"
+            echo "has_new=false" >> "$GITHUB_OUTPUT"
           else
             git commit -m "crawl: add new articles from YouTube sources"
             git push
+            echo "has_new=true" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Build site
+        if: steps.commit.outputs.has_new == 'true'
+        run: pnpm build
+
       - name: Deploy to Cloudflare Pages
+        if: steps.commit.outputs.has_new == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
