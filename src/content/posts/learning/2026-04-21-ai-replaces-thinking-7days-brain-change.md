@@ -1,6 +1,6 @@
 ---
 title: "7 天讓 AI 代替我思考——這是我大腦的變化"
-date: 2026-04-21
+date: 2026-04-21T19:00:29+08:00
 category: learning
 tags: [ai, neuroscience, cognitive-science, experiment, brain, working-memory]
 lang: zh-TW

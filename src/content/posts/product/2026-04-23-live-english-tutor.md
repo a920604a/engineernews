@@ -1,6 +1,6 @@
 ---
 title: "Live English Tutor"
-date: 2026-04-23
+date: 2026-04-23T14:56:03+08:00
 category: product
 type: case-study
 tags: ["python", "typescript", "react", "fastapi", "docker", "postgresql", "firebase", "ai", "education"]

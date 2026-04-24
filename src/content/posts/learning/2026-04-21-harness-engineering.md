@@ -1,6 +1,6 @@
 ---
 title: "Harness Engineering：語言模型不是不夠聰明，只是缺乏引導"
-date: 2026-04-21
+date: 2026-04-21T08:03:40+08:00
 category: learning
 tags: [ai, harness-engineering, llm, ai-agent, prompt-engineering, context-engineering]
 lang: zh-TW

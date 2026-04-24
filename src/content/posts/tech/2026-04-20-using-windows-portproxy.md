@@ -1,6 +1,6 @@
 ---
 title: "Using Windows Portproxy to Run Codex with Remote GPU Ollama (No Proxy Server Needed)"
-date: 2026-04-20
+date: 2026-04-20T15:11:51+08:00
 category: tech
 tags: [ollama, codex, docker, gpu, windows, portproxy]
 lang: zh-TW

@@ -3,7 +3,7 @@
 | 欄位 | 型別 | 必填 | 說明 |
 |------|------|------|------|
 | title | string | ✅ | 文章標題 |
-| date | date | ✅ | 撰寫日期，格式 YYYY-MM-DD |
+| date | datetime | ✅ | 撰寫時間，格式 ISO 8601（`YYYY-MM-DDTHH:MM:SS.sssZ`） |
 | category | string | ✅ | 主分類，從 5 個選一（見下方） |
 | tags | string[] | ✅ | 標籤，全小寫 kebab-case，可空陣列 |
 | lang | enum | ✅ | zh-TW 或 en，預設 zh-TW |
@@ -62,7 +62,7 @@ tags: [astro, cloudflare-workers, deployment]
 
 ## 檔名規則
 
-`YYYY-MM-DD-<slug>.md`
+`YYYY-MM-DD-<slug>.md`（檔名只用日期，不含時間）
 
 slug 用英文 kebab-case，取關鍵詞：
 - `2026-03-12-d1-batch-timeout.md`

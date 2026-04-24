@@ -1,6 +1,6 @@
 ---
 title: "ChatGPT 是怎麼煉成的？解密大型語言模型的三階段訓練流程"
-date: 2026-04-23
+date: 2026-04-23T11:33:00+08:00
 category: learning
 tags: ["ai", "llm", "chatgpt", "nlp"]
 lang: zh-TW

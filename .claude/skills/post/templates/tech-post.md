@@ -1,6 +1,6 @@
 ---
 title: ""
-date: YYYY-MM-DD
+date: YYYY-MM-DDTHH:MM:SS.sssZ
 category: tech
 tags: []
 lang: zh-TW

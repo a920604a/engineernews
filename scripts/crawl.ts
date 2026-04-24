@@ -470,7 +470,9 @@ ${structure}
 // ── Markdown Output ──────────────────────────────────────────────────────────
 
 function writePost(videoId: string, source: Source, video: VideoEntry, ai: AISummary): string {
-  const today = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  const today = now.toISOString().split('T')[0];
+  const nowIso = now.toISOString();
   const category = ['tech', 'product', 'learning', 'career', 'life'].includes(ai.category) ? ai.category : 'learning';
   const categoryDir = path.join(POSTS_BASE_DIR, category);
   if (!fs.existsSync(categoryDir)) fs.mkdirSync(categoryDir, { recursive: true });
@@ -486,7 +488,7 @@ function writePost(videoId: string, source: Source, video: VideoEntry, ai: AISum
   const frontmatter = [
     '---',
     `title: "${ai.title.replace(/"/g, '\\"')}"`,
-    `date: ${today}`,
+    `date: ${nowIso}`,
     `category: ${category}`,
     `tags: [${ai.tags.map(t => `"${t}"`).join(', ')}]`,
     `lang: zh-TW`,

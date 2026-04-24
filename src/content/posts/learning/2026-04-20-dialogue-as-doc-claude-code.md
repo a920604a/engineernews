@@ -1,6 +1,6 @@
 ---
 title: "對話即文件：用 Claude Code 把 Debug 過程直接變成文章"
-date: 2026-04-20
+date: 2026-04-21T08:03:40+08:00
 category: learning
 tags: ["ai", "claude-code", "debugging", "writing-automation"]
 lang: zh-TW

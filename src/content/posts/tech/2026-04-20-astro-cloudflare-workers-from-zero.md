@@ -1,6 +1,6 @@
 ---
 title: "用 Astro + Cloudflare Workers 從零建立低摩擦平台"
-date: 2026-04-20
+date: 2026-04-20T13:38:46+08:00
 category: "tech"
 tags: ["astro", "cloudflare-workers", "cloudflare-pages", "deployment"]
 lang: zh-TW

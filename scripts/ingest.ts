@@ -111,14 +111,16 @@ async function ingest() {
     rl.close();
   }
 
-  const today = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  const today = now.toISOString().split('T')[0];
+  const nowIso = now.toISOString();
   const slug = `${today}-${slugify(finalTitle)}`;
   const outputPath = path.join(CONTENT_DIR, `${slug}.md`);
 
   const frontmatter = [
     '---',
     `title: "${finalTitle}"`,
-    `date: "${today}"`,
+    `date: "${nowIso}"`,
     `category: "${meta.category}"`,
     `tags: [${meta.tags.map(t => `"${t}"`).join(', ')}]`,
     `lang: "zh-TW"`,
