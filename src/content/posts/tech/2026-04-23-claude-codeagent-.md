@@ -24,10 +24,10 @@ draft: false
 
 ```mermaid
 graph LR
-    A[下載 Claude Code 安裝程式] -->|下載完成後|> B[安裝 Claude Code]
-    B -->|安裝完成後|> C[設定 Claude Code]
-    C -->|設定完成後|> D[安裝 Agent 框架]
-    D -->|安裝完成後|> E[設定 Agent 框架]
+    A[下載 Claude Code 安裝程式] -->|下載完成後| B[安裝 Claude Code]
+    B -->|安裝完成後| C[設定 Claude Code]
+    C -->|設定完成後| D[安裝 Agent 框架]
+    D -->|安裝完成後| E[設定 Agent 框架]
 ```
 
 1. 下載 Claude Code 安裝程式：請前往 Claude Code 官網下載對應作業系統的安裝程式。
@@ -42,10 +42,10 @@ graph LR
 
 ```mermaid
 graph LR
-    A[下載 Claude Code 安裝程式] -->|下載完成後|> B[安裝 Claude Code]
-    B -->|安裝完成後|> C[設定 Claude Code]
-    C -->|設定完成後|> D[安裝 Agent 框架]
-    D -->|安裝完成後|> E[設定 Agent 框架]
+    A[下載 Claude Code 安裝程式] -->|下載完成後| B[安裝 Claude Code]
+    B -->|安裝完成後| C[設定 Claude Code]
+    C -->|設定完成後| D[安裝 Agent 框架]
+    D -->|安裝完成後| E[設定 Agent 框架]
 ```
 
 1. 下載 Claude Code 安裝程式：請前往 Claude Code 官網下載對應作業系統的安裝程式。
@@ -60,10 +60,10 @@ graph LR
 
 ```mermaid
 graph LR
-    A[下載 Claude Code 安裝程式] -->|下載完成後|> B[安裝 Claude Code]
-    B -->|安裝完成後|> C[設定 Claude Code]
-    C -->|設定完成後|> D[安裝 Agent 框架]
-    D -->|安裝完成後|> E[設定 Agent 框架]
+    A[下載 Claude Code 安裝程式] -->|下載完成後| B[安裝 Claude Code]
+    B -->|安裝完成後| C[設定 Claude Code]
+    C -->|設定完成後| D[安裝 Agent 框架]
+    D -->|安裝完成後| E[設定 Agent 框架]
 ```
 
 1. 下載 Claude Code 安裝程式：請前往 Claude Code 官網下載對應作業系統的安裝程式。

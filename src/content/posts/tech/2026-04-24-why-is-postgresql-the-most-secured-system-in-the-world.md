@@ -47,3 +47,4 @@ PostgreSQL 是一個安全性非常高的資料庫管理系統，適合需要高
 ## 參考資料
 * PostgreSQL 官方網站：https://www.postgresql.org/
 * PostgreSQL 安全指南：https://www.postgresql.org/docs/current/static/security.html
+* [PostgreSQL 為何是世界上最安全的系統](https://www.youtube.com/watch?v=S_Z8Y0vMSzo)

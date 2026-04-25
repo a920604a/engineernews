@@ -11,13 +11,17 @@ const MAX_VIDEOS_PER_CHANNEL = 5;
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-function isAlreadyProcessed(videoId: string): boolean {
+function isAlreadyProcessed(videoId: string, videoUrl: string): boolean {
   const categories = ['tech', 'product', 'learning', 'career', 'life'];
   for (const cat of categories) {
     const dir = path.join(POSTS_BASE_DIR, cat);
     if (!fs.existsSync(dir)) continue;
     const files = fs.readdirSync(dir);
-    if (files.some(f => f.includes(videoId))) return true;
+    for (const file of files) {
+      if (file.includes(videoId)) return true;
+      const content = fs.readFileSync(path.join(dir, file), 'utf-8');
+      if (content.includes(`original_url: "${videoUrl}"`)) return true;
+    }
   }
   return false;
 }
@@ -481,8 +485,11 @@ function writePost(videoId: string, source: Source, video: VideoEntry, ai: AISum
   const outputPath = path.join(categoryDir, fileName);
 
   let finalSummary = ai.summary;
+  const videoRef = `- [${video.title}](${video.url})`;
   if (!finalSummary.includes('## 參考資料')) {
-    finalSummary += `\n\n## 參考資料\n\n- [${video.title}](${video.url})`;
+    finalSummary += `\n\n## 參考資料\n\n${videoRef}`;
+  } else if (!finalSummary.includes(video.url)) {
+    finalSummary += `\n${videoRef}`;
   }
 
   const frontmatter = [
@@ -522,7 +529,7 @@ async function crawl() {
   // 依序嘗試隨機排列的頻道，找到第一個有新影片的就處理並結束
   for (const source of enabledSources) {
     const videos = getLatestVideos(source);
-    const newVideos = videos.filter(v => !isAlreadyProcessed(v.id));
+    const newVideos = videos.filter(v => !isAlreadyProcessed(v.id, v.url));
 
     if (newVideos.length === 0) {
       console.log(`  ⏭️  ${source.name} 無新影片，換下一個`);

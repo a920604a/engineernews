@@ -53,3 +53,4 @@ graph LR
 
 *   [System Design Primer](https://github.com/donnemartin/system-design-primer)
 *   [Designing Data-Intensive Applications](https://dataintensive.net/)
+*   [系統設計面試複盤：Live 評論會](https://www.youtube.com/watch?v=NA7O85akf1I)

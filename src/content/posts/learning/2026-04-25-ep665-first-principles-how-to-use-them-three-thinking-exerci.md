@@ -31,10 +31,10 @@ draft: false
 
 ```mermaid
 graph LR
-    A[問題] -->|質疑假設|> B[假設和知識]
-    B -->|分解問題|> C[基本原理和假設]
-    C -->|重新組合|> D[新的知識和假設]
-    D -->|批判性思考和質疑|> E[解決方案]
+    A[問題] -->|質疑假設| B[假設和知識]
+    B -->|分解問題| C[基本原理和假設]
+    C -->|重新組合| D[新的知識和假設]
+    D -->|批判性思考和質疑| E[解決方案]
 ```
 
 ## 跟「第二原則」（Second Principles）的差別
@@ -46,3 +46,4 @@ graph LR
 ## 參考資料
 * [First Principles](https://en.wikipedia.org/wiki/First_principle)
 * [Second Principles](https://en.wikipedia.org/wiki/Second_principle)
+* [從基本原理出發：3 個思考練習，讓你不再被選項牽著鼻子走](https://www.youtube.com/watch?v=hToO6daVuSw)

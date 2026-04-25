@@ -24,3 +24,4 @@ andrej-karpathy-skills 項目包含了 Karpathy 的 Claude Code 配置文件、�
 
 ## 參考資料
 - andrej-karpathy-skills：https://github.com/andrej-karpathy-skills
+- [Github 一周熱點第 111 期](https://www.youtube.com/watch?v=MreEoXnLysc)
