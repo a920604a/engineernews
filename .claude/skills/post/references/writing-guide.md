@@ -1,4 +1,4 @@
-# quidproquo 寫作風格指南
+# engineernews 寫作風格指南
 
 ## 核心原則
 
