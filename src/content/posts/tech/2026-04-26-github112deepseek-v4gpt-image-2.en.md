@@ -33,12 +33,12 @@ Although DeepSeek V4's emergence represents a breakthrough in AI technology, sev
 
 ```mermaid
 graph LR
-    A[DeepSeek V4 Project] -->|Published on Github|> B[Open-Source Community]
-    B -->|Gains Widespread Attention|> C[Technical Community]
-    C -->|Represents AI Progress|> D[Multimodal Generative Model]
-    D -->|Generates High-Quality Images and Text|> E[Applied to Image Generation, Text Generation, etc.]
-    E -->|Requires Vast Data and Computational Resources|> F[Deep Learning Technology]
-    F -->|Requires Significant Investment and Resources|> G[Model Training and Development]
-    G -->|Faces Challenges and Limitations|> H[Improving Model Generation Quality, Reducing Training Time, etc.]
-    H -->|Requires Further Research and Exploration|> I[Future Observations]
+    A[DeepSeek V4 Project] -->|Published on Github| B[Open-Source Community]
+    B -->|Gains Widespread Attention| C[Technical Community]
+    C -->|Represents AI Progress| D[Multimodal Generative Model]
+    D -->|Generates High-Quality Images and Text| E[Applied to Image Generation, Text Generation, etc.]
+    E -->|Requires Vast Data and Computational Resources| F[Deep Learning Technology]
+    F -->|Requires Significant Investment and Resources| G[Model Training and Development]
+    G -->|Faces Challenges and Limitations| H[Improving Model Generation Quality, Reducing Training Time, etc.]
+    H -->|Requires Further Research and Exploration| I[Future Observations]
 ```

@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getPostUrl, type PostLang } from '../../lib/postPaths';
+import { createLogger } from '../../lib/logger';
 
 type SearchSource = {
   citation: number;
@@ -265,8 +266,23 @@ Question:
 ${query}`;
 }
 
+async function writeLog(
+  db: D1Database,
+  log: { query: string; lang: string; vectorHits: number; keywordHits: number; llmOk: boolean; error?: string; durationMs: number }
+) {
+  try {
+    await db.prepare(
+      `INSERT INTO search_logs (query, lang, vector_hits, keyword_hits, llm_ok, error, duration_ms)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`
+    ).bind(log.query, log.lang, log.vectorHits, log.keywordHits, log.llmOk ? 1 : 0, log.error ?? null, log.durationMs).run();
+  } catch {
+    // non-critical, ignore
+  }
+}
+
 export const POST: APIRoute = async ({ request, locals }) => {
   const { AI, VECTORIZE, DB } = locals.runtime.env;
+  const log = createLogger(DB, 'api/search');
   const body = (await request.json()) as SearchBody;
   const parsed = parseBody(body);
 
@@ -277,40 +293,62 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
+  const t0 = Date.now();
+  let vectorHits = 0;
+  let keywordHits = 0;
+  let llmOk = false;
+
   try {
-    const embeddingResponse = await AI.run(EMBEDDING_MODEL, {
-      text: parsed.query,
-    });
+    log.info('search started', { query: parsed.query, lang: parsed.lang });
+
+    const embeddingResponse = await AI.run(EMBEDDING_MODEL, { text: parsed.query });
     const vector = embeddingResponse.data[0];
 
     let sources = await getRelevantSources(DB, VECTORIZE, vector, parsed.lang);
+    vectorHits = sources.length;
+    log.debug('vector search', { hits: vectorHits });
+
     if (sources.length === 0) {
       sources = await getKeywordSources(DB, parsed.query, parsed.lang);
+      keywordHits = sources.length;
+      log.debug('keyword fallback', { hits: keywordHits });
     }
+
     const prompt = buildPrompt(parsed.query, parsed.lang, sources);
     let answerStream: BodyInit;
+    let contentType: string;
 
     try {
       answerStream = await AI.run(CHAT_MODEL, {
-        prompt,
+        messages: [{ role: 'user', content: prompt }],
         stream: true,
       });
+      llmOk = true;
+      contentType = 'text/event-stream; charset=utf-8';
     } catch (chatError) {
-      console.error('Workers AI chat failed, using fallback answer:', chatError);
+      log.error('Workers AI chat failed', chatError);
       answerStream = buildFallbackAnswer(parsed.query, sources, parsed.lang);
+      contentType = 'text/plain; charset=utf-8';
     }
 
+    const durationMs = Date.now() - t0;
+    log.info('search done', { vectorHits, keywordHits, llmOk, durationMs });
+
+    // fire-and-forget search_logs
+    void writeLog(DB, { query: parsed.query, lang: parsed.lang, vectorHits, keywordHits, llmOk, durationMs });
+
     const headers = new Headers();
-    headers.set('Content-Type', typeof answerStream === 'string'
-      ? 'text/plain; charset=utf-8'
-      : 'text/event-stream; charset=utf-8');
+    headers.set('Content-Type', contentType);
     headers.set('Cache-Control', 'no-cache, no-transform');
     headers.set('x-rag-sources', JSON.stringify(sources));
     headers.set('x-rag-lang', parsed.lang);
 
     return new Response(answerStream as BodyInit, { headers });
   } catch (error) {
-    console.error('Search API Error:', error);
+    const errMsg = error instanceof Error ? error.message : String(error);
+    log.error('search failed', errMsg);
+    void writeLog(DB, { query: parsed.query, lang: parsed.lang, vectorHits, keywordHits, llmOk, error: errMsg, durationMs: Date.now() - t0 });
+
     const fallback = buildFallbackAnswer(parsed.query, [], parsed.lang);
     return new Response(fallback, {
       status: 200,
