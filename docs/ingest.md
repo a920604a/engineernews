@@ -1,143 +1,175 @@
-# 對話攝取與 Sync 工具
+# 內容 Pipeline：Ingest、Crawl、Sync
+
+---
 
 ## 內容來源
-
-本站內容有兩個來源：
 
 | 來源 | 工具 | 觸發方式 |
 |------|------|---------|
 | 工程對話 / 筆記 | `scripts/ingest.ts` | 手動執行 |
-| YouTube 頻道爬蟲 | `scripts/crawl.ts` | GitHub Actions 每天自動 |
+| YouTube 頻道 | `scripts/crawl.ts` | GitHub Actions cron 每 6 小時 |
 
 ---
 
 ## ingest.ts — 對話攝取
 
-### 互動模式（預設）
+將工程對話或筆記轉為帶 metadata 的 Markdown 文章。
+
+### 執行方式
 
 ```bash
-pnpm ingest <conversation.txt>
+pnpm ingest <conversation.txt>        # 互動模式，確認標題後手動 push
+pnpm ingest <conversation.txt> --yes  # 全自動：AI 生成 + git commit + push
 ```
 
-Workers AI 分析對話內容，產生 title / tldr / tags / category，並詢問是否修改標題。確認後手動 commit 與 push。
-
-### 自動模式（--yes）
-
-```bash
-pnpm ingest <conversation.txt> --yes
-```
-
-跳過所有互動，直接使用 AI 生成的 title，並自動執行：
-
-```
-寫入 markdown → git add → git commit → git push
-```
-
-push 後 CI 自動觸發部署與 D1 sync。
-
-### 使用的 AI Model
-
-呼叫 **Cloudflare Workers AI** 的 `@cf/meta/llama-3.1-8b-instruct`，將對話分析成結構化 metadata：
-
-```
-對話文字 → Llama-3.1-8b → { title, tldr, tags, category }
-```
-
-需設定環境變數：`CLOUDFLARE_ACCOUNT_ID`、`CLOUDFLARE_API_TOKEN`
-
-### 工作流程
+### 流程
 
 ```mermaid
-flowchart LR
-  Conv[對話 / 筆記] --> Ingest[pnpm ingest file.txt]
-  Ingest --> AI[Workers AI\nllama-3.1-8b]
-  AI --> Meta[title / tldr / tags / category]
-  Meta --> Mode{--yes?}
-  Mode -- 是 --> AutoCommit[git commit + push]
-  Mode -- 否 --> Review[人工確認標題]
-  Review --> ManualCommit[git commit + push]
-  AutoCommit --> CI[GitHub Actions]
-  ManualCommit --> CI
-  CI --> Deploy[Cloudflare Pages]
-  CI --> Sync[sync:prod → D1 + Vectorize]
+sequenceDiagram
+  participant Dev as 開發者
+  participant Script as ingest.ts
+  participant LLM as Workers AI<br/>llama-3.1-8b-instruct
+  participant Git as git
+  participant GHA as GitHub Actions
+
+  Dev->>Script: pnpm ingest file.txt [--yes]
+  Script->>Script: regex 脫敏<br/>(API keys / tokens / passwords)
+  Script->>LLM: 對話文字 → 分析
+  LLM-->>Script: { title, tldr, tags, category }
+
+  alt --yes
+    Script->>Git: git add + commit + push
+  else 互動模式
+    Script->>Dev: 確認/修改標題
+    Dev->>Git: 手動 git add + push
+  end
+
+  Git->>GHA: 觸發 deploy.yml
 ```
+
+### 脫敏規則
+
+| Pattern | 替換 |
+|---------|------|
+| `sk-[a-zA-Z0-9]{20,}` | `[REDACTED_API_KEY]` |
+| `Bearer [token]` | `Bearer [REDACTED]` |
+| 32-64 位 hex | `[REDACTED_TOKEN]` |
+| `password=xxx` / `api_key=xxx` | `[REDACTED]` |
+| `https://user:pass@...` | `https://[REDACTED]@...` |
+
+### 使用的 AI 模型
+
+`@cf/meta/llama-3.1-8b-instruct` — 輸出 `{ title, tldr, tags, category }` JSON
 
 ---
 
 ## crawl.ts — YouTube 爬蟲
 
+自動從 9 個 YouTube 頻道擷取最新技術影片，生成繁體中文摘要文章。
+
 ### 執行方式
 
 ```bash
-pnpm crawl         # 本地（不寫 Vectorize）
-pnpm crawl:prod    # 遠端（含 Vectorize embedding）
+pnpm crawl          # 本地（不寫 Vectorize）
+pnpm crawl:prod     # 遠端（含 Vectorize embedding）
 ```
 
-每次執行最多處理 **3 支**新影片（來源 shuffle，不同頻道輪流）。
+每次執行最多處理 **3 支**新影片。
 
-### 工作流程
+### 流程
 
 ```mermaid
 flowchart TD
-  Cron[GitHub Actions cron\n每天 UTC 02:00] --> Shuffle[隨機排序 9 個來源]
-  Shuffle --> Loop[for each source]
-  Loop --> List[yt-dlp 列出最新 5 支影片]
-  List --> Filter[過濾已處理]
+  Cron["GitHub Actions cron<br/>0 */6 * * *"] --> Shuffle[隨機排序 9 個頻道]
+  Shuffle --> Loop[for each 頻道]
+  Loop --> List["yt-dlp 列出最新 5 支影片"]
+  List --> Filter[過濾已處理（查 D1）]
   Filter --> Pick[取第 1 支新影片]
-  Pick --> Sub[yt-dlp 下載字幕\nzh-TW > zh > en]
-  Sub -- 有字幕 --> AI[Workers AI 生成\n繁體中文摘要]
-  Sub -- 無字幕 --> Fallback[title + description fallback]
-  Fallback --> AI
-  AI --> Write[寫入 posts/crawled/VIDEO_ID.md\ntype: crawled]
+  Pick --> Sub["yt-dlp 下載字幕<br/>zh-TW > zh-Hant > zh > en"]
+  Sub -->|有字幕| Trim[截斷至 4000 chars]
+  Sub -->|無字幕| Fallback[title + description]
+  Trim --> LLM["Workers AI llama-3.1-70b<br/>繁中摘要 + Mermaid 圖"]
+  Fallback --> LLM
+  LLM --> Validate{Mermaid 有效?}
+  Validate -->|否| Fix["LLM 修正 Mermaid 語法"]
+  Fix --> Write
+  Validate -->|是| Write["寫入 posts/{category}/{videoId}.md"]
   Write --> Count{已達 3 支?}
-  Count -- 是 --> Commit[git commit + push\nauthor: a920604a]
-  Count -- 否 --> Loop
-  Commit --> CI[deploy.yml 觸發]
-  CI --> Deploy[Cloudflare Pages]
-  CI --> Sync[sync:prod → D1 + Vectorize]
+  Count -->|否| Loop
+  Count -->|是| Commit["git commit + push<br/>author: a920604a"]
+  Commit --> Deploy[觸發 deploy.yml]
 ```
 
 ### 來源設定
 
-來源清單維護在 `scripts/sources.ts`，新增頻道只需在 `SOURCES` 陣列加一筆 `Source` 物件並設定 `enabled: true`。
+頻道清單維護在 `scripts/sources.ts`（`SOURCES` 陣列，`enabled: true` 才會被爬取）。
 
-目前收錄 9 個繁體中文 YouTube 頻道（AI、工程、職涯、個人成長）。
+### Crawled 文章 Frontmatter
+
+```yaml
+---
+title: "LLM 生成"
+date: "ISO 8601"
+category: "tech|product|learning|career|life"
+tags: [...]
+lang: "zh-TW"
+tldr: "一句話摘要"
+draft: false
+original_url: "https://youtube.com/watch?v=..."
+type: "crawled"
+---
+```
 
 ---
 
-## sync-to-d1.ts — 增量同步機制
+## sync-to-d1.ts — 增量同步
 
-為了節省 API 呼叫額度並提升速度，`sync-to-d1.ts` 採用了基於 Hash 的增量更新機制。
+將本地 Markdown 增量同步到 D1 + Vectorize。基於 SHA256 hash 避免重複 embedding。
 
-### 工作流程
+### 執行方式
+
+```bash
+pnpm sync           # 同步至本地 D1（不寫 Vectorize）
+pnpm sync:prod      # 同步至遠端 D1 + Vectorize（CI 自動觸發）
+```
+
+### 流程
 
 ```mermaid
 flowchart TD
-  Start[啟動 Sync] --> LoadHashes[一次性載入 D1 所有 content_hash]
-  LoadHashes --> Loop[遍歷本地所有 MD 檔案]
-  Loop --> CalcHash[計算本地內容 SHA256 Hash]
-  CalcHash --> Compare{Hash 是否一致?}
-  
-  Compare -- 是 --> Skip[跳過該文章]
-  Compare -- 否 --> DeleteVec[刪除 Vectorize 舊向量\n依據舊 chunk 數量重建 IDs]
-  DeleteVec --> UpsertD1[UPSERT D1 紀錄\n更新 content_hash]
-  UpsertD1 --> SyncChunks[重新切割 Chunks 並寫入 D1]
-  SyncChunks --> Embed[重新產生 Embedding 並寫入 Vectorize]
-  
-  Skip --> Next[下一篇]
-  Embed --> Next
-  Next --> Loop
-  Loop -- 結束遍歷 --> Cleanup[孤立資料清理\nOrphan Cleanup]
-  Cleanup --> Done[完成]
+  Start[sync-to-d1.ts --prod] --> LoadHashes[載入 D1 所有 id→content_hash]
+  LoadHashes --> Walk[Walk src/content/posts/]
+  Walk --> Each{每個 .md}
+  Each --> Hash[SHA256]
+  Hash --> Same{hash 相同?}
+  Same -->|是| Skip[跳過]
+  Same -->|否| DelVec[刪除舊向量\nvectorize delete-vectors]
+  DelVec --> Upsert["D1 UPSERT posts<br/>(id, title, category, lang, tldr, content, tags, content_hash...)"]
+  Upsert --> Chunks[分割 chunks\n段落 max 1000 chars]
+  Chunks --> EachChunk{每個 chunk}
+  EachChunk --> D1Chunk[D1 INSERT doc_chunks]
+  D1Chunk --> Embed["Workers AI bge-m3<br/>text → float[384]"]
+  Embed --> VecInsert["Vectorize insert<br/>metadata: {source_id, lang, title, ...}"]
+  VecInsert --> EachChunk
+  EachChunk -->|完成| Each
+  Each -->|完成| Orphan[清理孤立資料\n比對本地 vs D1 ids]
 ```
 
-### 核心特性
+### Chunk ID 格式
 
-1.  **增量跳過**：內容未改動的文章完全不會觸發 D1 寫入或 AI 向量計算，大幅縮短 CI 執行時間。
-2.  **精準清理向量**：更新文章時，會先根據 D1 中記錄的舊 chunk 數量重建 chunk IDs（格式：`type:hash-index`），精準呼叫 `vectorize delete`，避免索引殘留。
-3.  **孤立資料處理 (Orphan Cleanup)**：
-    *   比對「本地檔案集合」與「D1 現有 ID 集合」。
-    *   若 D1 中存在但本地已刪除的 ID，會自動清除 D1 紀錄及其對應的所有向量。
+```
+post:{sha1(sourceId)[0:16]}-{chunkIndex}
+```
+
+範例：`post:abc123def456-0`、`post:abc123def456-1`
+
+### 觸發條件（CI）
+
+`deploy.yml` 在以下條件才執行 sync：
+```
+git diff HEAD~1 -- src/content/ scripts/sync-to-d1.ts
+```
+若無內容變動，跳過 sync 節省 API 費用。
 
 ---
 
@@ -145,9 +177,9 @@ flowchart TD
 
 | 指令 | 說明 |
 |------|------|
-| `pnpm ingest <file>` | 互動模式攝取對話 |
+| `pnpm ingest <file>` | 互動模式攝取 |
 | `pnpm ingest <file> --yes` | 全自動攝取 + push |
-| `pnpm crawl` | 本地爬蟲（不寫 Vectorize） |
-| `pnpm crawl:prod` | 遠端爬蟲（含 Vectorize） |
+| `pnpm crawl` | 本地爬蟲 |
+| `pnpm crawl:prod` | 遠端爬蟲（含向量） |
 | `pnpm sync` | 同步至本地 D1 |
-| `pnpm sync:prod` | 同步至遠端 D1 + Vectorize（增量模式） |
+| `pnpm sync:prod` | 同步至遠端 D1 + Vectorize |

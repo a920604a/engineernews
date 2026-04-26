@@ -1,149 +1,102 @@
-# 架構說明
+# 系統架構
 
 ## 技術棧
 
 | 層級 | 技術 |
 |------|------|
 | 前端 | Astro 5 + React（互動元件） |
-| 邊緣執行 | Cloudflare Workers |
+| 邊緣執行 | Cloudflare Workers（SSR + API routes） |
+| 靜態搜尋 | Pagefind（build-time 全文索引） |
 | 資料庫 | Cloudflare D1（SQLite） |
-| 向量索引 | Cloudflare Vectorize |
+| 向量索引 | Cloudflare Vectorize（384 維，cosine） |
 | AI 推理 | Cloudflare Workers AI |
+| OG 圖片快取 | Cloudflare R2 |
+| CI/CD | GitHub Actions |
+| 套件管理 | pnpm 10 |
 
-## 系統架構
+---
+
+## 系統整體架構
 
 ```mermaid
 graph TD
-  subgraph Client[瀏覽器]
-    Browser[使用者]
+  subgraph Browser[瀏覽器]
+    User[使用者]
   end
 
   subgraph External[外部來源]
-    YouTube[YouTube / 字幕]
+    YT[YouTube / 字幕]
   end
 
   subgraph GHA[GitHub Actions]
-    Crawler[爬蟲機器人\nscripts/crawl.ts]
-    Deploy[部署流水線\ndeploy.yml]
+    DeployCI[deploy.yml]
+    CrawlCI[crawl.yml cron]
   end
 
   subgraph CF[Cloudflare]
-    subgraph Frontend[靜態 Hosting]
-      Pages[Cloudflare Pages\nAstro 靜態輸出]
-    end
+    Pages[Cloudflare Pages\nAstro SSR]
 
-    subgraph Backend[API 後端]
-      Workers[Cloudflare Workers\nsrc/pages/api/*.ts]
+    subgraph API[Worker API Routes]
+      SearchAPI[/api/search]
+      OGAPI[/api/og/...]
+      ViewsAPI[/api/views]
     end
 
     subgraph Storage[資料儲存]
-      D1[(Cloudflare D1\nposts / projects / doc_chunks)]
+      D1[(D1\nengineer-news-db)]
+      R2[(R2\nog-images bucket)]
+      Vec[(Vectorize\nengineer-news-index)]
     end
 
-    subgraph VectorSearch[語義搜尋]
-      Vectorize[(Cloudflare Vectorize\n向量索引)]
-    end
-
-    subgraph AI[AI 推理]
-      BGE[Workers AI\nbge-small-en-v1.5\nembedding]
-      LLM[Workers AI\nllama-3.1-8b-instruct\ningest / crawl 摘要]
+    subgraph WAI[Workers AI]
+      BGE[bge-m3\nembedding]
+      Qwen[qwen1.5-14b\nRAG chat]
+      Llama[llama-3.1-8b / 70b\ningest / crawl]
     end
   end
 
-  %% 使用者流程
-  Browser -->|瀏覽頁面| Pages
-  Browser -->|/api/search| Workers
-  Workers -->|查詢文章| D1
-  Workers -->|向量相似度搜尋| Vectorize
-  Workers -->|query → 向量| BGE
-  Vectorize -.->|chunk metadata| D1
+  User --> Pages
+  Pages --> SearchAPI & OGAPI & ViewsAPI
+  SearchAPI --> BGE & Vec & D1 & Qwen
+  OGAPI --> R2
+  ViewsAPI --> D1
 
-  %% 機器人流程
-  Crawler -->|抓取資訊| YouTube
-  Crawler -->|請求摘要與 Mermaid| LLM
-  Crawler -->|git push| Deploy
-  Deploy -->|構建與部署| Pages
-  Deploy -->|增量同步資料| D1
-  Deploy -->|同步向量索引| Vectorize
-  Deploy -->|產生內容 Embedding| BGE
+  CrawlCI --> YT --> Llama
+  CrawlCI -->|git push| DeployCI
+  DeployCI --> Pages
+  DeployCI --> BGE & D1 & Vec
 ```
 
-## 內容資料流
+---
 
-### 手動攝取（ingest）
+## Pipeline 文件
 
-```mermaid
-sequenceDiagram
-  participant Dev as 開發者
-  participant Ingest as ingest.ts
-  participant LLM as Workers AI (llama)
-  participant Git as git
-  participant GH as GitHub Actions
-  participant Pages as Cloudflare Pages
-  participant Sync as sync-to-d1.ts
-  participant D1
+| Pipeline | 文件 | 說明 |
+|----------|------|------|
+| AI 語義搜尋 | [pipelines/ai-search.md](pipelines/ai-search.md) | Vectorize + RAG（bge-m3 + qwen1.5-14b） |
+| 靜態關鍵字搜尋 | [pipelines/search.md](pipelines/search.md) | Pagefind，build-time，無 API |
+| OG 圖片生成 | [pipelines/og-image.md](pipelines/og-image.md) | satori + resvg-wasm + R2 快取 |
+| 手動發文 / 爬蟲 / Sync | [ingest.md](ingest.md) | ingest.ts、crawl.ts、sync-to-d1.ts |
 
-  Dev->>Ingest: pnpm ingest file.txt --yes
-  Ingest->>LLM: 對話文字
-  LLM-->>Ingest: title / tldr / tags / category
-  Ingest->>Git: git commit + push
-  Git->>GH: 觸發 deploy.yml
-  GH->>Pages: astro build + deploy
-  GH->>Sync: pnpm sync:prod
-  Sync->>D1: UPSERT posts + doc_chunks
-```
+---
 
-### 自動爬蟲（crawl）
-
-```mermaid
-sequenceDiagram
-  participant Cron as GitHub Actions cron
-  participant Crawl as crawl.ts
-  participant YT as yt-dlp
-  participant LLM as Workers AI (llama)
-  participant Git as git
-  participant GH as GitHub Actions
-  participant D1
-
-  Cron->>Crawl: 每天 UTC 02:00
-  loop 最多 3 支影片
-    Crawl->>YT: 列出新影片 + 下載字幕
-    YT-->>Crawl: 字幕文字（或 fallback）
-    Crawl->>LLM: 字幕 → 繁體中文摘要 (Follow post skill)
-    LLM-->>Crawl: title / tldr / tags / summary / mermaid
-    Crawl->>Git: 寫入 posts/crawled/YYYY-MM-DD-slug.md
-  end
-  Git->>GH: git commit + push
-  GH->>GH: 手動觸發 deploy.yml (gh workflow run)
-  GH->>GH: 觸發 deploy.yml → Pages + D1 sync
-```
-
-## 搜尋功能
-
-| | `/search` | `/ai-search` |
-|---|---|---|
-| 技術 | Pagefind（靜態全文索引） | Vectorize（語義向量搜尋） |
-| 運作方式 | build time 建立索引，純前端 JS 比對 | 即時呼叫 `/api/search` → embedding → 向量相似度 |
-| 增量更新 | N/A | 基於 `content_hash` 的增量同步 (SHA256) |
-| 需要 Workers | 否 | 是 |
-
-## D1 Schema
+## Cloudflare D1 Schema
 
 ```mermaid
 erDiagram
   posts {
-    TEXT id PK
-    TEXT slug
+    TEXT id PK "category/date-slug"
+    TEXT slug UK
     TEXT title
-    TEXT category
-    TEXT lang
+    TEXT category "tech|product|learning|..."
+    TEXT lang "zh-TW|en"
     TEXT description
     TEXT tldr
     TEXT content
-    TEXT tags
-    TEXT source
+    TEXT tags "JSON array"
+    TEXT source "crawled|null"
     TEXT source_url
-    TEXT content_hash
+    TEXT content_hash "SHA256"
     TEXT created_at
     TEXT updated_at
   }
@@ -161,25 +114,53 @@ erDiagram
     TEXT updated_at
   }
   doc_chunks {
-    TEXT id PK
-    TEXT source_id
-    TEXT source_type
+    TEXT id PK "post:hash-idx"
+    TEXT source_id FK
+    TEXT source_type "post|project"
     INTEGER chunk_index
     TEXT content
-    INTEGER token_count
     TEXT updated_at
   }
-```
+  page_views {
+    TEXT slug PK
+    INTEGER count
+    TEXT updated_at
+  }
   posts ||--o{ doc_chunks : "source_type=post"
   projects ||--o{ doc_chunks : "source_type=project"
 ```
 
-## 文章類型
+---
 
-| type | 說明 | 來源 |
-|------|------|------|
-| `debug` | 踩坑記錄 | 手動 ingest |
-| `deep-dive` | 技術深度介紹 | 手動 ingest |
-| `guide` | 操作指南 | 手動 ingest |
-| `project` | 專案介紹 | 手動 ingest |
-| `crawled` | 自動爬取（YouTube） | crawl.ts 自動生成 |
+## Workers AI 模型一覽
+
+| 模型 | 用途 | 呼叫位置 |
+|------|------|---------|
+| `@cf/baai/bge-m3` | 多語言 embedding（384 維） | `/api/search`、`sync-to-d1.ts` |
+| `@cf/qwen/qwen1.5-14b-chat-awq` | RAG 回答串流 | `/api/search` |
+| `@cf/meta/llama-3.1-8b-instruct` | Ingest metadata 擷取 | `scripts/ingest.ts` |
+| `@cf/meta/llama-3.1-70b-instruct` | Crawl 全文摘要 + Mermaid | `scripts/crawl.ts` |
+
+---
+
+## Cloudflare Bindings（wrangler.jsonc）
+
+| Binding | 類型 | 名稱 | 說明 |
+|---------|------|------|------|
+| `DB` | D1 | `engineer-news-db` | 主資料庫 |
+| `OG_IMAGES` | R2 | `engineer-news-og-images` | OG 圖片快取 |
+| `VECTORIZE` | Vectorize | `engineer-news-index` | 向量索引（384D cosine） |
+| `AI` | Workers AI | — | AI 推理 binding |
+
+---
+
+## 文章分類
+
+| 分類 | 說明 |
+|------|------|
+| `tech` | 工程技術 |
+| `product` | 產品思維 |
+| `learning` | 學習筆記 |
+| `career` | 職涯 |
+| `life` | 生活 |
+| `ai` / `design` / ... | 其他主題分類 |
