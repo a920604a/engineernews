@@ -36,6 +36,18 @@ type ChunkRow = {
   tldr?: string | null;
 };
 
+type SearchResult = {
+  citation: number;
+  postId: string;
+  title: string;
+  url: string;
+  excerpt: string;
+  score: number;
+  lang: PostLang;
+  category: string;
+  chunkId: string;
+};
+
 const EMBEDDING_MODEL = '@cf/baai/bge-small-en-v1.5';
 const CHAT_MODEL = '@cf/meta/llama-3.1-8b-instruct';
 const MAX_MATCHES = 8;
@@ -59,7 +71,7 @@ async function getRelevantSources(
   vectorize: VectorizeIndex,
   queryEmbedding: number[],
   lang: PostLang
-): Promise<SearchSource[]> {
+): Promise<SearchResult[]> {
   const matches = await vectorize.query(queryEmbedding, {
     topK: MAX_MATCHES,
     returnMetadata: false,
@@ -130,6 +142,100 @@ async function getRelevantSources(
   return sources;
 }
 
+async function getKeywordSources(
+  db: D1Database,
+  query: string,
+  lang: PostLang
+): Promise<SearchResult[]> {
+  const terms = query
+    .toLowerCase()
+    .split(/\s+/)
+    .map((term) => term.trim())
+    .filter((term) => term.length >= 2)
+    .slice(0, 4);
+
+  if (terms.length === 0) {
+    terms.push(query.toLowerCase());
+  }
+
+  const clauses = terms
+    .map(() => '(lower(title) LIKE ? OR lower(content) LIKE ? OR lower(description) LIKE ? OR lower(tldr) LIKE ? OR lower(tags) LIKE ?)')
+    .join(' OR ');
+
+  const bindings = terms.flatMap((term) => {
+    const pattern = `%${term}%`;
+    return [pattern, pattern, pattern, pattern, pattern];
+  });
+
+  const rows = await db.prepare(`
+    SELECT
+      d.id AS chunk_id,
+      d.source_id,
+      d.source_type,
+      d.chunk_index,
+      d.content,
+      p.title,
+      p.category,
+      p.lang,
+      p.description,
+      p.tldr,
+      CASE
+        WHEN lower(p.title) LIKE ? THEN 5
+        WHEN lower(p.tldr) LIKE ? THEN 4
+        WHEN lower(p.description) LIKE ? THEN 3
+        WHEN lower(d.content) LIKE ? THEN 2
+        ELSE 1
+      END AS score_rank
+    FROM doc_chunks d
+    JOIN posts p ON p.id = d.source_id
+    WHERE p.lang = ? AND (${clauses})
+    GROUP BY d.source_id
+    ORDER BY score_rank DESC, p.updated_at DESC, p.date DESC
+    LIMIT 8
+  `).bind(
+    `%${query.toLowerCase()}%`,
+    `%${query.toLowerCase()}%`,
+    `%${query.toLowerCase()}%`,
+    `%${query.toLowerCase()}%`,
+    lang,
+    ...bindings
+  ).all<ChunkRow & { score_rank: number }>();
+
+  const resultRows = rows.results ?? [];
+  const sources: SearchResult[] = [];
+
+  for (const row of resultRows) {
+    const citation = sources.length + 1;
+    sources.push({
+      citation,
+      postId: row.source_id,
+      title: row.title,
+      url: getPostUrl(row.source_id, row.lang),
+      excerpt: truncate(row.content, 220),
+      score: Math.max(0.2, Math.min(1, (row.score_rank ?? 1) / 5)),
+      lang: row.lang,
+      category: row.category,
+      chunkId: row.chunk_id,
+    });
+  }
+
+  return sources;
+}
+
+function buildFallbackAnswer(query: string, sources: SearchResult[], lang: PostLang) {
+  if (sources.length === 0) {
+    return lang === 'en'
+      ? `No relevant results were found for "${query}".`
+      : `沒有找到「${query}」的相關結果。`;
+  }
+
+  const lead = lang === 'en'
+    ? `I found ${sources.length} related article(s) for "${query}".`
+    : `我找到 ${sources.length} 篇和「${query}」相關的文章：`;
+  const bullets = sources.map((source) => `- [${source.citation}] ${source.title}`);
+  return [lead, ...bullets].join('\n');
+}
+
 function buildPrompt(query: string, lang: PostLang, sources: SearchSource[]) {
   const answerLang = lang === 'en' ? 'English' : 'Traditional Chinese (Taiwan)';
   const context = sources.length > 0
@@ -177,15 +283,27 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
     const vector = embeddingResponse.data[0];
 
-    const sources = await getRelevantSources(DB, VECTORIZE, vector, parsed.lang);
+    let sources = await getRelevantSources(DB, VECTORIZE, vector, parsed.lang);
+    if (sources.length === 0) {
+      sources = await getKeywordSources(DB, parsed.query, parsed.lang);
+    }
     const prompt = buildPrompt(parsed.query, parsed.lang, sources);
-    const answerStream = await AI.run(CHAT_MODEL, {
-      prompt,
-      stream: true,
-    });
+    let answerStream: BodyInit;
+
+    try {
+      answerStream = await AI.run(CHAT_MODEL, {
+        prompt,
+        stream: true,
+      });
+    } catch (chatError) {
+      console.error('Workers AI chat failed, using fallback answer:', chatError);
+      answerStream = buildFallbackAnswer(parsed.query, sources, parsed.lang);
+    }
 
     const headers = new Headers();
-    headers.set('Content-Type', 'text/event-stream; charset=utf-8');
+    headers.set('Content-Type', typeof answerStream === 'string'
+      ? 'text/plain; charset=utf-8'
+      : 'text/event-stream; charset=utf-8');
     headers.set('Cache-Control', 'no-cache, no-transform');
     headers.set('x-rag-sources', JSON.stringify(sources));
     headers.set('x-rag-lang', parsed.lang);
@@ -193,9 +311,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return new Response(answerStream as BodyInit, { headers });
   } catch (error) {
     console.error('Search API Error:', error);
-    return new Response(JSON.stringify({ error: 'Search failed' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
+    const fallback = buildFallbackAnswer(parsed.query, [], parsed.lang);
+    return new Response(fallback, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-cache, no-transform',
+        'x-rag-sources': '[]',
+        'x-rag-lang': parsed.lang,
+      },
     });
   }
 };

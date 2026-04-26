@@ -88,11 +88,13 @@ export const prerender = true;
 
     status.textContent = `找到 ${items.length} 筆結果。`;
     results.innerHTML = items.map((item, index) => {
-      const url = normalizeUrl(item.url);
-      const title = escapeHtml(item?.meta?.title || item?.meta?.name || '未命名文章');
-      const excerpt = escapeHtml(item.excerpt || item.content || '');
-      const date = escapeHtml(item?.meta?.date || '');
-      const category = escapeHtml(item?.meta?.category || '');
+      const data = item?.data ?? item;
+      const meta = data?.meta ?? {};
+      const url = normalizeUrl(data?.url ?? item?.url);
+      const title = escapeHtml(meta?.title || meta?.name || '未命名文章');
+      const excerpt = escapeHtml(data?.excerpt || data?.content || '');
+      const date = escapeHtml(meta?.date || '');
+      const category = escapeHtml(meta?.category || '');
 
       return `
         <a class="search-result card" href="${escapeHtml(url)}">
@@ -115,6 +117,7 @@ export const prerender = true;
 
     try {
       pagefindModule = await import('/pagefind/pagefind.js');
+      await pagefindModule.init();
       return pagefindModule;
     } catch (error) {
       console.error('Pagefind index not available', error);
@@ -142,8 +145,15 @@ export const prerender = true;
       const response = await pagefind.search(query);
       if (currentRequest !== requestId) return;
 
-      const items = response?.results ?? [];
-      renderResults(items, query);
+      const items = await Promise.all((response?.results ?? []).slice(0, 8).map(async (result) => {
+        try {
+          return await result.data();
+        } catch (error) {
+          console.warn('Failed to load Pagefind result data', error);
+          return null;
+        }
+      }));
+      renderResults(items.filter(Boolean), query);
     } catch (error) {
       console.error('Search failed', error);
       if (currentRequest !== requestId) return;
