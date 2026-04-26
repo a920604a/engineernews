@@ -208,7 +208,7 @@ async function syncChunks(
         fs.writeFileSync(tmp, JSON.stringify({
           id: cid,
           values: vector,
-          metadata: { source_id: sourceId, source_type: sourceType, slug: meta.slug, title: meta.title },
+          metadata: { source_id: sourceId, source_type: sourceType, chunk_index: i, slug: meta.slug, title: meta.title },
         }));
         try {
           execSync(`wrangler vectorize insert ${VECTOR_INDEX} --file=${tmp}`, { stdio: 'inherit' });

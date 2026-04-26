@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import { ImageResponse } from '@vercel/og';
 import { createElement } from 'react';
 import { getOgCacheKey, isOgSiteRoute, parseOgArticleRoute } from '../../../lib/shareCard';
+import { normalizeEnglishPostId } from '../../../lib/postPaths';
 
 import fontUrl from '@fontsource/noto-sans-tc/files/noto-sans-tc-chinese-traditional-900-normal.woff?url';
 
@@ -29,7 +30,7 @@ async function getFontData(baseUrl: string) {
 
 async function getPostForShareCard(lang: 'zh-TW' | 'en', postId: string) {
   const posts = await getCollection('posts', ({ data }) => !data.draft && data.lang === lang);
-  return posts.find((post) => post.id === postId);
+  return posts.find((post) => normalizeEnglishPostId(post.id) === normalizeEnglishPostId(postId));
 }
 
 function SiteCard() {

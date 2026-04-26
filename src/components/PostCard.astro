@@ -1,5 +1,6 @@
 ---
 import type { Lang } from '../i18n/ui';
+import { getPostUrl } from '../lib/postPaths';
 
 interface Props {
   id: string;
@@ -26,7 +27,7 @@ const {
 } = Astro.props;
 
 const isEn = lang === 'en';
-const postHref = isEn ? `/en/posts/${id}` : `/posts/${id}`;
+const postHref = getPostUrl(id, lang);
 const catHref  = isEn ? `/en/categories/${category}` : `/categories/${category}`;
 const tagHref  = (t: string) => isEn ? `/en/tags/${t}` : `/tags/${t}`;
 

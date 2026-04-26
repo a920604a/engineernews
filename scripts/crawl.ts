@@ -178,6 +178,14 @@ interface AISummary {
   summary: string;
 }
 
+interface EnglishArticle {
+  title: string;
+  tldr: string;
+  tags: string[];
+  description: string;
+  content: string;
+}
+
 const VALID_TYPES = ['how-to', 'explainer', 'listicle', 'deep-dive', 'debug', 'case-study', 'comparison', 'research', 'newsjacking'] as const;
 
 const TYPE_STRUCTURES: Record<string, string> = {
@@ -471,6 +479,97 @@ ${structure}
   };
 }
 
+async function generateMermaidDiagram(videoTitle: string, content: string, articleContent: string): Promise<string> {
+  const prompt = `你是 Mermaid 圖表設計師。根據以下影片內容與文章摘要，產生一張最能表達技術結構、資料流或步驟順序的 Mermaid 圖。
+
+規則：
+- 只輸出 Mermaid code，不要輸出 \`\`\`mermaid fence
+- 優先使用 flowchart，若流程互動更適合則用 sequenceDiagram
+- 圖要具體，不要把整篇文章變成文字清單
+- 節點名稱簡短，箭頭格式要正確
+
+影片標題：${videoTitle}
+
+影片內容：
+${content}
+
+文章摘要：
+${articleContent}`;
+
+  const raw = await callAI(prompt, 500);
+  return raw.replace(/```mermaid/g, '').replace(/```/g, '').trim();
+}
+
+async function translateArticle(article: AISummary, articleContent: string, videoTitle: string): Promise<EnglishArticle> {
+  const metaPrompt = `你是一位技術編輯，請把以下台灣繁體中文文章資訊翻譯成自然的英文。
+
+只輸出 JSON，不要輸出其他文字：
+{
+  "title": "English title",
+  "tldr": "English one-sentence summary",
+  "tags": ["english-tag-1", "english-tag-2"],
+  "description": "English meta description"
+}
+
+規則：
+- tags 必須是 lower-case kebab-case
+- 保留技術術語與產品名稱的專有名詞
+- title 盡量自然、精準
+
+原始影片標題：${videoTitle}
+中文標題：${article.title}
+中文摘要：${article.tldr}
+中文標籤：${article.tags.join(', ')}`;
+
+  const metaRaw = await callAI(metaPrompt, 400);
+  let meta: Partial<EnglishArticle> = {};
+
+  try {
+    const jsonMatch = metaRaw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON found');
+    meta = JSON.parse(jsonMatch[0]);
+  } catch (error) {
+    console.warn('  ⚠️  英文 metadata 解析失敗，使用 fallback。');
+    meta = {
+      title: article.title,
+      tldr: article.tldr,
+      tags: article.tags.map((tag) => tag.toLowerCase()),
+      description: article.tldr,
+    };
+  }
+
+  const contentPrompt = `You are a technical editor.
+
+Translate the following Taiwanese Traditional Chinese Markdown article into natural English.
+
+Rules:
+- Preserve the Markdown structure, headings, lists, tables, links, and code fences.
+- Keep Mermaid code blocks intact, translating only surrounding prose.
+- Do not add explanations or prefaces.
+- Keep the tone direct and concise.
+
+Article title: ${article.title}
+
+Markdown:
+${articleContent}`;
+
+  let translatedContent = await callAI(contentPrompt, 3200);
+  translatedContent = translatedContent.trim();
+
+  if (!translatedContent || translatedContent.length < 100) {
+    console.warn('  ⚠️  英文內容翻譯過短，fallback to original content.');
+    translatedContent = articleContent;
+  }
+
+  return {
+    title: meta.title || article.title,
+    tldr: meta.tldr || article.tldr,
+    tags: (meta.tags?.length ? meta.tags : article.tags.map((tag) => tag.toLowerCase())) as string[],
+    description: meta.description || meta.tldr || article.tldr,
+    content: translatedContent,
+  };
+}
+
 // ── Markdown Output ──────────────────────────────────────────────────────────
 
 function writePost(videoId: string, source: Source, video: VideoEntry, ai: AISummary): string {
@@ -513,6 +612,38 @@ function writePost(videoId: string, source: Source, video: VideoEntry, ai: AISum
   return outputPath;
 }
 
+function writeEnglishPost(videoId: string, source: Source, video: VideoEntry, ai: AISummary, english: EnglishArticle): string {
+  const now = new Date();
+  const today = now.toISOString().split('T')[0];
+  const nowIso = now.toISOString();
+  const category = ['tech', 'product', 'learning', 'career', 'life'].includes(ai.category) ? ai.category : 'learning';
+  const categoryDir = path.join(POSTS_BASE_DIR, category);
+  if (!fs.existsSync(categoryDir)) fs.mkdirSync(categoryDir, { recursive: true });
+
+  const fileName = `${today}-${slugify(video.title) || video.id}.en.md`;
+  const outputPath = path.join(categoryDir, fileName);
+
+  const frontmatter = [
+    '---',
+    `title: "${english.title.replace(/"/g, '\\"')}"`,
+    `date: ${nowIso}`,
+    `category: ${category}`,
+    `tags: [${english.tags.map(t => `"${t}"`).join(', ')}]`,
+    `lang: en`,
+    `tldr: "${english.tldr.replace(/"/g, '\\"')}"`,
+    `description: "${english.description.replace(/"/g, '\\"')}"`,
+    `type: ${ai.type}`,
+    `original_url: "${video.url}"`,
+    `draft: false`,
+    '---',
+    '',
+    english.content,
+  ].join('\n');
+
+  fs.writeFileSync(outputPath, frontmatter);
+  return outputPath;
+}
+
 // ── Main ─────────────────────────────────────────────────────────────────────
 
 function shuffle<T>(arr: T[]): T[] {
@@ -545,8 +676,18 @@ async function crawl() {
       const content = subtitles ?? `標題：${video.title}\n簡介：${video.description}`;
 
       const ai = await summarize(content, source.tags, video.title);
-      const outPath = writePost(video.id, source, video, ai);
+      const mermaid = await generateMermaidDiagram(video.title, content, ai.summary);
+      let articleWithDiagram = ai.summary;
+      if (!/```mermaid[\s\S]*?```/.test(articleWithDiagram) && mermaid) {
+        articleWithDiagram += `\n\n## 技術結構圖\n\n\`\`\`mermaid\n${mermaid}\n\`\`\``;
+      }
+
+      const articleForWrite = { ...ai, summary: articleWithDiagram };
+      const english = await translateArticle(articleForWrite, articleForWrite.summary, video.title);
+      const outPath = writePost(video.id, source, video, articleForWrite);
+      const enOutPath = writeEnglishPost(video.id, source, video, ai, english);
       console.log(`  ✅ ${path.relative(process.cwd(), outPath)}`);
+      console.log(`  ✅ ${path.relative(process.cwd(), enOutPath)}`);
       console.log(`\n✅ 完成 1 篇文章。`);
       return;
     } catch (e) {

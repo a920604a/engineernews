@@ -1,19 +1,74 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 
-interface SearchResult {
-  slug: string;
+interface RagSource {
+  citation: number;
+  postId: string;
   title: string;
+  url: string;
+  excerpt: string;
   score: number;
-  postId?: string;
+  lang: 'zh-TW' | 'en';
+  category: string;
+  chunkId: string;
 }
 
 interface Props {
   lang?: 'zh-TW' | 'en';
 }
 
+function parseStreamPayload(payload: string) {
+  const trimmed = payload.trim();
+  if (!trimmed) return '';
+  if (trimmed === '[DONE]') return '';
+
+  try {
+    const parsed = JSON.parse(trimmed);
+    const delta = parsed?.choices?.[0]?.delta?.content;
+    if (typeof delta === 'string') return delta;
+    const response = parsed?.response;
+    if (typeof response === 'string') return response;
+    const text = parsed?.text;
+    if (typeof text === 'string') return text;
+    return '';
+  } catch {
+    return trimmed;
+  }
+}
+
+function renderAnswer(answer: string, sources: RagSource[]) {
+  const parts = answer.split(/(\[\d+\])/g);
+
+  return parts.map((part, index) => {
+    const citation = part.match(/^\[(\d+)\]$/);
+    if (citation) {
+      const citationIndex = Number(citation[1]);
+      const source = sources.find((item) => item.citation === citationIndex);
+      if (source) {
+        return (
+          <a
+            key={`${part}-${index}`}
+            href={source.url}
+            title={source.title}
+            style={{
+              color: 'var(--accent)',
+              textDecoration: 'none',
+              fontWeight: 700,
+            }}
+          >
+            {part}
+          </a>
+        );
+      }
+    }
+
+    return <span key={`${part}-${index}`}>{part}</span>;
+  });
+}
+
 export default function Search({ lang = 'zh-TW' }: Props) {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [answer, setAnswer] = useState('');
+  const [sources, setSources] = useState<RagSource[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searched, setSearched] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -22,39 +77,124 @@ export default function Search({ lang = 'zh-TW' }: Props) {
   const isEn = lang === 'en';
   const placeholder = isEn ? 'Semantic search...' : '語義搜尋技術知識...';
   const noResultsText = isEn ? 'No results found.' : '沒有找到相關結果。';
-  const resultsLabel = isEn ? 'AI Semantic Results' : 'AI 語義搜尋結果';
+  const resultsLabel = isEn ? 'RAG Answer' : 'RAG 回答';
+  const sourcesLabel = isEn ? 'Cited Sources' : '引用來源';
 
   const search = useCallback(async (q: string) => {
     if (!q.trim()) {
-      setResults([]);
+      setAnswer('');
+      setSources([]);
       setSearched(false);
       return;
     }
 
     setIsSearching(true);
+    setAnswer('');
+    setSources([]);
+
     try {
       const res = await fetch('/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: q }),
+        body: JSON.stringify({ query: q, lang }),
       });
-      const data = await res.json();
-      setResults(data.results || []);
+
+      if (!res.ok) {
+        throw new Error(`Search failed: ${res.status}`);
+      }
+
+      const sourceHeader = res.headers.get('x-rag-sources');
+      if (sourceHeader) {
+        try {
+          const parsed = JSON.parse(sourceHeader) as RagSource[];
+          setSources(Array.isArray(parsed) ? parsed : []);
+        } catch {
+          setSources([]);
+        }
+      }
+
+      const reader = res.body?.getReader();
+      if (!reader) {
+        const text = await res.text();
+        setAnswer(text);
+        setSearched(true);
+        return;
+      }
+
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let streamMode: 'unknown' | 'text' | 'sse' = 'unknown';
+      let finalAnswer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        if (streamMode === 'unknown') {
+          streamMode = chunk.includes('data:') || chunk.includes('\n\n') ? 'sse' : 'text';
+        }
+
+        if (streamMode === 'text') {
+          finalAnswer += chunk;
+          setAnswer(finalAnswer);
+          continue;
+        }
+
+        buffer += chunk;
+        let separatorIndex = buffer.indexOf('\n\n');
+        while (separatorIndex !== -1) {
+          const rawEvent = buffer.slice(0, separatorIndex).trim();
+          buffer = buffer.slice(separatorIndex + 2);
+
+          if (rawEvent) {
+            const payload = rawEvent
+              .split(/\r?\n/)
+              .filter((line) => line.startsWith('data:'))
+              .map((line) => line.slice(5).trimStart())
+              .join('\n');
+            const delta = parseStreamPayload(payload);
+            if (delta) {
+              finalAnswer += delta;
+              setAnswer(finalAnswer);
+            }
+          }
+
+          separatorIndex = buffer.indexOf('\n\n');
+        }
+      }
+
+      if (streamMode === 'sse' && buffer.trim()) {
+        const payload = buffer
+          .split(/\r?\n/)
+          .filter((line) => line.startsWith('data:'))
+          .map((line) => line.slice(5).trimStart())
+          .join('\n');
+        const delta = parseStreamPayload(payload);
+        if (delta) {
+          finalAnswer += delta;
+          setAnswer(finalAnswer);
+        }
+      }
+
       setSearched(true);
     } catch {
-      setResults([]);
+      setAnswer('');
+      setSources([]);
+      setSearched(true);
     } finally {
       setIsSearching(false);
     }
-  }, []);
+  }, [lang]);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => search(query), 400);
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
   }, [query, search]);
 
-  // ⌘K / Ctrl+K shortcut
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -65,8 +205,6 @@ export default function Search({ lang = 'zh-TW' }: Props) {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
-
-  const postHref = (slug: string) => isEn ? `/en/posts/${slug}` : `/posts/${slug}`;
 
   return (
     <div style={{ marginBottom: '32px' }}>
@@ -103,45 +241,84 @@ export default function Search({ lang = 'zh-TW' }: Props) {
         </div>
       </div>
 
-      {searched && !isSearching && (
-        <div style={{ marginTop: '12px' }}>
-          {results.length === 0 ? (
+      {searched && (
+        <div style={{ marginTop: '16px', display: 'grid', gap: '16px' }}>
+          {answer ? (
+            <section style={{
+              border: '0.5px solid var(--separator)',
+              borderRadius: '12px',
+              background: 'var(--bg-secondary)',
+              padding: '16px 18px',
+            }}>
+              <p style={{
+                margin: '0 0 10px',
+                fontSize: '12px',
+                fontWeight: 700,
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase',
+                color: 'var(--label-secondary)',
+              }}>
+                {resultsLabel}
+              </p>
+              <div style={{
+                margin: 0,
+                fontSize: '15px',
+                lineHeight: 1.8,
+                color: 'var(--label)',
+                whiteSpace: 'pre-wrap',
+              }}>
+                {renderAnswer(answer, sources)}
+              </div>
+            </section>
+          ) : !isSearching ? (
             <p style={{ fontSize: '14px', color: 'var(--label-secondary)', margin: '0', padding: '12px 0' }}>
               {noResultsText}
             </p>
-          ) : (
-            <>
-              <p style={{ fontSize: '12px', color: 'var(--label-secondary)', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
-                {resultsLabel}
+          ) : null}
+
+          {sources.length > 0 && (
+            <section>
+              <p style={{
+                margin: '0 0 10px',
+                fontSize: '12px',
+                fontWeight: 700,
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase',
+                color: 'var(--label-secondary)',
+              }}>
+                {sourcesLabel}
               </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                {results.map((res, i) => (
+              <div style={{ display: 'grid', gap: '8px' }}>
+                {sources.map((source) => (
                   <a
-                    key={i}
-                    href={postHref(res.slug)}
+                    key={source.chunkId}
+                    href={source.url}
                     style={{
-                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                      padding: '10px 14px', borderRadius: '8px',
-                      background: 'var(--bg-secondary)', border: '0.5px solid var(--separator)',
-                      textDecoration: 'none', transition: 'background 0.15s',
-                      gap: '12px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '4px',
+                      padding: '12px 14px',
+                      borderRadius: '10px',
+                      background: 'var(--bg-secondary)',
+                      border: '0.5px solid var(--separator)',
+                      textDecoration: 'none',
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-tertiary)')}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--bg-secondary)')}
                   >
-                    <span style={{ fontSize: '15px', fontWeight: 500, color: 'var(--label)' }}>
-                      {res.title}
-                    </span>
-                    <span style={{
-                      fontSize: '12px', color: 'var(--accent)', fontVariantNumeric: 'tabular-nums',
-                      flexShrink: 0, fontWeight: 500,
-                    }}>
-                      {(res.score * 100).toFixed(0)}%
-                    </span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', alignItems: 'baseline' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--label)' }}>
+                        [{source.citation}] {source.title}
+                      </span>
+                      <span style={{ fontSize: '11px', color: 'var(--accent)', flexShrink: 0 }}>
+                        {(source.score * 100).toFixed(0)}%
+                      </span>
+                    </div>
+                    <p style={{ margin: 0, fontSize: '13px', color: 'var(--label-secondary)', lineHeight: 1.6 }}>
+                      {source.excerpt}
+                    </p>
                   </a>
                 ))}
               </div>
-            </>
+            </section>
           )}
         </div>
       )}
