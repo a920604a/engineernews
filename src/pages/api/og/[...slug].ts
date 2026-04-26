@@ -33,6 +33,27 @@ async function getPostForShareCard(lang: 'zh-TW' | 'en', postId: string) {
   return posts.find((post) => normalizeEnglishPostId(post.id) === normalizeEnglishPostId(postId));
 }
 
+function createShareCardNode({
+  siteRoute,
+  post,
+  lang,
+}: {
+  siteRoute: boolean;
+  post: Awaited<ReturnType<typeof getPostForShareCard>> | null;
+  lang: 'zh-TW' | 'en';
+}) {
+  if (siteRoute) {
+    return h(SiteCard);
+  }
+
+  return h(ShareCard, {
+    title: post?.data.title ?? '',
+    category: post?.data.category ?? '',
+    tldr: post?.data.tldr,
+    lang,
+  });
+}
+
 function SiteCard() {
   return h(
     'div',
@@ -335,7 +356,7 @@ export const GET: APIRoute = async ({ params, locals, request }) => {
   let cached = null;
 
   try {
-    cached = await OG_IMAGES.get(cacheKey);
+    cached = OG_IMAGES ? await OG_IMAGES.get(cacheKey) : null;
   } catch (error) {
     console.warn(`OG cache lookup failed for ${cacheKey}`, error);
     cached = null;
@@ -349,38 +370,53 @@ export const GET: APIRoute = async ({ params, locals, request }) => {
     return new Response(body, { headers });
   }
 
-  const fontData = await getFontData(request.url);
-  const post = route ? await getPostForShareCard(route.lang, route.postId) : null;
+  try {
+    const fontData = await getFontData(request.url);
+    const post = route ? await getPostForShareCard(route.lang, route.postId) : null;
 
-  if (route && !post) {
-    return new Response('Not found', { status: 404 });
-  }
+    if (route && !post) {
+      return new Response('Not found', { status: 404 });
+    }
 
-  const response = new ImageResponse(
-    siteRoute
-      ? h(SiteCard)
-      : route
-        ? h(ShareCard, {
-            title: post?.data.title ?? '',
-            category: post?.data.category ?? '',
-            tldr: post?.data.tldr,
-            lang: route.lang,
-          })
-        : null,
-    {
+    const response = new ImageResponse(createShareCardNode({ siteRoute, post, lang: route?.lang ?? 'zh-TW' }), {
       width: CARD_WIDTH,
       height: CARD_HEIGHT,
       fonts: [{ name: FONT_FAMILY, data: fontData, weight: 900, style: 'normal' }],
+    });
+    const png = await response.arrayBuffer();
+
+    if (OG_IMAGES) {
+      try {
+        await OG_IMAGES.put(cacheKey, png);
+      } catch (error) {
+        console.warn(`OG cache write failed for ${cacheKey}`, error);
+      }
     }
-  );
-  const png = await response.arrayBuffer();
 
-  await OG_IMAGES.put(cacheKey, png);
+    return new Response(png, {
+      headers: {
+        'Content-Type': 'image/png',
+        'Cache-Control': 'public, max-age=31536000, immutable',
+      },
+    });
+  } catch (error) {
+    console.error(`OG image generation failed for ${cacheKey}`, error);
 
-  return new Response(png, {
-    headers: {
-      'Content-Type': 'image/png',
-      'Cache-Control': 'public, max-age=31536000, immutable',
-    },
-  });
+    try {
+      const fallback = new ImageResponse(h(SiteCard), {
+        width: CARD_WIDTH,
+        height: CARD_HEIGHT,
+      });
+      const png = await fallback.arrayBuffer();
+      return new Response(png, {
+        headers: {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'public, max-age=3600',
+        },
+      });
+    } catch (fallbackError) {
+      console.error(`OG fallback generation failed for ${cacheKey}`, fallbackError);
+      return new Response('OG generation failed', { status: 500 });
+    }
+  }
 };

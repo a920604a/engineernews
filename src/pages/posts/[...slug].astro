@@ -99,6 +99,10 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
 
   <div class="article-grid">
   <article class="article-body">
+    <div class="article-share-panel">
+      <SharePanel title={post.data.title} url={Astro.url.href} imageUrl={ogImage ?? ''} />
+    </div>
+
     <!-- Series nav (top) -->
     {series && (
       <div style="background:var(--bg-secondary); border:0.5px solid var(--separator); border-radius:var(--radius-md); padding:14px 18px; margin-bottom:28px; font-size:13px;">
@@ -176,12 +180,6 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
   {tocHeadings.length > 2 && (
     <aside class="article-toc-sidebar">
       <div class="sidebar-block">
-        <SharePanel
-          title={post.data.title}
-          url={Astro.url.href}
-          imageUrl={ogImage ?? ''}
-        />
-
         <p class="toc-sidebar-title">目錄</p>
         <ol>
           {tocHeadings.map(h => (
@@ -327,6 +325,11 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
   }
 
   .article-grid { display: block; }
+
+  .article-share-panel {
+    display: block;
+    margin-bottom: 24px;
+  }
 
   @media (min-width: 1140px) {
     .article-grid {
