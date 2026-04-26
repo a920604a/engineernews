@@ -11,4 +11,5 @@ interface Env {
   DB: D1Database;
   VECTORIZE: VectorizeIndex;
   AI: Ai;
+  OG_IMAGES: R2Bucket;
 }

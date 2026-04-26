@@ -2,12 +2,14 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostCard from '../../components/PostCard.astro';
+import SharePanel from '../../components/SharePanel.astro';
 import ScrollToTop from '../../components/ScrollToTop.astro';
 import PostPrevNext from '../../components/PostPrevNext.astro';
 import { useTranslations } from '../../i18n/utils';
 import { getRelatedPosts } from '../../utils/relatedPosts';
 import { getSeriesNav } from '../../utils/seriesNav';
 import { calcReadingTime } from '../../utils/readingTime';
+import { getOgImageUrl } from '../../lib/shareCard';
 
 export const prerender = true;
 
@@ -27,6 +29,7 @@ const t = useTranslations('zh-TW');
 const related = getRelatedPosts(post, allPosts);
 const series = getSeriesNav(post, allPosts);
 const readingTime = post.data.readingTime ?? calcReadingTime(post.body ?? '');
+const ogImage = getOgImageUrl(Astro.url.pathname, Astro.url.origin) ?? undefined;
 
 // Calculate Prev/Next
 const sortedPosts = allPosts
@@ -48,10 +51,23 @@ const jsonLd = {
 const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' });
 ---
 
-<BaseLayout title={post.data.title} description={post.data.description} jsonLd={jsonLd} layout="article">
+<BaseLayout title={post.data.title} description={post.data.description} jsonLd={jsonLd} layout="article" ogImage={ogImage}>
   <!-- Full-bleed Hero Banner -->
   <header class="post-hero" style={`--cat-color: var(--cat-${post.data.category});`}>
-    <div class="hero-inner hero-flex">
+    <!-- OG Background Layer -->
+    <div class="hero-bg-wrapper">
+      {ogImage && (
+        <img 
+          src={ogImage} 
+          alt="" 
+          class="hero-bg-img"
+          onerror="this.style.display='none'"
+        />
+      )}
+      <div class="hero-bg-overlay"></div>
+    </div>
+
+    <div class="hero-inner">
       <div class="hero-content">
         <div class="hero-meta">
           <a href={`/categories/${post.data.category}`} class="hero-badge">{post.data.category}</a>
@@ -70,15 +86,6 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
             <p class="tldr-content">{post.data.tldr}</p>
           </div>
         )}
-      </div>
-
-      <div class="hero-image-container">
-        <img 
-          src={`/og/posts-${post.data.category}-${post.id.replace(/\//g, '-')}.png`} 
-          alt={post.data.title}
-          class="hero-featured-image"
-          onerror="this.style.display='none'"
-        />
       </div>
     </div>
 
@@ -169,6 +176,12 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
   {tocHeadings.length > 2 && (
     <aside class="article-toc-sidebar">
       <div class="sidebar-block">
+        <SharePanel
+          title={post.data.title}
+          url={Astro.url.href}
+          imageUrl={ogImage ?? ''}
+        />
+
         <p class="toc-sidebar-title">目錄</p>
         <ol>
           {tocHeadings.map(h => (
@@ -186,56 +199,44 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
 <style>
   .post-hero {
     position: relative;
-    padding: 80px 24px 100px;
-    background: linear-gradient(135deg, color-mix(in srgb, var(--cat-color) 20%, var(--bg)) 0%, var(--bg) 100%);
+    padding: 100px 24px 120px;
+    background: var(--bg);
     overflow: hidden;
     margin-bottom: 40px;
     border-bottom: 0.5px solid var(--separator);
   }
 
+  .hero-bg-wrapper {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .hero-bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(60px) saturate(1.8);
+    opacity: 0.45;
+    transform: scale(1.1);
+  }
+
+  .hero-bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg, 
+      color-mix(in srgb, var(--cat-color) 15%, transparent) 0%, 
+      var(--bg) 100%
+    );
+  }
+
   .hero-inner {
-    max-width: 1140px;
+    max-width: 800px;
     margin: 0 auto;
     position: relative;
     z-index: 2;
-  }
-
-  .hero-flex {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 48px;
-  }
-
-  .hero-content {
-    flex: 1;
-    max-width: 720px;
-  }
-
-  .hero-image-container {
-    flex-shrink: 0;
-    width: 360px;
-    display: none;
-  }
-
-  @media (min-width: 1024px) {
-    .hero-image-container {
-      display: block;
-    }
-  }
-
-  .hero-featured-image {
-    width: 100%;
-    height: auto;
-    border-radius: var(--radius-md);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    border: 0.5px solid rgba(255,255,255,0.1);
-    transform: perspective(1000px) rotateY(-5deg) rotateX(2deg);
-    transition: transform 0.3s ease;
-  }
-
-  .hero-featured-image:hover {
-    transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
   }
 
   .hero-meta {

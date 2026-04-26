@@ -1,6 +1,7 @@
 ---
 import { getLangFromUrl, useTranslations, getLangSwitchUrl } from '../i18n/utils';
 import CommandCenter from '../components/CommandCenter';
+import { getOgImageUrl } from '../lib/shareCard';
 import '@fontsource/noto-sans-tc/400.css';
 import '@fontsource/noto-sans-tc/500.css';
 import '@fontsource/noto-sans-tc/700.css';
@@ -23,6 +24,11 @@ const siteDescription = description ?? t('site.tagline');
 const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://engineer-news.pages.dev');
 const switchURL = getLangSwitchUrl(Astro.url, lang);
 const isEn = lang === 'en';
+const defaultOgImage =
+  (ogImage && ogImage.length > 0)
+    ? ogImage
+    : getOgImageUrl(Astro.url.pathname, canonicalURL.origin);
+const ogType = layout === 'article' ? 'article' : 'website';
 
 const siteJsonLd = {
   "@context": "https://schema.org",
@@ -52,12 +58,13 @@ const siteJsonLd = {
     <meta property="og:title" content={`${title} | ${siteName}`} />
     <meta property="og:description" content={siteDescription} />
     <meta property="og:url" content={canonicalURL} />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content={ogImage ?? `${canonicalURL.origin}/og/${Astro.url.pathname.replace(/^\/|\/$/g, '').replace(/\//g, '-') || 'index'}.png`} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:image" content={defaultOgImage} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={`${title} | ${siteName}`} />
     <meta name="twitter:description" content={siteDescription} />
-    <meta name="twitter:image" content={ogImage ?? `${canonicalURL.origin}/og/${Astro.url.pathname.replace(/^\/|\/$/g, '').replace(/\//g, '-') || 'index'}.png`} />
+    <meta name="twitter:image" content={defaultOgImage} />
+
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd ?? siteJsonLd)} />
 

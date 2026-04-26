@@ -10,6 +10,13 @@
 			"database_id": "0bec497e-9de7-4069-bc90-7d0da0f72e9a"
 		}
 	],
+	"r2_buckets": [
+		{
+			"binding": "OG_IMAGES",
+			"bucket_name": "engineer-news-og-images",
+			"remote": true
+		}
+	],
 	"vectorize": [
 		{
 			"binding": "VECTORIZE",

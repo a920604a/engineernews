@@ -2,6 +2,8 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { useTranslations } from '../../../i18n/utils';
+import SharePanel from '../../../components/SharePanel.astro';
+import { getOgImageUrl } from '../../../lib/shareCard';
 
 export const prerender = true;
 
@@ -17,6 +19,7 @@ const { post } = Astro.props;
 const { Content, headings } = await render(post);
 const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 const t = useTranslations('en');
+const ogImage = getOgImageUrl(Astro.url.pathname, Astro.url.origin) ?? undefined;
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -32,7 +35,7 @@ const dateStr = post.data.date.toLocaleDateString('en-US', {
 });
 ---
 
-<BaseLayout title={post.data.title} description={post.data.description} jsonLd={jsonLd} layout="article">
+<BaseLayout title={post.data.title} description={post.data.description} jsonLd={jsonLd} layout="article" ogImage={ogImage}>
   <div class="article-grid">
   <article class="article-body">
     <header style="padding: 32px 0 24px; border-bottom: 0.5px solid var(--separator); margin-bottom: 32px;">
@@ -86,6 +89,12 @@ const dateStr = post.data.date.toLocaleDateString('en-US', {
 
   {tocHeadings.length > 2 && (
     <aside class="article-toc-sidebar">
+      <SharePanel
+        title={post.data.title}
+        url={Astro.url.href}
+        imageUrl={ogImage ?? ''}
+      />
+
       <p class="toc-sidebar-title">Table of Contents</p>
       <ol>
         {tocHeadings.map(h => (
