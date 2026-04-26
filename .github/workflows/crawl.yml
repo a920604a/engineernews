@@ -51,6 +51,7 @@ jobs:
             echo "has_new=false" >> "$GITHUB_OUTPUT"
           else
             git commit -m "crawl: add new articles from YouTube sources"
+            git pull --rebase origin main
             git push
             echo "has_new=true" >> "$GITHUB_OUTPUT"
           fi
