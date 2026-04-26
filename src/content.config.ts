@@ -11,6 +11,8 @@ const posts = defineCollection({
     lang: z.enum(['zh-TW', 'en']).default('zh-TW'),
     description: z.string().optional(),
     tldr: z.string().optional(),
+    audio_url: z.string().optional(),
+    srt_url: z.string().optional(),
     draft: z.boolean().default(false),
     pinned: z.boolean().default(false),
     type: z.enum([

@@ -29,8 +29,9 @@ type SearchLog = { id: number; query: string; lang: string; vector_hits: number;
 type ChunkRow = { source_id: string; title: string; category: string; lang: string; chunk_count: number; last_updated: string };
 type R2Object = { key: string; size: number; uploaded: string };
 type PageView = { slug: string; count: number; updated_at: string };
+type TTSRecord = { id: number; created_at: string; type: 'tts'; title: string; voice: string; audio_filename: string; srt_filename: string };
 
-type DetailView = 'posts' | 'vectorize' | 'r2' | 'pageviews' | 'searchlogs' | 'logs' | null;
+type DetailView = 'posts' | 'vectorize' | 'r2' | 'pageviews' | 'searchlogs' | 'logs' | 'tts' | 'settings' | null;
 
 const TOKEN_KEY = 'admin_token';
 
@@ -690,11 +691,114 @@ function RecentPosts({ posts, onDrill }: { posts: D1Data['recent_posts']; onDril
   );
 }
 
+function TTSDetail() {
+  const [records, setRecords] = useState<TTSRecord[] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch('/api/tts/history?type=tts&limit=100')
+      .then(r => r.json())
+      .then(d => setRecords(d.records))
+      .catch(e => setErr(e.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <p style={s.section}>最近 100 筆 TTS 合成日誌</p>
+      </div>
+      {loading && <CardSkeleton lines={8} />}
+      {err && <Err msg={err} />}
+      {records && (
+        <div style={{ maxHeight: '600px', overflowY: 'auto' }}>
+          {records.map(r => (
+            <div key={r.id} style={{ ...s.row, flexWrap: 'wrap', gap: '8px', padding: '12px' }}>
+              <span style={{ ...s.mono, color: 'var(--label-secondary)', fontSize: '11px' }}>{new Date(r.created_at).toLocaleString()}</span>
+              <span style={s.pill('#48484a')}>{r.voice}</span>
+              <span style={{ fontSize: '13px', flex: 1, fontWeight: 500 }}>{r.title}</span>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <a href={`/api/tts/audio/${r.audio_filename}`} target="_blank" style={{ fontSize: '11px', color: 'var(--accent)', textDecoration: 'none' }}>WAV ↗</a>
+                <a href={`/api/tts/audio/${r.srt_filename}`} target="_blank" style={{ fontSize: '11px', color: 'var(--label-tertiary)', textDecoration: 'none' }}>SRT ↗</a>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SettingsDetail({ token }: { token: string }) {
+  const [settings, setSettings] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(`/api/admin/stats?token=${encodeURIComponent(token)}&view=settings`)
+      .then(r => r.json() as Promise<SF<Record<string, string>>>)
+      .then(d => { if (d.data) setSettings(d.data); else setErr(d.error); })
+      .catch(e => setErr(e.message))
+      .finally(() => setLoading(false));
+  }, [token]);
+
+  const handleSave = () => {
+    setSaving(true);
+    fetch(`/api/admin/stats?token=${encodeURIComponent(token)}&view=settings`, {
+      method: 'POST',
+      body: JSON.stringify(settings),
+    })
+      .then(r => r.json())
+      .then(() => alert('設定已儲存'))
+      .catch(e => alert('儲存失敗：' + e.message))
+      .finally(() => setSaving(false));
+  };
+
+  return (
+    <div style={{ maxWidth: '500px' }}>
+      <p style={s.section}>TTS 預設語音設定</p>
+      {loading ? <CardSkeleton lines={4} /> : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={s.card}>
+            <p style={s.label}>繁體中文 (zh-TW) 預設語音</p>
+            <input 
+              value={settings.tts_voice_zh || ''} 
+              onChange={e => setSettings({ ...settings, tts_voice_zh: e.target.value })}
+              style={{ ...s.mono, width: '100%', padding: '8px', marginTop: '4px', background: 'var(--fill-secondary)', border: '1px solid var(--separator)', borderRadius: '4px', color: 'inherit' }}
+            />
+          </div>
+          <div style={s.card}>
+            <p style={s.label}>英文 (en) 預設語音</p>
+            <input 
+              value={settings.tts_voice_en || ''} 
+              onChange={e => setSettings({ ...settings, tts_voice_en: e.target.value })}
+              style={{ ...s.mono, width: '100%', padding: '8px', marginTop: '4px', background: 'var(--fill-secondary)', border: '1px solid var(--separator)', borderRadius: '4px', color: 'inherit' }}
+            />
+          </div>
+          <button 
+            onClick={handleSave} 
+            disabled={saving}
+            style={{ ...s.btn(true), padding: '12px', marginTop: '8px' }}
+          >
+            {saving ? '儲存中...' : '儲存變更'}
+          </button>
+        </div>
+      )}
+      {err && <Err msg={err} />}
+    </div>
+  );
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 const DETAIL_TITLES: Record<string, string> = {
   posts: 'Post Timeline', vectorize: 'Vectorize 詳情', r2: 'R2 物件列表',
   pageviews: 'Page Views Top 50', searchlogs: 'AI Search Logs', logs: 'Application Logs',
+  tts: 'TTS Synthesis Logs', settings: '系統設定',
 };
 
 export default function AdminDashboard() {
@@ -750,6 +854,8 @@ export default function AdminDashboard() {
         {detail === 'pageviews'                         && <PageViewsDetail token={token} />}
         {detail === 'searchlogs'                        && <SearchLogsDetail token={token} />}
         {detail === 'logs'                              && <LogsPanel token={token} />}
+        {detail === 'tts'                               && <TTSDetail />}
+        {detail === 'settings'                          && <SettingsDetail token={token} />}
       </div>
     );
   }
@@ -768,6 +874,7 @@ export default function AdminDashboard() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
+          <button style={s.btn()} onClick={() => setDetail('settings')}>⚙ 設定</button>
           <button style={s.btn()} onClick={() => token && fetchOverview(token, true)}>↺ 重新整理</button>
           <button style={{ ...s.btn(), color: 'var(--label-secondary)' }} onClick={() => { localStorage.removeItem(TOKEN_KEY); setToken(null); }}>登出</button>
         </div>
@@ -790,6 +897,7 @@ export default function AdminDashboard() {
             />
             <Stat label="Avg 耗時 (7d)" value={`${d1?.search_stats.avg_ms ?? 0}`} sub="ms" />
             <Stat label="R2 Objects" value={data.r2.data ? (data.r2.data.truncated ? '1000+' : data.r2.data.count) : '–'} sub="OG images" onClick={() => setDetail('r2')} />
+            <Stat label="TTS Logs" value="View" sub="Synthesis history" onClick={() => setDetail('tts')} />
             <Stat label="Vectorize" value={data.vectorize.data?.chunk_count ?? '–'} sub={`${data.vectorize.data?.dimensions ?? 0}D ${data.vectorize.data?.embedding_model.split('/').at(-1) ?? ''}`} onClick={() => setDetail('vectorize')} />
           </div>
 

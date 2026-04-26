@@ -6,6 +6,7 @@ import SharePanel from '../../components/SharePanel.astro';
 import ScrollToTop from '../../components/ScrollToTop.astro';
 import PostPrevNext from '../../components/PostPrevNext.astro';
 import { useTranslations } from '../../i18n/utils';
+import { TTSPlayer } from '../../components/TTSPlayer';
 import { getRelatedPosts } from '../../utils/relatedPosts';
 import { getSeriesNav } from '../../utils/seriesNav';
 import { calcReadingTime } from '../../utils/readingTime';
@@ -133,6 +134,16 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
         </nav>
       </details>
     )}
+
+    <!-- TTS Player -->
+    <TTSPlayer 
+      client:load 
+      title={post.data.title} 
+      tldr={post.data.tldr} 
+      content={post.body ?? ''}
+      initialAudioUrl={post.data.audio_url}
+      initialSrtUrl={post.data.srt_url}
+    />
 
     <!-- Content -->
     <div class="prose"><Content /></div>

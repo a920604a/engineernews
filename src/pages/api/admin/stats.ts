@@ -124,6 +124,30 @@ export const GET: APIRoute = async ({ request, locals }) => {
     return Response.json(result);
   }
 
+  if (view === 'settings') {
+    if (request.method === 'POST') {
+      const result = await safe(async () => {
+        const body = await request.json() as Record<string, string>;
+        const statements = Object.entries(body).map(([key, value]) => 
+          env.DB.prepare('INSERT INTO settings (key, value, updated_at) VALUES (?, ?, datetime("now")) ON CONFLICT(key) DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at').bind(key, value)
+        );
+        await env.DB.batch(statements);
+        return { success: true };
+      });
+      return Response.json(result);
+    } else {
+      const result = await safe(async () => {
+        const rows = await env.DB.prepare('SELECT key, value FROM settings').all<{ key: string; value: string }>();
+        const settings: Record<string, string> = {};
+        for (const row of rows.results) {
+          settings[row.key] = row.value;
+        }
+        return settings;
+      });
+      return Response.json(result);
+    }
+  }
+
   // ── Overview (single batched call for main dashboard) ─────────────────────
 
   const [d1Result, r2Result, postsResult] = await Promise.allSettled([

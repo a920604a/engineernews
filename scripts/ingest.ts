@@ -2,9 +2,37 @@ import fs from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline';
 import { execSync } from 'node:child_process';
+import { processTextForTTS, synthesize, DEFAULT_TTS_API_URL } from '../src/lib/tts';
 
 const CONTENT_DIR = path.join(process.cwd(), 'src/content/posts');
 const YES_MODE = process.argv.includes('--yes');
+const DB_NAME = 'engineer-news-db';
+
+function querySql<T = any>(sql: string): T[] {
+  const tmp = path.join(process.cwd(), `.tmp_query_${Date.now()}.sql`);
+  fs.writeFileSync(tmp, sql);
+  try {
+    const out = execSync(
+      `wrangler d1 execute ${DB_NAME} --local --file=${tmp} --yes --json`,
+      { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'inherit'] }
+    );
+    const parsed = JSON.parse(out);
+    return parsed?.[0]?.results ?? [];
+  } catch {
+    return [];
+  } finally {
+    fs.unlinkSync(tmp);
+  }
+}
+
+function getSetting(key: string, defaultValue: string): string {
+  try {
+    const rows = querySql<{ value: string }>(`SELECT value FROM settings WHERE key='${key}'`);
+    return rows[0]?.value ?? defaultValue;
+  } catch {
+    return defaultValue;
+  }
+}
 
 const SECRET_PATTERNS: Array<[RegExp, string]> = [
   [/\b(sk-[a-zA-Z0-9]{20,})\b/g, '[REDACTED_API_KEY]'],
@@ -25,7 +53,7 @@ function redactSecrets(text: string): string {
 const ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID;
 const API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
 
-async function summarize(conversation: string): Promise<{ title: string; tldr: string; tags: string[]; category: string }> {
+async function summarize(conversation: string): Promise<{ title: string; tldr: string; tags: string[]; category: string; lang: 'zh-TW' | 'en' }> {
   if (!ACCOUNT_ID || !API_TOKEN) {
     console.error('Missing CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_API_TOKEN');
     process.exit(1);
@@ -42,7 +70,8 @@ ${conversation}
   "title": "簡短的文章標題（20字以內）",
   "tldr": "一句話摘要（50字以內）",
   "tags": ["tag1", "tag2", "tag3"],
-  "category": "tech | debug | guide | product"
+  "category": "tech | debug | guide | product",
+  "lang": "zh-TW | en"
 }`;
 
   const response = await fetch(
@@ -61,7 +90,7 @@ ${conversation}
     const match = text.match(/\{[\s\S]*\}/);
     return JSON.parse(match?.[0] ?? '{}');
   } catch {
-    return { title: 'Untitled', tldr: '', tags: [], category: 'tech' };
+    return { title: 'Untitled', tldr: '', tags: [], category: 'tech', lang: 'zh-TW' };
   }
 }
 
@@ -96,12 +125,12 @@ async function ingest() {
   const meta = await summarize(conversation);
 
   console.log('\n分析結果：');
-  console.log(`  標題：${meta.title}`);
-  console.log(`  摘要：${meta.tldr}`);
-  console.log(`  標籤：${meta.tags.join(', ')}`);
-  console.log(`  分類：${meta.category}`);
+  console.log(`  標題：${meta.title || 'Untitled'}`);
+  console.log(`  摘要：${meta.tldr || ''}`);
+  console.log(`  標籤：${(meta.tags || []).join(', ')}`);
+  console.log(`  分類：${meta.category || 'tech'}`);
 
-  let finalTitle = meta.title;
+  let finalTitle = meta.title || 'Untitled';
 
   if (!YES_MODE) {
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
@@ -117,19 +146,42 @@ async function ingest() {
   const slug = `${today}-${slugify(finalTitle)}`;
   const outputPath = path.join(CONTENT_DIR, `${slug}.md`);
 
+  const lang = meta.lang || 'zh-TW';
+  console.log(`\n正在嘗試預合成 TTS 音訊 (${lang})...`);
+  let audioUrl = '';
+  let srtUrl = '';
+  try {
+    const voiceSettingKey = lang === 'en' ? 'tts_voice_en' : 'tts_voice_zh';
+    const defaultVoice = lang === 'en' ? 'en-US-AvaNeural' : 'zh-TW-HsiaoChenNeural';
+    const voice = getSetting(voiceSettingKey, defaultVoice);
+    
+    const ttsText = processTextForTTS(finalTitle, meta.tldr || '', conversation);
+    const ttsResult = await synthesize({
+      text: ttsText,
+      voice: voice
+    }, process.env.TTS_API_URL || DEFAULT_TTS_API_URL);
+    audioUrl = ttsResult.audio_url;
+    srtUrl = ttsResult.srt_url;
+    console.log(`✅ TTS 預合成成功 (${voice}): ${audioUrl}`);
+  } catch (e) {
+    console.warn(`⚠️ TTS 預合成跳過: ${e instanceof Error ? e.message : 'API 未啟動'}`);
+  }
+
   const frontmatter = [
     '---',
     `title: "${finalTitle}"`,
     `date: "${nowIso}"`,
-    `category: "${meta.category}"`,
-    `tags: [${meta.tags.map(t => `"${t}"`).join(', ')}]`,
-    `lang: "zh-TW"`,
-    `tldr: "${meta.tldr}"`,
+    `category: "${meta.category || 'tech'}"`,
+    `tags: [${(meta.tags || []).map(t => `"${t}"`).join(', ')}]`,
+    `lang: "${lang}"`,
+    `tldr: "${meta.tldr || ''}"`,
+    audioUrl ? `audio_url: "${audioUrl}"` : '',
+    srtUrl ? `srt_url: "${srtUrl}"` : '',
     `draft: false`,
     '---',
     '',
     conversation,
-  ].join('\n');
+  ].filter(Boolean).join('\n');
 
   fs.writeFileSync(outputPath, frontmatter);
   console.log(`\n✅ 文章已生成：${outputPath}`);
