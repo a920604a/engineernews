@@ -48,7 +48,7 @@ const TTL: Record<string, number> = {
 
 function cacheGet<T>(key: string): { data: T; fetchedAt: number } | null {
   try {
-    const raw = sessionStorage.getItem(`adm_${key}`);
+    const raw = localStorage.getItem(`adm_${key}`);
     if (!raw) return null;
     const { data, fetchedAt, ttl } = JSON.parse(raw) as { data: T; fetchedAt: number; ttl: number };
     if (Date.now() - fetchedAt > ttl) return null;
@@ -58,7 +58,7 @@ function cacheGet<T>(key: string): { data: T; fetchedAt: number } | null {
 
 function cacheSet<T>(key: string, data: T) {
   try {
-    sessionStorage.setItem(`adm_${key}`, JSON.stringify({ data, fetchedAt: Date.now(), ttl: TTL[key] ?? 5 * 60_000 }));
+    localStorage.setItem(`adm_${key}`, JSON.stringify({ data, fetchedAt: Date.now(), ttl: TTL[key] ?? 5 * 60_000 }));
   } catch {}
 }
 
