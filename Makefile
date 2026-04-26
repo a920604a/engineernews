@@ -1,6 +1,6 @@
 DB_NAME    = engineer-news-db
 VEC_INDEX  = engineer-news-index
-VEC_DIMS   = 384
+VEC_DIMS   = 1024
 VEC_METRIC = cosine
 
 -include .env
