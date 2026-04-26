@@ -10,8 +10,6 @@ original_url: "https://www.youtube.com/watch?v=cqGYZ6rBF2c"
 draft: false
 ---
 
-## TL;DR
-
 在這篇文章中，我們將分享一場 100 天的挑戰，探索成為「女性角色」的體驗與成長之旅。透過這場挑戰，我們將了解如何克服困難，找到自己的優勢，並成為更好的自己。
 
 什麼是成為「女性角色」的最高難度？

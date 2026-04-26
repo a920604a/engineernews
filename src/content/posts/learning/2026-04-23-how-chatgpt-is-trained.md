@@ -9,8 +9,6 @@ description: "深入解析李宏毅老師分享的 ChatGPT 訓練原理，從 Pr
 draft: false
 ---
 
-## TL;DR
-
 ChatGPT 的訓練分為三個核心階段：
 1. **Pre-training (自我學習)**：閱讀海量網路資料，學習如何「接龍」。
 2. **Instruction Fine-tuning (指令微調)**：由人類提供高品質答案，教導它聽懂指令。

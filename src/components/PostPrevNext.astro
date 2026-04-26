@@ -1,0 +1,85 @@
+---
+interface Post {
+  id: string;
+  title: string;
+}
+
+interface Props {
+  prev?: Post;
+  next?: Post;
+}
+
+const { prev, next } = Astro.props;
+---
+
+<div class="prev-next-nav">
+  <div class="nav-item">
+    {prev && (
+      <a href={`/posts/${prev.id}`} class="nav-link prev">
+        <span class="nav-label">← 上一篇</span>
+        <span class="nav-title">{prev.title}</span>
+      </a>
+    )}
+  </div>
+  <div class="nav-item">
+    {next && (
+      <a href={`/posts/${next.id}`} class="nav-link next">
+        <span class="nav-label">下一篇 →</span>
+        <span class="nav-title">{next.title}</span>
+      </a>
+    )}
+  </div>
+</div>
+
+<style>
+  .prev-next-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 60px;
+    padding-top: 32px;
+    border-top: 0.5px solid var(--separator);
+  }
+
+  @media (max-width: 640px) {
+    .prev-next-nav {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .nav-link {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--separator);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    height: 100%;
+    transition: all 0.2s ease;
+  }
+
+  .nav-link:hover {
+    border-color: var(--accent);
+    background: var(--glass);
+    transform: translateY(-2px);
+  }
+
+  .nav-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--label-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+
+  .nav-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--label);
+    line-height: 1.4;
+  }
+
+  .next { text-align: right; }
+</style>

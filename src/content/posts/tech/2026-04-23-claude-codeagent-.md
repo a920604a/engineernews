@@ -10,8 +10,6 @@ original_url: "https://www.youtube.com/watch?v=7JltMHmSvuY"
 draft: false
 ---
 
-## TL;DR
-
 本文將介紹如何在新電腦上從零開始安裝和設定 Claude Code 等 Agent 框架，支援 Windows、macOS 和 Linux 三大作業系統。透過本文的指導，您將能夠順暢地跑通 Claude Code 等 Agent 框架，無論您使用的是哪一種作業系統。
 
 ### 前言

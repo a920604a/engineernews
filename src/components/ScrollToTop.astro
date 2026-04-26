@@ -1,0 +1,79 @@
+---
+---
+<button id="scroll-to-top" aria-label="回頂部" class="stt-btn">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m18 15-6-6-6 6"/>
+  </svg>
+  <span id="stt-progress">0%</span>
+</button>
+
+<style>
+  .stt-btn {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 999;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--separator);
+    box-shadow: var(--shadow-md);
+    color: var(--label);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .stt-btn.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .stt-btn:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  #stt-progress {
+    font-size: 9px;
+    font-weight: 700;
+    margin-top: -2px;
+    font-variant-numeric: tabular-nums;
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    const btn = document.getElementById('scroll-to-top');
+    const progressText = document.getElementById('stt-progress');
+    if (!btn || !progressText) return;
+
+    window.addEventListener('scroll', () => {
+      const doc = document.documentElement;
+      const scrolled = doc.scrollTop || document.body.scrollTop;
+      const total = doc.scrollHeight - doc.clientHeight;
+      const percent = total > 0 ? Math.round((scrolled / total) * 100) : 0;
+
+      progressText.textContent = `${percent}%`;
+
+      if (scrolled > 400) {
+        btn.classList.add('visible');
+      } else {
+        btn.classList.remove('visible');
+      }
+    }, { passive: true });
+
+    btn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  })();
+</script>

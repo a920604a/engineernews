@@ -2,6 +2,8 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostCard from '../../components/PostCard.astro';
+import ScrollToTop from '../../components/ScrollToTop.astro';
+import PostPrevNext from '../../components/PostPrevNext.astro';
 import { useTranslations } from '../../i18n/utils';
 import { getRelatedPosts } from '../../utils/relatedPosts';
 import { getSeriesNav } from '../../utils/seriesNav';
@@ -26,6 +28,14 @@ const related = getRelatedPosts(post, allPosts);
 const series = getSeriesNav(post, allPosts);
 const readingTime = post.data.readingTime ?? calcReadingTime(post.body ?? '');
 
+// Calculate Prev/Next
+const sortedPosts = allPosts
+  .filter(p => !p.data.draft && p.data.lang === 'zh-TW')
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const currentIndex = sortedPosts.findIndex(p => p.id === post.id);
+const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : undefined;
+const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : undefined;
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "TechArticle",
@@ -39,38 +49,49 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description} jsonLd={jsonLd} layout="article">
-  <div class="article-grid">
-  <article class="article-body">
-    <!-- Header -->
-    <header style="padding: 40px 0 28px; border-bottom: 0.5px solid var(--separator); margin-bottom: 36px;">
-      <div style="margin-bottom: 10px;">
-        <a href={`/categories/${post.data.category}`} class="badge badge-type" style="text-decoration:none;">{post.data.category}</a>
-      </div>
+  <!-- Full-bleed Hero Banner -->
+  <header class="post-hero" style={`--cat-color: var(--cat-${post.data.category});`}>
+    <div class="hero-inner hero-flex">
+      <div class="hero-content">
+        <div class="hero-meta">
+          <a href={`/categories/${post.data.category}`} class="hero-badge">{post.data.category}</a>
+          <time class="hero-date">{dateStr}</time>
+          <span class="hero-sep">·</span>
+          <span class="hero-reading">{readingTime} 分鐘閱讀</span>
+          <span class="hero-sep">·</span>
+          <span id="view-count" class="hero-views">－ 次閱讀</span>
+        </div>
 
-      <h1 style="margin:0 0 20px; font-size:clamp(26px,5vw,36px); font-weight:900; line-height:1.15; letter-spacing:-0.02em;">{post.data.title}</h1>
+        <h1 class="hero-title">{post.data.title}</h1>
 
-      <div style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--label-secondary); flex-wrap:wrap;">
-        <time style="font-variant-numeric: tabular-nums;">{dateStr}</time>
-        <span style="opacity:0.35;">·</span>
-        <span>{readingTime} 分鐘閱讀</span>
-        <span style="opacity:0.35;">·</span>
-        <span id="view-count">－ 次閱讀</span>
-        {post.data.type && (
-          <>
-            <span style="opacity:0.35;">·</span>
-            <span class="badge badge-type">{post.data.type}</span>
-          </>
+        {post.data.tldr && (
+          <div class="hero-tldr">
+            <p class="tldr-label">{t('post.tldr')}</p>
+            <p class="tldr-content">{post.data.tldr}</p>
+          </div>
         )}
       </div>
 
-      {post.data.tldr && (
-        <div style="background:color-mix(in srgb, var(--accent) 7%, transparent); border:0.5px solid color-mix(in srgb, var(--accent) 20%, transparent); border-left:3px solid var(--accent); border-radius:var(--radius-md); padding:16px 20px; margin-top:24px;">
-          <p style="font-size:11px; font-weight:700; color:var(--accent); margin:0 0 6px; text-transform:uppercase; letter-spacing:0.06em;">{t('post.tldr')}</p>
-          <p style="margin:0; font-size:15px; color:var(--label); line-height:1.7;">{post.data.tldr}</p>
-        </div>
-      )}
-    </header>
+      <div class="hero-image-container">
+        <img 
+          src={`/og/posts-${post.data.category}-${post.id.replace(/\//g, '-')}.png`} 
+          alt={post.data.title}
+          class="hero-featured-image"
+          onerror="this.style.display='none'"
+        />
+      </div>
+    </div>
 
+    <!-- Wave Separator -->
+    <div class="hero-wave">
+      <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+      </svg>
+    </div>
+  </header>
+
+  <div class="article-grid">
+  <article class="article-body">
     <!-- Series nav (top) -->
     {series && (
       <div style="background:var(--bg-secondary); border:0.5px solid var(--separator); border-radius:var(--radius-md); padding:14px 18px; margin-bottom:28px; font-size:13px;">
@@ -104,6 +125,12 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
 
     <!-- Content -->
     <div class="prose"><Content /></div>
+
+    <!-- Prev/Next Nav -->
+    <PostPrevNext 
+      prev={prevPost ? { id: prevPost.id, title: prevPost.data.title } : undefined} 
+      next={nextPost ? { id: nextPost.id, title: nextPost.data.title } : undefined} 
+    />
 
     <!-- Tags -->
     {post.data.tags.length > 0 && (
@@ -141,47 +168,199 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
 
   {tocHeadings.length > 2 && (
     <aside class="article-toc-sidebar">
-      <p class="toc-sidebar-title">目錄</p>
-      <ol>
-        {tocHeadings.map(h => (
-          <li class={h.depth === 3 ? 'toc-item toc-item--sub' : 'toc-item'}>
-            <a href={`#${h.slug}`}>{h.text}</a>
-          </li>
-        ))}
-      </ol>
+      <div class="sidebar-block">
+        <p class="toc-sidebar-title">目錄</p>
+        <ol>
+          {tocHeadings.map(h => (
+            <li class={h.depth === 3 ? 'toc-item toc-item--sub' : 'toc-item'}>
+              <a href={`#${h.slug}`}>{h.text}</a>
+            </li>
+          ))}
+        </ol>
+      </div>
     </aside>
   )}
   </div>
 </BaseLayout>
 
 <style>
-  .article-grid { display: block; }
+  .post-hero {
+    position: relative;
+    padding: 80px 24px 100px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--cat-color) 20%, var(--bg)) 0%, var(--bg) 100%);
+    overflow: hidden;
+    margin-bottom: 40px;
+    border-bottom: 0.5px solid var(--separator);
+  }
+
+  .hero-inner {
+    max-width: 1140px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 48px;
+  }
+
+  .hero-content {
+    flex: 1;
+    max-width: 720px;
+  }
+
+  .hero-image-container {
+    flex-shrink: 0;
+    width: 360px;
+    display: none;
+  }
 
   @media (min-width: 1024px) {
+    .hero-image-container {
+      display: block;
+    }
+  }
+
+  .hero-featured-image {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    transform: perspective(1000px) rotateY(-5deg) rotateX(2deg);
+    transition: transform 0.3s ease;
+  }
+
+  .hero-featured-image:hover {
+    transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+  }
+
+  .hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .hero-badge {
+    background: var(--cat-color);
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+  }
+
+  .hero-date, .hero-reading, .hero-views {
+    font-size: 13px;
+    color: var(--label-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hero-sep {
+    color: var(--label-tertiary);
+    opacity: 0.5;
+  }
+
+  .hero-title {
+    font-size: clamp(28px, 6vw, 44px);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin: 0 0 24px;
+    color: var(--label);
+  }
+
+  .hero-tldr {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-left: 4px solid var(--cat-color);
+    border-radius: var(--radius-md);
+    padding: 20px 24px;
+    max-width: 680px;
+  }
+
+  .tldr-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--cat-color);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 8px;
+  }
+
+  .tldr-content {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--label-secondary);
+  }
+
+  .hero-wave {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    transform: rotate(180deg);
+  }
+
+  .hero-wave svg {
+    position: relative;
+    display: block;
+    width: calc(100% + 1.3px);
+    height: 48px;
+  }
+
+  .hero-wave .shape-fill {
+    fill: var(--bg);
+  }
+
+  .article-grid { display: block; }
+
+  @media (min-width: 1140px) {
     .article-grid {
       display: grid;
-      grid-template-columns: 1fr 220px;
-      gap: 48px;
+      grid-template-columns: 1fr 240px;
+      gap: 56px;
       align-items: start;
+      max-width: 1100px;
+      margin: 0 auto;
     }
     .toc-mobile { display: none; }
   }
 
   .article-toc-sidebar { display: none; }
 
-  @media (min-width: 1024px) {
+  @media (min-width: 1140px) {
     .article-toc-sidebar {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
       position: sticky;
-      top: 72px;
-      max-height: calc(100vh - 88px);
+      top: 110px;
+      max-height: calc(100vh - 140px);
       overflow-y: auto;
-      font-size: 13px;
-      padding: 16px 18px;
-      background: var(--bg-secondary);
-      border: 0.5px solid var(--separator);
-      border-radius: var(--radius-md);
+      padding: 0;
+      background: transparent;
+      border: none;
     }
+  }
+
+  .sidebar-block {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--separator);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
   }
 
   .toc-sidebar-title {
@@ -194,17 +373,30 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
   }
 
   .article-toc-sidebar ol { padding: 0; margin: 0; list-style: none; }
-  .toc-item + .toc-item { margin-top: 6px; }
-  .toc-item--sub { padding-left: 12px; }
+  .toc-item { position: relative; }
+  .toc-item + .toc-item { margin-top: 8px; }
+  .toc-item--sub { padding-left: 14px; }
+  .toc-item--sub::before {
+    content: '';
+    position: absolute;
+    left: 4px; top: 10px;
+    width: 4px; height: 1px;
+    background: var(--label-tertiary);
+    opacity: 0.5;
+  }
 
   .article-toc-sidebar a {
     color: var(--label-secondary);
     text-decoration: none;
     line-height: 1.4;
-    transition: color 0.15s;
+    transition: all 0.15s ease;
     display: block;
+    font-size: 13px;
   }
-  .article-toc-sidebar a:hover { color: var(--accent); }
+  .article-toc-sidebar a:hover {
+    color: var(--accent);
+    transform: translateX(2px);
+  }
 </style>
 
 <script define:vars={{ slug: post.id }}>
@@ -223,3 +415,5 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
     }
   })();
 </script>
+
+<ScrollToTop />

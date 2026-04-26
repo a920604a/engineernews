@@ -10,9 +10,6 @@ draft: false
 pinned: true
 ---
 
-## TL;DR
-列出本部落格的主要工具、為何選擇它們，以及在實作上要注意的地方，供未來複製或改造參考。
-
 ## 工具清單與角色
 - Astro：內容與頁面渲染（輕量、快速）。
 - Cloudflare Pages：靜態內容部署與 CDN。  

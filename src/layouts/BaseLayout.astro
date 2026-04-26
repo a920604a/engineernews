@@ -1,5 +1,6 @@
 ---
 import { getLangFromUrl, useTranslations, getLangSwitchUrl } from '../i18n/utils';
+import CommandCenter from '../components/CommandCenter';
 import '@fontsource/noto-sans-tc/400.css';
 import '@fontsource/noto-sans-tc/500.css';
 import '@fontsource/noto-sans-tc/700.css';
@@ -52,10 +53,11 @@ const siteJsonLd = {
     <meta property="og:description" content={siteDescription} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:type" content="website" />
-    {ogImage && <meta property="og:image" content={ogImage} />}
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content={ogImage ?? `${canonicalURL.origin}/og/${Astro.url.pathname.replace(/^\/|\/$/g, '').replace(/\//g, '-') || 'index'}.png`} />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={`${title} | ${siteName}`} />
     <meta name="twitter:description" content={siteDescription} />
+    <meta name="twitter:image" content={ogImage ?? `${canonicalURL.origin}/og/${Astro.url.pathname.replace(/^\/|\/$/g, '').replace(/\//g, '-') || 'index'}.png`} />
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd ?? siteJsonLd)} />
 
@@ -81,6 +83,13 @@ const siteJsonLd = {
         --shadow-md: 0 4px 20px rgba(0,0,0,0.6);
         --radius-sm: 8px; --radius-md: 12px;
         --radius-lg: 18px; --radius-full: 9999px;
+
+        /* Category Colors */
+        --cat-tech: #0a84ff;
+        --cat-product: #bf5af2;
+        --cat-learning: #ff9f0a;
+        --cat-career: #30d158;
+        --cat-life: #ff375f;
       }
 
       /* Apple Light */
@@ -366,16 +375,27 @@ const siteJsonLd = {
       /* ─── macOS Code Block ────────────────────────────── */
       .prose pre {
         position: relative;
-        padding-top: 36px !important;
+        padding-top: 40px !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
       }
       .prose pre::before {
         content: '';
         position: absolute;
-        top: 12px; left: 16px;
-        width: 12px; height: 12px;
+        top: 0; left: 0; right: 0;
+        height: 32px;
+        background: rgba(255,255,255,0.05);
+        border-bottom: 0.5px solid rgba(255,255,255,0.1);
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
+      }
+      .prose pre::after {
+        content: '';
+        position: absolute;
+        top: 10px; left: 16px;
+        width: 10px; height: 10px;
         border-radius: 50%;
         background: #ff5f57;
-        box-shadow: 20px 0 0 #febc2e, 40px 0 0 #28c840;
+        box-shadow: 18px 0 0 #febc2e, 36px 0 0 #28c840;
+        z-index: 2;
       }
 
       /* ─── Reading Progress Bar ────────────────────────── */
@@ -502,6 +522,8 @@ const siteJsonLd = {
     </script>
 
     <div id="reading-progress"></div>
+
+    <CommandCenter client:load />
 
     <header class="site-header" data-pagefind-ignore>
       <div class="nav-inner">

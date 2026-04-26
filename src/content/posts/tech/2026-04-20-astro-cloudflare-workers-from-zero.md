@@ -10,9 +10,6 @@ draft: false
 pinned: true
 ---
 
-## TL;DR
-一步步示範如何用 Astro 建站、用 Workers 提供動態 API，並把整個流程用 Cloudflare Pages + Wrangler 自動化部署；重點是最小可行開發步驟與本地測試策略。
-
 ## 情境
 需要快速經營一個技術部落格或 demo 平台，希望每天能更新內容、同時提供簡單 API（如搜索或向量化），並在低成本環境上穩定執行。
 

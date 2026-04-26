@@ -9,9 +9,9 @@ description: ""
 draft: false
 ---
 
-## TL;DR
+## 摘要
 
-{{tldr}}
+{{用 3 個 bullet points 總結技術核心或決策重點，不要與 tldr 重複內容}}
 
 ## 情境
 
@@ -33,22 +33,20 @@ draft: false
 {{code}}
 ```
 
-## 示意圖（選填）
-
-{{若流程或架構用文字說清楚要超過 3 句，加 Mermaid 圖。否則刪掉這個 section。}}
+## 系統架構 / 流程 (Mermaid)
 
 ```mermaid
 {{flowchart / sequenceDiagram / graph，視情境選用}}
 ```
 
-## 為什麼會這樣
+## 核心原理
 
-{{根本原因}}
+{{根本原因與技術深度解析}}
 
 ## 學到的事
 
-{{一句話總結}}
+{{一句話總結經驗}}
 
 ## 參考資料
 
-{{列出相關的官方文件、GitHub issue、Stack Overflow 等連結。格式：`- [顯示名稱](URL)`}}
+{{格式：`- [顯示名稱](URL)`}}

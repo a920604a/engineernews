@@ -13,9 +13,6 @@ draft: false
 
 # Harness Engineering：有時候語言模型不是不夠聰明，只是沒有人類好好引導
 
-## TL;DR
-Harness Engineering 是一種結合人工智慧和人類專業知識的方法，旨在改進語言模型的表現。
-
 ## 是什麼
 Harness Engineering是一種方法論，它旨在結合人工智慧（AI）和人類專業知識，來改進語言模型的表現。它認為，語言模型的不足不是因為模型本身不夠聰明，而是因為缺乏有效的引導和調整。通過Harness Engineering，開發者可以利用人類的專業知識和經驗，來優化語言模型的訓練和應用。
 
