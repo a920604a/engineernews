@@ -48,8 +48,8 @@ type SearchResult = {
   chunkId: string;
 };
 
-const EMBEDDING_MODEL = '@cf/baai/bge-small-en-v1.5';
-const CHAT_MODEL = '@cf/meta/llama-3.1-8b-instruct';
+const EMBEDDING_MODEL = '@cf/baai/bge-m3';
+const CHAT_MODEL = '@cf/qwen/qwen1.5-14b-chat-awq';
 const MAX_MATCHES = 8;
 const MAX_SOURCES = 5;
 
@@ -74,8 +74,9 @@ async function getRelevantSources(
 ): Promise<SearchResult[]> {
   const matches = await vectorize.query(queryEmbedding, {
     topK: MAX_MATCHES,
-    returnMetadata: false,
+    returnMetadata: 'indexed',
     returnValues: false,
+    filter: { lang },
   });
 
   const ids = matches.matches
@@ -118,7 +119,6 @@ async function getRelevantSources(
   for (const id of ids) {
     const row = rowMap.get(id);
     if (!row) continue;
-    if (row.lang !== lang) continue;
     if (seenSources.has(row.source_id)) continue;
 
     const sourceLang = row.lang;

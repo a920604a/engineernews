@@ -167,7 +167,7 @@ function deleteOldVectors(sourceId: string, sourceType: string) {
 async function getEmbedding(text: string): Promise<number[] | null> {
   if (!ACCOUNT_ID || !API_TOKEN) return null;
   const res = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/ai/run/@cf/baai/bge-small-en-v1.5`,
+    `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/ai/run/@cf/baai/bge-m3`,
     {
       method: 'POST',
       headers: { Authorization: `Bearer ${API_TOKEN}` },
@@ -184,7 +184,7 @@ async function syncChunks(
   sourceId: string,
   sourceType: 'post' | 'project',
   content: string,
-  meta: { slug: string; title: string }
+  meta: { slug: string; title: string; lang: string }
 ) {
   execSync(
     `wrangler d1 execute ${DB_NAME} ${remoteFlag} --command="DELETE FROM doc_chunks WHERE source_id='${esc(sourceId)}' AND source_type='${sourceType}'" --yes`,
@@ -208,7 +208,7 @@ async function syncChunks(
         fs.writeFileSync(tmp, JSON.stringify({
           id: cid,
           values: vector,
-          metadata: { source_id: sourceId, source_type: sourceType, chunk_index: i, slug: meta.slug, title: meta.title },
+          metadata: { source_id: sourceId, source_type: sourceType, chunk_index: i, slug: meta.slug, title: meta.title, lang: meta.lang },
         }));
         try {
           execSync(`wrangler vectorize insert ${VECTOR_INDEX} --file=${tmp}`, { stdio: 'inherit' });
@@ -317,7 +317,7 @@ async function syncPosts() {
         content_hash=excluded.content_hash, updated_at=excluded.updated_at;
     `);
 
-    await syncChunks(id, 'post', content, { slug, title });
+    await syncChunks(id, 'post', content, { slug, title, lang });
     synced++;
   }
 
