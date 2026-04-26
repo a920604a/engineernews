@@ -1,6 +1,8 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
-import { ImageResponse } from '@vercel/og';
+import satori from 'satori';
+import { Resvg, initWasm } from '@resvg/resvg-wasm';
+import resvgWasm from '@resvg/resvg-wasm/index_bg.wasm?url';
 import { createElement } from 'react';
 import { getOgCacheKey, isOgSiteRoute, parseOgArticleRoute } from '../../../lib/shareCard';
 import { normalizeEnglishPostId } from '../../../lib/postPaths';
@@ -13,6 +15,7 @@ const CARD_WIDTH = 1200;
 const CARD_HEIGHT = 630;
 
 let fontDataPromise: Promise<ArrayBuffer> | null = null;
+let resvgInitialized = false;
 
 async function getFontData(baseUrl: string) {
   if (!fontDataPromise) {
@@ -26,6 +29,24 @@ async function getFontData(baseUrl: string) {
   }
 
   return fontDataPromise;
+}
+
+async function ensureResvgInit(baseUrl: string) {
+  if (!resvgInitialized) {
+    const wasmResponse = await fetch(new URL(resvgWasm, baseUrl));
+    await initWasm(wasmResponse);
+    resvgInitialized = true;
+  }
+}
+
+async function renderToPng(node: React.ReactNode, fontData: ArrayBuffer): Promise<ArrayBuffer> {
+  const svg = await satori(node as React.ReactElement, {
+    width: CARD_WIDTH,
+    height: CARD_HEIGHT,
+    fonts: [{ name: FONT_FAMILY, data: fontData, weight: 900, style: 'normal' }],
+  });
+  const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: CARD_WIDTH } });
+  return resvg.render().asPng().buffer as ArrayBuffer;
 }
 
 async function getPostForShareCard(lang: 'zh-TW' | 'en', postId: string) {
@@ -371,6 +392,7 @@ export const GET: APIRoute = async ({ params, locals, request }) => {
   }
 
   try {
+    await ensureResvgInit(request.url);
     const fontData = await getFontData(request.url);
     const post = route ? await getPostForShareCard(route.lang, route.postId) : null;
 
@@ -378,12 +400,10 @@ export const GET: APIRoute = async ({ params, locals, request }) => {
       return new Response('Not found', { status: 404 });
     }
 
-    const response = new ImageResponse(createShareCardNode({ siteRoute, post, lang: route?.lang ?? 'zh-TW' }), {
-      width: CARD_WIDTH,
-      height: CARD_HEIGHT,
-      fonts: [{ name: FONT_FAMILY, data: fontData, weight: 900, style: 'normal' }],
-    });
-    const png = await response.arrayBuffer();
+    const png = await renderToPng(
+      createShareCardNode({ siteRoute, post, lang: route?.lang ?? 'zh-TW' }),
+      fontData,
+    );
 
     if (OG_IMAGES) {
       try {
@@ -401,22 +421,6 @@ export const GET: APIRoute = async ({ params, locals, request }) => {
     });
   } catch (error) {
     console.error(`OG image generation failed for ${cacheKey}`, error);
-
-    try {
-      const fallback = new ImageResponse(h(SiteCard), {
-        width: CARD_WIDTH,
-        height: CARD_HEIGHT,
-      });
-      const png = await fallback.arrayBuffer();
-      return new Response(png, {
-        headers: {
-          'Content-Type': 'image/png',
-          'Cache-Control': 'public, max-age=3600',
-        },
-      });
-    } catch (fallbackError) {
-      console.error(`OG fallback generation failed for ${cacheKey}`, fallbackError);
-      return new Response('OG generation failed', { status: 500 });
-    }
+    return new Response('OG generation failed', { status: 500 });
   }
 };
