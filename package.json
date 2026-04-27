@@ -11,7 +11,8 @@
     "sync:prod": "tsx scripts/sync-to-d1.ts --prod",
     "ingest": "tsx scripts/ingest.ts",
     "crawl": "tsx scripts/crawl.ts",
-    "crawl:prod": "tsx scripts/crawl.ts --prod"
+    "crawl:prod": "tsx scripts/crawl.ts --prod",
+    "fix-mermaid": "tsx scripts/fix-mermaid.ts"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.13",
