@@ -57,15 +57,20 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // 有預合成音訊或直接顯示（fallback 時讀者觸發合成）
-    setIsVisible(true);
-    // Check D1 for cached audio_url (set by previous visitor)
-    if (!initialAudioUrl) {
+    if (initialAudioUrl) {
+      setIsVisible(true);
+    } else {
+      // Check D1 for cached audio_url (set by previous visitor)
       const slug = location.pathname.split('/').filter(Boolean).pop() ?? '';
       if (slug) {
         fetch(`/api/tts/audio-url?slug=${encodeURIComponent(slug)}`)
           .then(r => r.json() as Promise<{ audio_url: string | null }>)
-          .then(({ audio_url }) => { if (audio_url) setAudioUrl(audio_url); })
+          .then(({ audio_url }) => {
+            if (audio_url) {
+              setAudioUrl(audio_url);
+              setIsVisible(true);
+            }
+          })
           .catch(() => {});
       }
     }
