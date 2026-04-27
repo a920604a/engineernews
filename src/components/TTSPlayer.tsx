@@ -50,12 +50,25 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [ttsError, setTtsError] = useState<string | null>(null);
+  const [voices, setVoices] = useState<{ name: string; gender: string; locale: string }[]>([]);
+  const [selectedVoice, setSelectedVoice] = useState('');
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     // 有預合成音訊或直接顯示（fallback 時讀者觸發合成）
     setIsVisible(true);
+    // Check D1 for cached audio_url (set by previous visitor)
+    if (!initialAudioUrl) {
+      const slug = location.pathname.split('/').filter(Boolean).pop() ?? '';
+      if (slug) {
+        fetch(`/api/tts/audio-url?slug=${encodeURIComponent(slug)}`)
+          .then(r => r.json() as Promise<{ audio_url: string | null }>)
+          .then(({ audio_url }) => { if (audio_url) setAudioUrl(audio_url); })
+          .catch(() => {});
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -74,19 +87,6 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
   const handleSynthesize = async () => {
     setIsLoading(true);
     const slug = location.pathname.split('/').filter(Boolean).pop() ?? '';
-
-    // Check R2 cache first
-    if (slug) {
-      const r2Url = `/api/tts/r2/tts/${slug}.mp3`;
-      const check = await fetch(r2Url, { method: 'HEAD' }).catch(() => null);
-      if (check?.ok) {
-        setAudioUrl(r2Url);
-        setIsPlaying(true);
-        setIsLoading(false);
-        return;
-      }
-    }
-
     const ttsText = processTextForTTS(title, tldr || '', content);
 
     // Try MediaSource streaming (play while receiving)
@@ -117,17 +117,22 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
               if (!sb.updating) ms.endOfStream();
               else sb.addEventListener('updateend', () => ms.endOfStream(), { once: true });
 
-              // Cache to R2 in background — upload the already-collected bytes directly
-              const blob = new Blob(chunks, { type: 'audio/mpeg' });
-              fetch(`/api/tts/cache?slug=${encodeURIComponent(slug)}`, {
+              // Cache to R2 in background — call synthesize to store wav
+              fetch(`/api/tts/cache`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'audio/mpeg' },
-                body: blob,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: ttsText, slug }),
               }).then(async r => {
                 if (r.ok) {
                   const data = await r.json() as { audio_url: string };
                   setAudioUrl(data.audio_url);
                   URL.revokeObjectURL(objectUrl);
+                  // Persist audio_url to D1 so next page load skips synthesis
+                  if (slug) fetch('/api/tts/update-audio', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ slug, audio_url: data.audio_url }),
+                  }).catch(() => {});
                 }
               }).catch(() => {});
               return;
@@ -143,7 +148,7 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
           appendNext();
         } catch (e) {
           setIsLoading(false);
-          alert('語音合成失敗：' + (e instanceof Error ? e.message : '未知錯誤'));
+          setTtsError('語音服務暫時不可用，請稍後再試');
         }
       }, { once: true });
 
@@ -160,20 +165,25 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
         const objectUrl = URL.createObjectURL(blob);
         setAudioUrl(objectUrl);
         setIsPlaying(true);
-        // Upload to R2
-        fetch(`/api/tts/cache?slug=${encodeURIComponent(slug)}`, {
+        // Cache to R2 via synthesize (wav)
+        fetch(`/api/tts/cache`, {
           method: 'POST',
-          headers: { 'Content-Type': 'audio/mpeg' },
-          body: blob,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: ttsText, slug }),
         }).then(async r => {
           if (r.ok) {
             const data = await r.json() as { audio_url: string };
             setAudioUrl(data.audio_url);
             URL.revokeObjectURL(objectUrl);
+            if (slug) fetch('/api/tts/update-audio', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ slug, audio_url: data.audio_url }),
+            }).catch(() => {});
           }
         }).catch(() => {});
       } catch (e) {
-        alert('語音合成失敗：' + (e instanceof Error ? e.message : '未知錯誤'));
+        setTtsError('語音服務暫時不可用，請稍後再試');
       } finally {
         setIsLoading(false);
       }
@@ -285,6 +295,11 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
             </div>
           </div>
         </div>
+        {ttsError && (
+          <div style={{ marginTop: '10px', fontSize: '12px', color: 'var(--label-secondary)', padding: '6px 8px', background: 'var(--fill-secondary)', borderRadius: '6px' }}>
+            ⚠️ {ttsError}
+          </div>
+        )}
       </div>
 
       {audioUrl && (

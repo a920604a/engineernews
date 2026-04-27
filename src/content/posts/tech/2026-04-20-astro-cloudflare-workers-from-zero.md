@@ -8,6 +8,7 @@ description: "實作指南：從空專案開始，用 Astro 建靜態前端、Cl
 tldr: "以 Astro 做內容與 UI，Cloudflare Workers 提供 API 與邊緣處理，Cloudflare Pages 做靜態部署；關鍵在於 routes、環境變數與 D1/kv 的運用。"
 draft: false
 pinned: true
+audio_url: "/api/tts/r2/tts/tts_20260427_023715_983436.wav"
 ---
 
 ## 情境

@@ -266,3 +266,4 @@ export const GET: APIRoute = async ({ request, locals }) => {
     posts,
   });
 };
+export const POST = GET;

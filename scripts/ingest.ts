@@ -152,7 +152,6 @@ async function ingest() {
   const lang = meta.lang || 'zh-TW';
   console.log(`\n正在嘗試預合成 TTS 音訊 (${lang})...`);
   let audioUrl = '';
-  let srtUrl = '';
   
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tts-ingest-'));
   try {
@@ -166,21 +165,12 @@ async function ingest() {
       voice: voice
     }, process.env.TTS_API_URL || DEFAULT_TTS_API_URL);
     
-    // 持久化流程：下載 -> 上傳 R2
     const audioFilename = path.basename(ttsResult.audio_url);
-    const srtFilename = path.basename(ttsResult.srt_url);
     const localAudio = path.join(tmpDir, audioFilename);
-    const localSrt = path.join(tmpDir, srtFilename);
-
     const apiBase = (process.env.TTS_API_URL || DEFAULT_TTS_API_URL).replace(/\/$/, '');
     await downloadFile(`${apiBase}${ttsResult.audio_url}`, localAudio);
-    await downloadFile(`${apiBase}${ttsResult.srt_url}`, localSrt);
-
     uploadToR2(localAudio, `tts/${audioFilename}`, isProd);
-    uploadToR2(localSrt, `tts/${srtFilename}`, isProd);
-
     audioUrl = getR2PublicUrl(`tts/${audioFilename}`);
-    srtUrl = getR2PublicUrl(`tts/${srtFilename}`);
 
     console.log(`✅ TTS 預合成並持久化成功: ${audioUrl}`);
   } catch (e) {
@@ -198,7 +188,6 @@ async function ingest() {
     `lang: "${lang}"`,
     `tldr: "${meta.tldr || ''}"`,
     audioUrl ? `audio_url: "${audioUrl}"` : '',
-    srtUrl ? `srt_url: "${srtUrl}"` : '',
     `draft: false`,
     '---',
     '',

@@ -183,3 +183,6 @@ git diff HEAD~1 -- src/content/ scripts/sync-to-d1.ts
 | `pnpm crawl:prod` | 遠端爬蟲（含向量） |
 | `pnpm sync` | 同步至本地 D1 |
 | `pnpm sync:prod` | 同步至遠端 D1 + Vectorize |
+| `make fix-mermaid` | 掃描所有文章，修復 Mermaid 語法錯誤 |
+| `make tts-all` | 批次合成所有未有 audio_url 的文章，存本地 R2 |
+| `make tts-all-prod` | 同上，存遠端 R2 |

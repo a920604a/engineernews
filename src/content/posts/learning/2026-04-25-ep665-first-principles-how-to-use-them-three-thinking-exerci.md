@@ -9,6 +9,7 @@ description: "從基本原理出發的思考方式，透過 3 個練習，讓你
 type: explainer
 original_url: "https://www.youtube.com/watch?v=hToO6daVuSw"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260427_023521_451297.wav"
 ---
 
 首先，我們來看什麼是「第一原則」（First Principles）。在這篇文章中，我們將探討什麼是第一原則、為什麼它們重要、如何運用它們，以及與其他概念的差別。

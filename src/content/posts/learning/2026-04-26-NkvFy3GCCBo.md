@@ -9,6 +9,7 @@ description: "探討時代對年輕人的割裂現象"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=NkvFy3GCCBo"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260427_023606_639515.wav"
 ---
 
 **時代的割裂：年輕人面臨的反內卷和龍蝦焦慮**

@@ -615,7 +615,6 @@ async function writePost(videoId: string, source: Source, video: VideoEntry, ai:
 
   console.log(`  正在為中文文章嘗試 TTS 合成...`);
   let audioUrl = '';
-  let srtUrl = '';
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tts-crawl-zh-'));
   try {
     const voice = getSetting('tts_voice_zh', 'zh-TW-HsiaoChenNeural');
@@ -623,17 +622,12 @@ async function writePost(videoId: string, source: Source, video: VideoEntry, ai:
     const ttsResult = await synthesize({ text: ttsText, voice }, process.env.TTS_API_URL || DEFAULT_TTS_API_URL);
     
     const audioFilename = path.basename(ttsResult.audio_url);
-    const srtFilename = path.basename(ttsResult.srt_url);
     const apiBase = (process.env.TTS_API_URL || DEFAULT_TTS_API_URL).replace(/\/$/, '');
     
     await downloadFile(`${apiBase}${ttsResult.audio_url}`, path.join(tmpDir, audioFilename));
-    await downloadFile(`${apiBase}${ttsResult.srt_url}`, path.join(tmpDir, srtFilename));
-    
     uploadToR2(path.join(tmpDir, audioFilename), `tts/${audioFilename}`, isProd);
-    uploadToR2(path.join(tmpDir, srtFilename), `tts/${srtFilename}`, isProd);
     
     audioUrl = getR2PublicUrl(`tts/${audioFilename}`);
-    srtUrl = getR2PublicUrl(`tts/${srtFilename}`);
     console.log(`  ✅ TTS 成功: ${audioUrl}`);
   } catch (e) {
     console.warn(`  ⚠️ TTS 跳過: ${e instanceof Error ? e.message : '未知錯誤'}`);
@@ -659,7 +653,6 @@ async function writePost(videoId: string, source: Source, video: VideoEntry, ai:
     `tldr: "${ai.tldr.replace(/"/g, '\\"')}"`,
     `description: "${ai.tldr.replace(/"/g, '\\"')}"`,
     audioUrl ? `audio_url: "${audioUrl}"` : '',
-    srtUrl ? `srt_url: "${srtUrl}"` : '',
     `type: ${ai.type}`,
     `original_url: "${video.url}"`,
     `draft: false`,
@@ -685,7 +678,6 @@ async function writeEnglishPost(videoId: string, source: Source, video: VideoEnt
 
   console.log(`  正在為英文文章嘗試 TTS 合成...`);
   let audioUrl = '';
-  let srtUrl = '';
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tts-crawl-en-'));
   try {
     const voice = getSetting('tts_voice_en', 'en-US-AvaNeural');
@@ -693,17 +685,12 @@ async function writeEnglishPost(videoId: string, source: Source, video: VideoEnt
     const ttsResult = await synthesize({ text: ttsText, voice }, process.env.TTS_API_URL || DEFAULT_TTS_API_URL);
     
     const audioFilename = path.basename(ttsResult.audio_url);
-    const srtFilename = path.basename(ttsResult.srt_url);
     const apiBase = (process.env.TTS_API_URL || DEFAULT_TTS_API_URL).replace(/\/$/, '');
     
     await downloadFile(`${apiBase}${ttsResult.audio_url}`, path.join(tmpDir, audioFilename));
-    await downloadFile(`${apiBase}${ttsResult.srt_url}`, path.join(tmpDir, srtFilename));
-    
     uploadToR2(path.join(tmpDir, audioFilename), `tts/${audioFilename}`, isProd);
-    uploadToR2(path.join(tmpDir, srtFilename), `tts/${srtFilename}`, isProd);
     
     audioUrl = getR2PublicUrl(`tts/${audioFilename}`);
-    srtUrl = getR2PublicUrl(`tts/${srtFilename}`);
     console.log(`  ✅ TTS 成功: ${audioUrl}`);
   } catch (e) {
     console.warn(`  ⚠️ TTS 跳過: ${e instanceof Error ? e.message : '未知錯誤'}`);
@@ -721,7 +708,6 @@ async function writeEnglishPost(videoId: string, source: Source, video: VideoEnt
     `tldr: "${english.tldr.replace(/"/g, '\\"')}"`,
     `description: "${english.description.replace(/"/g, '\\"')}"`,
     audioUrl ? `audio_url: "${audioUrl}"` : '',
-    srtUrl ? `srt_url: "${srtUrl}"` : '',
     `type: ${ai.type}`,
     `original_url: "${video.url}"`,
     `draft: false`,

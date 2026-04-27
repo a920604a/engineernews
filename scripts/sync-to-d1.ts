@@ -307,14 +307,15 @@ async function syncPosts() {
     runSql(`DELETE FROM posts WHERE slug='${esc(slug)}' AND id!='${esc(id)}';`);
 
     runSql(`
-      INSERT INTO posts (id, slug, title, category, lang, description, tldr, content, tags, content_hash, created_at, updated_at)
+      INSERT INTO posts (id, slug, title, category, lang, description, tldr, content, tags, content_hash, created_at, updated_at, audio_url)
       VALUES ('${esc(id)}','${esc(slug)}','${esc(title)}','${esc(category)}','${esc(lang)}',
               '${esc(description)}','${esc(tldr)}','${esc(content)}','${esc(tags)}','${hash}',
-              '${created_at}','${updated_at}')
+              '${created_at}','${updated_at}','${esc(data.audio_url ?? '')}')
       ON CONFLICT(id) DO UPDATE SET
         slug=excluded.slug, title=excluded.title, content=excluded.content,
         description=excluded.description, tldr=excluded.tldr, tags=excluded.tags,
-        content_hash=excluded.content_hash, updated_at=excluded.updated_at;
+        content_hash=excluded.content_hash, updated_at=excluded.updated_at,
+        audio_url=CASE WHEN excluded.audio_url != '' THEN excluded.audio_url ELSE posts.audio_url END;
     `);
 
     await syncChunks(id, 'post', content, { slug, title, lang });

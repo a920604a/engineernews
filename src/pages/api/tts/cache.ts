@@ -1,8 +1,18 @@
 import type { APIRoute } from 'astro';
 
+type D1 = { prepare: (sql: string) => { bind: (...args: any[]) => { run: () => Promise<any> } } };
+
+function log(db: D1 | undefined, level: 'info' | 'warn' | 'error', message: string) {
+  db?.prepare('INSERT INTO logs (level, source, message, created_at) VALUES (?, ?, ?, datetime("now"))')
+    .bind(level, 'tts/cache', message).run().catch(() => {});
+}
+
 export const POST: APIRoute = async ({ request, locals }) => {
   const OG_IMAGES = locals.runtime?.env?.OG_IMAGES;
+  const db = locals.runtime?.env?.DB as D1 | undefined;
+
   if (!OG_IMAGES) {
+    log(db, 'error', 'R2 not configured');
     return new Response(JSON.stringify({ error: 'R2 not configured' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
@@ -13,14 +23,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   // Mode 1: upload pre-synthesized audio binary directly
   if (contentType.includes('audio/')) {
-    const ext = contentType.includes('mpeg') ? 'mp3' : 'wav';
     const slug = new URL(request.url).searchParams.get('slug');
-    const filename = slug ? `${slug}.${ext}` : `${Date.now()}.${ext}`;
+    const filename = slug ? `${slug}.wav` : `${Date.now()}.wav`;
     const key = `tts/${filename}`;
 
-    // Return existing R2 file if already cached
     const existing = await OG_IMAGES.head(key);
     if (existing) {
+      log(db, 'info', `cache hit (R2 already exists): ${key}`);
       return new Response(
         JSON.stringify({ audio_url: `/api/tts/r2/${key}`, srt_url: '' }),
         { status: 200, headers: { 'Content-Type': 'application/json' } }
@@ -28,9 +37,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     const audioBuffer = await request.arrayBuffer();
-    await OG_IMAGES.put(key, audioBuffer, {
-      httpMetadata: { contentType },
-    });
+    await OG_IMAGES.put(key, audioBuffer, { httpMetadata: { contentType } });
+    log(db, 'info', `uploaded binary to R2: ${key} (${audioBuffer.byteLength} bytes)`);
     return new Response(
       JSON.stringify({ audio_url: `/api/tts/r2/${key}`, srt_url: '' }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
@@ -38,7 +46,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   }
 
   // Mode 2: synthesize via TTS API then store to R2
-  let body: { text: string; voice?: string };
+  let body: { text: string; voice?: string; slug?: string };
   try {
     body = await request.json();
   } catch {
@@ -48,7 +56,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
-  const { text, voice } = body;
+  const { text, voice, slug } = body;
   if (!text) {
     return new Response(JSON.stringify({ error: 'text is required' }), {
       status: 400,
@@ -57,6 +65,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   }
 
   const TTS_API_URL = (locals.runtime?.env?.TTS_API_URL as string | undefined) || 'http://localhost:8008';
+  log(db, 'info', `synthesize start: slug=${slug ?? 'unknown'} voice=${voice ?? 'default'} textLen=${text.length}`);
 
   let synthesizeRes: Response;
   try {
@@ -66,6 +75,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       body: JSON.stringify({ text, voice }),
     });
   } catch (e) {
+    log(db, 'error', `TTS API unreachable: ${String(e)}`);
     return new Response(JSON.stringify({ error: 'TTS API unreachable', detail: String(e) }), {
       status: 503,
       headers: { 'Content-Type': 'application/json' },
@@ -74,6 +84,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   if (!synthesizeRes.ok) {
     const err = await synthesizeRes.json().catch(() => ({})) as any;
+    log(db, 'error', `TTS synthesis failed: ${synthesizeRes.status} ${err.detail ?? synthesizeRes.statusText}`);
     return new Response(JSON.stringify({ error: 'TTS synthesis failed', detail: err.detail ?? synthesizeRes.statusText }), {
       status: 502,
       headers: { 'Content-Type': 'application/json' },
@@ -81,42 +92,28 @@ export const POST: APIRoute = async ({ request, locals }) => {
   }
 
   const ttsResult = await synthesizeRes.json() as { audio_url: string; srt_url: string };
-  const apiBase = TTS_API_URL.replace(/\/$/, '');
+  log(db, 'info', `synthesize done: ${ttsResult.audio_url}`);
 
-  const audioFilename = ttsResult.audio_url.split('/').pop()!;
+  const apiBase = TTS_API_URL.replace(/\/$/, '');
+  const originalFilename = ttsResult.audio_url.split('/').pop()!;
+  const audioFilename = slug ? `${slug}.wav` : originalFilename;
   const r2AudioKey = `tts/${audioFilename}`;
 
   const audioRes = await fetch(`${apiBase}${ttsResult.audio_url}`);
   if (!audioRes.ok) {
+    log(db, 'error', `failed to download audio from TTS server: ${audioRes.status}`);
     return new Response(JSON.stringify({ error: 'Failed to download audio from TTS API' }), {
       status: 502,
       headers: { 'Content-Type': 'application/json' },
     });
   }
 
-  await OG_IMAGES.put(r2AudioKey, await audioRes.arrayBuffer(), {
-    httpMetadata: { contentType: 'audio/wav' },
-  });
-
-  let r2SrtKey = '';
-  try {
-    const srtFilename = ttsResult.srt_url.split('/').pop()!;
-    r2SrtKey = `tts/${srtFilename}`;
-    const srtRes = await fetch(`${apiBase}${ttsResult.srt_url}`);
-    if (srtRes.ok) {
-      await OG_IMAGES.put(r2SrtKey, await srtRes.arrayBuffer(), {
-        httpMetadata: { contentType: 'text/plain' },
-      });
-    }
-  } catch {
-    // SRT 失敗不影響音檔
-  }
+  const audioBuffer = await audioRes.arrayBuffer();
+  await OG_IMAGES.put(r2AudioKey, audioBuffer, { httpMetadata: { contentType: 'audio/wav' } });
+  log(db, 'info', `uploaded to R2: ${r2AudioKey} (${audioBuffer.byteLength} bytes)`);
 
   return new Response(
-    JSON.stringify({
-      audio_url: `/api/tts/r2/${r2AudioKey}`,
-      srt_url: r2SrtKey ? `/api/tts/r2/${r2SrtKey}` : '',
-    }),
+    JSON.stringify({ audio_url: `/api/tts/r2/${r2AudioKey}`, srt_url: '' }),
     { status: 200, headers: { 'Content-Type': 'application/json' } }
   );
 };

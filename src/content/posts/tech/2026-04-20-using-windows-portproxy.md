@@ -7,6 +7,7 @@ lang: zh-TW
 description: "在 Windows 上用 portproxy 把 Codex 指向遠端 GPU 上的 Ollama：完整 Docker、網路與驗證流程，並修正實作上的常見坑。"
 tldr: "透過 Docker 在 GPU 機上部署 Ollama，並在 Windows 用 netsh portproxy 將 localhost:11434 轉發到 GPU 機，讓 Codex 在 Windows 上透明使用遠端 GPU。"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260427_023800_961530.wav"
 ---
 
 # 🚀 Docker GPU Ollama + Codex Client 完整架構教學

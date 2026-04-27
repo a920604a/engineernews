@@ -8,6 +8,7 @@ description: "說明 Engineer News 部落格使用的關鍵工具與設計抉擇
 tldr: "本部落格採用 Astro 作靜態渲染、Cloudflare Pages/Workers 提供部署與動態 API、D1 作輕量資料儲存，向量化在同步步驟中處理文章索引。"
 draft: false
 pinned: true
+audio_url: "/api/tts/r2/tts/tts_20260427_023733_770570.wav"
 ---
 
 ## 工具清單與角色

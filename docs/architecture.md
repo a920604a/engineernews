@@ -76,6 +76,7 @@ graph TD
 | AI 語義搜尋 | [pipelines/ai-search.md](pipelines/ai-search.md) | Vectorize + RAG（bge-m3 + qwen1.5-14b） |
 | 靜態關鍵字搜尋 | [pipelines/search.md](pipelines/search.md) | Pagefind，build-time，無 API |
 | OG 圖片生成 | [pipelines/og-image.md](pipelines/og-image.md) | satori + resvg-wasm + R2 快取 |
+| 語音播放（TTS） | [pipelines/tts.md](pipelines/tts.md) | edge_tts + R2 快取，支援 MediaSource streaming |
 | 手動發文 / 爬蟲 / Sync | [ingest.md](ingest.md) | ingest.ts、crawl.ts、sync-to-d1.ts |
 
 ---
@@ -148,9 +149,10 @@ erDiagram
 | Binding | 類型 | 名稱 | 說明 |
 |---------|------|------|------|
 | `DB` | D1 | `engineer-news-db` | 主資料庫 |
-| `OG_IMAGES` | R2 | `engineer-news-og-images` | OG 圖片快取 |
+| `OG_IMAGES` | R2 | `engineer-news-og-images` | OG 圖片 + TTS 音檔快取 |
 | `VECTORIZE` | Vectorize | `engineer-news-index` | 向量索引（384D cosine） |
 | `AI` | Workers AI | — | AI 推理 binding |
+| `TTS_API_URL` | 環境變數 | — | TTS server URL（選填，不設定則跳過自動合成） |
 
 ---
 

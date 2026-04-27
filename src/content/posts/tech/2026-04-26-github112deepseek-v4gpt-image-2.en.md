@@ -9,6 +9,7 @@ description: "DeepSeek V4 project brings the latest flagship large model"
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=I1A0O2TCwlU"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260427_024147_935815.wav"
 ---
 
 ## TL;DR

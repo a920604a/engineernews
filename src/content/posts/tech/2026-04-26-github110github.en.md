@@ -9,6 +9,7 @@ description: "Learn about the project with the highest growth rate in GitHub's h
 type: explainer
 original_url: "https://www.youtube.com/watch?v=iBGVMcXnkWo"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260427_024125_423899.wav"
 ---
 
 Here is the translated article:

@@ -67,6 +67,18 @@ crawl:
 ingest:
 	pnpm ingest $(FILE) --yes
 
+# 掃描所有文章並修復 Mermaid 語法錯誤（需 CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID）
+fix-mermaid:
+	npx tsx scripts/fix-mermaid.ts
+
+# 針對所有未有 audio_url 的文章合成語音並上傳 R2，回寫 frontmatter（需 TTS_API_URL）
+tts-all:
+	npx tsx scripts/tts-all.ts
+
+# 同上，上傳至遠端 R2
+tts-all-prod:
+	npx tsx scripts/tts-all.ts --prod
+
 # ── 遠端 GitHub Actions 觸發 ─────────────────────────────────────────────────
 
 # 透過 GitHub CLI 觸發遠端爬蟲 workflow（需先 gh auth login）
@@ -82,4 +94,5 @@ remote-deploy:
 	vec-rebuild \
 	sync sync-prod \
 	rebuild \
-	crawl ingest remote-crawl remote-deploy
+	crawl ingest remote-crawl remote-deploy \
+	fix-mermaid tts-all tts-all-prod

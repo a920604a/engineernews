@@ -9,6 +9,7 @@ description: "系統設計面試複盤：Live 評論會"
 type: case-study
 original_url: "https://www.youtube.com/watch?v=NA7O85akf1I"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260427_024044_877018.wav"
 ---
 
 # 開頭：這個案例要解決什麼問題
