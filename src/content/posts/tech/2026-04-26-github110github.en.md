@@ -29,7 +29,7 @@ oh-my-codex solves the limitations of GitHub's code editor, such as the lack of 
 oh-my-codex extends Codex's functionality through a plugin architecture. Developers can install and manage plugins to add new features to Codex. For example, the code auto-completion plugin provides intelligent code suggestions, while the code formatting plugin automatically formats code.
 
 ```mermaid
-sequenceDiagram
+graph LR
     participant C as Codex
     participant P as oh-my-codex
     participant D as Developer

@@ -65,6 +65,7 @@ sequenceDiagram
   participant 後端API
   participant LiveKit
   participant Emma
+  participant Ollama
 
   學生->>前端: Google Sign-In
   前端->>後端API: 建立課程 / 取得 LiveKit Token
