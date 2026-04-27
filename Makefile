@@ -79,6 +79,13 @@ tts-all:
 tts-all-prod:
 	npx tsx scripts/tts-all.ts --prod
 
+# 針對單篇文章跑完整 pipeline：TTS → R2 → D1 audio_url → sync D1 + Vectorize
+# 用法：make tts-post FILE=src/content/posts/learning/xxx.md
+tts-post:
+	@[ "$(FILE)" ] || (echo "❌ 請指定 FILE，例如：make tts-post FILE=src/content/posts/learning/xxx.md" && exit 1)
+	npx tsx scripts/tts-all.ts --prod --file=$(FILE)
+	npx tsx scripts/sync-to-d1.ts --prod --file=$(FILE)
+
 # ── 遠端 GitHub Actions 觸發 ─────────────────────────────────────────────────
 
 # 透過 GitHub CLI 觸發遠端爬蟲 workflow（需先 gh auth login）
@@ -95,4 +102,4 @@ remote-deploy:
 	sync sync-prod \
 	rebuild \
 	crawl ingest remote-crawl remote-deploy \
-	fix-mermaid tts-all tts-all-prod
+	fix-mermaid tts-all tts-all-prod tts-post

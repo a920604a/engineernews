@@ -10,6 +10,7 @@ const VECTOR_INDEX = 'engineer-news-index';
 const ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID;
 const API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
 const isProd = process.argv.includes('--prod');
+const targetFileArg = process.argv.find(a => a.startsWith('--file='))?.slice(7);
 const remoteFlag = isProd ? '--remote' : '--local';
 
 // ── Workflow report ───────────────────────────────────────────────────────────
@@ -264,7 +265,9 @@ async function cleanupOrphans(
 // ── Sync posts ────────────────────────────────────────────────────────────────
 
 async function syncPosts() {
-  const files = walkMdFiles(POSTS_DIR);
+  const files = targetFileArg
+    ? [path.isAbsolute(targetFileArg) ? targetFileArg : path.join(process.cwd(), targetFileArg)]
+    : walkMdFiles(POSTS_DIR);
   const existingHashes = loadExistingHashes('posts');
   const localIds = new Set<string>();
   let skipped = 0;
@@ -323,7 +326,7 @@ async function syncPosts() {
   }
 
   console.log(`  ✓ ${synced} synced, ${skipped} skipped (unchanged)`);
-  await cleanupOrphans('posts', localIds);
+  if (!targetFileArg) await cleanupOrphans('posts', localIds);
 }
 
 

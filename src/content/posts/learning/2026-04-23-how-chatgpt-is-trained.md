@@ -7,6 +7,7 @@ lang: zh-TW
 tldr: "ChatGPT 的誕生並非一蹴而就，而是經過『開天闢地』的自我學習、『指點迷津』的人類引導，以及『超越自我』的強化學習三個關鍵階段。"
 description: "深入解析李宏毅老師分享的 ChatGPT 訓練原理，從 Pre-train 到 RLHF 的完整技術路徑。"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260427_025918_088667.wav"
 ---
 
 ChatGPT 的訓練分為三個核心階段：

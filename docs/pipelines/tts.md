@@ -87,7 +87,7 @@ flowchart TD
 
 ## Pipeline 3：批次補齊（make tts-all）
 
-針對所有未有 `audio_url` 的文章一次性補齊。
+針對所有未有 `audio_url` 的文章一次性補齊。支援 `--file=` 只處理指定單篇。
 
 ```bash
 make tts-all        # 本地 R2（需 TTS server 運行）
@@ -96,13 +96,16 @@ make tts-all-prod   # 遠端 R2（需 TTS_API_URL + CLOUDFLARE_API_TOKEN）
 
 ```mermaid
 flowchart TD
-  Start[tts-all.ts] --> Scan[掃描 src/content/posts/**/*.md]
-  Scan --> Each{每篇文章}
+  Start[tts-all.ts] --> FileArg{--file= 指定?}
+  FileArg -->|是| Single[只處理指定檔案]
+  FileArg -->|否| Scan[掃描 src/content/posts/**/*.md]
+  Single --> Each{每篇文章}
+  Scan --> Each
   Each --> HasAudio{有 audio_url?}
   HasAudio -->|是| Skip[跳過]
   HasAudio -->|否| Synth[POST /api/tts/synthesize]
   Synth --> Upload[上傳 R2 tts/{filename}.wav]
-  Upload --> Rewrite[回寫 frontmatter audio_url]
+  Upload --> Rewrite[只改寫 frontmatter audio_url 行]
   Rewrite --> ProdCheck{--prod?}
   ProdCheck -->|是| D1[UPDATE posts SET audio_url WHERE slug]
   ProdCheck -->|否| Each
@@ -111,10 +114,36 @@ flowchart TD
 
 > **`--prod` 與 local 的差異**
 >
-> | 模式 | R2 | D1 |
+> | 模式 | R2 | D1 audio_url |
 > |------|----|----|
 > | `make tts-all`（local）| 寫入本地 R2 miniflare | 不更新，需另跑 `sync-to-d1` |
 > | `make tts-all-prod` | 寫入遠端 R2 | **立即** `UPDATE posts SET audio_url` |
+
+> **frontmatter 寫入方式**：只替換 `audio_url:` 那一行（或插入）。title、tags、date 等其他欄位完全不動。
+
+---
+
+## Pipeline 4：單篇完整補齊（make tts-post）
+
+針對單篇執行 TTS → R2 → D1 `audio_url` → Vectorize，不影響其他文章。
+
+```bash
+make tts-post FILE=src/content/posts/learning/2026-04-23-how-chatgpt-is-trained.md
+```
+
+```mermaid
+flowchart TD
+  Start["make tts-post FILE=..."] --> TTS["tts-all.ts --prod --file=FILE\n合成 + 上傳 R2 + UPDATE D1 audio_url"]
+  TTS --> Sync["sync-to-d1.ts --prod --file=FILE\nhash 比對（1 篇）"]
+  Sync --> Changed{hash 改變?}
+  Changed -->|是| Upsert["D1 UPSERT（完整欄位 + content_hash）\n+ Vectorize re-embed"]
+  Changed -->|否| Done[已是最新，跳過]
+  Upsert --> Done
+```
+
+使用時機：
+- `tts-all-prod` 因 TTS API 失敗跳過某篇
+- 手動補齊特定文章的語音與向量
 
 ---
 

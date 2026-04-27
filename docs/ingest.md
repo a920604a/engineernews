@@ -133,26 +133,38 @@ pnpm sync           # 同步至本地 D1（不寫 Vectorize）
 pnpm sync:prod      # 同步至遠端 D1 + Vectorize（CI 自動觸發）
 ```
 
+### 執行模式
+
+| 模式 | 對象 | Orphan 清理 |
+|------|------|------------|
+| `--prod`（無 `--file`）| 全部 `.md` | 是 |
+| `--prod --file=<path>` | 指定單篇 | **否**（避免誤判其他篇為孤立） |
+
 ### 流程
 
 ```mermaid
 flowchart TD
-  Start[sync-to-d1.ts --prod] --> LoadHashes[載入 D1 所有 id→content_hash]
-  LoadHashes --> Walk[Walk src/content/posts/]
-  Walk --> Each{每個 .md}
-  Each --> Hash[SHA256]
+  Start[sync-to-d1.ts --prod] --> FileArg{--file= 指定?}
+  FileArg -->|是| Single[只處理指定檔案]
+  FileArg -->|否| Walk[Walk src/content/posts/]
+  Single --> LoadHashes[載入 D1 所有 id→content_hash]
+  Walk --> LoadHashes
+  LoadHashes --> Each{每個 .md}
+  Each --> Hash[SHA256 全檔]
   Hash --> Same{hash 相同?}
   Same -->|是| Skip[跳過]
   Same -->|否| DelVec[刪除舊向量\nvectorize delete-vectors]
-  DelVec --> Upsert["D1 UPSERT posts<br/>(id, title, category, lang, tldr, content, tags, content_hash...)"]
-  Upsert --> Chunks[分割 chunks\n段落 max 1000 chars]
+  DelVec --> Upsert["D1 UPSERT posts<br/>(含 content_hash, audio_url)"]
+  Upsert --> Chunks[分割 chunks]
   Chunks --> EachChunk{每個 chunk}
   EachChunk --> D1Chunk[D1 INSERT doc_chunks]
-  D1Chunk --> Embed["Workers AI bge-m3<br/>text → float[384]"]
-  Embed --> VecInsert["Vectorize insert<br/>metadata: {source_id, lang, title, ...}"]
+  D1Chunk --> Embed["Workers AI bge-m3\ntext → float[384]"]
+  Embed --> VecInsert["Vectorize insert"]
   VecInsert --> EachChunk
   EachChunk -->|完成| Each
-  Each -->|完成| Orphan[清理孤立資料\n比對本地 vs D1 ids]
+  Each -->|完成| OrphanCheck{--file= ?}
+  OrphanCheck -->|否| Orphan[清理孤立資料]
+  OrphanCheck -->|是| Done[完成]
 ```
 
 ### Chunk ID 格式
@@ -185,4 +197,5 @@ git diff HEAD~1 -- src/content/ scripts/sync-to-d1.ts
 | `pnpm sync:prod` | 同步至遠端 D1 + Vectorize |
 | `make fix-mermaid` | 掃描所有文章，修復 Mermaid 語法錯誤 |
 | `make tts-all` | 批次合成所有未有 audio_url 的文章，存本地 R2 |
-| `make tts-all-prod` | 同上，存遠端 R2 |
+| `make tts-all-prod` | 同上，存遠端 R2，並直接 UPDATE D1 audio_url |
+| `make tts-post FILE=...` | 單篇完整 pipeline：TTS → R2 → D1 audio_url → Vectorize |

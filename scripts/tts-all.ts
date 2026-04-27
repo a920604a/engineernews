@@ -8,6 +8,7 @@ import { synthesize, downloadFile, uploadToR2, getR2PublicUrl, processTextForTTS
 const POSTS_DIR = path.join(process.cwd(), 'src/content/posts');
 const TTS_API_URL = process.env.TTS_API_URL || DEFAULT_TTS_API_URL;
 const isProd = process.argv.includes('--prod');
+const targetFileArg = process.argv.find(a => a.startsWith('--file='))?.slice(7);
 
 function getAllPosts(): string[] {
   const results: string[] = [];
@@ -78,7 +79,9 @@ async function processPost(filePath: string): Promise<void> {
 }
 
 async function main() {
-  const posts = getAllPosts();
+  const posts = targetFileArg
+    ? [path.isAbsolute(targetFileArg) ? targetFileArg : path.join(process.cwd(), targetFileArg)]
+    : getAllPosts();
   console.log(`🔍 找到 ${posts.length} 篇文章`);
   for (const p of posts) {
     await processPost(p);
