@@ -1,19 +1,22 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import readline from 'node:readline';
+import os from 'node:os';
+import readline from 'readline';
 import { execSync } from 'node:child_process';
-import { processTextForTTS, synthesize, DEFAULT_TTS_API_URL } from '../src/lib/tts';
+import { processTextForTTS, synthesize, downloadFile, uploadToR2, getR2PublicUrl, DEFAULT_TTS_API_URL } from '../src/lib/tts';
 
 const CONTENT_DIR = path.join(process.cwd(), 'src/content/posts');
 const YES_MODE = process.argv.includes('--yes');
+const isProd = process.argv.includes('--prod');
 const DB_NAME = 'engineer-news-db';
 
 function querySql<T = any>(sql: string): T[] {
+  const remoteFlag = isProd ? '--remote' : '--local';
   const tmp = path.join(process.cwd(), `.tmp_query_${Date.now()}.sql`);
   fs.writeFileSync(tmp, sql);
   try {
     const out = execSync(
-      `wrangler d1 execute ${DB_NAME} --local --file=${tmp} --yes --json`,
+      `wrangler d1 execute ${DB_NAME} ${remoteFlag} --file=${tmp} --yes --json`,
       { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'inherit'] }
     );
     const parsed = JSON.parse(out);
@@ -21,7 +24,7 @@ function querySql<T = any>(sql: string): T[] {
   } catch {
     return [];
   } finally {
-    fs.unlinkSync(tmp);
+    if (fs.existsSync(tmp)) fs.unlinkSync(tmp);
   }
 }
 
@@ -150,6 +153,8 @@ async function ingest() {
   console.log(`\n正在嘗試預合成 TTS 音訊 (${lang})...`);
   let audioUrl = '';
   let srtUrl = '';
+  
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tts-ingest-'));
   try {
     const voiceSettingKey = lang === 'en' ? 'tts_voice_en' : 'tts_voice_zh';
     const defaultVoice = lang === 'en' ? 'en-US-AvaNeural' : 'zh-TW-HsiaoChenNeural';
@@ -160,11 +165,28 @@ async function ingest() {
       text: ttsText,
       voice: voice
     }, process.env.TTS_API_URL || DEFAULT_TTS_API_URL);
-    audioUrl = ttsResult.audio_url;
-    srtUrl = ttsResult.srt_url;
-    console.log(`✅ TTS 預合成成功 (${voice}): ${audioUrl}`);
+    
+    // 持久化流程：下載 -> 上傳 R2
+    const audioFilename = path.basename(ttsResult.audio_url);
+    const srtFilename = path.basename(ttsResult.srt_url);
+    const localAudio = path.join(tmpDir, audioFilename);
+    const localSrt = path.join(tmpDir, srtFilename);
+
+    const apiBase = (process.env.TTS_API_URL || DEFAULT_TTS_API_URL).replace(/\/$/, '');
+    await downloadFile(`${apiBase}${ttsResult.audio_url}`, localAudio);
+    await downloadFile(`${apiBase}${ttsResult.srt_url}`, localSrt);
+
+    uploadToR2(localAudio, `tts/${audioFilename}`, isProd);
+    uploadToR2(localSrt, `tts/${srtFilename}`, isProd);
+
+    audioUrl = getR2PublicUrl(`tts/${audioFilename}`);
+    srtUrl = getR2PublicUrl(`tts/${srtFilename}`);
+
+    console.log(`✅ TTS 預合成並持久化成功: ${audioUrl}`);
   } catch (e) {
-    console.warn(`⚠️ TTS 預合成跳過: ${e instanceof Error ? e.message : 'API 未啟動'}`);
+    console.warn(`⚠️ TTS 流程跳過: ${e instanceof Error ? e.message : '未知錯誤'}`);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
   }
 
   const frontmatter = [

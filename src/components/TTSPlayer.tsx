@@ -1,5 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { listVoices, synthesize, processTextForTTS, type Voice } from '../lib/tts';
+
+function processTextForTTS(title: string, tldr: string, content: string): string {
+  let processed = `您好，歡迎收聽 Engineer News。今天為您導讀的文章標題是：${title}。\n`;
+  if (tldr) processed += `本篇摘要：${tldr}。\n`;
+  processed += `導讀開始。\n\n`;
+
+  const mainContent = content.replace(/^---[\s\S]*?---\n*/, '');
+  const sections = mainContent.split(/\n(?=#{1,6}\s)/);
+
+  for (const section of sections) {
+    const headerMatch = section.match(/^(#{1,6})\s+(.*)/);
+    if (headerMatch) processed += `\n章節標題：${headerMatch[2]}。\n`;
+
+    let body = section.replace(/^#{1,6}\s+.*?\n/, '');
+    body = body.replace(/!\[[^\]]*\]\([^\)]+\)/g, '');
+    body = body.replace(/<img[^>]*>/gi, '');
+    body = body.replace(/```[\s\S]*?```/g, '\n此處有程式碼範例，已跳過詳細內容。\n');
+    body = body.replace(/`([^`]+)`/g, '$1');
+    body = body.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+    body = body.replace(/[\*_]{1,3}([^\*_]+)[\*_]{1,3}/g, '$1');
+    body = body.replace(/<[^>]*>/g, '');
+    processed += body;
+  }
+
+  processed += `\n\n以上是文章「${title}」的導讀內容。感謝您的收聽，我們下次見。`;
+  return processed.trim();
+}
 
 interface TTSPlayerProps {
   title: string;
@@ -28,16 +54,9 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // 即使 API 下線，只要有預合成音訊就顯示
-    if (initialAudioUrl) {
-      setIsVisible(true);
-    } else {
-      // 否則進行健康檢查
-      listVoices()
-        .then(() => setIsVisible(true))
-        .catch(() => setIsVisible(false));
-    }
-  }, [initialAudioUrl]);
+    // 有預合成音訊或直接顯示（fallback 時讀者觸發合成）
+    setIsVisible(true);
+  }, []);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -45,20 +64,119 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
     }
   }, [playbackSpeed]);
 
+  // Auto-play when a new audioUrl is set (after synthesis)
+  useEffect(() => {
+    if (audioUrl && isPlaying && audioRef.current) {
+      audioRef.current.play().catch(() => {});
+    }
+  }, [audioUrl]);
+
   const handleSynthesize = async () => {
     setIsLoading(true);
-    try {
-      const ttsText = processTextForTTS(title, tldr || '', content);
-      const res = await synthesize({
-        text: ttsText,
-        // 不在前端傳入 voice，由後端根據設定決定，或暫時保留預設
-      });
-      setAudioUrl(res.audio_url);
-      setIsPlaying(true);
-    } catch (e) {
-      alert('語音合成失敗：' + (e instanceof Error ? e.message : '未知錯誤'));
-    } finally {
-      setIsLoading(false);
+    const slug = location.pathname.split('/').filter(Boolean).pop() ?? '';
+
+    // Check R2 cache first
+    if (slug) {
+      const r2Url = `/api/tts/r2/tts/${slug}.mp3`;
+      const check = await fetch(r2Url, { method: 'HEAD' }).catch(() => null);
+      if (check?.ok) {
+        setAudioUrl(r2Url);
+        setIsPlaying(true);
+        setIsLoading(false);
+        return;
+      }
+    }
+
+    const ttsText = processTextForTTS(title, tldr || '', content);
+
+    // Try MediaSource streaming (play while receiving)
+    if (typeof MediaSource !== 'undefined' && MediaSource.isTypeSupported('audio/mpeg')) {
+      const ms = new MediaSource();
+      const objectUrl = URL.createObjectURL(ms);
+      setAudioUrl(objectUrl);
+
+      ms.addEventListener('sourceopen', async () => {
+        const sb = ms.addSourceBuffer('audio/mpeg');
+        const chunks: Uint8Array[] = [];
+
+        try {
+          const res = await fetch('/api/tts/stream', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: ttsText }),
+          });
+          if (!res.ok || !res.body) throw new Error(`合成失敗 (${res.status})`);
+
+          setIsLoading(false);
+          setIsPlaying(true);
+
+          const reader = res.body.getReader();
+          const appendNext = async () => {
+            const { done, value } = await reader.read();
+            if (done) {
+              if (!sb.updating) ms.endOfStream();
+              else sb.addEventListener('updateend', () => ms.endOfStream(), { once: true });
+
+              // Cache to R2 in background — upload the already-collected bytes directly
+              const blob = new Blob(chunks, { type: 'audio/mpeg' });
+              fetch(`/api/tts/cache?slug=${encodeURIComponent(slug)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'audio/mpeg' },
+                body: blob,
+              }).then(async r => {
+                if (r.ok) {
+                  const data = await r.json() as { audio_url: string };
+                  setAudioUrl(data.audio_url);
+                  URL.revokeObjectURL(objectUrl);
+                }
+              }).catch(() => {});
+              return;
+            }
+            chunks.push(value);
+            if (sb.updating) {
+              sb.addEventListener('updateend', () => { sb.appendBuffer(value); appendNext(); }, { once: true });
+            } else {
+              sb.appendBuffer(value);
+              sb.addEventListener('updateend', appendNext, { once: true });
+            }
+          };
+          appendNext();
+        } catch (e) {
+          setIsLoading(false);
+          alert('語音合成失敗：' + (e instanceof Error ? e.message : '未知錯誤'));
+        }
+      }, { once: true });
+
+    } else {
+      // Fallback: collect all then play
+      try {
+        const res = await fetch('/api/tts/stream', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: ttsText }),
+        });
+        if (!res.ok) throw new Error(`合成失敗 (${res.status})`);
+        const blob = await res.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        setAudioUrl(objectUrl);
+        setIsPlaying(true);
+        // Upload to R2
+        fetch(`/api/tts/cache?slug=${encodeURIComponent(slug)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'audio/mpeg' },
+          body: blob,
+        }).then(async r => {
+          if (r.ok) {
+            const data = await r.json() as { audio_url: string };
+            setAudioUrl(data.audio_url);
+            URL.revokeObjectURL(objectUrl);
+          }
+        }).catch(() => {});
+      } catch (e) {
+        alert('語音合成失敗：' + (e instanceof Error ? e.message : '未知錯誤'));
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 

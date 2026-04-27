@@ -1,3 +1,7 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { execSync } from 'node:child_process';
+
 export interface Voice {
   name: string;
   gender: string;
@@ -16,6 +20,7 @@ export interface SynthesizeResult {
 }
 
 export const DEFAULT_TTS_API_URL = 'http://localhost:8008';
+export const R2_BUCKET_NAME = 'engineer-news-og-images';
 
 export async function listVoices(baseUrl: string = ''): Promise<Voice[]> {
   const res = await fetch(`${baseUrl}/api/tts/voices`);
@@ -39,6 +44,33 @@ export async function synthesize(
   }
 
   return res.json();
+}
+
+/**
+ * 從指定 URL 下載檔案到本地
+ */
+export async function downloadFile(url: string, destPath: string): Promise<void> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`下載失敗: ${res.statusText}`);
+  const arrayBuffer = await res.arrayBuffer();
+  fs.writeFileSync(destPath, Buffer.from(arrayBuffer));
+}
+
+/**
+ * 將本地檔案上傳至 R2 儲存桶
+ */
+export function uploadToR2(localPath: string, r2Key: string, isProd: boolean = false): void {
+  const remoteFlag = isProd ? '--remote' : '--local';
+  const contentType = r2Key.endsWith('.wav') ? 'audio/wav' : r2Key.endsWith('.srt') ? 'text/plain' : 'application/octet-stream';
+  console.log(`  📤 上傳至 R2: ${r2Key} (${isProd ? 'remote' : 'local'})`);
+  execSync(`wrangler r2 object put ${R2_BUCKET_NAME}/${r2Key} --file="${localPath}" --content-type="${contentType}" ${remoteFlag}`, { stdio: 'inherit' });
+}
+
+/**
+ * 獲取 R2 檔案的公開 URL（透過本地代理）
+ */
+export function getR2PublicUrl(r2Key: string): string {
+  return `/api/tts/r2/${r2Key}`;
 }
 
 /**

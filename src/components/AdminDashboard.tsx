@@ -731,56 +731,98 @@ function TTSDetail() {
   );
 }
 
+const TTS_DEFAULTS: Record<string, string> = {
+  tts_voice_zh: 'zh-TW-HsiaoChenNeural',
+  tts_voice_en: 'en-US-AvaNeural',
+};
+
 function SettingsDetail({ token }: { token: string }) {
   const [settings, setSettings] = useState<Record<string, string>>({});
+  const [voices, setVoices] = useState<{ name: string; gender: string; locale: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/admin/stats?token=${encodeURIComponent(token)}&view=settings`)
-      .then(r => r.json() as Promise<SF<Record<string, string>>>)
-      .then(d => { if (d.data) setSettings(d.data); else setErr(d.error); })
+    Promise.all([
+      fetch(`/api/admin/stats?token=${encodeURIComponent(token)}&view=settings`)
+        .then(r => r.json() as Promise<SF<Record<string, string>>>),
+      fetch('/api/tts/voices').then(r => r.ok ? r.json() : []).catch(() => []),
+    ])
+      .then(([d, v]) => {
+        if (d.data) setSettings(d.data); else setErr(d.error);
+        setVoices(v as any[]);
+      })
       .catch(e => setErr(e.message))
       .finally(() => setLoading(false));
   }, [token]);
 
   const handleSave = () => {
     setSaving(true);
+    // 儲存時補上預設值（若使用者未選）
+    const toSave = { ...settings };
+    for (const [k, v] of Object.entries(TTS_DEFAULTS)) {
+      if (!toSave[k]) toSave[k] = v;
+    }
     fetch(`/api/admin/stats?token=${encodeURIComponent(token)}&view=settings`, {
       method: 'POST',
-      body: JSON.stringify(settings),
+      body: JSON.stringify(toSave),
     })
       .then(r => r.json())
-      .then(() => alert('設定已儲存'))
+      .then(() => { setSettings(toSave); alert('設定已儲存'); })
       .catch(e => alert('儲存失敗：' + e.message))
       .finally(() => setSaving(false));
   };
 
+  const inputStyle = { ...s.mono, width: '100%', padding: '8px', marginTop: '4px', background: 'var(--fill-secondary)', border: '1px solid var(--separator)', borderRadius: '4px', color: 'inherit' };
+
+  const VoiceSelect = ({ settingKey }: { settingKey: string }) => {
+    const defaultVoice = TTS_DEFAULTS[settingKey] ?? '';
+    const currentValue = settings[settingKey] || '';
+    return voices.length > 0 ? (
+      <select
+        value={currentValue}
+        onChange={e => setSettings({ ...settings, [settingKey]: e.target.value })}
+        style={inputStyle}
+      >
+        <option value="">— 使用預設：{defaultVoice} —</option>
+        {voices.map(v => (
+          <option key={v.name} value={v.name}>
+            {v.name === defaultVoice ? `★ ${v.name}` : v.name} ({v.gender}, {v.locale})
+          </option>
+        ))}
+      </select>
+    ) : (
+      <input
+        value={currentValue}
+        onChange={e => setSettings({ ...settings, [settingKey]: e.target.value })}
+        placeholder={`預設：${defaultVoice}（TTS API 未連線）`}
+        style={inputStyle}
+      />
+    );
+  };
+
   return (
     <div style={{ maxWidth: '500px' }}>
-      <p style={s.section}>TTS 預設語音設定</p>
+      <p style={s.section}>TTS 語音設定</p>
       {loading ? <CardSkeleton lines={4} /> : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={s.card}>
             <p style={s.label}>繁體中文 (zh-TW) 預設語音</p>
-            <input 
-              value={settings.tts_voice_zh || ''} 
-              onChange={e => setSettings({ ...settings, tts_voice_zh: e.target.value })}
-              style={{ ...s.mono, width: '100%', padding: '8px', marginTop: '4px', background: 'var(--fill-secondary)', border: '1px solid var(--separator)', borderRadius: '4px', color: 'inherit' }}
-            />
+            <VoiceSelect settingKey="tts_voice_zh" />
           </div>
           <div style={s.card}>
             <p style={s.label}>英文 (en) 預設語音</p>
-            <input 
-              value={settings.tts_voice_en || ''} 
-              onChange={e => setSettings({ ...settings, tts_voice_en: e.target.value })}
-              style={{ ...s.mono, width: '100%', padding: '8px', marginTop: '4px', background: 'var(--fill-secondary)', border: '1px solid var(--separator)', borderRadius: '4px', color: 'inherit' }}
-            />
+            <VoiceSelect settingKey="tts_voice_en" />
           </div>
-          <button 
-            onClick={handleSave} 
+          {voices.length === 0 && (
+            <p style={{ ...s.label, color: 'var(--label-tertiary)', fontSize: '12px' }}>
+              ⚠️ TTS API 未連線，顯示文字輸入框。連線後重新整理可顯示語音選單。
+            </p>
+          )}
+          <button
+            onClick={handleSave}
             disabled={saving}
             style={{ ...s.btn(true), padding: '12px', marginTop: '8px' }}
           >

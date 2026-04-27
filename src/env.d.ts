@@ -12,4 +12,5 @@ interface Env {
   VECTORIZE: VectorizeIndex;
   AI: Ai;
   OG_IMAGES: R2Bucket;
+  TTS_API_URL?: string;
 }

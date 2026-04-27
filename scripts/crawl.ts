@@ -3,11 +3,41 @@ import path from 'node:path';
 import os from 'node:os';
 import { execSync, spawnSync } from 'node:child_process';
 import { SOURCES, type Source } from './sources.js';
+import { processTextForTTS, synthesize, downloadFile, uploadToR2, getR2PublicUrl, DEFAULT_TTS_API_URL } from '../src/lib/tts';
 
 const POSTS_BASE_DIR = path.join(process.cwd(), 'src/content/posts');
 const ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID;
 const API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
 const MAX_VIDEOS_PER_CHANNEL = 5;
+const DB_NAME = 'engineer-news-db';
+const isProd = process.argv.includes('--prod');
+
+function querySql<T = any>(sql: string): T[] {
+  const remoteFlag = isProd ? '--remote' : '--local';
+  const tmp = path.join(process.cwd(), `.tmp_query_${Date.now()}.sql`);
+  fs.writeFileSync(tmp, sql);
+  try {
+    const out = execSync(
+      `wrangler d1 execute ${DB_NAME} ${remoteFlag} --file=${tmp} --yes --json`,
+      { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'inherit'] }
+    );
+    const parsed = JSON.parse(out);
+    return parsed?.[0]?.results ?? [];
+  } catch {
+    return [];
+  } finally {
+    if (fs.existsSync(tmp)) fs.unlinkSync(tmp);
+  }
+}
+
+function getSetting(key: string, defaultValue: string): string {
+  try {
+    const rows = querySql<{ value: string }>(`SELECT value FROM settings WHERE key='${key}'`);
+    return rows[0]?.value ?? defaultValue;
+  } catch {
+    return defaultValue;
+  }
+}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -572,7 +602,7 @@ ${articleContent}`;
 
 // ── Markdown Output ──────────────────────────────────────────────────────────
 
-function writePost(videoId: string, source: Source, video: VideoEntry, ai: AISummary): string {
+async function writePost(videoId: string, source: Source, video: VideoEntry, ai: AISummary): Promise<string> {
   const now = new Date();
   const today = now.toISOString().split('T')[0];
   const nowIso = now.toISOString();
@@ -582,6 +612,34 @@ function writePost(videoId: string, source: Source, video: VideoEntry, ai: AISum
 
   const fileName = `${today}-${slugify(video.title) || video.id}.md`;
   const outputPath = path.join(categoryDir, fileName);
+
+  console.log(`  正在為中文文章嘗試 TTS 合成...`);
+  let audioUrl = '';
+  let srtUrl = '';
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tts-crawl-zh-'));
+  try {
+    const voice = getSetting('tts_voice_zh', 'zh-TW-HsiaoChenNeural');
+    const ttsText = processTextForTTS(ai.title, ai.tldr, ai.summary);
+    const ttsResult = await synthesize({ text: ttsText, voice }, process.env.TTS_API_URL || DEFAULT_TTS_API_URL);
+    
+    const audioFilename = path.basename(ttsResult.audio_url);
+    const srtFilename = path.basename(ttsResult.srt_url);
+    const apiBase = (process.env.TTS_API_URL || DEFAULT_TTS_API_URL).replace(/\/$/, '');
+    
+    await downloadFile(`${apiBase}${ttsResult.audio_url}`, path.join(tmpDir, audioFilename));
+    await downloadFile(`${apiBase}${ttsResult.srt_url}`, path.join(tmpDir, srtFilename));
+    
+    uploadToR2(path.join(tmpDir, audioFilename), `tts/${audioFilename}`, isProd);
+    uploadToR2(path.join(tmpDir, srtFilename), `tts/${srtFilename}`, isProd);
+    
+    audioUrl = getR2PublicUrl(`tts/${audioFilename}`);
+    srtUrl = getR2PublicUrl(`tts/${srtFilename}`);
+    console.log(`  ✅ TTS 成功: ${audioUrl}`);
+  } catch (e) {
+    console.warn(`  ⚠️ TTS 跳過: ${e instanceof Error ? e.message : '未知錯誤'}`);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
 
   let finalSummary = ai.summary;
   const videoRef = `- [${video.title}](${video.url})`;
@@ -600,6 +658,8 @@ function writePost(videoId: string, source: Source, video: VideoEntry, ai: AISum
     `lang: zh-TW`,
     `tldr: "${ai.tldr.replace(/"/g, '\\"')}"`,
     `description: "${ai.tldr.replace(/"/g, '\\"')}"`,
+    audioUrl ? `audio_url: "${audioUrl}"` : '',
+    srtUrl ? `srt_url: "${srtUrl}"` : '',
     `type: ${ai.type}`,
     `original_url: "${video.url}"`,
     `draft: false`,
@@ -612,7 +672,7 @@ function writePost(videoId: string, source: Source, video: VideoEntry, ai: AISum
   return outputPath;
 }
 
-function writeEnglishPost(videoId: string, source: Source, video: VideoEntry, ai: AISummary, english: EnglishArticle): string {
+async function writeEnglishPost(videoId: string, source: Source, video: VideoEntry, ai: AISummary, english: EnglishArticle): Promise<string> {
   const now = new Date();
   const today = now.toISOString().split('T')[0];
   const nowIso = now.toISOString();
@@ -623,6 +683,34 @@ function writeEnglishPost(videoId: string, source: Source, video: VideoEntry, ai
   const fileName = `${today}-${slugify(video.title) || video.id}.en.md`;
   const outputPath = path.join(categoryDir, fileName);
 
+  console.log(`  正在為英文文章嘗試 TTS 合成...`);
+  let audioUrl = '';
+  let srtUrl = '';
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tts-crawl-en-'));
+  try {
+    const voice = getSetting('tts_voice_en', 'en-US-AvaNeural');
+    const ttsText = processTextForTTS(english.title, english.tldr, english.content);
+    const ttsResult = await synthesize({ text: ttsText, voice }, process.env.TTS_API_URL || DEFAULT_TTS_API_URL);
+    
+    const audioFilename = path.basename(ttsResult.audio_url);
+    const srtFilename = path.basename(ttsResult.srt_url);
+    const apiBase = (process.env.TTS_API_URL || DEFAULT_TTS_API_URL).replace(/\/$/, '');
+    
+    await downloadFile(`${apiBase}${ttsResult.audio_url}`, path.join(tmpDir, audioFilename));
+    await downloadFile(`${apiBase}${ttsResult.srt_url}`, path.join(tmpDir, srtFilename));
+    
+    uploadToR2(path.join(tmpDir, audioFilename), `tts/${audioFilename}`, isProd);
+    uploadToR2(path.join(tmpDir, srtFilename), `tts/${srtFilename}`, isProd);
+    
+    audioUrl = getR2PublicUrl(`tts/${audioFilename}`);
+    srtUrl = getR2PublicUrl(`tts/${srtFilename}`);
+    console.log(`  ✅ TTS 成功: ${audioUrl}`);
+  } catch (e) {
+    console.warn(`  ⚠️ TTS 跳過: ${e instanceof Error ? e.message : '未知錯誤'}`);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+
   const frontmatter = [
     '---',
     `title: "${english.title.replace(/"/g, '\\"')}"`,
@@ -632,6 +720,8 @@ function writeEnglishPost(videoId: string, source: Source, video: VideoEntry, ai
     `lang: en`,
     `tldr: "${english.tldr.replace(/"/g, '\\"')}"`,
     `description: "${english.description.replace(/"/g, '\\"')}"`,
+    audioUrl ? `audio_url: "${audioUrl}"` : '',
+    srtUrl ? `srt_url: "${srtUrl}"` : '',
     `type: ${ai.type}`,
     `original_url: "${video.url}"`,
     `draft: false`,
@@ -684,8 +774,8 @@ async function crawl() {
 
       const articleForWrite = { ...ai, summary: articleWithDiagram };
       const english = await translateArticle(articleForWrite, articleForWrite.summary, video.title);
-      const outPath = writePost(video.id, source, video, articleForWrite);
-      const enOutPath = writeEnglishPost(video.id, source, video, ai, english);
+      const outPath = await writePost(video.id, source, video, articleForWrite);
+      const enOutPath = await writeEnglishPost(video.id, source, video, ai, english);
       console.log(`  ✅ ${path.relative(process.cwd(), outPath)}`);
       console.log(`  ✅ ${path.relative(process.cwd(), enOutPath)}`);
       console.log(`\n✅ 完成 1 篇文章。`);

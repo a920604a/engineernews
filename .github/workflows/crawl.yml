@@ -36,6 +36,7 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TTS_API_URL: ${{ secrets.TTS_API_URL }}  # 選填：TTS 服務 URL，不設定則跳過 TTS 合成
 
       - name: Configure git
         run: |
