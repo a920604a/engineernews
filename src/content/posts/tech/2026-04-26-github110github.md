@@ -31,13 +31,12 @@ sequenceDiagram
     participant C as Codex
     participant P as oh-my-codex
     participant D as 开发者
-
+    Note over D,C,P: Codex、oh-my-codex、开发者之间的交互
     D->>C: 编辑代码
     C->>P: 请求插件功能
     P->>D: 提供插件功能
     D->>P: 安装和管理插件
     P->>C: 扩展Codex功能
-    Note over D,C,P: Codex、oh-my-codex、开发者之间的交互
 ```
 
 ## 跟其他增强工具的差別
