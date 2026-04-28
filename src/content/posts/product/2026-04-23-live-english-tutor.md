@@ -79,7 +79,7 @@ sequenceDiagram
   學生->>前端: 結束課程
   前端->>後端API: 通知結束 (SUMMARY)
   後端API->>Ollama: 觸發課後報告生成
-  後端API-->>前端: 課後中文報告
+  後端API->>前端: 課後中文報告
 ```
 
 ## 成果

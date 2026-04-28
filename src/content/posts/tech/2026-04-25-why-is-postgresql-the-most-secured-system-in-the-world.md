@@ -49,7 +49,7 @@ sequenceDiagram
     Server->>Client: 提供記錄和審計信息
     Client->>Server: 監控安全性狀態
 
-    Note over Client,Server,Database: 完成
+    Note over Client,Server,Database: 完成安全流程
 ```
 
 ## 跟 MySQL 的差別
