@@ -1,8 +1,8 @@
 ---
 title: "Using Windows Portproxy to Run Codex with Remote GPU Ollama (No Proxy Server Needed)"
-date: 2026-04-20T15:11:51+08:00
+date: 2026-04-28T15:11:51+08:00
 category: tech
-tags: [ollama, codex, docker, gpu, windows, portproxy]
+tags: [ollama, codex, aider, docker, gpu, windows, portproxy]
 lang: zh-TW
 description: "在 Windows 上用 portproxy 把 Codex 指向遠端 GPU 上的 Ollama：完整 Docker、網路與驗證流程，並修正實作上的常見坑。"
 tldr: "透過 Docker 在 GPU 機上部署 Ollama，並在 Windows 用 netsh portproxy 將 localhost:11434 轉發到 GPU 機，讓 Codex 在 Windows 上透明使用遠端 GPU。"
@@ -90,7 +90,31 @@ sandbox = "elevated"
 
 ---
 
-## 三、Windows portproxy（關鍵步驟）
+## 三、Client（Windows） — Aider 設定
+
+同樣的 portproxy 架構也適用於 [aider](https://github.com/paul-gauthier/aider)。只需讓 aider 指向 localhost:11434，portproxy 會自動轉發到遠端 GPU。
+
+命令列方式：
+
+```bash
+aider --model ollama/gemma4:e4b --openai-api-base http://localhost:11434/v1
+```
+
+或在專案目錄建立 `.aider.conf.yml` 設定檔：
+
+```yaml
+model: ollama/gemma4:e4b
+openai-api-base: http://localhost:11434/v1
+```
+
+重點說明：
+- aider 透過 OpenAI 相容介面與 Ollama 溝通，所以 `--openai-api-base` 需加上 `/v1` 路徑。
+- model 名稱格式為 `ollama/<model_name>`，讓 aider 知道使用 Ollama provider。
+- 與 Codex 相同，aider 只連 localhost，portproxy 負責轉發，不需修改任何遠端設定。
+
+---
+
+## 四、Windows portproxy（關鍵步驟）
 
 在 Windows 上以管理員權限開 PowerShell，新增 portproxy 規則：
 
@@ -129,7 +153,7 @@ curl http://localhost:11434/v1/models
 
 ---
 
-## 四、常見問題與排查（必寫）
+## 五、常見問題與排查（必寫）
 
 1. Codex 連 localhost 失敗或無回應
    - 檢查 Windows IP Helper 服務是否啟用（portproxy 依賴 iphlpsvc）：
@@ -155,17 +179,18 @@ curl http://localhost:11434/v1/models
 
 ---
 
-## 五、完整架構圖
+## 六、完整架構圖
 
 ```mermaid
 flowchart TD
   A[Codex on Windows] -->|localhost:11434| B[Windows portproxy]
+  D[Aider on Windows] -->|localhost:11434| B
   B -->|192.168.15.235:11434| C[GPU Server: Ollama in Docker]
 ```
 
 ---
 
-## 六、核心價值（你要讓讀者知道）
+## 七、核心價值（你要讓讀者知道）
 
 這個流程在解決三個真實問題：
 - GPU server 容易在 Linux 上穩定部署（Docker 化）
