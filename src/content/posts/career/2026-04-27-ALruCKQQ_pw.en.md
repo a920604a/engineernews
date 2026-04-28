@@ -10,6 +10,7 @@ description: "Discover how to safeguard yourself in a hostile workplace"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=ALruCKQQ_pw"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260428_052831_349869.wav"
 ---
 
 Here is the translated article:
@@ -30,10 +31,10 @@ In toxic workplaces, employees may face the following challenges:
 
 ```mermaid
 graph LR
-    A[High-pressure work environment] -->|leads to|> B[Physical and mental health problems]
-    B -->|increases|> C[Work stress]
-    C -->|affects|> D[Work performance]
-    D -->|lowers|> E[Employee satisfaction]
+    A[High-pressure work environment] -->|leads to| B[Physical and mental health problems]
+    B -->|increases| C[Work stress]
+    C -->|affects| D[Work performance]
+    D -->|lowers| E[Employee satisfaction]
 ```
 
 To protect themselves, employees can take the following measures:

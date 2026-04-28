@@ -10,6 +10,7 @@ description: "Discover the unexplored potential of the world's top database"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=wmGikV_393Y"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260428_053025_442305.wav"
 ---
 
 Here is the translated article:
@@ -35,9 +36,9 @@ A database's performance ceiling is influenced by multiple factors, including:
 
 ```mermaid
 graph LR
-    A[Hardware Constraints] -->|Affects|> B[Database Performance Ceiling]
-    C[Software Optimization] -->|Affects|> B
-    D[Architectural Constraints] -->|Affects|> B
+    A[Hardware Constraints] -->|Affects| B[Database Performance Ceiling]
+    C[Software Optimization] -->|Affects| B
+    D[Architectural Constraints] -->|Affects| B
 ```
 
 ## Difference from Performance Testing

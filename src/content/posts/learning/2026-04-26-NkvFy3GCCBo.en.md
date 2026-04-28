@@ -27,11 +27,11 @@ The era's fracture phenomenon reflects the dilemma that young people face in mod
 
 ```mermaid
 graph LR
-    A[Young People] -->|Face Pressure and Expectations|> B[Internalization and Lobster Anxiety]
-    B -->|Contradictory Mindset|> C[Anti-Internalization]
-    B -->|Contradictory Mindset|> D[Lobster Anxiety]
-    C -->|Pursue Freedom and Autonomy|> E[Personal Growth and Development]
-    D -->|Constantly Strive and Struggle|> F[Societal Recognition and Success]
+    A[Young People] -->|Face Pressure and Expectations| B[Internalization and Lobster Anxiety]
+    B -->|Contradictory Mindset| C[Anti-Internalization]
+    B -->|Contradictory Mindset| D[Lobster Anxiety]
+    C -->|Pursue Freedom and Autonomy| E[Personal Growth and Development]
+    D -->|Constantly Strive and Struggle| F[Societal Recognition and Success]
 ```
 
 ## Difference from other concepts

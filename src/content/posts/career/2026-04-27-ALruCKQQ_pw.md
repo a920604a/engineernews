@@ -10,6 +10,7 @@ description: "如何在不良工作環境中保護自己"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=ALruCKQQ_pw"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260428_052851_644530.wav"
 ---
 
 為什麼「上班」是毀掉人最快的方式？如何在草台班子裡保護自己
@@ -28,10 +29,10 @@ draft: false
 
 ```mermaid
 graph LR
-    A[高壓工作環境] -->|導致|> B[身心健康問題]
-    B -->|增加|> C[工作壓力]
-    C -->|影響|> D[工作績效]
-    D -->|降低|> E[員工滿意度]
+    A[高壓工作環境] -->|導致| B[身心健康問題]
+    B -->|增加| C[工作壓力]
+    C -->|影響| D[工作績效]
+    D -->|降低| E[員工滿意度]
 ```
 
 為了保護自己，員工可以採取以下措施：

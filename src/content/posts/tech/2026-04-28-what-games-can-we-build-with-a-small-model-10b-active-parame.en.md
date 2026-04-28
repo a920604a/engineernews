@@ -10,6 +10,7 @@ description: "Discover what games can be built using a compact model with 10 bil
 type: explainer
 original_url: "https://www.youtube.com/watch?v=Yysg5-WnVhg"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260428_053120_155353.wav"
 ---
 
 What Kind of Games Can Be Built with Small Models (10B Active Parameters)?
@@ -28,9 +29,9 @@ The working principle of small models is to train a neural network with relative
 
 ```mermaid
 graph LR
-    A[Dataset] -->|Training|> B[Small Model]
-    B -->|Generation|> C[Image]
-    C -->|Output|> D[Game Content]
+    A[Dataset] -->|Training| B[Small Model]
+    B -->|Generation| C[Image]
+    C -->|Output| D[Game Content]
 ```
 
 ## Differences from Large Models

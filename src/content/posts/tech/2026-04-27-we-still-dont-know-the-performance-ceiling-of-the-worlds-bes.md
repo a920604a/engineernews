@@ -10,6 +10,7 @@ description: "探討資料庫效能的極限"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=wmGikV_393Y"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260428_053102_871506.wav"
 ---
 
 你還不知道世界上最好的資料庫的效能天花板是什麼
@@ -33,9 +34,9 @@ draft: false
 
 ```mermaid
 graph LR
-    A[硬體限制] -->|影響|> B[資料庫效能天花板]
-    C[軟體優化] -->|影響|> B
-    D[架構限制] -->|影響|> B
+    A[硬體限制] -->|影響| B[資料庫效能天花板]
+    C[軟體優化] -->|影響| B
+    D[架構限制] -->|影響| B
 ```
 
 ## 跟效能測試的差別
