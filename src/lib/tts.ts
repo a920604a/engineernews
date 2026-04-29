@@ -165,7 +165,7 @@ export async function synthesizeCFAI(
   const isEnglish = lang === 'en' || lang.startsWith('en-');
   const model = isEnglish ? '@cf/deepgram/aura-2-en' : '@cf/myshell-ai/melotts';
   const body = isEnglish
-    ? { text, encoding: 'mp3', container: 'none' }
+    ? { text, encoding: 'mp3' }
     : { prompt: text, lang: 'zh' };
 
   const res = await fetch(
