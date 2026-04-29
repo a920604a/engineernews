@@ -10,6 +10,7 @@ description: "Delving into the connection between emotions and anxiety"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=sZh0DhSXNQY"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260429_230000_598590.wav"
 ---
 
 **The Emotional Alarm Mechanism: Why Trying to Calm Down Can Make You More Anxious**

@@ -6,10 +6,10 @@ tags: ["Codex", "APP", "實戰教程", "科技", "工具"]
 lang: zh-TW
 tldr: "一步步學習 Codex APP 的實戰教程"
 description: "一步步學習 Codex APP 的實戰教程"
-audio_url: "/api/tts/r2/tts/2026-04-29-codex-app-codex.mp3"
 type: how-to
 original_url: "https://www.youtube.com/watch?v=4gciWspBVHw"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260429_225940_892740.wav"
 ---
 
 ## TL;DR

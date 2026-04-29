@@ -6,10 +6,10 @@ tags: ["心理學", "情緒管理"]
 lang: zh-TW
 tldr: "探討情緒與焦慮之間的關係"
 description: "探討情緒與焦慮之間的關係"
-audio_url: "/api/tts/r2/tts/2026-04-29-sZh0DhSXNQY.mp3"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=sZh0DhSXNQY"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260429_230021_247369.wav"
 ---
 
 **情緒的警報器機制：為什麼越想冷靜反而越焦慮？**

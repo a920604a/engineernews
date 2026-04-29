@@ -23,6 +23,23 @@ export interface SynthesizeResult {
 export const DEFAULT_TTS_API_URL = 'http://localhost:8008';
 export const R2_BUCKET_NAME = 'engineer-news-og-images';
 
+/**
+ * Feature toggle: controls which TTS backend is used.
+ *
+ *   edge   – local Edge TTS server only (default; CF AI code is preserved but skipped)
+ *   cf-ai  – Cloudflare Workers AI only
+ *   auto   – try Edge TTS first, fall back to CF AI if unavailable
+ *
+ * Set via env var TTS_PROVIDER=edge|cf-ai|auto
+ */
+export type TTSProvider = 'edge' | 'cf-ai' | 'auto';
+export const TTS_PROVIDER: TTSProvider =
+  (['edge', 'cf-ai', 'auto'] as TTSProvider[]).includes(
+    process.env.TTS_PROVIDER as TTSProvider
+  )
+    ? (process.env.TTS_PROVIDER as TTSProvider)
+    : 'edge';
+
 export async function listVoices(baseUrl: string = ''): Promise<Voice[]> {
   const res = await fetch(`${baseUrl}/api/tts/voices`);
   if (!res.ok) throw new Error('無法取得語音列表');
@@ -140,8 +157,10 @@ export async function checkEdgeTTSHealth(baseUrl: string): Promise<boolean> {
   try {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 3000);
+    // Use GET instead of HEAD: FastAPI APIRouter + StaticFiles mount("/") causes
+    // HEAD requests to fall through to the static handler and return 404.
     const res = await fetch(`${baseUrl}/api/tts/voices`, {
-      method: 'HEAD',
+      method: 'GET',
       signal: controller.signal,
     });
     clearTimeout(timer);
@@ -213,7 +232,11 @@ export interface SynthesizeWithFallbackOpts {
 }
 
 /**
- * 統一合成入口：優先 Edge TTS，不可用時自動 fallback 到 CF Workers AI
+ * 統一合成入口，行為由 TTS_PROVIDER 環境變數控制：
+ *   edge  – 僅使用本地 Edge TTS server（預設）
+ *   cf-ai – 僅使用 Cloudflare Workers AI
+ *   auto  – 先試 Edge TTS，不可用時 fallback 到 CF AI
+ *
  * 回傳 R2 public URL（/api/tts/r2/tts/{filename}）
  */
 export async function synthesizeWithFallback(
@@ -224,31 +247,48 @@ export async function synthesizeWithFallback(
 ): Promise<string> {
   const { ttsApiUrl, voice, accountId, apiToken, isProd = false } = opts;
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tts-fallback-'));
+  const provider = TTS_PROVIDER;
 
   try {
-    const healthy = await checkEdgeTTSHealth(ttsApiUrl);
+    const useEdge = provider === 'edge' || provider === 'auto';
+    const useCFAI = provider === 'cf-ai';
 
-    if (healthy) {
-      const result = await synthesize({ text, voice }, ttsApiUrl);
-      const audioFilename = path.basename(result.audio_url);
-      const apiBase = ttsApiUrl.replace(/\/$/, '');
-      const localPath = path.join(tmpDir, audioFilename);
-      await downloadFile(`${apiBase}${result.audio_url}`, localPath);
-      uploadToR2(localPath, `tts/${audioFilename}`, isProd);
-      return getR2PublicUrl(`tts/${audioFilename}`);
+    if (useEdge) {
+      const healthy = await checkEdgeTTSHealth(ttsApiUrl);
+      if (healthy) {
+        const result = await synthesize({ text, voice }, ttsApiUrl);
+        const audioFilename = path.basename(result.audio_url);
+        const apiBase = ttsApiUrl.replace(/\/$/, '');
+        const localPath = path.join(tmpDir, audioFilename);
+        await downloadFile(`${apiBase}${result.audio_url}`, localPath);
+        uploadToR2(localPath, `tts/${audioFilename}`, isProd);
+        return getR2PublicUrl(`tts/${audioFilename}`);
+      }
+      if (provider === 'edge') {
+        throw new Error(`Edge TTS server 無回應 (${ttsApiUrl})，TTS_PROVIDER=edge 下不啟用 fallback`);
+      }
+      // provider === 'auto': fall through to CF AI
     }
 
-    if (!accountId || !apiToken) {
-      throw new Error('CF AI fallback: CLOUDFLARE_ACCOUNT_ID 或 CLOUDFLARE_API_TOKEN 未設定');
+    if (useCFAI || provider === 'auto') {
+      if (!accountId || !apiToken) {
+        throw new Error('CF AI: CLOUDFLARE_ACCOUNT_ID 或 CLOUDFLARE_API_TOKEN 未設定');
+      }
+      const modelName = lang === 'en' || lang.startsWith('en-') ? 'aura-2-en' : 'melotts';
+      if (provider === 'auto') {
+        console.log(`  🔄 Edge TTS 不可用，改用 CF AI (${modelName})...`);
+      } else {
+        console.log(`  ☁️  使用 CF AI TTS (${modelName})...`);
+      }
+      const audioBuffer = await synthesizeCFAI(text, lang, accountId, apiToken);
+      const r2Key = `tts/${slug}.mp3`;
+      const localPath = path.join(tmpDir, `${slug}.mp3`);
+      fs.writeFileSync(localPath, Buffer.from(audioBuffer));
+      uploadToR2(localPath, r2Key, isProd);
+      return getR2PublicUrl(r2Key);
     }
 
-    console.log(`  🔄 Edge TTS 不可用，改用 CF AI (${lang === 'en' || lang.startsWith('en-') ? 'aura-2-en' : 'melotts'})...`);
-    const audioBuffer = await synthesizeCFAI(text, lang, accountId, apiToken);
-    const r2Key = `tts/${slug}.mp3`;
-    const localPath = path.join(tmpDir, `${slug}.mp3`);
-    fs.writeFileSync(localPath, Buffer.from(audioBuffer));
-    uploadToR2(localPath, r2Key, isProd);
-    return getR2PublicUrl(r2Key);
+    throw new Error(`未知的 TTS_PROVIDER 值: ${provider}`);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }

@@ -10,6 +10,7 @@ description: "Get started with Codex APP and learn its practical applications wi
 type: how-to
 original_url: "https://www.youtube.com/watch?v=4gciWspBVHw"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260429_225917_317162.wav"
 ---
 
 # Codex APP Master Guide: Comprehensive Practical Tutorials for Mastery

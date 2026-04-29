@@ -3,7 +3,6 @@ import path from 'node:path';
 import os from 'node:os';
 import { execSync, spawnSync } from 'node:child_process';
 import { SOURCES, type Source } from './sources.js';
-import { processTextForTTS, synthesizeWithFallback, DEFAULT_TTS_API_URL } from '../src/lib/tts';
 
 const POSTS_BASE_DIR = path.join(process.cwd(), 'src/content/posts');
 const ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID;
@@ -613,23 +612,7 @@ async function writePost(videoId: string, source: Source, video: VideoEntry, ai:
   const fileName = `${today}-${slugify(video.title) || video.id}.md`;
   const outputPath = path.join(categoryDir, fileName);
 
-  console.log(`  正在為中文文章嘗試 TTS 合成...`);
-  let audioUrl = '';
-  const zhSlug = path.basename(outputPath, '.md');
-  try {
-    const voice = getSetting('tts_voice_zh', 'zh-TW-HsiaoChenNeural');
-    const ttsText = processTextForTTS(ai.title, ai.tldr, ai.summary);
-    audioUrl = await synthesizeWithFallback(ttsText, 'zh', zhSlug, {
-      ttsApiUrl: process.env.TTS_API_URL || DEFAULT_TTS_API_URL,
-      voice,
-      accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
-      apiToken: process.env.CLOUDFLARE_API_TOKEN,
-      isProd,
-    });
-    console.log(`  ✅ TTS 成功: ${audioUrl}`);
-  } catch (e) {
-    console.warn(`  ⚠️ TTS 跳過: ${e instanceof Error ? e.message : '未知錯誤'}`);
-  }
+  const audioUrl = '';
 
   let finalSummary = ai.summary;
   const videoRef = `- [${video.title}](${video.url})`;
@@ -672,23 +655,7 @@ async function writeEnglishPost(videoId: string, source: Source, video: VideoEnt
   const fileName = `${today}-${slugify(video.title) || video.id}.en.md`;
   const outputPath = path.join(categoryDir, fileName);
 
-  console.log(`  正在為英文文章嘗試 TTS 合成...`);
-  let audioUrl = '';
-  const enSlug = path.basename(outputPath, '.md');
-  try {
-    const voice = getSetting('tts_voice_en', 'en-US-AvaNeural');
-    const ttsText = processTextForTTS(english.title, english.tldr, english.content);
-    audioUrl = await synthesizeWithFallback(ttsText, 'en', enSlug, {
-      ttsApiUrl: process.env.TTS_API_URL || DEFAULT_TTS_API_URL,
-      voice,
-      accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
-      apiToken: process.env.CLOUDFLARE_API_TOKEN,
-      isProd,
-    });
-    console.log(`  ✅ TTS 成功: ${audioUrl}`);
-  } catch (e) {
-    console.warn(`  ⚠️ TTS 跳過: ${e instanceof Error ? e.message : '未知錯誤'}`);
-  }
+  const audioUrl = '';
 
   const frontmatter = [
     '---',

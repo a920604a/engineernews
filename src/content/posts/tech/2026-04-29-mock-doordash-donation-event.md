@@ -6,10 +6,10 @@ tags: ["系統設計", "Mock", "工程", "技術"]
 lang: zh-TW
 tldr: " DoorDash 的捐贈活動系統設計"
 description: " DoorDash 的捐贈活動系統設計"
-audio_url: "/api/tts/r2/tts/2026-04-29-mock-doordash-donation-event.mp3"
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=xbnrvkVf0s8"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260429_230113_740044.wav"
 ---
 
 # 系統設計Mock：複盤 DoorDash 捐贈活動

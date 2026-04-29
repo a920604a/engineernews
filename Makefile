@@ -86,6 +86,12 @@ tts-post:
 	npx tsx scripts/tts-all.ts --prod --file=$(FILE)
 	npx tsx scripts/sync-to-d1.ts --prod --file=$(FILE)
 
+# 重置指定日期所有文章的音檔：刪除 R2 檔案、清除 D1 audio_url、移除 frontmatter audio_url
+# 用法：make reset-audio DATE=2026-04-29
+reset-audio:
+	@[ "$(DATE)" ] || (echo "❌ 請指定 DATE，例如：make reset-audio DATE=2026-04-29" && exit 1)
+	npx tsx scripts/reset-audio-by-date.ts --date=$(DATE) --prod
+
 # ── 遠端 GitHub Actions 觸發 ─────────────────────────────────────────────────
 
 # 透過 GitHub CLI 觸發遠端爬蟲 workflow（需先 gh auth login）
@@ -102,4 +108,4 @@ remote-deploy:
 	sync sync-prod \
 	rebuild \
 	crawl ingest remote-crawl remote-deploy \
-	fix-mermaid tts-all tts-all-prod tts-post
+	fix-mermaid tts-all tts-all-prod tts-post reset-audio
