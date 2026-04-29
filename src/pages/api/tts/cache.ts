@@ -28,7 +28,7 @@ async function synthesizeCFAI(
   const model = isEnglish ? '@cf/deepgram/aura-2-en' : '@cf/myshell-ai/melotts';
   const params = isEnglish
     ? { text, encoding: 'mp3', container: 'none' }
-    : { prompt: text, lang: 'ZH' };
+    : { prompt: text, lang: 'zh' };
 
   const result = await ai.run(model, params);
 

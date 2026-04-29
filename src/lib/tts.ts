@@ -154,7 +154,7 @@ export async function checkEdgeTTSHealth(baseUrl: string): Promise<boolean> {
 /**
  * 透過 Cloudflare Workers AI REST API 合成音訊，回傳 MP3 binary
  * lang: 'en' → @cf/deepgram/aura-2-en
- * 其他   → @cf/myshell-ai/melotts (lang='ZH')
+ * 其他   → @cf/myshell-ai/melotts (lang='zh')
  */
 export async function synthesizeCFAI(
   text: string,
@@ -166,7 +166,7 @@ export async function synthesizeCFAI(
   const model = isEnglish ? '@cf/deepgram/aura-2-en' : '@cf/myshell-ai/melotts';
   const body = isEnglish
     ? { text, encoding: 'mp3', container: 'none' }
-    : { prompt: text, lang: 'ZH' };
+    : { prompt: text, lang: 'zh' };
 
   const res = await fetch(
     `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/${model}`,
@@ -185,7 +185,23 @@ export async function synthesizeCFAI(
     throw new Error(`CF AI TTS 失敗 (${res.status}): ${err}`);
   }
 
-  return res.arrayBuffer();
+  const ct = res.headers.get('content-type') ?? '';
+
+  // 若回傳 binary audio（部分模型如 aura-2-en 直接回傳）
+  if (ct.includes('audio/') || ct.includes('application/octet-stream')) {
+    return res.arrayBuffer();
+  }
+
+  // CF AI REST API 將音訊包在 JSON envelope 中，audio 欄位為 base64
+  // { "result": { "audio": "base64..." }, "success": true }
+  const json = await res.json() as any;
+  const audioB64: string | undefined = json?.result?.audio ?? json?.audio;
+  if (!audioB64 || typeof audioB64 !== 'string') {
+    throw new Error(`CF AI: 未預期的回應格式 (content-type: ${ct}, keys: ${Object.keys(json?.result ?? json ?? {}).join(',')})`);
+  }
+
+  const binary = Buffer.from(audioB64, 'base64');
+  return binary.buffer.slice(binary.byteOffset, binary.byteOffset + binary.byteLength) as ArrayBuffer;
 }
 
 export interface SynthesizeWithFallbackOpts {
