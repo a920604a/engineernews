@@ -3,7 +3,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { execSync, spawnSync } from 'node:child_process';
 import { SOURCES, type Source } from './sources.js';
-import { processTextForTTS, synthesize, downloadFile, uploadToR2, getR2PublicUrl, DEFAULT_TTS_API_URL } from '../src/lib/tts';
+import { processTextForTTS, synthesizeWithFallback, DEFAULT_TTS_API_URL } from '../src/lib/tts';
 
 const POSTS_BASE_DIR = path.join(process.cwd(), 'src/content/posts');
 const ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID;
@@ -615,24 +615,20 @@ async function writePost(videoId: string, source: Source, video: VideoEntry, ai:
 
   console.log(`  正在為中文文章嘗試 TTS 合成...`);
   let audioUrl = '';
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tts-crawl-zh-'));
+  const zhSlug = path.basename(outputPath, '.md');
   try {
     const voice = getSetting('tts_voice_zh', 'zh-TW-HsiaoChenNeural');
     const ttsText = processTextForTTS(ai.title, ai.tldr, ai.summary);
-    const ttsResult = await synthesize({ text: ttsText, voice }, process.env.TTS_API_URL || DEFAULT_TTS_API_URL);
-    
-    const audioFilename = path.basename(ttsResult.audio_url);
-    const apiBase = (process.env.TTS_API_URL || DEFAULT_TTS_API_URL).replace(/\/$/, '');
-    
-    await downloadFile(`${apiBase}${ttsResult.audio_url}`, path.join(tmpDir, audioFilename));
-    uploadToR2(path.join(tmpDir, audioFilename), `tts/${audioFilename}`, isProd);
-    
-    audioUrl = getR2PublicUrl(`tts/${audioFilename}`);
+    audioUrl = await synthesizeWithFallback(ttsText, 'zh', zhSlug, {
+      ttsApiUrl: process.env.TTS_API_URL || DEFAULT_TTS_API_URL,
+      voice,
+      accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
+      apiToken: process.env.CLOUDFLARE_API_TOKEN,
+      isProd,
+    });
     console.log(`  ✅ TTS 成功: ${audioUrl}`);
   } catch (e) {
     console.warn(`  ⚠️ TTS 跳過: ${e instanceof Error ? e.message : '未知錯誤'}`);
-  } finally {
-    fs.rmSync(tmpDir, { recursive: true, force: true });
   }
 
   let finalSummary = ai.summary;
@@ -678,24 +674,20 @@ async function writeEnglishPost(videoId: string, source: Source, video: VideoEnt
 
   console.log(`  正在為英文文章嘗試 TTS 合成...`);
   let audioUrl = '';
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tts-crawl-en-'));
+  const enSlug = path.basename(outputPath, '.md');
   try {
     const voice = getSetting('tts_voice_en', 'en-US-AvaNeural');
     const ttsText = processTextForTTS(english.title, english.tldr, english.content);
-    const ttsResult = await synthesize({ text: ttsText, voice }, process.env.TTS_API_URL || DEFAULT_TTS_API_URL);
-    
-    const audioFilename = path.basename(ttsResult.audio_url);
-    const apiBase = (process.env.TTS_API_URL || DEFAULT_TTS_API_URL).replace(/\/$/, '');
-    
-    await downloadFile(`${apiBase}${ttsResult.audio_url}`, path.join(tmpDir, audioFilename));
-    uploadToR2(path.join(tmpDir, audioFilename), `tts/${audioFilename}`, isProd);
-    
-    audioUrl = getR2PublicUrl(`tts/${audioFilename}`);
+    audioUrl = await synthesizeWithFallback(ttsText, 'en', enSlug, {
+      ttsApiUrl: process.env.TTS_API_URL || DEFAULT_TTS_API_URL,
+      voice,
+      accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
+      apiToken: process.env.CLOUDFLARE_API_TOKEN,
+      isProd,
+    });
     console.log(`  ✅ TTS 成功: ${audioUrl}`);
   } catch (e) {
     console.warn(`  ⚠️ TTS 跳過: ${e instanceof Error ? e.message : '未知錯誤'}`);
-  } finally {
-    fs.rmSync(tmpDir, { recursive: true, force: true });
   }
 
   const frontmatter = [

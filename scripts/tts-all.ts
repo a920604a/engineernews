@@ -1,9 +1,8 @@
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
 import matter from 'gray-matter';
-import { synthesize, downloadFile, uploadToR2, getR2PublicUrl, processTextForTTS, DEFAULT_TTS_API_URL } from '../src/lib/tts';
+import { synthesizeWithFallback, processTextForTTS, DEFAULT_TTS_API_URL } from '../src/lib/tts';
 
 const POSTS_DIR = path.join(process.cwd(), 'src/content/posts');
 const TTS_API_URL = process.env.TTS_API_URL || DEFAULT_TTS_API_URL;
@@ -43,25 +42,23 @@ async function processPost(filePath: string): Promise<void> {
   const title = data.title ?? path.basename(filePath, '.md');
   const tldr = data.tldr ?? '';
   const content = raw.replace(/^---[\s\S]*?---\n*/, '');
-  const voice = data.lang === 'en' ? 'en-US-AvaNeural' : 'zh-TW-HsiaoChenNeural';
+  const lang = data.lang === 'en' ? 'en' : 'zh';
+  const voice = lang === 'en' ? 'en-US-AvaNeural' : 'zh-TW-HsiaoChenNeural';
+  const slug = path.basename(filePath, '.md');
 
   console.log(`  🎙️  合成: ${title}`);
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tts-all-'));
   try {
     const ttsText = processTextForTTS(title, tldr, content);
-    const result = await synthesize({ text: ttsText, voice }, TTS_API_URL);
-
-    const apiBase = TTS_API_URL.replace(/\/$/, '');
-    const audioFilename = path.basename(result.audio_url);
-
-    await downloadFile(`${apiBase}${result.audio_url}`, path.join(tmpDir, audioFilename));
-    uploadToR2(path.join(tmpDir, audioFilename), `tts/${audioFilename}`, isProd);
-
-    const audioUrl = getR2PublicUrl(`tts/${audioFilename}`);
+    const audioUrl = await synthesizeWithFallback(ttsText, lang, slug, {
+      ttsApiUrl: TTS_API_URL,
+      voice,
+      accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
+      apiToken: process.env.CLOUDFLARE_API_TOKEN,
+      isProd,
+    });
     setAudioUrl(filePath, audioUrl);
 
     if (isProd) {
-      const slug = path.basename(filePath, '.md');
       const escaped = audioUrl.replace(/'/g, "''");
       console.log(`  📝 寫入 D1: ${slug}`);
       execSync(
@@ -73,8 +70,6 @@ async function processPost(filePath: string): Promise<void> {
     console.log(`  ✅ ${audioUrl}`);
   } catch (e) {
     console.warn(`  ⚠️  失敗: ${e instanceof Error ? e.message : e}`);
-  } finally {
-    fs.rmSync(tmpDir, { recursive: true, force: true });
   }
 }
 

@@ -13,13 +13,24 @@ export const ALL: APIRoute = async ({ request, params, locals }) => {
     const OG_IMAGES = locals.runtime?.env?.OG_IMAGES;
     if (!OG_IMAGES) return new Response('R2 not configured', { status: 500 });
 
-    const object = await OG_IMAGES.get(key);
-    if (!object) return new Response('Not found', { status: 404 });
-
-    const ext = key.split('.').pop() ?? '';
     const contentTypeMap: Record<string, string> = {
       mp3: 'audio/mpeg', wav: 'audio/wav', srt: 'text/plain',
     };
+
+    // Try requested key first; if missing and it's a tts/ audio key, try alternate format
+    let object = await OG_IMAGES.get(key);
+    let resolvedKey = key;
+    if (!object && key.startsWith('tts/')) {
+      const altKey = key.endsWith('.wav') ? key.replace(/\.wav$/, '.mp3') : key.endsWith('.mp3') ? key.replace(/\.mp3$/, '.wav') : null;
+      if (altKey) {
+        object = await OG_IMAGES.get(altKey);
+        if (object) resolvedKey = altKey;
+      }
+    }
+
+    if (!object) return new Response('Not found', { status: 404 });
+
+    const ext = resolvedKey.split('.').pop() ?? '';
     const ct = contentTypeMap[ext] ?? 'application/octet-stream';
 
     const data = await object.arrayBuffer();

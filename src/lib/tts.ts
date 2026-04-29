@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
 
@@ -61,7 +62,7 @@ export async function downloadFile(url: string, destPath: string): Promise<void>
  */
 export function uploadToR2(localPath: string, r2Key: string, isProd: boolean = false): void {
   const remoteFlag = isProd ? '--remote' : '--local';
-  const contentType = r2Key.endsWith('.wav') ? 'audio/wav' : r2Key.endsWith('.srt') ? 'text/plain' : 'application/octet-stream';
+  const contentType = r2Key.endsWith('.wav') ? 'audio/wav' : r2Key.endsWith('.mp3') ? 'audio/mpeg' : r2Key.endsWith('.srt') ? 'text/plain' : 'application/octet-stream';
   console.log(`  📤 上傳至 R2: ${r2Key} (${isProd ? 'remote' : 'local'})`);
   execSync(`wrangler r2 object put ${R2_BUCKET_NAME}/${r2Key} --file="${localPath}" --content-type="${contentType}" ${remoteFlag}`, { stdio: 'inherit' });
 }
@@ -130,4 +131,109 @@ export function processTextForTTS(title: string, tldr: string, content: string):
   processed += `\n\n以上是文章「${title}」的導讀內容。感謝您的收聽，我們下次見。`;
 
   return processed.trim();
+}
+
+/**
+ * 檢查 Edge TTS server 是否可用（3 秒 timeout）
+ */
+export async function checkEdgeTTSHealth(baseUrl: string): Promise<boolean> {
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 3000);
+    const res = await fetch(`${baseUrl}/api/tts/voices`, {
+      method: 'HEAD',
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * 透過 Cloudflare Workers AI REST API 合成音訊，回傳 MP3 binary
+ * lang: 'en' → @cf/deepgram/aura-2-en
+ * 其他   → @cf/myshell-ai/melotts (lang='ZH')
+ */
+export async function synthesizeCFAI(
+  text: string,
+  lang: string,
+  accountId: string,
+  apiToken: string
+): Promise<ArrayBuffer> {
+  const isEnglish = lang === 'en' || lang.startsWith('en-');
+  const model = isEnglish ? '@cf/deepgram/aura-2-en' : '@cf/myshell-ai/melotts';
+  const body = isEnglish
+    ? { text, encoding: 'mp3', container: 'none' }
+    : { prompt: text, lang: 'ZH' };
+
+  const res = await fetch(
+    `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/${model}`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    }
+  );
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`CF AI TTS 失敗 (${res.status}): ${err}`);
+  }
+
+  return res.arrayBuffer();
+}
+
+export interface SynthesizeWithFallbackOpts {
+  ttsApiUrl: string;
+  voice?: string;
+  accountId?: string;
+  apiToken?: string;
+  isProd?: boolean;
+}
+
+/**
+ * 統一合成入口：優先 Edge TTS，不可用時自動 fallback 到 CF Workers AI
+ * 回傳 R2 public URL（/api/tts/r2/tts/{filename}）
+ */
+export async function synthesizeWithFallback(
+  text: string,
+  lang: string,
+  slug: string,
+  opts: SynthesizeWithFallbackOpts
+): Promise<string> {
+  const { ttsApiUrl, voice, accountId, apiToken, isProd = false } = opts;
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tts-fallback-'));
+
+  try {
+    const healthy = await checkEdgeTTSHealth(ttsApiUrl);
+
+    if (healthy) {
+      const result = await synthesize({ text, voice }, ttsApiUrl);
+      const audioFilename = path.basename(result.audio_url);
+      const apiBase = ttsApiUrl.replace(/\/$/, '');
+      const localPath = path.join(tmpDir, audioFilename);
+      await downloadFile(`${apiBase}${result.audio_url}`, localPath);
+      uploadToR2(localPath, `tts/${audioFilename}`, isProd);
+      return getR2PublicUrl(`tts/${audioFilename}`);
+    }
+
+    if (!accountId || !apiToken) {
+      throw new Error('CF AI fallback: CLOUDFLARE_ACCOUNT_ID 或 CLOUDFLARE_API_TOKEN 未設定');
+    }
+
+    console.log(`  🔄 Edge TTS 不可用，改用 CF AI (${lang === 'en' || lang.startsWith('en-') ? 'aura-2-en' : 'melotts'})...`);
+    const audioBuffer = await synthesizeCFAI(text, lang, accountId, apiToken);
+    const r2Key = `tts/${slug}.mp3`;
+    const localPath = path.join(tmpDir, `${slug}.mp3`);
+    fs.writeFileSync(localPath, Buffer.from(audioBuffer));
+    uploadToR2(localPath, r2Key, isProd);
+    return getR2PublicUrl(r2Key);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
 }
