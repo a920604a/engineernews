@@ -152,7 +152,7 @@ erDiagram
 | `OG_IMAGES` | R2 | `engineer-news-og-images` | OG 圖片 + TTS 音檔快取 |
 | `VECTORIZE` | Vectorize | `engineer-news-index` | 向量索引（384D cosine） |
 | `AI` | Workers AI | — | AI 推理 binding |
-| `TTS_API_URL` | 環境變數 | — | TTS server URL（選填，不設定則跳過自動合成） |
+| `TTS_API_URL` | 環境變數 | — | TTS server URL（選填，不設定則走 CF AI fallback） |
 
 ---
 
