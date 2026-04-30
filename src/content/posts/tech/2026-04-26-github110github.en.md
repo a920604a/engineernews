@@ -31,7 +31,7 @@ oh-my-codex extends Codex's functionality through a plugin architecture. Develop
 ```mermaid
 sequenceDiagram
     participant C as Codex
-    participant P as oh-my-codex
+    participant P as "oh-my-codex"
     participant D as Developer
 
     D->>C: Edit code

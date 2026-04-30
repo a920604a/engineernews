@@ -39,8 +39,8 @@ sequenceDiagram
     D->>P: 安装和管理插件
     P->>A: 加载插件
     A->>C: 扩展Codex功能
-    alt 
-    Note over D,P: 使用插件
+    alt 使用插件
+    Note over D,P: 
     end
 ```
 
