@@ -75,7 +75,7 @@ sequenceDiagram
   loop 對話練習 (PRACTICE)
     學生->>Emma: 語音輸入
     Emma->>學生: 回應 + 即時糾錯 (CORRECTION)
-  end
+  endloop
   學生->>前端: 結束課程
   前端->>後端API: 通知結束 (SUMMARY)
   後端API->>Ollama: 觸發課後報告生成

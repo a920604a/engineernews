@@ -40,7 +40,7 @@ sequenceDiagram
     P->>A: 加载插件
     A->>C: 扩展Codex功能
     alt 使用插件
-    Note over D,P: 
+        Note over D,P: 
     end
 ```
 
