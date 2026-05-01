@@ -10,6 +10,7 @@ description: "系統設計背八股嗎？"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=a7JHJ8Tzwpg"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260501_083328_294580.wav"
 ---
 
 系統設計（system design）是軟體開發中一個重要的環節，它負責規劃和設計系統的整體架構和功能。許多人認為系統設計就是背八股文，靠死記硬背來解決問題。但事實上，系統設計遠比背八股文複雜得多。

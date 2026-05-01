@@ -10,6 +10,7 @@ description: "Is system design just about memorizing?"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=a7JHJ8Tzwpg"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260501_083418_634767.wav"
 ---
 
 Here is the translated article:

@@ -2,8 +2,10 @@ name: Crawl YouTube Sources
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # 每六小時執行一次
-  workflow_dispatch:       # 允許手動觸發
+    - cron: '0 0 * * 1-5'   # 平日 08:00 台灣（UTC 00:00）
+    - cron: '0 9 * * 1-5'   # 平日 17:00 台灣（UTC 09:00）
+    - cron: '0 */6 * * 0,6' # 假日每 6 小時
+  workflow_dispatch:         # 允許手動觸發
 
 jobs:
   crawl:

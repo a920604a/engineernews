@@ -115,6 +115,22 @@ interface VideoEntry {
   title: string;
   url: string;
   description: string;
+  uploadDate: string; // YYYYMMDD
+}
+
+function parseUploadDate(raw: string): string {
+  // yt-dlp 回傳 YYYYMMDD，NA 表示無法取得
+  return /^\d{8}$/.test(raw.trim()) ? raw.trim() : '';
+}
+
+function isWithinMaxAge(uploadDate: string, maxAgeDays: number): boolean {
+  if (!uploadDate) return true; // 無法取得日期時放行
+  const year = parseInt(uploadDate.slice(0, 4), 10);
+  const month = parseInt(uploadDate.slice(4, 6), 10) - 1;
+  const day = parseInt(uploadDate.slice(6, 8), 10);
+  const uploaded = new Date(year, month, day).getTime();
+  const cutoff = Date.now() - maxAgeDays * 24 * 60 * 60 * 1000;
+  return uploaded >= cutoff;
 }
 
 function getLatestVideos(source: Source): VideoEntry[] {
@@ -123,7 +139,7 @@ function getLatestVideos(source: Source): VideoEntry[] {
     [
       '-m', 'yt_dlp',
       '--flat-playlist',
-      '--print', '%(id)s|||%(title)s|||%(webpage_url)s|||%(description)s',
+      '--print', '%(id)s|||%(title)s|||%(webpage_url)s|||%(upload_date)s|||%(description)s',
       '--playlist-end', String(MAX_VIDEOS_PER_CHANNEL),
       '-q',
       source.url,
@@ -142,11 +158,12 @@ function getLatestVideos(source: Source): VideoEntry[] {
     .filter(line => line.includes('|||'))
     .map(line => {
       const parts = line.split('|||');
-      const [id, title, url, ...descParts] = parts;
+      const [id, title, url, uploadDateRaw, ...descParts] = parts;
       return {
         id: (id ?? '').trim(),
         title: (title ?? '').trim(),
         url: (url ?? '').trim(),
+        uploadDate: parseUploadDate(uploadDateRaw ?? ''),
         description: descParts.join('|||').trim(),
       };
     })
@@ -689,13 +706,23 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 async function crawl() {
-  const enabledSources = shuffle(SOURCES.filter(s => s.enabled && s.type === 'youtube'));
-  console.log(`\n🔍 爬蟲啟動（隨機單頻道模式）`);
+  const today = new Date().getDay(); // 0=日, 1=一, ..., 6=六
+  const enabledSources = shuffle(
+    SOURCES.filter(s => s.enabled && s.type === 'youtube' && s.days.includes(today))
+  );
+  console.log(`\n🔍 爬蟲啟動（今天星期 ${today}，符合頻道 ${enabledSources.length} 個）`);
 
   // 依序嘗試隨機排列的頻道，找到第一個有新影片的就處理並結束
   for (const source of enabledSources) {
     const videos = getLatestVideos(source);
-    const newVideos = videos.filter(v => !isAlreadyProcessed(v.id, v.url));
+    const newVideos = videos.filter(v => {
+      if (isAlreadyProcessed(v.id, v.url)) return false;
+      if (!isWithinMaxAge(v.uploadDate, source.maxAgeDays)) {
+        console.log(`  ⏭️  跳過過舊影片：${v.title}（${v.uploadDate}，限制 ${source.maxAgeDays} 天）`);
+        return false;
+      }
+      return true;
+    });
 
     if (newVideos.length === 0) {
       console.log(`  ⏭️  ${source.name} 無新影片，換下一個`);

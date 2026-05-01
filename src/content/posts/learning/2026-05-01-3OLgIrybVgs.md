@@ -10,6 +10,7 @@ description: "關於覺醒的反思"
 type: explainer
 original_url: "https://www.youtube.com/shorts/3OLgIrybVgs"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260501_083207_263513.wav"
 ---
 
 # 對於代價的覺醒：效能優化的重要性
