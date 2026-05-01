@@ -67,9 +67,9 @@ subgraph LLM[LLM Engines]
 end
 
 subgraph Storage[Storage]
-  MinIO[(MinIO : PDFs)]
-  PostgreSQL[(PostgreSQL : Metadata)]
-  Qdrant[(Qdrant : Vectors)]
+  MinIO[("MinIO : PDFs")]
+  PostgreSQL[("PostgreSQL : Metadata")]
+  Qdrant[("Qdrant : Vectors")]
 end
 
 NoteServer --> Retrieve
@@ -93,14 +93,14 @@ Storage --> Subscription
 
 ```mermaid
 flowchart TD
-  A([使用者輸入問題]) --> B[Query Rewriting 中英轉換]
+  A("[使用者輸入問題"]) --> B[Query Rewriting 中英轉換]
   B --> C[Qdrant Hybrid Search\ndense + sparse]
   C --> D[文件重排 Re-ranking]
   D --> E[Ollama LLM 生成答案]
   E --> F[Langfuse 記錄 prompt trace]
-  F --> G([回傳雙語答案])
+  F --> G("[回傳雙語答案"])
 
-  H([Prefect 每日排程]) --> I[爬取 arXiv 論文]
+  H("[Prefect 每日排程"]) --> I[爬取 arXiv 論文]
   I --> J[Chunk + Embed]
   J --> K[寫入 Qdrant + MinIO]
 ```

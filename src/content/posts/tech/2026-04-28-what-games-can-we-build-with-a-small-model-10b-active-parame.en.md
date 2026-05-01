@@ -29,9 +29,9 @@ The working principle of small models is to train a neural network with relative
 
 ```mermaid
 graph LR
-    A[Dataset] -->|Training| B[Small Model]
-    B -->|Generation| C[Image]
-    C -->|Output| D[Game Content]
+    A[Dataset] -->|"Training"| B[Small Model]
+    B -->|"Generation"| C[Image]
+    C -->|"Output"| D[Game Content]
 ```
 
 ## Differences from Large Models

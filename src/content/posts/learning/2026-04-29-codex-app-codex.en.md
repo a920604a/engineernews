@@ -64,13 +64,13 @@ print(x + y)
 
 ```mermaid
 graph LR
-    A[Start] -->|Installation and Login|> B(Install Codex APP)
-    B -->|Login Success|> C(Browse Homepage)
-    C -->|Browse Tutorials|> D(Choose Tutorial)
-    D -->|Enter Tutorial Page|> E(Learn and Practice)
-    E -->|Complete Practice|> F(Submit Assignment)
-    F -->|Submit Success|> G(Evaluate and Feedback)
-    G -->|Complete|> H(End)
+    A[Start] -->|"Installation and Login"| B(Install Codex APP)
+    B -->|"Login Success"| C(Browse Homepage)
+    C -->|"Browse Tutorials"| D(Choose Tutorial)
+    D -->|"Enter Tutorial Page"| E(Learn and Practice)
+    E -->|"Complete Practice"| F(Submit Assignment)
+    F -->|"Submit Success"| G(Evaluate and Feedback)
+    G -->|"Complete"| H(End)
 
     style A fill:#f9f,stroke:#333,stroke-width:2px
     style B fill:#f9f,stroke:#333,stroke-width:2px

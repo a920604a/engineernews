@@ -41,19 +41,19 @@ graph LR
   API["後端 API\n(FastAPI)"]
   Agent["AI Agent Emma\n(LiveKit Agents + Gemini)"]
   LK["LiveKit Server\n(Self-hosted WebRTC)"]
-  DB[(PostgreSQL)]
+  DB[("PostgreSQL")]
   Ollama["報告生成\n(Ollama)"]
   Firebase["Firebase Auth"]
 
-  FE -->|Google Sign-In| Firebase
-  FE -->|REST| API
-  API -->|token 簽發| LK
-  FE -->|WebRTC Audio/Video| LK
-  LK -->|Audio Stream| Agent
-  Agent -->|糾錯 / 對話訊息| FE
-  Agent -->|內部回調 API| API
+  FE -->|"Google Sign-In"| Firebase
+  FE -->|"REST"| API
+  API -->|"token 簽發"| LK
+  FE -->|"WebRTC Audio/Video"| LK
+  LK -->|"Audio Stream"| Agent
+  Agent -->|"糾錯 / 對話訊息"| FE
+  Agent -->|"內部回調 API"| API
   API --- DB
-  API -->|Transcript + 糾錯| Ollama
+  API -->|"Transcript + 糾錯"| Ollama
 ```
 
 ## 流程圖

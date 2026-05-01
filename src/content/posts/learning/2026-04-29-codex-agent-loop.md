@@ -77,7 +77,7 @@ flowchart LR
   B -- 否 --> C[繼續 loop]
   B -- 是 --> D[呼叫 /responses/compact]
   D --> E[加密 compaction item]
-  E --> F[替換歷史，釋放空間]
+  E --> F["替換歷史，釋放空間"]
   F --> C
 ```
 

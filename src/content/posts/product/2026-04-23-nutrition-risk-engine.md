@@ -39,19 +39,19 @@ Nutrition Guard 是一個零月費的飲食風險管理平台，140 種食物依
 ```mermaid
 graph LR
   User["使用者"] --> FE["React 18 SPA\n(Cloudflare Pages)"]
-  FE -->|Google Sign-In| Firebase["Firebase Auth"]
-  FE -->|飲食日誌| Firestore[(Firebase Firestore)]
-  FE -->|食物查詢 + AI 分析| Worker["Cloudflare Workers"]
-  Worker -->|驗證 ID Token| Firebase
-  Worker --> D1[(Cloudflare D1\n140 食物 / ~300 標籤)]
-  Worker -->|個人化建議| AI["Workers AI\n(Llama 3.1 8B)"]
+  FE -->|"Google Sign-In"| Firebase["Firebase Auth"]
+  FE -->|"飲食日誌"| Firestore[("Firebase Firestore")]
+  FE -->|"食物查詢 + AI 分析"| Worker["Cloudflare Workers"]
+  Worker -->|"驗證 ID Token"| Firebase
+  Worker --> D1[("Cloudflare D1\n140 食物 / ~300 標籤")]
+  Worker -->|"個人化建議"| AI["Workers AI\n(Llama 3.1 8B)"]
 ```
 
 ## 流程圖
 
 ```mermaid
 flowchart TD
-  A([使用者搜尋食物]) --> B[D1 查詢 + 標籤加總]
+  A("[使用者搜尋食物"]) --> B[D1 查詢 + 標籤加總]
   B --> C{風險分數}
   C -- ≥4 --> D[🔴 高風險提示]
   C -- ≥2 --> E[🟡 中風險提示]
@@ -60,7 +60,7 @@ flowchart TD
   G -- 是 --> H[記錄飲食日誌]
   H --> I[Workers AI 個人化建議]
   I --> J[PDF 報告匯出]
-  G -- 否 --> Z([結束])
+  G -- 否 --> Z("[結束"])
   J --> Z
 ```
 

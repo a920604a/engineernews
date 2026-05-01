@@ -29,14 +29,14 @@ The design philosophy of DoorDash's system is based on event-driven design (EDD)
 The system architecture of DoorDash's donation activity is as follows:
 ```mermaid
 graph LR
-  A[Client] -->|Order|> B[Order Service]
-  B -->|Create Order|> C[Order Database]
-  C -->|Order Event|> D[Event Bus]
-  D -->|Order Event|> E[Donation Service]
-  E -->|Create Donation|> F[Donation Database]
-  F -->|Donation Event|> D
-  D -->|Donation Event|> G[Notification Service]
-  G -->|Send Notification|> H[Client]
+  A[Client] -->|"Order"| B[Order Service]
+  B -->|"Create Order"| C[Order Database]
+  C -->|"Order Event"| D[Event Bus]
+  D -->|"Order Event"| E[Donation Service]
+  E -->|"Create Donation"| F[Donation Database]
+  F -->|"Donation Event"| D
+  D -->|"Donation Event"| G[Notification Service]
+  G -->|"Send Notification"| H[Client]
 ```
 The core concepts of the system include:
 

@@ -31,10 +31,10 @@ In toxic workplaces, employees may face the following challenges:
 
 ```mermaid
 graph LR
-    A[High-pressure work environment] -->|leads to| B[Physical and mental health problems]
-    B -->|increases| C[Work stress]
-    C -->|affects| D[Work performance]
-    D -->|lowers| E[Employee satisfaction]
+    A[High-pressure work environment] -->|"leads to"| B[Physical and mental health problems]
+    B -->|"increases"| C[Work stress]
+    C -->|"affects"| D[Work performance]
+    D -->|"lowers"| E[Employee satisfaction]
 ```
 
 To protect themselves, employees can take the following measures:

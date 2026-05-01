@@ -36,9 +36,9 @@ A database's performance ceiling is influenced by multiple factors, including:
 
 ```mermaid
 graph LR
-    A[Hardware Constraints] -->|Affects| B[Database Performance Ceiling]
-    C[Software Optimization] -->|Affects| B
-    D[Architectural Constraints] -->|Affects| B
+    A[Hardware Constraints] -->|"Affects"| B[Database Performance Ceiling]
+    C[Software Optimization] -->|"Affects"| B
+    D[Architectural Constraints] -->|"Affects"| B
 ```
 
 ## Difference from Performance Testing

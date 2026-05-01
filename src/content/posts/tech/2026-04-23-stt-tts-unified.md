@@ -38,12 +38,12 @@ Whisper 語音辨識是 CPU-bound 任務，若在 FastAPI 主執行緒直接執�
 ```mermaid
 graph LR
   User["使用者"] --> FE["React 19 + Vite\nTTSPanel / STTPanel / HistoryPanel"]
-  FE -->|REST API| API["FastAPI + Uvicorn"]
-  API -->|edge-tts| MS["Microsoft Edge TTS\n(雲端 322 種語音)"]
-  API -->|ThreadPoolExecutor| Whisper["OpenAI Whisper\n(本地離線推論)"]
-  API --- DB[(SQLite\n歷史紀錄)]
-  MS -->|音訊檔| API
-  Whisper -->|轉錄結果| API
+  FE -->|"REST API"| API["FastAPI + Uvicorn"]
+  API -->|"edge-tts"| MS["Microsoft Edge TTS\n(雲端 322 種語音)"]
+  API -->|"ThreadPoolExecutor"| Whisper["OpenAI Whisper\n(本地離線推論)"]
+  API --- DB[("SQLite\n歷史紀錄")]
+  MS -->|"音訊檔"| API
+  Whisper -->|"轉錄結果"| API
 ```
 
 ## 流程圖
@@ -51,21 +51,21 @@ graph LR
 ```mermaid
 flowchart TD
   subgraph TTS
-    A([輸入文字]) --> B[語言自動偵測]
+    A("[輸入文字"]) --> B[語言自動偵測]
     B --> C[edge-tts 請求 Microsoft]
     C --> D[生成音訊檔]
     D --> E[SQLite 儲存]
-    E --> F([播放 / 下載])
+    E --> F("[播放 / 下載"])
   end
 
   subgraph STT
-    G([上傳音檔]) --> H[後端立即回傳 task_id]
+    G("[上傳音檔"]) --> H[後端立即回傳 task_id]
     H --> I[ThreadPoolExecutor\n執行 Whisper 推論]
     I --> J[前端輪詢狀態]
     J --> K{完成?}
     K -- 否 --> J
     K -- 是 --> L[SQLite 儲存結果]
-    L --> M([顯示轉錄文字])
+    L --> M("[顯示轉錄文字"])
   end
 ```
 

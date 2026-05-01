@@ -31,10 +31,10 @@ Performance optimization can solve multiple problems, including:
 Performance optimization is a cyclical process that includes:
 ```mermaid
 graph LR
-    A[Performance Monitoring] -->|Collecting performance data|> B[Performance Analysis]
-    B -->|Identifying bottlenecks|> C[Performance Optimization]
-    C -->|Optimizing code|> D[Testing and Verification]
-    D -->|Feedback loop|> A
+    A[Performance Monitoring] -->|"Collecting performance data"| B[Performance Analysis]
+    B -->|"Identifying bottlenecks"| C[Performance Optimization]
+    C -->|"Optimizing code"| D[Testing and Verification]
+    D -->|"Feedback loop"| A
 ```
 In this process, developers need to use tools to collect performance data, analyze bottlenecks, optimize code, and conduct testing and verification.
 

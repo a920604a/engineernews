@@ -29,11 +29,11 @@ The emotional alarm mechanism involves the following steps:
 
 ```mermaid
 graph LR
-    A[Stress or Challenge] -->|Triggers|> B[Body Response]
-    B -->|Physiological Response|> C[Rapid Heartbeat, Sweating, Muscle Tension]
-    C -->|Perception|> D[Emotional Awareness]
-    D -->|Evaluation|> E[Emotional Response]
-    E -->|Feedback|> A
+    A[Stress or Challenge] -->|"Triggers"| B[Body Response]
+    B -->|"Physiological Response"| C[Rapid Heartbeat, Sweating, Muscle Tension]
+    C -->|"Perception"| D[Emotional Awareness]
+    D -->|"Evaluation"| E[Emotional Response]
+    E -->|"Feedback"| A
 ```
 
 ## Difference from Stress Management

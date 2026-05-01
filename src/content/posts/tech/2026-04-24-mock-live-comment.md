@@ -24,10 +24,10 @@ Live comment 系統是一種實時的評論系統，需要在短時間內處理�
 
 ```mermaid
 graph LR
-    Client["用戶端"] -->|評論數據| Server["服務端"]
-    Server -->|評論數據| DB["數據庫"]
-    DB -->|評論數據| Server
-    Server -->|評論數據| Client
+    Client["用戶端"] -->|"評論數據"| Server["服務端"]
+    Server -->|"評論數據"| DB["數據庫"]
+    DB -->|"評論數據"| Server
+    Server -->|"評論數據"| Client
 ```
 
 ## 實作細節

@@ -23,7 +23,7 @@ RAG 的標準流程是這樣的：
 flowchart LR
   A[原始文件] --> B[切塊 Chunking]
   B --> C[向量化 Embedding]
-  C --> D[(向量資料庫)]
+  C --> D[("向量資料庫")]
   E[使用者查詢] --> F[查詢向量化]
   F --> G[相似度搜尋]
   D --> G
@@ -54,10 +54,10 @@ graph TD
   B["📖 The Wiki\n（LLM 生成並持續更新的 markdown 頁面）\n摘要、交叉引用、概念索引"]
   C["⚙️ Schema\n（定義 wiki 結構與工作流程）\n操作規則、頁面格式、更新策略"]
 
-  A -->|Ingest| B
-  C -->|governs| B
-  B -->|Query| D["👤 使用者"]
-  B -->|Lint| B
+  A -->|"Ingest"| B
+  C -->|"governs"| B
+  B -->|"Query"| D["👤 使用者"]
+  B -->|"Lint"| B
 ```
 
 **Raw Sources** 是不可修改的事實層。原始文章、論文、對話紀錄、程式碼都放在這裡，LLM 只讀不寫。
@@ -72,7 +72,8 @@ graph TD
 
 新資料進來時，LLM 不只是把它切塊存進向量資料庫，而是主動問：「這份資料影響了哪些現有的 wiki 頁面？有沒有需要新增的概念條目？有沒有跟舊資料矛盾的地方？」
 
-```mermaid
+```mermaidgraph TD
+
 sequenceDiagram
   participant S as Raw Source（新文件）
   participant L as LLM

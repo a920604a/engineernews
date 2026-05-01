@@ -183,9 +183,9 @@ curl http://localhost:11434/v1/models
 
 ```mermaid
 flowchart TD
-  A[Codex on Windows] -->|localhost:11434| B[Windows portproxy]
-  D[Aider on Windows] -->|localhost:11434| B
-  B -->|192.168.15.235:11434| C[GPU Server: Ollama in Docker]
+  A[Codex on Windows] -->|"localhost:11434"| B[Windows portproxy]
+  D[Aider on Windows] -->|"localhost:11434"| B
+  B -->|"192.168.15.235:11434"| C["GPU Server: Ollama in Docker"]
 ```
 
 ---

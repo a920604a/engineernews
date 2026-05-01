@@ -33,11 +33,11 @@ The system design process typically includes the following steps:
 
 ```mermaid
 graph LR
-    A[Requirements Analysis] -->|Collect and analyze user requirements|> B[System Architecture Design]
-    B -->|Design system architecture and functionality|> C[System Detailed Design]
-    C -->|Detailed design of each part of the system|> D[System Implementation]
-    D -->|Implement system|> E[System Testing]
-    E -->|Test system|> F[System Maintenance]
+    A[Requirements Analysis] -->|"Collect and analyze user requirements"| B[System Architecture Design]
+    B -->|"Design system architecture and functionality"| C[System Detailed Design]
+    C -->|"Detailed design of each part of the system"| D[System Implementation]
+    D -->|"Implement system"| E[System Testing]
+    E -->|"Test system"| F[System Maintenance]
 ```
 
 ## Difference from Software Architecture

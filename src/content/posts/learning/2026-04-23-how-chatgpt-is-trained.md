@@ -19,14 +19,14 @@ ChatGPT 的訓練分為三個核心階段：
 
 ```mermaid
 flowchart TD
-    A[海量網路資料] --> B(第一階段：Pre-train)
-    B -->|學會接龍但不聽話| C[自我學習的模型]
+    A[海量網路資料] --> B("第一階段：Pre-train")
+    B -->|"學會接龍但不聽話"| C[自我學習的模型]
     
-    D[人類標註的指令資料集] --> E(第二階段：Instruction Fine-tuning)
-    E -->|學會聽話但能力有限| F[指令微調後的模型]
+    D[人類標註的指令資料集] --> E("第二階段：Instruction Fine-tuning")
+    E -->|"學會聽話但能力有限"| F[指令微調後的模型]
     
-    G[人類偏好排序資料] --> H(第三階段：RLHF)
-    H -->|與人類價值觀對齊| I[最終的 ChatGPT]
+    G[人類偏好排序資料] --> H("第三階段：RLHF")
+    H -->|"與人類價值觀對齊"| I[最終的 ChatGPT]
 ```
 
 ## 第一階段：開天闢地 (Pre-training)
