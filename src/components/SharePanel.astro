@@ -16,14 +16,12 @@ const { title, url, imageUrl } = Astro.props;
         <path d="M19 5 10 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M8 7H6.5A2.5 2.5 0 0 0 4 9.5v8A2.5 2.5 0 0 0 6.5 20h8A2.5 2.5 0 0 0 17 17.5V16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <span>分享</span>
     </button>
     <button type="button" class="share-panel__button" data-share-copy aria-label="複製連結">
       <svg class="share-panel__icon" viewBox="0 0 24 24" aria-hidden="true">
         <rect x="9" y="9" width="10" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
         <path d="M7 15H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <span>複製</span>
     </button>
     <a class="share-panel__button share-panel__button--ghost" data-share-download href={imageUrl} download aria-label="下載圖卡">
       <svg class="share-panel__icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -141,7 +139,7 @@ const { title, url, imageUrl } = Astro.props;
 <style>
   .share-panel {
     margin: 0 0 20px;
-    padding: 10px;
+    padding: 8px 12px;
     border: 0.5px solid var(--separator);
     border-radius: var(--radius-lg);
     background:
@@ -151,9 +149,9 @@ const { title, url, imageUrl } = Astro.props;
   }
 
   .share-panel__actions {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    display: flex;
     gap: 8px;
+    justify-content: flex-end;
   }
 
   .share-panel__button {
@@ -162,18 +160,17 @@ const { title, url, imageUrl } = Astro.props;
     background: transparent;
     color: var(--label);
     border-radius: var(--radius-full);
-    padding: 10px 6px;
+    padding: 0;
     font: inherit;
-    font-weight: 600;
     text-decoration: none;
     cursor: pointer;
     transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    min-height: 56px;
+    width: 40px;
+    height: 40px;
+    flex: none;
   }
 
   .share-panel__button:hover {
@@ -197,8 +194,8 @@ const { title, url, imageUrl } = Astro.props;
   }
 
   .share-panel__icon {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     flex: none;
   }
 
