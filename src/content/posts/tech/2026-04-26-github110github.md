@@ -41,6 +41,7 @@ sequenceDiagram
     A->>C: 扩展Codex功能
     alt 使用插件
         Note over D,P: 
+    else 不使用插件
     end
 ```
 
