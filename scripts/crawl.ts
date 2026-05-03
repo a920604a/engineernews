@@ -193,10 +193,10 @@ function downloadSubtitles(videoUrl: string, tmpDir: string): string | null {
   const vttFiles = files.filter(f => f.endsWith('.vtt'));
   if (vttFiles.length === 0) return null;
 
-  const preferred = vttFiles.find(f => f.includes('.zh-TW.')) ?? 
-                    vttFiles.find(f => f.includes('.zh-Hant.')) ??
-                    vttFiles.find(f => f.includes('.zh.')) ?? 
-                    vttFiles[0];
+  const preferred = vttFiles.find(f => f.includes('.zh-TW.')) ??
+    vttFiles.find(f => f.includes('.zh-Hant.')) ??
+    vttFiles.find(f => f.includes('.zh.')) ??
+    vttFiles[0];
 
   const raw = fs.readFileSync(path.join(tmpDir, preferred), 'utf-8');
   return parseVtt(raw);
@@ -690,7 +690,7 @@ async function writePost(videoId: string, source: Source, video: VideoEntry, ai:
     audioUrl ? `audio_url: "${audioUrl}"` : '',
     `type: ${ai.type}`,
     `original_url: "${video.url}"`,
-    `draft: false`,
+    `draft: true`,
     '---',
     '',
     finalSummary,
@@ -725,7 +725,7 @@ async function writeEnglishPost(videoId: string, source: Source, video: VideoEnt
     audioUrl ? `audio_url: "${audioUrl}"` : '',
     `type: ${ai.type}`,
     `original_url: "${video.url}"`,
-    `draft: false`,
+    `draft: true`,
     '---',
     '',
     english.content,
