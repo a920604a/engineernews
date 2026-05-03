@@ -28,6 +28,9 @@
 		"binding": "AI"
 	},
 	"vars": {
-		"ADMIN_TOKEN": "dev-secret"
+		"ADMIN_TOKEN": "dev-secret",
+		"GITHUB_TOKEN": "ghp_placeholder_replace_in_production",
+		"GITHUB_OWNER": "a920604a",
+		"GITHUB_REPO": "engineernews"
 	}
 }

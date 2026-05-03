@@ -36,6 +36,7 @@ const posts = defineCollection({
     source_url: z.string().url().optional(),
     github: z.string().url().optional(),
     url: z.string().url().optional(),
+    original_url: z.string().url().optional(),
   }),
 });
 
