@@ -10,6 +10,7 @@ description: "探討 AI 自我修正技術的發展"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=m3i2mk5hs8U"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260503_050551_930215.wav"
 ---
 
 AI 能自我修正嗎？從 decoding、workflow 到 reasoning 的技術發展整理

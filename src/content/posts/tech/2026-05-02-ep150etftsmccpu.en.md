@@ -10,6 +10,7 @@ description: "TSMC's stock price surges, what are the implications of the Financ
 type: explainer
 original_url: "https://www.youtube.com/watch?v=zpmBleCwvGo"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260503_050250_456987.wav"
 ---
 
 Here is the translated article:

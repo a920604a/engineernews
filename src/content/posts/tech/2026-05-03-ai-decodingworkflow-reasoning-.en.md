@@ -10,6 +10,7 @@ description: "This article discusses the development of AI self-correction techn
 type: explainer
 original_url: "https://www.youtube.com/watch?v=m3i2mk5hs8U"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260503_050505_139954.wav"
 ---
 
 AI Can Self-Correct? From Decoding, Workflow to Reasoning, a Technical Overview

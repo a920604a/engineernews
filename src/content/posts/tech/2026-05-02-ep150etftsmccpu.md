@@ -10,6 +10,7 @@ description: "台積電股票價格飆升，金管會放寬主動型ETF投資上
 type: explainer
 original_url: "https://www.youtube.com/watch?v=zpmBleCwvGo"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260503_050320_789105.wav"
 ---
 
 台積電（TSMC）股價不斷創新高，指數衝破四萬點，投資人趨之若鶩。金管會放寬主動型ETF單一個股投資上限，讓投資人對TSMC的期待更高。到底TSMC的極限在哪裡？本篇文章將深入分析台股美股風險優勢，全面的解析TSMC的未來發展前景。

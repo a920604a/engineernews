@@ -210,7 +210,45 @@ function parseVtt(vtt: string): string {
     .replace(/<[^>]+>/g, '')
     .replace(/\s+/g, ' ')
     .trim()
-    .slice(0, 4000);
+    .slice(0, 8000);
+}
+
+// ── Web Search Supplement ────────────────────────────────────────────────────
+
+async function searchRelatedArticles(query: string): Promise<string> {
+  try {
+    const encoded = encodeURIComponent(query);
+    const res = await fetch(`https://s.jina.ai/${encoded}`, {
+      headers: { 'Accept': 'text/plain', 'X-No-Cache': 'true' },
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) return '';
+    const text = await res.text();
+    // 只取前 6000 字，避免太大
+    return text.slice(0, 6000);
+  } catch {
+    return '';
+  }
+}
+
+async function enrichContent(rawContent: string, videoTitle: string): Promise<{ content: string; supplemented: boolean }> {
+  const isFallback = rawContent.startsWith('標題：');
+  const isThin = rawContent.length < 500;
+
+  if (!isFallback && !isThin) {
+    return { content: rawContent, supplemented: false };
+  }
+
+  console.log(`  🔍 內容不足（${rawContent.length} 字），搜尋補充資料...`);
+  const searchResult = await searchRelatedArticles(videoTitle);
+  if (!searchResult) {
+    console.log(`  ⚠️  搜尋無結果，使用原始內容`);
+    return { content: rawContent, supplemented: false };
+  }
+
+  console.log(`  ✅ 找到補充資料（${searchResult.length} 字）`);
+  const combined = `=== 影片原始內容 ===\n${rawContent}\n\n=== 搜尋補充資料 ===\n${searchResult}`;
+  return { content: combined, supplemented: true };
 }
 
 // ── Workers AI Summarize ─────────────────────────────────────────────────────
@@ -479,13 +517,14 @@ async function summarize(content: string, sourceTags: string[], videoTitle: stri
   // ── Step 2：根據 type 生成內容 ────────────────────────────────────────────────
   const structure = TYPE_STRUCTURES[validType];
 
-  const contentPrompt = `你是台灣技術主編。將以下 YouTube 影片內容撰寫成一篇台灣繁體中文技術文章。
+  const contentPrompt = `你是台灣技術主編。將以下資料撰寫成一篇台灣繁體中文深度技術文章。
 
 【寫作規範】
 - 語言：全程使用台灣繁體中文。術語：「程式碼」非「代碼」、「框架」非「架構（指 framework 時）」、「專案」非「項目」。
-- 語氣：直接，不客套，可以有觀點，不需要介紹自己。
-- 長度：600–1000 字。
+- 語氣：直接，有觀點，像工程師在寫給工程師看的文章，不需要客套。
+- 長度：1500–2500 字。要有深度，不要泛泛而談。
 - 圖表：有流程或架構時用 Mermaid（flowchart / sequenceDiagram / graph 依情境選用），不要為了加圖而加圖。Mermaid 箭頭格式：\`A --> B\` 或 \`A -->|label| B\`，不要用 \`|label|>\`。
+- 【重要】只能引用以下 <content> 中出現的資訊。如果資料不足以支撐某個段落，就直接略過那個段落，不要補充沒有根據的內容。
 - 必須以此結構撰寫（將 {{...}} 替換為實際內容）：
 
 ${structure}
@@ -494,10 +533,10 @@ ${structure}
 
 <content>
 影片標題：${videoTitle}
-內容：${content}
+${content}
 </content>`;
 
-  let articleContent = await callAI(contentPrompt, 2500);
+  let articleContent = await callAI(contentPrompt, 4000);
 
   if (!articleContent || articleContent.length < 200) {
     throw new Error('Content too short');
@@ -735,7 +774,9 @@ async function crawl() {
 
     try {
       const subtitles = downloadSubtitles(video.url, tmpDir);
-      const content = subtitles ?? `標題：${video.title}\n簡介：${video.description}`;
+      const rawContent = subtitles ?? `標題：${video.title}\n簡介：${video.description}`;
+      const { content, supplemented } = await enrichContent(rawContent, video.title);
+      if (supplemented) console.log(`  📚 已加入網路補充資料`);
 
       const ai = await summarize(content, source.tags, video.title);
       const mermaid = await generateMermaidDiagram(video.title, content, ai.summary);

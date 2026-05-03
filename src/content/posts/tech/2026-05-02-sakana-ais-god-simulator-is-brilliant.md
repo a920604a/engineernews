@@ -10,6 +10,7 @@ description: "Sakana AI 的神明模擬器是一個創新的AI工具"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=QzZ4VwDHAT4"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260503_050358_149486.wav"
 ---
 
 **開發 AI 神明模擬器：Sakana AI 的創舉**

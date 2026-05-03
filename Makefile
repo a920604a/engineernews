@@ -67,6 +67,18 @@ crawl:
 ingest:
 	pnpm ingest $(FILE) --yes
 
+# 批次重寫所有爬蟲文章（dry-run，只列出清單）
+rewrite:
+	pnpm rewrite
+
+# 批次重寫所有爬蟲文章（實際寫入，需 CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID）
+rewrite-write:
+	pnpm rewrite:write
+
+# 重寫單篇（用法：make rewrite-post FILE=src/content/posts/tech/xxx.md）
+rewrite-post:
+	pnpm rewrite:write -- --file=$(FILE)
+
 # 掃描所有文章並修復 Mermaid 語法錯誤（需 CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID）
 fix-mermaid:
 	npx tsx scripts/fix-mermaid.ts
