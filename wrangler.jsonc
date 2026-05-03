@@ -29,8 +29,9 @@
 	},
 	"vars": {
 		"ADMIN_TOKEN": "dev-secret",
-		"GITHUB_TOKEN": "ghp_placeholder_replace_in_production",
 		"GITHUB_OWNER": "a920604a",
 		"GITHUB_REPO": "engineernews"
 	}
+	// GITHUB_TOKEN is a secret — set via Cloudflare dashboard or:
+	// wrangler pages secret put GITHUB_TOKEN
 }
