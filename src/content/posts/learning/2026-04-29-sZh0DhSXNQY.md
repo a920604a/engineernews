@@ -8,7 +8,7 @@ tldr: "探討情緒與焦慮之間的關係"
 description: "探討情緒與焦慮之間的關係"
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=sZh0DhSXNQY"
-draft: "false"
+draft: false
 audio_url: "/api/tts/r2/tts/tts_20260429_230021_247369.wav"
 ---
 ## TL;DR

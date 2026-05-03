@@ -8,7 +8,7 @@ tldr: "一步步學習 Codex APP 的實戰教程"
 description: "一步步學習 Codex APP 的實戰教程"
 type: "how-to"
 original_url: "https://www.youtube.com/watch?v=4gciWspBVHw"
-draft: "false"
+draft: false
 audio_url: "/api/tts/r2/tts/tts_20260429_225940_892740.wav"
 ---
 # TL;DR

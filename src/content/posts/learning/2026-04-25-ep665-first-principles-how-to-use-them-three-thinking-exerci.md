@@ -8,7 +8,7 @@ tldr: "從基本原理出發的思考方式，透過 3 個練習，讓你做出�
 description: "從基本原理出發的思考方式，透過 3 個練習，讓你做出更好的決定"
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=hToO6daVuSw"
-draft: "false"
+draft: false
 audio_url: "/api/tts/r2/tts/tts_20260427_023521_451297.wav"
 ---
 ## TL;DR

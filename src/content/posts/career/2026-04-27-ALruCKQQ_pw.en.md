@@ -8,7 +8,7 @@ tldr: "Learn how to protect yourself in a toxic work environment"
 description: "Discover how to safeguard yourself in a hostile workplace"
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=ALruCKQQ_pw"
-draft: "false"
+draft: false
 audio_url: "/api/tts/r2/tts/tts_20260428_052831_349869.wav"
 ---
 ## TL;DR

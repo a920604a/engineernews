@@ -7,7 +7,7 @@ lang: "zh-TW"
 tldr: "透過一場 100 天的挑戰，探索成為「女性角色」的體驗與成長之旅。"
 description: "透過一場 100 天的挑戰，探索成為「女性角色」的體驗與成長之旅。"
 original_url: "https://www.youtube.com/watch?v=cqGYZ6rBF2c"
-draft: "false"
+draft: false
 audio_url: "/api/tts/r2/tts/tts_20260427_023516_692062.wav"
 ---
 挑戰最高難度的女性角色：100 天後的成長之旅

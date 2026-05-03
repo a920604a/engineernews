@@ -7,7 +7,7 @@ lang: "zh-TW"
 tldr: "本文將介紹如何在新電腦上從零開始安裝和設定 Claude Code 等 Agent 框架，支援 Windows、macOS 和 Linux 三大作業系統。"
 description: "本文將介紹如何在新電腦上從零開始安裝和設定 Claude Code 等 Agent 框架，支援 Windows、macOS 和 Linux 三大作業系統。"
 original_url: "https://www.youtube.com/watch?v=7JltMHmSvuY"
-draft: "false"
+draft: false
 audio_url: "/api/tts/r2/tts/tts_20260427_023901_221199.wav"
 ---
 # TL;DR
