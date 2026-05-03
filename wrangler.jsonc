@@ -22,7 +22,7 @@
 		{
 			"binding": "VECTORIZE",
 			"index_name": "engineer-news-index"
-		}
+		},
 	],
 	"ai": {
 		"binding": "AI"
