@@ -8,7 +8,7 @@ tldr: "Learn Codex APP with step-by-step practical tutorials"
 description: "Get started with Codex APP and learn its practical applications with our comprehensive guide"
 type: "how-to"
 original_url: "https://www.youtube.com/watch?v=4gciWspBVHw"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260429_225917_317162.wav"
 ---
 # TL;DR

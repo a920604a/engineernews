@@ -8,7 +8,7 @@ tldr: "DeepSeek V4 專案帶來最新旗艦大模型"
 description: "DeepSeek V4 專案帶來最新旗艦大模型"
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=I1A0O2TCwlU"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260427_024218_177699.wav"
 ---
 

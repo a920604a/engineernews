@@ -9,7 +9,7 @@ description: "探討資料庫效能的極限"
 
 type: explainer
 original_url: "https://www.youtube.com/watch?v=wmGikV_393Y"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260428_053102_871506.wav"
 ---
 

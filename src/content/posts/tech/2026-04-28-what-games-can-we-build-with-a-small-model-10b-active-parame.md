@@ -9,7 +9,7 @@ description: "探討使用 10 億參數的小型模型可以打造什麼樣的�
 
 type: explainer
 original_url: "https://www.youtube.com/watch?v=Yysg5-WnVhg"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260428_053248_707286.wav"
 ---
 

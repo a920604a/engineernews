@@ -8,7 +8,7 @@ tldr: "關於覺醒的反思"
 description: "關於覺醒的反思"
 type: "explainer"
 original_url: "https://www.youtube.com/shorts/3OLgIrybVgs"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260501_083207_263513.wav"
 ---
 ## TL;DR

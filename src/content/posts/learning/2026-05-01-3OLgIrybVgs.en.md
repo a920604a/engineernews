@@ -8,7 +8,7 @@ tldr: "A reflection on the nature of awakening"
 description: "A thought-provoking exploration of the concept of awakening and its relationship with personal growth."
 type: "explainer"
 original_url: "https://www.youtube.com/shorts/3OLgIrybVgs"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260501_083146_745087.wav"
 ---
 ## TL;DR

@@ -9,7 +9,7 @@ description: "台積電股票價格飆升，金管會放寬主動型ETF投資上
 
 type: explainer
 original_url: "https://www.youtube.com/watch?v=zpmBleCwvGo"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260503_050320_789105.wav"
 ---
 

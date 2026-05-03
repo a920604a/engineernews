@@ -9,7 +9,7 @@ description: "系統設計背八股嗎？"
 
 type: explainer
 original_url: "https://www.youtube.com/watch?v=a7JHJ8Tzwpg"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260501_083328_294580.wav"
 ---
 

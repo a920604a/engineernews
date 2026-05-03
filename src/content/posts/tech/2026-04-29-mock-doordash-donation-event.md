@@ -8,7 +8,7 @@ tldr: " DoorDash 的捐贈活動系統設計"
 description: " DoorDash 的捐贈活動系統設計"
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=xbnrvkVf0s8"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260429_230113_740044.wav"
 ---
 

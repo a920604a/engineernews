@@ -9,7 +9,7 @@ description: "A review of the system design for DoorDash's donation event"
 
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=xbnrvkVf0s8"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260429_230056_301326.wav"
 ---
 

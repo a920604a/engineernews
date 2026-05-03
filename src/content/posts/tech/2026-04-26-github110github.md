@@ -8,7 +8,7 @@ tldr: "介紹 GitHub 歷史增長最快的專案"
 description: "介紹 GitHub 歷史增長最快的專案"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=iBGVMcXnkWo"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260427_024130_479557.wav"
 ---
 

@@ -8,7 +8,7 @@ tldr: "Discover the fastest-growing project on GitHub."
 description: "Learn about the project with the highest growth rate in GitHub's history."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=iBGVMcXnkWo"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260427_024125_423899.wav"
 ---
 

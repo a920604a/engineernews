@@ -8,7 +8,7 @@ tldr: "如何在不良工作環境中保護自己"
 description: "如何在不良工作環境中保護自己"
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=ALruCKQQ_pw"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260428_052851_644530.wav"
 ---
 ## TL;DR
