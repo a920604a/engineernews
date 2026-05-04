@@ -140,9 +140,14 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
       next={nextPost ? { id: nextPost.id, title: nextPost.data.title } : undefined} 
     />
 
+    <!-- Share (mobile: above tags; hidden on desktop) -->
+    <div class="article-share-panel">
+      <SharePanel title={post.data.title} url={Astro.url.href} imageUrl={ogImage ?? ''} />
+    </div>
+
     <!-- Tags -->
     {post.data.tags.length > 0 && (
-      <div style="margin-top:40px; padding-top:24px; border-top:0.5px solid var(--separator);">
+      <div style="margin-top:32px; padding-top:24px; border-top:0.5px solid var(--separator);">
         <p style="font-size:11px; color:var(--label-tertiary); margin:0 0 10px; text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">{t('post.tags')}</p>
         <div class="tags">
           {post.data.tags.map((tag) => (
@@ -172,11 +177,6 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
         </div>
       </div>
     )}
-
-    <!-- Share -->
-    <div class="article-share-panel">
-      <SharePanel title={post.data.title} url={Astro.url.href} imageUrl={ogImage ?? ''} />
-    </div>
   </article>
 
   <aside class="article-toc-sidebar">
