@@ -131,16 +131,6 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
       </details>
     )}
 
-    <!-- TTS Player -->
-    <TTSPlayer 
-      client:load 
-      title={post.data.title} 
-      tldr={post.data.tldr} 
-      content={post.body ?? ''}
-      initialAudioUrl={post.data.audio_url}
-      initialSrtUrl={post.data.srt_url}
-    />
-
     <!-- Content -->
     <div class="prose"><Content /></div>
 
@@ -189,8 +179,18 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
     </div>
   </article>
 
-  {tocHeadings.length > 2 && (
-    <aside class="article-toc-sidebar">
+  <aside class="article-toc-sidebar">
+    <!-- TTS Player (desktop sidebar, full) -->
+    <TTSPlayer
+      client:load
+      title={post.data.title}
+      tldr={post.data.tldr}
+      content={post.body ?? ''}
+      initialAudioUrl={post.data.audio_url}
+      initialSrtUrl={post.data.srt_url}
+    />
+
+    {tocHeadings.length > 2 && (
       <div class="sidebar-block">
         <p class="toc-sidebar-title">目錄</p>
         <ol>
@@ -201,9 +201,20 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
           ))}
         </ol>
       </div>
-    </aside>
-  )}
+    )}
+  </aside>
   </div>
+
+  <!-- TTS Mini Bar (mobile fixed bottom) -->
+  <TTSPlayer
+    client:load
+    title={post.data.title}
+    tldr={post.data.tldr}
+    content={post.body ?? ''}
+    initialAudioUrl={post.data.audio_url}
+    initialSrtUrl={post.data.srt_url}
+    compact={true}
+  />
 </BaseLayout>
 
 <style>
@@ -368,11 +379,16 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
 
   .article-toc-sidebar { display: none; }
 
+  /* leave room for mobile mini bar */
+  @media (max-width: 1139px) {
+    .article-body { padding-bottom: 72px; }
+  }
+
   @media (min-width: 1140px) {
     .article-toc-sidebar {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 16px;
       position: sticky;
       top: 110px;
       max-height: calc(100vh - 140px);
