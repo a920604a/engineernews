@@ -665,7 +665,7 @@ async function writePost(videoId: string, source: Source, video: VideoEntry, ai:
   const categoryDir = path.join(POSTS_BASE_DIR, category);
   if (!fs.existsSync(categoryDir)) fs.mkdirSync(categoryDir, { recursive: true });
 
-  const fileName = `${today}-${slugify(video.title) || video.id}.md`;
+  const fileName = `${today}-${slugify(video.title) || video.id.toLowerCase()}.md`;
   const outputPath = path.join(categoryDir, fileName);
 
   const audioUrl = '';
@@ -708,7 +708,7 @@ async function writeEnglishPost(videoId: string, source: Source, video: VideoEnt
   const categoryDir = path.join(POSTS_BASE_DIR, category);
   if (!fs.existsSync(categoryDir)) fs.mkdirSync(categoryDir, { recursive: true });
 
-  const fileName = `${today}-${slugify(video.title) || video.id}.en.md`;
+  const fileName = `${today}-${slugify(video.title) || video.id.toLowerCase()}.en.md`;
   const outputPath = path.join(categoryDir, fileName);
 
   const audioUrl = '';
