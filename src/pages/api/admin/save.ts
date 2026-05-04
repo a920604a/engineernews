@@ -73,6 +73,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       Authorization: `Bearer ${env.GITHUB_TOKEN}`,
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
+      'User-Agent': 'engineer-news',
     },
   });
   if (!getRes.ok) {
@@ -89,6 +90,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       Authorization: `Bearer ${env.GITHUB_TOKEN}`,
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
+      'User-Agent': 'engineer-news',
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({

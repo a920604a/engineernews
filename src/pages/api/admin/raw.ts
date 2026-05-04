@@ -58,12 +58,12 @@ export const GET: APIRoute = async ({ request, locals }) => {
       Authorization: `Bearer ${env.GITHUB_TOKEN}`,
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
+      'User-Agent': 'engineer-news',
     },
   });
 
   if (!res.ok) {
-    const errBody = await res.text();
-    return Response.json({ error: `GitHub API ${res.status}: ${errBody}` }, { status: res.status });
+    return Response.json({ error: `GitHub API ${res.status}` }, { status: res.status });
   }
 
   const file = await res.json() as { content: string; sha: string };
