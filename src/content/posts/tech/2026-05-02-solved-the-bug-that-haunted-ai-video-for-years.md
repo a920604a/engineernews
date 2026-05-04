@@ -47,12 +47,12 @@ ln -s /c/Windows/System32/kernel32.dll $CONDA_PREFIX/site-packages/kernel32.dll
 
 ```mermaid
 graph LR
-    A[使用Lambda GPU雲端服務編譯AI模型] -->|出現錯誤訊息|> B["unable to load DLL 'kernel32.dll': The specified module could not be found."]
-    B -->|嘗試設定環境變數|> C[設定PATH和LD_LIBRARY_PATH]
-    C -->|仍然無法解決問題|> D[嘗試更新pip和conda套件]
-    D -->|無效|> E[新增符號連結kernel32.dll]
-    E -->|新增連結|> F[指向系統中的kernel32.dll檔案]
-    F -->|編譯成功|> G[解決問題]
+    A[使用Lambda GPU雲端服務編譯AI模型] -->|出現錯誤訊息| B["unable to load DLL 'kernel32.dll': The specified module could not be found."]
+    B -->|嘗試設定環境變數| C[設定PATH和LD_LIBRARY_PATH]
+    C -->|仍然無法解決問題| D[嘗試更新pip和conda套件]
+    D -->|無效| E[新增符號連結kernel32.dll]
+    E -->|新增連結| F[指向系統中的kernel32.dll檔案]
+    F -->|編譯成功| G[解決問題]
     style A fill:#f9f
     style B fill:#f66
     style C fill:#ccf

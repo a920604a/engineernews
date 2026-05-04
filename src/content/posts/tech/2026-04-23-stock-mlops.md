@@ -68,14 +68,14 @@ graph TD
 
 ```mermaid
 flowchart TD
-  A("[使用者送出預測請求"]) --> B[Nginx 路由 /api/predict]
+  A(["使用者送出預測請求"]) --> B[Nginx 路由 /api/predict]
   B --> C[FastAPI 推理 API]
   C --> D[從 ClickHouse 取特徵]
   D --> E[Scikit-learn 模型推理]
   E --> F[推送結果至 Kafka]
-  F --> G("[回傳預測值"])
+  F --> G(["回傳預測值"])
 
-  H("[Prefect 每日排程"]) --> I[Yahoo Finance 爬蟲]
+  H(["Prefect 每日排程"]) --> I[Yahoo Finance 爬蟲]
   I --> J[清洗 + 存入 ClickHouse]
   J --> K[觸發 Celery 重訓任務]
   K --> L[MLflow 記錄實驗]

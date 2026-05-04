@@ -51,21 +51,21 @@ graph LR
 ```mermaid
 flowchart TD
   subgraph TTS
-    A("[輸入文字"]) --> B[語言自動偵測]
+    A(["輸入文字"]) --> B[語言自動偵測]
     B --> C[edge-tts 請求 Microsoft]
     C --> D[生成音訊檔]
     D --> E[SQLite 儲存]
-    E --> F("[播放 / 下載"])
+    E --> F(["播放 / 下載"])
   end
 
   subgraph STT
-    G("[上傳音檔"]) --> H[後端立即回傳 task_id]
+    G(["上傳音檔"]) --> H[後端立即回傳 task_id]
     H --> I[ThreadPoolExecutor\n執行 Whisper 推論]
     I --> J[前端輪詢狀態]
     J --> K{完成?}
     K -- 否 --> J
     K -- 是 --> L[SQLite 儲存結果]
-    L --> M("[顯示轉錄文字"])
+    L --> M(["顯示轉錄文字"])
   end
 ```
 

@@ -33,10 +33,10 @@ The operating principle of the AI God Simulator is as follows:
 
 ```mermaid
 graph LR
-    A[User Input] -->|Create Virtual Character|> B[Virtual Character]
-    B -->|Simulate God Behavior|> C[God Simulator]
-    C -->|Generate Intelligent Behavior|> D[Virtual Character Behavior]
-    D -->|Interact with User|> A
+    A[User Input] -->|Create Virtual Character| B[Virtual Character]
+    B -->|Simulate God Behavior| C[God Simulator]
+    C -->|Generate Intelligent Behavior| D[Virtual Character Behavior]
+    D -->|Interact with User| A
 ```
 
 ## Difference from traditional virtual characters

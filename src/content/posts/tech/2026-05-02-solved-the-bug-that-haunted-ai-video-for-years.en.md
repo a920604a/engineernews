@@ -47,12 +47,12 @@ Environment variable settings and package updates cannot solve all problems; som
 
 ```mermaid
 graph LR
-    A[Using Lambda GPU cloud service to compile AI model] -->|error message|> B["unable to load DLL 'kernel32.dll': The specified module could not be found."]
-    B -->|attempt to set environment variables|> C[Set PATH and LD_LIBRARY_PATH]
-    C -->|still unable to resolve|> D[Attempt to update pip and conda packages]
-    D -->|ineffective|> E[Add symbolic link kernel32.dll]
-    E -->|add link|> F[Point to system's kernel32.dll file]
-    F -->|compilation successful|> G[Resolve issue]
+    A[Using Lambda GPU cloud service to compile AI model] -->|error message| B["unable to load DLL 'kernel32.dll': The specified module could not be found."]
+    B -->|attempt to set environment variables| C[Set PATH and LD_LIBRARY_PATH]
+    C -->|still unable to resolve| D[Attempt to update pip and conda packages]
+    D -->|ineffective| E[Add symbolic link kernel32.dll]
+    E -->|add link| F[Point to system's kernel32.dll file]
+    F -->|compilation successful| G[Resolve issue]
     style A fill:#f9f
     style B fill:#f66
     style C fill:#ccf

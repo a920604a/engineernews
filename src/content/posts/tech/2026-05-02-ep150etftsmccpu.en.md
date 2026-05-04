@@ -31,9 +31,9 @@ TSMC's business is primarily divided into two main segments: foundry services an
 
 ```mermaid
 graph LR
-    A[Customer demand] -->|Order|> B[Semiconductor design]
-    B -->|Design complete|> C[Semiconductor manufacturing]
-    C -->|Manufacturing complete|> D[Delivery]
+    A[Customer demand] -->|Order| B[Semiconductor design]
+    B -->|Design complete| C[Semiconductor manufacturing]
+    C -->|Manufacturing complete| D[Delivery]
 ```
 
 ## Differences from other foundries

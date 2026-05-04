@@ -1,14 +1,14 @@
 # fix-mermaid
 
-Scan `src/content/posts/**/*.md` for mermaid code blocks, validate each one by attempting to render it with `mmdc`, and fix any syntax errors — looping until every diagram renders cleanly.
+掃描 `src/content/posts/**/*.md` 中的 mermaid 程式碼區塊，透過 `mmdc` 嘗試渲染來驗證每個區塊，並修正所有語法錯誤——持續循環直到每個圖表都能正常渲染。
 
 ---
 
-## Steps
+## 步驟
 
-### 1. Discover all mermaid blocks
+### 1. 找出所有 mermaid 區塊
 
-Use Grep to find every file that contains ` ```mermaid `:
+使用 Grep 找出所有包含 ` ```mermaid ` 的檔案：
 
 ```
 pattern: ```mermaid
@@ -16,62 +16,62 @@ path: src/content/posts
 glob: **/*.md
 ```
 
-### 2. For each file found
+### 2. 針對每個找到的檔案
 
-Read the file and extract every mermaid block (text between `\`\`\`mermaid` and the closing `\`\`\``).
+讀取該檔案，提取所有 mermaid 區塊（即 `\`\`\`mermaid` 與結尾 `\`\`\`` 之間的文字）。
 
-### 3. Validate by rendering
+### 3. 透過渲染進行驗證
 
-For each extracted block, write it to a temp file and run:
+對每個提取的區塊，寫入暫存檔案並執行：
 
 ```bash
 echo '<mermaid-content>' > /tmp/test_diagram.mmd
 mmdc -i /tmp/test_diagram.mmd -o /tmp/test_out.svg --quiet 2>&1
 ```
 
-- If exit code is 0 → diagram is valid. Skip.
-- If exit code is non-zero → capture the error output and proceed to fix.
+- 若 exit code 為 0 → 圖表有效，跳過。
+- 若 exit code 非 0 → 擷取錯誤輸出，進行修正。
 
-### 4. Fix the block
+### 4. 修正區塊
 
-Analyze the error message from mmdc together with the diagram source to identify the problem. Common issues to look for:
+結合 mmdc 的錯誤訊息與圖表原始碼，分析問題所在。常見問題如下：
 
-| Issue | Fix |
+| 問題 | 修正方式 |
 |---|---|
-| Missing/wrong diagram type keyword | Add/correct `flowchart TD`, `sequenceDiagram`, `graph LR`, etc. |
-| Node labels with special characters unquoted | Wrap label in `"..."` |
-| Arrow syntax wrong (e.g. `->` instead of `-->`) | Correct arrow tokens |
-| Subgraph missing `end` | Add `end` |
-| Missing newline between statements | Add newlines |
-| `graph` used instead of `flowchart` for newer syntax | Convert keyword |
-| Participant/actor missing in sequenceDiagram | Add participant declarations |
-| Chinese/special chars in node IDs | Move to label: `A["中文"]` |
+| 缺少或錯誤的圖表類型關鍵字 | 新增或修正 `flowchart TD`、`sequenceDiagram`、`graph LR` 等 |
+| 節點標籤含特殊字元且未加引號 | 將標籤用 `"..."` 包起來 |
+| 箭頭語法錯誤（如 `->` 應為 `-->`） | 修正箭頭符號 |
+| Subgraph 缺少 `end` | 補上 `end` |
+| 陳述式之間缺少換行 | 補上換行 |
+| 新語法應用 `flowchart` 卻寫成 `graph` | 轉換關鍵字 |
+| sequenceDiagram 缺少 participant/actor 宣告 | 補上 participant 宣告 |
+| 節點 ID 含中文或特殊字元 | 移至標籤：`A["中文"]` |
 
-After making the fix, **re-run mmdc** on the corrected block to verify it renders. If it still fails, analyze the new error and fix again. Loop up to **5 attempts** per diagram. If still failing after 5 attempts, log the file path and skip — do not modify the file.
+修正後，**重新執行 mmdc** 確認能正常渲染。若仍失敗，分析新的錯誤再次修正。每個圖表最多嘗試 **5 次**。若 5 次後仍失敗，記錄檔案路徑後跳過——不修改該檔案。
 
-### 5. Write fixes back
+### 5. 將修正寫回檔案
 
-Once a corrected block is confirmed working (mmdc exits 0), use the Edit tool to replace the original broken block with the corrected one in the source file. Replace **only** the mermaid block content, leave the surrounding markdown untouched.
+確認修正後的區塊可正常渲染（mmdc exit code 為 0），使用 Edit 工具將原始檔案中的損壞區塊替換為修正版本。**只**替換 mermaid 區塊內容，不動周圍的 markdown。
 
-### 6. Report
+### 6. 輸出報告
 
-After scanning all files, output a summary:
+掃描所有檔案後，輸出摘要：
 
 ```
-## Mermaid Fix Report
+## Mermaid 修正報告
 
-✅ Valid (no changes):   N diagrams
-✏️  Fixed:               N diagrams  
-  - src/content/posts/tech/some-file.md (block 1): <short description of fix>
-❌ Could not fix:        N diagrams
-  - src/content/posts/...: <error snippet>
+✅ 有效（無變更）：  N 個圖表
+✏️  已修正：         N 個圖表  
+  - src/content/posts/tech/some-file.md（區塊 1）：<簡短修正說明>
+❌ 無法修正：        N 個圖表
+  - src/content/posts/...：<錯誤片段>
 ```
 
 ---
 
-## Constraints
+## 限制條件
 
-- Never remove a mermaid block entirely — only fix its syntax.
-- If a diagram is ambiguous (unclear intent), make the minimal change needed to make it parse, preserving the original meaning as best as possible.
-- Do not change anything outside of the mermaid code fences.
-- One block at a time — fix, verify, write, then move to the next.
+- 絕對不可完全移除 mermaid 區塊——只能修正語法。
+- 若圖表意圖不明確，做最小幅度的變更使其能解析，盡量保留原始語意。
+- 不可修改 mermaid 程式碼圍欄以外的任何內容。
+- 一次處理一個區塊——修正、驗證、寫回，再處理下一個。

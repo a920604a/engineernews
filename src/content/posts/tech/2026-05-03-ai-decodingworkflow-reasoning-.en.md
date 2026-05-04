@@ -39,10 +39,10 @@ The decoding layer refers to the AI system's interpretation and understanding of
 
 ```mermaid
 graph LR
-    A[Input Data] -->|Decoding|> B[Decoding Layer]
-    B -->|Data Preprocessing|> C[Data Preprocessing]
-    C -->|Feature Extraction|> D[Feature Extraction]
-    D -->|Pattern Recognition|> E[Pattern Recognition]
+    A[Input Data] -->|Decoding| B[Decoding Layer]
+    B -->|Data Preprocessing| C[Data Preprocessing]
+    C -->|Feature Extraction| D[Feature Extraction]
+    D -->|Pattern Recognition| E[Pattern Recognition]
 ```
 
 ### Workflow
@@ -61,9 +61,9 @@ The reasoning layer refers to the AI system's analysis and interpretation of dat
 
 ```mermaid
 graph LR
-    A[Data] -->|Analysis|> B[Logical Reasoning]
-    B -->|Probabilistic Reasoning|> C[Probabilistic Reasoning]
-    C -->|Decision-Making|> D[Decision-Making]
+    A[Data] -->|Analysis| B[Logical Reasoning]
+    B -->|Probabilistic Reasoning| C[Probabilistic Reasoning]
+    C -->|Decision-Making| D[Decision-Making]
 ```
 
 ## Differences from Other Technologies
