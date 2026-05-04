@@ -657,7 +657,7 @@ ${articleContent}`;
 
 // ── Markdown Output ──────────────────────────────────────────────────────────
 
-async function writePost(videoId: string, source: Source, video: VideoEntry, ai: AISummary): Promise<string> {
+async function writePost(videoId: string, source: Source, video: VideoEntry, ai: AISummary, slug: string): Promise<string> {
   const now = new Date();
   const today = now.toISOString().split('T')[0];
   const nowIso = now.toISOString();
@@ -665,7 +665,7 @@ async function writePost(videoId: string, source: Source, video: VideoEntry, ai:
   const categoryDir = path.join(POSTS_BASE_DIR, category);
   if (!fs.existsSync(categoryDir)) fs.mkdirSync(categoryDir, { recursive: true });
 
-  const fileName = `${today}-${slugify(video.title) || video.id.toLowerCase()}.md`;
+  const fileName = `${today}-${slug}.md`;
   const outputPath = path.join(categoryDir, fileName);
 
   const audioUrl = '';
@@ -700,7 +700,7 @@ async function writePost(videoId: string, source: Source, video: VideoEntry, ai:
   return outputPath;
 }
 
-async function writeEnglishPost(videoId: string, source: Source, video: VideoEntry, ai: AISummary, english: EnglishArticle): Promise<string> {
+async function writeEnglishPost(videoId: string, source: Source, video: VideoEntry, ai: AISummary, english: EnglishArticle, slug: string): Promise<string> {
   const now = new Date();
   const today = now.toISOString().split('T')[0];
   const nowIso = now.toISOString();
@@ -708,7 +708,7 @@ async function writeEnglishPost(videoId: string, source: Source, video: VideoEnt
   const categoryDir = path.join(POSTS_BASE_DIR, category);
   if (!fs.existsSync(categoryDir)) fs.mkdirSync(categoryDir, { recursive: true });
 
-  const fileName = `${today}-${slugify(video.title) || video.id.toLowerCase()}.en.md`;
+  const fileName = `${today}-${slug}.en.md`;
   const outputPath = path.join(categoryDir, fileName);
 
   const audioUrl = '';
@@ -787,8 +787,9 @@ async function crawl() {
 
       const articleForWrite = { ...ai, summary: articleWithDiagram };
       const english = await translateArticle(articleForWrite, articleForWrite.summary, video.title);
-      const outPath = await writePost(video.id, source, video, articleForWrite);
-      const enOutPath = await writeEnglishPost(video.id, source, video, ai, english);
+      const slug = slugify(video.title) || slugify(english.title) || video.id.toLowerCase();
+      const outPath = await writePost(video.id, source, video, articleForWrite, slug);
+      const enOutPath = await writeEnglishPost(video.id, source, video, ai, english, slug);
       console.log(`  ✅ ${path.relative(process.cwd(), outPath)}`);
       console.log(`  ✅ ${path.relative(process.cwd(), enOutPath)}`);
       console.log(`\n✅ 完成 1 篇文章。`);
