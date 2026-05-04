@@ -44,7 +44,9 @@ async function publishFile(
   if (!getRes.ok) return null;
 
   const file = await getRes.json() as GitHubFileResponse;
-  const original = atob(file.content.replace(/\n/g, ''));
+  const original = new TextDecoder().decode(
+    Uint8Array.from(atob(file.content.replace(/\n/g, '')), c => c.charCodeAt(0))
+  );
   const updated = original.replace(/^draft:\s*true/m, 'draft: false');
 
   if (original === updated) return null; // already published

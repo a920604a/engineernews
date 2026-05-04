@@ -67,7 +67,9 @@ export const GET: APIRoute = async ({ request, locals }) => {
   }
 
   const file = await res.json() as { content: string; sha: string };
-  const raw = atob(file.content.replace(/\n/g, ''));
+  const raw = new TextDecoder().decode(
+    Uint8Array.from(atob(file.content.replace(/\n/g, '')), c => c.charCodeAt(0))
+  );
 
   const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
   if (!match) {
