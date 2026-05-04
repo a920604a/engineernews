@@ -62,7 +62,8 @@ export const GET: APIRoute = async ({ request, locals }) => {
   });
 
   if (!res.ok) {
-    return Response.json({ error: `GitHub API ${res.status}` }, { status: res.status });
+    const errBody = await res.text();
+    return Response.json({ error: `GitHub API ${res.status}: ${errBody}` }, { status: res.status });
   }
 
   const file = await res.json() as { content: string; sha: string };
