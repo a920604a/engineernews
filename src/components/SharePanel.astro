@@ -146,12 +146,13 @@ const { title, url, imageUrl } = Astro.props;
       radial-gradient(circle at top right, color-mix(in srgb, var(--accent) 18%, transparent), transparent 34%),
       var(--bg-secondary);
     box-shadow: var(--shadow-md);
+    display: inline-flex;
+    align-items: center;
   }
 
   .share-panel__actions {
     display: flex;
     gap: 8px;
-    justify-content: flex-end;
   }
 
   .share-panel__button {
