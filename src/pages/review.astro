@@ -70,7 +70,23 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
     .toast a { color: #a8d8ff; text-decoration: none; }
     @keyframes slide-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .empty { text-align: center; padding: 64px 0; color: #888; }
+    .btn-delete { background: #fef2f2; color: #dc2626; }
+    .btn-delete:hover:not(:disabled) { background: #fee2e2; }
+    .editor-split { grid-template-columns: 1fr 1fr !important; }
+    .editor-split textarea { height: 420px; min-height: 120px; }
+    .preview-pane { border: 1px solid #ddd; border-radius: 6px; padding: 12px 16px; height: 420px; overflow-y: auto; font-size: 13px; line-height: 1.7; background: #fafafa; }
+    .preview-pane h1,.preview-pane h2,.preview-pane h3 { font-weight: 600; margin: 0.8em 0 0.3em; }
+    .preview-pane h1 { font-size: 1.4em; } .preview-pane h2 { font-size: 1.2em; } .preview-pane h3 { font-size: 1.05em; }
+    .preview-pane p { margin: 0 0 0.7em; }
+    .preview-pane code { background: #f0f0f0; border-radius: 3px; padding: 1px 4px; font-family: 'SF Mono', monospace; font-size: 0.9em; }
+    .preview-pane pre { background: #1a1a1a; color: #e5e5e5; border-radius: 6px; padding: 12px; overflow-x: auto; margin-bottom: 0.8em; }
+    .preview-pane pre code { background: none; padding: 0; }
+    .preview-pane ul,.preview-pane ol { padding-left: 1.5em; margin-bottom: 0.7em; }
+    .preview-pane blockquote { border-left: 3px solid #ddd; padding-left: 1em; color: #666; margin: 0 0 0.7em; }
+    .preview-pane a { color: #0066cc; } .preview-pane hr { border: none; border-top: 1px solid #e5e5e5; margin: 1em 0; }
+    .preview-pane img { max-width: 100%; }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/marked@14/marked.min.js"></script>
 </head>
 <body>
   <h1>Draft Review</h1>
@@ -100,6 +116,7 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
               <span class="card-date">{post.data.date.toISOString().slice(0, 10)}</span>
               <button class="btn btn-edit" data-slug={post.id}>編輯 ▾</button>
               <button class="btn btn-publish" data-slug={post.id} data-title={post.data.title}>發布</button>
+              <button class="btn btn-delete" data-slug={post.id} data-title={post.data.title}>刪除</button>
             </div>
           </div>
 
@@ -134,10 +151,14 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
                   <input name="tags" type="text" placeholder="ai, llm, cloudflare" />
                 </div>
               </div>
-              <div class="form-row full">
+              <div class="form-row editor-split">
                 <div class="form-group">
                   <label>Markdown 內容</label>
                   <textarea name="body" rows="22"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>預覽</label>
+                  <div class="preview-pane"></div>
                 </div>
               </div>
               <div class="edit-footer">
@@ -197,11 +218,17 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
           form.querySelector('[name=description]').value = fm.description ?? '';
           form.querySelector('[name=category]').value = fm.category ?? 'tech';
           form.querySelector('[name=tags]').value = Array.isArray(fm.tags) ? fm.tags.join(', ') : (fm.tags ?? '');
-          form.querySelector('[name=body]').value = data.body;
+          const bodyTextarea = form.querySelector('[name=body]');
+          bodyTextarea.value = data.body;
           form.dataset.frontmatter = JSON.stringify(fm);
 
           panel.querySelector('.edit-loading').style.display = 'none';
           form.classList.add('ready');
+
+          const previewPane = form.querySelector('.preview-pane');
+          const updatePreview = () => { previewPane.innerHTML = marked.parse(bodyTextarea.value); };
+          updatePreview();
+          bodyTextarea.addEventListener('input', updatePreview);
         } catch (err) {
           panel.querySelector('.edit-loading').textContent = `❌ 載入失敗：${err.message}`;
         }
@@ -262,6 +289,36 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
     });
     document.querySelectorAll('.btn-publish-edit').forEach(btn => {
       btn.addEventListener('click', () => submitEdit(btn.closest('form'), true));
+    });
+
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const slug = btn.dataset.slug;
+        const title = btn.dataset.title;
+        if (!confirm(`確定要刪除「${title}」？\n文章會移至 _trash/ 目錄，可從 git 復原。`)) return;
+        btn.disabled = true;
+        btn.textContent = '刪除中…';
+        try {
+          const res = await fetch(`/api/admin/delete?token=${token}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error);
+          document.getElementById(cardId(slug))?.remove();
+          showToast(`🗑 已移至垃圾桶：${title}`, 'success', 4000);
+          const remaining = document.querySelectorAll('#draft-list .card').length;
+          document.getElementById('meta').textContent = `${remaining} 篇待審閱`;
+          if (remaining === 0) {
+            document.getElementById('draft-list').innerHTML = '<div class="empty">🎉 沒有待審閱的文章</div>';
+          }
+        } catch (err) {
+          showToast(`❌ 刪除失敗：${err.message}`, 'error');
+          btn.disabled = false;
+          btn.textContent = '刪除';
+        }
+      });
     });
 
     document.querySelectorAll('.card-actions .btn-publish').forEach(btn => {
