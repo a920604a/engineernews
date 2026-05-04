@@ -86,16 +86,15 @@ const dateStr = post.data.date.toLocaleDateString('en-US', {
         </div>
       </footer>
     )}
+
+    <!-- Share -->
+    <div class="article-share-panel">
+      <SharePanel title={post.data.title} url={Astro.url.href} imageUrl={ogImage ?? ''} />
+    </div>
   </article>
 
   {tocHeadings.length > 2 && (
     <aside class="article-toc-sidebar">
-      <SharePanel
-        title={post.data.title}
-        url={Astro.url.href}
-        imageUrl={ogImage ?? ''}
-      />
-
       <p class="toc-sidebar-title">Table of Contents</p>
       <ol>
         {tocHeadings.map(h => (
@@ -112,12 +111,21 @@ const dateStr = post.data.date.toLocaleDateString('en-US', {
 <style>
   .article-grid { display: block; }
 
+  .article-body {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
   @media (min-width: 1024px) {
     .article-grid {
       display: grid;
       grid-template-columns: 1fr 220px;
       gap: 48px;
       align-items: start;
+    }
+    .article-body {
+      max-width: none;
+      margin: 0;
     }
     .toc-mobile { display: none; }
   }
