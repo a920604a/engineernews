@@ -10,6 +10,8 @@ if (!env.ADMIN_TOKEN || token !== env.ADMIN_TOKEN) {
 
 const allPosts = await getCollection('posts', ({ data }) => data.draft === true && data.lang === 'zh-TW');
 const drafts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative'];
 ---
 
 <!DOCTYPE html>
@@ -20,29 +22,52 @@ const drafts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.value
   <title>Review Drafts</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 860px; margin: 0 auto; padding: 32px 16px; background: #f9f9f9; color: #1a1a1a; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 900px; margin: 0 auto; padding: 32px 16px; background: #f9f9f9; color: #1a1a1a; }
     h1 { font-size: 20px; font-weight: 600; margin: 0 0 8px; }
     .meta { font-size: 13px; color: #666; margin-bottom: 32px; }
-    .card { background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; padding: 20px 24px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+    .card { background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; padding: 20px 24px; margin-bottom: 16px; }
+    .card-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
     .card-body { flex: 1; min-width: 0; }
     .card-title { font-size: 16px; font-weight: 600; margin: 0 0 6px; }
     .card-tldr { font-size: 13px; color: #555; margin: 0 0 10px; }
     .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
     .tag { font-size: 11px; background: #f0f0f0; border-radius: 4px; padding: 2px 8px; color: #444; }
-    .card-links { display: flex; gap: 12px; font-size: 12px; }
+    .tag-cat { background: #e8f0fe; color: #1a73e8; }
+    .card-links { font-size: 12px; }
     .card-links a { color: #0066cc; text-decoration: none; }
     .card-links a:hover { text-decoration: underline; }
     .card-date { font-size: 12px; color: #999; }
     .card-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
-    .btn-publish { background: #0a84ff; color: #fff; border: none; border-radius: 8px; padding: 8px 18px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
-    .btn-publish:hover { background: #006edb; }
-    .btn-publish:disabled { background: #99c4f5; cursor: not-allowed; }
+    .btn { border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-edit { background: #f0f0f0; color: #333; }
+    .btn-edit:hover { background: #e0e0e0; }
+    .btn-edit.active { background: #e8f0fe; color: #1a73e8; }
+    .btn-publish { background: #0a84ff; color: #fff; }
+    .btn-publish:hover:not(:disabled) { background: #006edb; }
+    .btn-save { background: #34a853; color: #fff; }
+    .btn-save:hover:not(:disabled) { background: #2d8f47; }
+    .edit-panel { display: none; border-top: 1px solid #e5e5e5; margin-top: 16px; padding-top: 20px; }
+    .edit-panel.open { display: block; }
+    .edit-loading { color: #888; font-size: 13px; padding: 8px 0; }
+    .edit-form { display: none; }
+    .edit-form.ready { display: block; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .form-row.full { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group label { font-size: 12px; font-weight: 500; color: #555; }
+    .form-group input, .form-group select, .form-group textarea {
+      border: 1px solid #ddd; border-radius: 6px; padding: 8px 10px; font-size: 13px;
+      font-family: inherit; outline: none; transition: border-color 0.15s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #0a84ff; }
+    .form-group textarea { resize: vertical; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; line-height: 1.6; }
+    .edit-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
     .toast-container { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 8px; z-index: 100; }
     .toast { background: #1a1a1a; color: #fff; border-radius: 8px; padding: 12px 16px; font-size: 13px; max-width: 360px; animation: slide-in 0.2s ease; }
     .toast.success { background: #1c7c4a; }
     .toast.error { background: #c0392b; }
     .toast a { color: #a8d8ff; text-decoration: none; }
-    .toast a:hover { text-decoration: underline; }
     @keyframes slide-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .empty { text-align: center; padding: 64px 0; color: #888; }
   </style>
@@ -57,26 +82,69 @@ const drafts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.value
     <div id="draft-list">
       {drafts.map(post => (
         <div class="card" id={`card-${post.id.replace(/\//g, '-')}`}>
-          <div class="card-body">
-            <div class="card-title">{post.data.title}</div>
-            {post.data.tldr && <p class="card-tldr">{post.data.tldr}</p>}
-            <div class="card-tags">
-              <span class="tag" style="background:#e8f0fe;color:#1a73e8">{post.data.category}</span>
-              {post.data.tags.map(tag => <span class="tag">{tag}</span>)}
-            </div>
-            {post.data.original_url && (
-              <div class="card-links">
-                <a href={post.data.original_url} target="_blank" rel="noopener">▶ 原影片</a>
+          <div class="card-row">
+            <div class="card-body">
+              <div class="card-title">{post.data.title}</div>
+              {post.data.tldr && <p class="card-tldr">{post.data.tldr}</p>}
+              <div class="card-tags">
+                <span class="tag tag-cat">{post.data.category}</span>
+                {post.data.tags.map(tag => <span class="tag">{tag}</span>)}
               </div>
-            )}
+              {post.data.original_url && (
+                <div class="card-links">
+                  <a href={post.data.original_url} target="_blank" rel="noopener">▶ 原影片</a>
+                </div>
+              )}
+            </div>
+            <div class="card-actions">
+              <span class="card-date">{post.data.date.toISOString().slice(0, 10)}</span>
+              <button class="btn btn-edit" data-slug={post.id}>編輯 ▾</button>
+              <button class="btn btn-publish" data-slug={post.id} data-title={post.data.title}>發布</button>
+            </div>
           </div>
-          <div class="card-actions">
-            <span class="card-date">{post.data.date.toISOString().slice(0, 10)}</span>
-            <button
-              class="btn-publish"
-              data-slug={post.id}
-              data-title={post.data.title}
-            >發布</button>
+
+          <div class="edit-panel" id={`edit-${post.id.replace(/\//g, '-')}`}>
+            <div class="edit-loading">載入中…</div>
+            <form class="edit-form" data-slug={post.id}>
+              <div class="form-row">
+                <div class="form-group" style="grid-column: 1 / -1">
+                  <label>標題</label>
+                  <input name="title" type="text" />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>TL;DR</label>
+                  <input name="tldr" type="text" />
+                </div>
+                <div class="form-group">
+                  <label>Description</label>
+                  <input name="description" type="text" />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Category</label>
+                  <select name="category">
+                    {CATEGORIES.map(c => <option value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Tags (comma-separated)</label>
+                  <input name="tags" type="text" placeholder="ai, llm, cloudflare" />
+                </div>
+              </div>
+              <div class="form-row full">
+                <div class="form-group">
+                  <label>Markdown 內容</label>
+                  <textarea name="body" rows="22"></textarea>
+                </div>
+              </div>
+              <div class="edit-footer">
+                <button type="button" class="btn btn-save btn-save-draft">儲存草稿</button>
+                <button type="button" class="btn btn-publish btn-publish-edit">發布</button>
+              </div>
+            </form>
           </div>
         </div>
       ))}
@@ -95,7 +163,108 @@ const drafts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.value
       setTimeout(() => el.remove(), duration ?? 5000);
     }
 
-    document.querySelectorAll('.btn-publish').forEach(btn => {
+    function cardId(slug) { return `card-${slug.replace(/\//g, '-')}`; }
+    function editId(slug) { return `edit-${slug.replace(/\//g, '-')}`; }
+
+    document.querySelectorAll('.btn-edit').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const slug = btn.dataset.slug;
+        const panel = document.getElementById(editId(slug));
+        const isOpen = panel.classList.contains('open');
+
+        if (isOpen) {
+          panel.classList.remove('open');
+          btn.classList.remove('active');
+          btn.textContent = '編輯 ▾';
+          return;
+        }
+
+        panel.classList.add('open');
+        btn.classList.add('active');
+        btn.textContent = '收起 ▴';
+
+        const form = panel.querySelector('.edit-form');
+        if (form.classList.contains('ready')) return;
+
+        try {
+          const res = await fetch(`/api/admin/raw?slug=${encodeURIComponent(slug)}&token=${token}`);
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error);
+
+          const fm = data.frontmatter;
+          form.querySelector('[name=title]').value = fm.title ?? '';
+          form.querySelector('[name=tldr]').value = fm.tldr ?? '';
+          form.querySelector('[name=description]').value = fm.description ?? '';
+          form.querySelector('[name=category]').value = fm.category ?? 'tech';
+          form.querySelector('[name=tags]').value = Array.isArray(fm.tags) ? fm.tags.join(', ') : (fm.tags ?? '');
+          form.querySelector('[name=body]').value = data.body;
+          form.dataset.frontmatter = JSON.stringify(fm);
+
+          panel.querySelector('.edit-loading').style.display = 'none';
+          form.classList.add('ready');
+        } catch (err) {
+          panel.querySelector('.edit-loading').textContent = `❌ 載入失敗：${err.message}`;
+        }
+      });
+    });
+
+    async function submitEdit(form, publishNow) {
+      const slug = form.dataset.slug;
+      const fm = JSON.parse(form.dataset.frontmatter ?? '{}');
+
+      fm.title = form.querySelector('[name=title]').value.trim();
+      fm.tldr = form.querySelector('[name=tldr]').value.trim();
+      fm.description = form.querySelector('[name=description]').value.trim();
+      fm.category = form.querySelector('[name=category]').value;
+      fm.tags = form.querySelector('[name=tags]').value
+        .split(',').map(t => t.trim()).filter(Boolean);
+      fm.draft = !publishNow;
+
+      const body = form.querySelector('[name=body]').value;
+      const saveBtns = form.querySelectorAll('button');
+      saveBtns.forEach(b => { b.disabled = true; });
+
+      try {
+        const res = await fetch(`/api/admin/save?token=${token}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug, frontmatter: fm, body }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        const sha = data.commitSha.slice(0, 7);
+
+        if (publishNow) {
+          document.getElementById(cardId(slug))?.remove();
+          showToast(
+            `✅ 已發布 <strong>${fm.title}</strong>（${sha}）— <a href="${data.actionsUrl}" target="_blank">查看部署 →</a>`,
+            'success', 8000
+          );
+          const remaining = document.querySelectorAll('#draft-list .card').length;
+          document.getElementById('meta').textContent = `${remaining} 篇待審閱`;
+          if (remaining === 0) {
+            document.getElementById('draft-list').innerHTML = '<div class="empty">🎉 沒有待審閱的文章</div>';
+          }
+        } else {
+          showToast(`💾 草稿已儲存（${sha}）`, 'success', 4000);
+          form.dataset.frontmatter = JSON.stringify(fm);
+          saveBtns.forEach(b => { b.disabled = false; });
+        }
+      } catch (err) {
+        showToast(`❌ 儲存失敗：${err.message}`, 'error');
+        saveBtns.forEach(b => { b.disabled = false; });
+      }
+    }
+
+    document.querySelectorAll('.btn-save-draft').forEach(btn => {
+      btn.addEventListener('click', () => submitEdit(btn.closest('form'), false));
+    });
+    document.querySelectorAll('.btn-publish-edit').forEach(btn => {
+      btn.addEventListener('click', () => submitEdit(btn.closest('form'), true));
+    });
+
+    document.querySelectorAll('.card-actions .btn-publish').forEach(btn => {
       btn.addEventListener('click', async () => {
         const slug = btn.dataset.slug;
         const title = btn.dataset.title;
@@ -109,30 +278,21 @@ const drafts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.value
             body: JSON.stringify({ slug }),
           });
           const data = await res.json();
+          if (!res.ok) throw new Error(data.error);
 
-          if (!res.ok) {
-            showToast(`❌ 發布失敗：${data.error}`, 'error');
-            btn.disabled = false;
-            btn.textContent = '發布';
-            return;
-          }
-
-          document.getElementById(`card-${slug.replace(/\//g, '-')}`)?.remove();
-
+          document.getElementById(cardId(slug))?.remove();
           const sha = data.commitSha.slice(0, 7);
           showToast(
             `✅ 已發布 <strong>${title}</strong>（${sha}）— <a href="${data.actionsUrl}" target="_blank">查看部署 →</a>`,
-            'success',
-            8000
+            'success', 8000
           );
-
           const remaining = document.querySelectorAll('#draft-list .card').length;
           document.getElementById('meta').textContent = `${remaining} 篇待審閱`;
           if (remaining === 0) {
             document.getElementById('draft-list').innerHTML = '<div class="empty">🎉 沒有待審閱的文章</div>';
           }
         } catch (err) {
-          showToast(`❌ 網路錯誤：${err.message}`, 'error');
+          showToast(`❌ 發布失敗：${err.message}`, 'error');
           btn.disabled = false;
           btn.textContent = '發布';
         }
