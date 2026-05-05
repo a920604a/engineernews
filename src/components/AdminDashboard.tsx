@@ -26,6 +26,7 @@ type PostRow = { id: string; title: string; category: string; lang: string; crea
 type ContentStats = { draft_true: number; draft_false: number; published_with_audio: number };
 type Overview = { d1: SF<D1Data>; r2: SF<R2Data>; vectorize: SF<VecData>; config: SF<CfgData>; posts: SF<PostRow[]>; content_stats: SF<ContentStats> };
 type AppLogRow = { id: number; level: 'debug' | 'info' | 'warn' | 'error'; source: string; message: string; data: string | null; created_at: string };
+type AppLogPage = { rows: AppLogRow[]; total: number; limit: number; offset: number };
 type SearchLog = { id: number; query: string; lang: string; vector_hits: number; keyword_hits: number; llm_ok: number; error: string | null; duration_ms: number; created_at: string };
 type ChunkRow = { source_id: string; title: string; category: string; lang: string; chunk_count: number; last_updated: string };
 type R2Object = { key: string; size: number; uploaded: string };
@@ -545,9 +546,12 @@ function PageViewsDetail({ token }: { token: string }) {
 // ── Logs Detail / Card ────────────────────────────────────────────────────────
 
 const LOG_LEVEL_LABELS = ['debug', 'info', 'warn', 'error'] as const;
+const LOG_PAGE_SIZE = 50;
 
 function LogsPanel({ token }: { token: string }) {
   const [rows, setRows] = useState<AppLogRow[] | null>(null);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
   const [sources, setSources] = useState<string[]>([]);
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -559,18 +563,24 @@ function LogsPanel({ token }: { token: string }) {
   const load = useCallback((force = false) => {
     setLoading(true);
     setErr(null);
-    const params = new URLSearchParams({ token, view: 'logs' });
+    const params = new URLSearchParams({
+      token,
+      view: 'logs',
+      limit: String(LOG_PAGE_SIZE),
+      offset: String(page * LOG_PAGE_SIZE),
+    });
     if (srcFilter !== 'all') params.set('source', srcFilter);
     if (lvlFilter !== 'all') params.set('level', lvlFilter);
 
     const srcKey = `log-sources`;
-    const logKey = `logs_${srcFilter}_${lvlFilter}`;
+    const logKey = `logs_${srcFilter}_${lvlFilter}_${page}`;
 
     if (!force) {
-      const cachedLogs = cacheGet<AppLogRow[]>(logKey);
+      const cachedLogs = cacheGet<AppLogPage>(logKey);
       const cachedSrc  = cacheGet<{ source: string; count: number }[]>(srcKey);
-      if (cachedLogs && cachedSrc) {
-        setRows(cachedLogs.data);
+      if (cachedLogs && cachedSrc && 'rows' in cachedLogs.data) {
+        setRows(cachedLogs.data.rows);
+        setTotal(cachedLogs.data.total);
         setSources(cachedSrc.data.map(s => s.source));
         setFetchedAt(cachedLogs.fetchedAt);
         setLoading(false);
@@ -579,19 +589,36 @@ function LogsPanel({ token }: { token: string }) {
     }
 
     Promise.all([
-      fetch(`/api/admin/stats?${params}`).then(r => r.json() as Promise<SF<AppLogRow[]>>),
+      fetch(`/api/admin/stats?${params}`).then(r => r.json() as Promise<SF<AppLogPage>>),
       fetch(`/api/admin/stats?token=${encodeURIComponent(token)}&view=log-sources`).then(r => r.json() as Promise<SF<{ source: string; count: number }[]>>),
     ])
       .then(([logsRes, srcRes]) => {
-        if (logsRes.data) { cacheSet(logKey, logsRes.data); setRows(logsRes.data); setFetchedAt(Date.now()); }
+        if (logsRes.data) {
+          cacheSet(logKey, logsRes.data);
+          setRows(logsRes.data.rows);
+          setTotal(logsRes.data.total);
+          setFetchedAt(Date.now());
+        }
         else setErr(logsRes.error);
         if (srcRes.data) { cacheSet(srcKey, srcRes.data); setSources(srcRes.data.map(s => s.source)); }
       })
       .catch(e => setErr((e as Error).message))
       .finally(() => setLoading(false));
-  }, [token, srcFilter, lvlFilter]);
+  }, [token, srcFilter, lvlFilter, page]);
 
   useEffect(() => { load(); }, [load]);
+
+  const selectSource = (source: string) => {
+    setPage(0);
+    setExpanded(null);
+    setSrcFilter(source);
+  };
+
+  const selectLevel = (level: string) => {
+    setPage(0);
+    setExpanded(null);
+    setLvlFilter(level);
+  };
 
   const counts = rows ? {
     debug: rows.filter(r => r.level === 'debug').length,
@@ -599,6 +626,9 @@ function LogsPanel({ token }: { token: string }) {
     warn:  rows.filter(r => r.level === 'warn').length,
     error: rows.filter(r => r.level === 'error').length,
   } : null;
+  const pageCount = Math.max(1, Math.ceil(total / LOG_PAGE_SIZE));
+  const start = total === 0 ? 0 : page * LOG_PAGE_SIZE + 1;
+  const end = Math.min(total, (page + 1) * LOG_PAGE_SIZE);
 
   return (
     <div>
@@ -607,14 +637,14 @@ function LogsPanel({ token }: { token: string }) {
         {/* Source tabs */}
         <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
           {(['all', ...sources]).map(src => (
-            <button key={src} style={{ ...s.btn(srcFilter === src), fontSize: '11px', padding: '4px 10px' }} onClick={() => setSrcFilter(src)}>{src}</button>
+            <button key={src} style={{ ...s.btn(srcFilter === src), fontSize: '11px', padding: '4px 10px' }} onClick={() => selectSource(src)}>{src}</button>
           ))}
         </div>
         {/* Level filter */}
         <div style={{ display: 'flex', gap: '4px' }}>
-          <button style={{ ...s.btn(lvlFilter === 'all'), fontSize: '11px', padding: '4px 10px' }} onClick={() => setLvlFilter('all')}>all</button>
+          <button style={{ ...s.btn(lvlFilter === 'all'), fontSize: '11px', padding: '4px 10px' }} onClick={() => selectLevel('all')}>all</button>
           {LOG_LEVEL_LABELS.map(l => (
-            <button key={l} style={{ ...s.btn(lvlFilter === l), fontSize: '11px', padding: '4px 10px', color: lvlFilter === l ? '#fff' : LOG_COLORS[l] }} onClick={() => setLvlFilter(l)}>{l}</button>
+            <button key={l} style={{ ...s.btn(lvlFilter === l), fontSize: '11px', padding: '4px 10px', color: lvlFilter === l ? '#fff' : LOG_COLORS[l] }} onClick={() => selectLevel(l)}>{l}</button>
           ))}
         </div>
         {/* Counts */}
@@ -627,6 +657,21 @@ function LogsPanel({ token }: { token: string }) {
           </div>
         )}
         <div style={{ marginLeft: 'auto', display: 'flex', gap: '6px', alignItems: 'center' }}>
+          <span style={{ fontSize: '11px', color: 'var(--label-secondary)' }}>{start}-{end} / {total}</span>
+          <button
+            style={{ ...s.btn(), fontSize: '12px', padding: '4px 10px', opacity: page === 0 || loading ? 0.45 : 1 }}
+            disabled={page === 0 || loading}
+            onClick={() => setPage(p => Math.max(0, p - 1))}
+          >
+            Prev
+          </button>
+          <button
+            style={{ ...s.btn(), fontSize: '12px', padding: '4px 10px', opacity: page >= pageCount - 1 || loading ? 0.45 : 1 }}
+            disabled={page >= pageCount - 1 || loading}
+            onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))}
+          >
+            Next
+          </button>
           {fetchedAt && <FetchedAt ts={fetchedAt} />}
           <button style={{ ...s.btn(), fontSize: '12px', padding: '4px 10px' }} onClick={() => load(true)}>↺</button>
         </div>
@@ -661,6 +706,25 @@ function LogsPanel({ token }: { token: string }) {
               )}
             </div>
           ))}
+          {total > LOG_PAGE_SIZE && (
+            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '8px', paddingTop: '12px', fontFamily: 'var(--font-sans, sans-serif)' }}>
+              <span style={{ fontSize: '12px', color: 'var(--label-secondary)' }}>Page {page + 1} / {pageCount}</span>
+              <button
+                style={{ ...s.btn(), fontSize: '12px', opacity: page === 0 || loading ? 0.45 : 1 }}
+                disabled={page === 0 || loading}
+                onClick={() => setPage(p => Math.max(0, p - 1))}
+              >
+                Prev
+              </button>
+              <button
+                style={{ ...s.btn(), fontSize: '12px', opacity: page >= pageCount - 1 || loading ? 0.45 : 1 }}
+                disabled={page >= pageCount - 1 || loading}
+                onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))}
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

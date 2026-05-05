@@ -19,6 +19,12 @@ type ContentStats = {
   published_with_audio: number;
 };
 
+function clampInt(value: string | null, fallback: number, min: number, max: number): number {
+  const parsed = Number.parseInt(value ?? '', 10);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.max(min, Math.min(max, parsed));
+}
+
 async function safe<T>(fn: () => Promise<T>): Promise<SafeResult<T>> {
   try {
     return { data: await fn(), error: null };
@@ -106,17 +112,34 @@ export const GET: APIRoute = async ({ request, locals }) => {
   if (view === 'logs') {
     const source = url.searchParams.get('source') ?? null;
     const level  = url.searchParams.get('level')  ?? null;
+    const limit = clampInt(url.searchParams.get('limit'), 50, 10, 100);
+    const offset = clampInt(url.searchParams.get('offset'), 0, 0, 100000);
     const result = await safe(async () => {
-      let sql = `SELECT id, level, source, message, data, created_at FROM logs`;
+      let whereSql = '';
       const conditions: string[] = [];
-      const bindings: string[] = [];
+      const bindings: (string | number)[] = [];
       if (source) { conditions.push('source = ?'); bindings.push(source); }
       if (level)  { conditions.push('level = ?');  bindings.push(level); }
-      if (conditions.length) sql += ` WHERE ${conditions.join(' AND ')}`;
-      sql += ` ORDER BY created_at DESC LIMIT 200`;
-      const rows = await env.DB.prepare(sql).bind(...bindings)
+      if (conditions.length) whereSql = ` WHERE ${conditions.join(' AND ')}`;
+
+      const totalRow = await env.DB.prepare(`SELECT COUNT(*) as count FROM logs${whereSql}`)
+        .bind(...bindings)
+        .first<{ count: number }>();
+
+      const rows = await env.DB.prepare(
+        `SELECT id, level, source, message, data, created_at
+         FROM logs${whereSql}
+         ORDER BY created_at DESC
+         LIMIT ? OFFSET ?`
+      ).bind(...bindings, limit, offset)
         .all<{ id: number; level: string; source: string; message: string; data: string | null; created_at: string }>();
-      return rows.results;
+
+      return {
+        rows: rows.results,
+        total: totalRow?.count ?? 0,
+        limit,
+        offset,
+      };
     });
     return Response.json(result);
   }
