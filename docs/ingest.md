@@ -7,13 +7,13 @@
 | 來源 | 工具 | 觸發方式 |
 |------|------|---------|
 | 工程對話 / 筆記 | `scripts/ingest.ts` | 手動執行 |
-| YouTube 頻道 | `scripts/crawl.ts` | GitHub Actions cron 每 6 小時 |
+| YouTube 頻道 | `scripts/crawl.ts` | GitHub Actions cron（平日 08:00/17:00、週末每 6 小時） |
 
 ---
 
 ## ingest.ts — 對話攝取
 
-將工程對話或筆記轉為帶 metadata 的 Markdown 文章。
+將工程對話或筆記轉為帶 metadata 的 Markdown 文章。`--yes` 模式會建立 `draft: false` 文章，並嘗試預合成 TTS 後寫入 `audio_url`。
 
 ### 執行方式
 
@@ -36,6 +36,8 @@ sequenceDiagram
   Script->>Script: regex 脫敏<br/>(API keys / tokens / passwords)
   Script->>LLM: 對話文字 → 分析
   LLM-->>Script: { title, tldr, tags, category }
+  Script->>Script: 產生 Markdown frontmatter<br/>draft: false
+  Script->>Script: TTS 預合成（可失敗略過）
 
   alt --yes
     Script->>Git: git add + commit + push
@@ -65,7 +67,7 @@ sequenceDiagram
 
 ## crawl.ts — YouTube 爬蟲
 
-自動從 9 個 YouTube 頻道擷取最新技術影片，生成繁體中文摘要文章。
+自動從 `scripts/sources.ts` 中當天排班、`enabled: true` 的 YouTube 頻道擷取最新影片，生成繁體中文與英文草稿。
 
 ### 執行方式
 
@@ -74,35 +76,38 @@ pnpm crawl          # 本地（不寫 Vectorize）
 pnpm crawl:prod     # 遠端（含 Vectorize embedding）
 ```
 
-每次執行最多處理 **3 支**新影片。
+每次執行最多處理 **1 支**新影片，產出 zh-TW 與 en 各一篇草稿。
 
 ### 流程
 
 ```mermaid
 flowchart TD
-  Cron["GitHub Actions cron<br/>0 */6 * * *"] --> Shuffle[隨機排序 9 個頻道]
+  Cron["GitHub Actions cron<br/>平日 08:00/17:00 TST<br/>週末每 6 小時"] --> DayFilter[依 today + days 過濾頻道]
+  DayFilter --> Shuffle[隨機排序頻道]
   Shuffle --> Loop[for each 頻道]
   Loop --> List["yt-dlp 列出最新 5 支影片"]
-  List --> Filter[過濾已處理（查 D1）]
+  List --> Filter[過濾已處理（掃描檔名 videoId + original_url）]
   Filter --> Pick[取第 1 支新影片]
   Pick --> Sub["yt-dlp 下載字幕<br/>zh-TW > zh-Hant > zh > en"]
-  Sub -->|有字幕| Trim[截斷至 4000 chars]
+  Sub -->|有字幕| Trim[parseVtt + 截斷至 8000 chars]
   Sub -->|無字幕| Fallback[title + description]
-  Trim --> LLM["Workers AI llama-3.1-70b<br/>繁中摘要 + Mermaid 圖"]
-  Fallback --> LLM
+  Trim --> Enrich{內容不足?}
+  Fallback --> Enrich
+  Enrich -->|是| Jina[jina.ai 補充搜尋資料]
+  Enrich -->|否| LLM
+  Jina --> LLM["Workers AI llama-3.1-70b<br/>metadata + zh-TW 文章 + Mermaid"]
   LLM --> Validate{Mermaid 有效?}
   Validate -->|否| Fix["LLM 修正 Mermaid 語法"]
-  Fix --> Write
-  Validate -->|是| Write["寫入 posts/{category}/{videoId}.md"]
-  Write --> Count{已達 3 支?}
-  Count -->|否| Loop
-  Count -->|是| Commit["git commit + push<br/>author: a920604a"]
+  Fix --> Translate[翻譯英文 metadata + 文章]
+  Validate -->|是| Translate
+  Translate --> Write["寫入 YYYY-MM-DD-slug.md<br/>與 YYYY-MM-DD-slug.en.md<br/>draft: true"]
+  Write --> Commit["git commit + push<br/>author: a920604a"]
   Commit --> Deploy[觸發 deploy.yml]
 ```
 
 ### 來源設定
 
-頻道清單維護在 `scripts/sources.ts`（`SOURCES` 陣列，`enabled: true` 才會被爬取）。
+頻道清單維護在 `scripts/sources.ts`（`SOURCES` 陣列，`enabled: true` 且 `days` 包含今天才會被爬取）。完整策略見 `docs/crawl.md`。
 
 ### Crawled 文章 Frontmatter
 
@@ -110,13 +115,14 @@ flowchart TD
 ---
 title: "LLM 生成"
 date: "ISO 8601"
-category: "tech|product|learning|career|life"
+category: "tech|product|learning|creative|life"
 tags: [...]
 lang: "zh-TW"
 tldr: "一句話摘要"
-draft: false
+description: "SEO 摘要"
+type: "how-to|explainer|listicle|deep-dive|debug|case-study|comparison|research|newsjacking"
 original_url: "https://youtube.com/watch?v=..."
-type: "crawled"
+draft: true
 ---
 ```
 
@@ -124,7 +130,7 @@ type: "crawled"
 
 ## sync-to-d1.ts — 增量同步
 
-將本地 Markdown 增量同步到 D1 + Vectorize。基於 SHA256 hash 避免重複 embedding。
+將本地 Markdown 增量同步到 D1 + Vectorize。基於 SHA256 hash 避免重複 embedding，且只同步 `draft: false` 的文章。
 
 ### 執行方式
 
@@ -150,7 +156,9 @@ flowchart TD
   Single --> LoadHashes[載入 D1 所有 id→content_hash]
   Walk --> LoadHashes
   LoadHashes --> Each{每個 .md}
-  Each --> Hash[SHA256 全檔]
+  Each --> Draft{draft !== false?}
+  Draft -->|是| DraftSkip[跳過草稿]
+  Draft -->|否| Hash[SHA256 全檔]
   Hash --> Same{hash 相同?}
   Same -->|是| Skip[跳過]
   Same -->|否| DelVec[刪除舊向量\nvectorize delete-vectors]
@@ -158,7 +166,7 @@ flowchart TD
   Upsert --> Chunks[分割 chunks]
   Chunks --> EachChunk{每個 chunk}
   EachChunk --> D1Chunk[D1 INSERT doc_chunks]
-  D1Chunk --> Embed["Workers AI bge-m3\ntext → float[384]"]
+  D1Chunk --> Embed["Workers AI bge-m3\ntext → float[1024]"]
   Embed --> VecInsert["Vectorize insert"]
   VecInsert --> EachChunk
   EachChunk -->|完成| Each

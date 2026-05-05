@@ -17,7 +17,7 @@ sequenceDiagram
 
   User->>API: POST { query, lang }
   API->>BGE: text → embedding
-  BGE-->>API: float[384]
+  BGE-->>API: float[1024]
 
   API->>Vec: query(vector, topK=8, filter={lang})
   Vec-->>API: [{ id, score }]
@@ -46,6 +46,7 @@ sequenceDiagram
 |------|----|------|
 | Embedding 模型 | `@cf/baai/bge-m3` | 多語言，支援繁中 |
 | Chat 模型 | `@cf/qwen/qwen1.5-14b-chat-awq` | 串流輸出 |
+| Vectorize index | `engineer-news-index` | 1024 維，cosine |
 | Vectorize topK | 8 | 取前 8 個向量 |
 | Lang filter | `{ lang }` metadata filter | 在向量層過濾語言 |
 | Max sources | 5 | dedup by source_id |

@@ -7,6 +7,7 @@ lang: zh-TW
 tldr: "Stanford CS146S 是第一門系統性教 vibe coding 的課程，從 LLM 原理、Coding Agent、MCP、AI IDE 到 Post-Deployment，10 週橫跨完整開發生命週期，有中文版 repo 和逐週學習記錄影片可跟。"
 description: "Stanford CS146S『The Modern Software Developer』完整導讀：課程架構、10 週大綱、程式碼範例、工具操作，以及中文社群資源整理。"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260505_033625_475659.wav"
 ---
 
 軟體工程師的工作方式正在被 AI 重新定義，但大多數討論停在工具比較或 demo 展示，少有系統性的課程從頭梳理這場轉變。Stanford 在 2025–2026 學年推出的 [CS146S: The Modern Software Developer](https://themodernsoftware.dev/) 填補了這個缺口——它是第一門從課程設計角度把「AI 驅動開發」整合進工程師技能樹的正式課程。

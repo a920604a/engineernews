@@ -4,14 +4,16 @@
 
 ## 概覽
 
-Astro + Cloudflare Pages/D1/Vectorize 架構的個人技術部落格，支援：
+Astro + Cloudflare Pages Functions/D1/Vectorize 架構的個人技術部落格，支援：
 
 - Markdown 文章系統（frontmatter 驗證）
 - 全文搜尋（`/search`，Pagefind 靜態索引）
 - AI 語義搜尋（`/ai-search`，Vectorize + Workers AI embedding）
 - 對話攝取（`pnpm ingest`）— 一行指令將工程對話轉成文章
-- YouTube 爬蟲（每天自動）— 從 9 個頻道抓字幕、生成繁體中文摘要
-- Cloudflare D1（儲存文章、projects、doc_chunks）
+- YouTube 爬蟲（平日 08:00/17:00、週末每 6 小時）— 抓字幕、生成 zh-TW/en 草稿
+- 文章 TTS（Edge TTS 優先，Workers AI fallback，R2 快取）
+- Review/Admin API（`/review`、`/admin`，需 `ADMIN_TOKEN`）
+- Cloudflare D1（儲存文章、chunks、views、search/logs、settings）
 - Cloudflare Vectorize（向量索引）
 - 多語系（繁體中文 / 英文）
 
@@ -50,7 +52,7 @@ frontmatter 格式與寫作規範：`docs/writing.md`
 
 ## 自動爬蟲
 
-GitHub Actions 每天 UTC 02:00（台灣時間 10:00）自動執行，從 YouTube 頻道抓取最新影片字幕，用 Workers AI 生成繁體中文摘要，每次最多 3 篇，自動 commit + push。
+GitHub Actions 依 `.github/workflows/crawl.yml` 執行：平日台灣時間 08:00、17:00，週末每 6 小時。爬蟲會從當天排班的 YouTube 頻道抓取最新影片字幕，用 Workers AI 生成繁體中文與英文草稿；每次找到一支新影片後就產出一組 `.md` / `.en.md` 並結束。
 
 來源設定：`scripts/sources.ts`（新增頻道只需加一筆設定）
 
@@ -61,7 +63,14 @@ GitHub Actions 每天 UTC 02:00（台灣時間 10:00）自動執行，從 YouTub
 ```env
 CLOUDFLARE_API_TOKEN=...
 CLOUDFLARE_ACCOUNT_ID=...
+TTS_API_URL=http://localhost:8008  # 選填；未設定時使用預設本機 TTS URL / Workers AI fallback
 ```
+
+Cloudflare Pages 端另需設定：
+
+- `ADMIN_TOKEN`：`/review` 與 `/api/admin/*` 使用
+- `GITHUB_TOKEN`：Admin API 透過 GitHub Contents API 儲存、發布、刪除文章時使用
+- `GITHUB_OWNER` / `GITHUB_REPO`：預設在 `wrangler.jsonc` 為 `a920604a` / `engineernews`
 
 ## 常用指令
 
@@ -73,10 +82,13 @@ CLOUDFLARE_ACCOUNT_ID=...
 | `pnpm sync:prod` | 手動同步所有文章至 D1 + Vectorize |
 | `make rebuild` | 重建 D1 表結構 + Vectorize index |
 | `make d1-clear` | 清空 D1 資料（保留表結構） |
+| `make tts-all-prod` | 批次補齊文章 `audio_url`，上傳遠端 R2 |
+| `make remote-crawl` | 透過 GitHub CLI 觸發遠端爬蟲 workflow |
 
 ## 文件
 
 - `docs/architecture.md` — 系統架構、資料流、D1 Schema
 - `docs/deployment.md` — CI/CD 流程、Secrets 設定
 - `docs/ingest.md` — 對話攝取與爬蟲工具詳解
+- `docs/crawl.md` — YouTube 爬蟲排班、去重、產文策略
 - `docs/writing.md` — 文章格式、分類與 commit 規範

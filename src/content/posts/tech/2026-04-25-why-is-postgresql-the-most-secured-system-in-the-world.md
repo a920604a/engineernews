@@ -9,6 +9,7 @@ description: "了解 PostgreSQL 的安全性"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=S_Z8Y0vMSzo"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260505_034018_451833.wav"
 ---
 
 # PostgreSQL 的安全性為什麼是全球最頂尖的？

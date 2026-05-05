@@ -10,35 +10,53 @@ flowchart TD
   Checkout --> Install[pnpm install]
   Install --> Build[pnpm build]
   Build --> Deploy[wrangler pages deploy dist]
-  Deploy --> Sync[pnpm sync:prod\nsync-to-d1.ts]
+  Deploy --> Changed{src/content 或\nsync-to-d1.ts 有變更?}
+  Changed -- 是 --> Sync[pnpm sync:prod\nsync-to-d1.ts]
+  Changed -- 否 --> End[跳過 D1 sync]
   Sync --> D1[(D1: posts / projects / doc_chunks)]
   Sync --> Vec[(Vectorize: embeddings)]
 ```
 
-> D1 sync 在每次 deploy 後自動執行，不需手動觸發。
+> D1 sync 只在 `src/content/` 或 `scripts/sync-to-d1.ts` 有變更時執行，避免沒有內容變動的部署也消耗 D1 / Vectorize API。
 
-### crawl.yml — 每天 UTC 02:00（台灣時間 10:00）
+### crawl.yml — YouTube 爬蟲排程
 
 ```mermaid
 flowchart TD
-  Cron[排程觸發] --> Install[pnpm install + pip install yt-dlp]
-  Install --> Crawl[pnpm crawl:prod\n每次最多 3 支影片]
+  Cron[平日 08:00/17:00 TST\n週末每 6 小時\n或 workflow_dispatch] --> Install[pnpm install + pip install yt-dlp]
+  Install --> Crawl[pnpm crawl:prod\n每次 1 支影片\n產 zh-TW + en 草稿]
   Crawl --> Check{有新文章?}
   Check -- 是 --> Commit[git commit + push\nauthor: a920604a]
   Check -- 否 --> End[結束]
-  Commit --> Deploy[觸發 deploy.yml]
+  Commit --> Build[pnpm build]
+  Build --> Deploy[wrangler pages deploy dist]
+  Commit --> DeployCI[push 另會觸發 deploy.yml\n負責 D1 + Vectorize sync]
 ```
 
-爬蟲產生的文章 commit 後，deploy.yml 自動接手部署與 D1 sync。
+爬蟲 workflow 會在有新文章時自行 build/deploy；同一個 push 也會觸發 `deploy.yml`，由 `deploy.yml` 負責內容同步到 D1 + Vectorize。
+
+### fix-mermaid.yml — 每天 UTC 01:00
+
+```mermaid
+flowchart TD
+  Cron[每天 UTC 01:00\n或 workflow_dispatch] --> Fix[pnpm fix-mermaid]
+  Fix --> Check{有修正?}
+  Check -- 是 --> Commit[git commit + push]
+  Check -- 否 --> End[結束]
+  Commit --> Build[pnpm build]
+  Build --> Deploy[wrangler pages deploy dist]
+```
 
 ---
 
 ## Git Author 規則
 
-所有 commit（本地 + CI）的 author 固定為 `a920604a`：
+CI 產生的 commit author 固定為 `a920604a`：
 
-- **本地**：`.git/hooks/commit-msg` 自動剔除 `Co-Authored-By:` 行
 - **CI**：crawl.yml 中明確設定 `git config user.name "a920604a"`
+- **CI**：fix-mermaid.yml 中明確設定 `git config user.name "a920604a"`
+
+本地 commit 訊息請遵守 `docs/writing.md` 的 `post(<category>): <標題摘要>` 格式。
 
 ---
 
@@ -61,6 +79,17 @@ pnpm preview      # 預覽靜態輸出
 |--------|------|
 | `CLOUDFLARE_API_TOKEN` | 需有 D1、Pages、Vectorize、Workers AI 權限 |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare Account ID |
+| `TTS_API_URL` | 選填；crawl workflow 若設定則可預合成 TTS |
+
+在 Cloudflare Pages 的環境變數 / secrets 設定：
+
+| 名稱 | 說明 |
+|------|------|
+| `ADMIN_TOKEN` | `/review` 與 `/api/admin/*` 驗證 |
+| `GITHUB_TOKEN` | Admin API 透過 GitHub Contents API 修改文章 |
+| `GITHUB_OWNER` | GitHub owner，`wrangler.jsonc` 預設 `a920604a` |
+| `GITHUB_REPO` | GitHub repo，`wrangler.jsonc` 預設 `engineernews` |
+| `TTS_API_URL` | 選填；線上 TTS proxy / cache API 使用 |
 
 本地開發在 `.env` 設定（不提交 git）：
 
@@ -85,5 +114,5 @@ wrangler d1 migrations apply engineer-news-db --remote
 
 ```bash
 make rebuild      # DROP + 重建 D1 表結構 + 重建 Vectorize index
-make sync-prod    # 同步所有 markdown → D1 + Vectorize
+make sync-prod    # 同步所有 draft:false markdown → D1 + Vectorize
 ```

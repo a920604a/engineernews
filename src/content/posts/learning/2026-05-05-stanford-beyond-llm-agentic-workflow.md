@@ -7,6 +7,7 @@ lang: zh-TW
 tldr: "Stanford「Beyond LLM」課程的核心地圖：為什麼 base model 不夠用、三種強化單一 LLM 的工具（Prompt Engineering / Fine-Tuning / RAG），以及如何設計 Agentic Workflow 與 Multi-Agent 系統。"
 description: "Gary Chen 整理的 Stanford Beyond LLM 課程筆記，涵蓋 LLM 限制、Prompt Engineering、Fine-Tuning、RAG、Agentic Workflow、評估系統與 Multi-Agent 架構。"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260505_033225_650383.wav"
 ---
 
 AI Builder 最常遇到的困境不是技術太難，而是術語太多、框架太雜，搞不清楚每個技術在解決什麼問題、自己現在該學哪個。Stanford 的「Beyond LLM」課程提供了一張清晰的技術地圖，從 base model 的本質限制出發，一路到 Agentic Workflow 與 Multi-Agent 的系統設計。這篇是課程核心的整理，讀完你會知道每個技術解什麼痛點、什麼時候用。
