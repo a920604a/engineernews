@@ -38,7 +38,7 @@ audio_url: "/api/tts/r2/tts/tts_20260427_023441_464616.wav"
 
 目標是把這個對話變成一篇「D1 SQLITE_BUSY 錯誤與 batch() 解法」的完整技術文章，不需要人工重寫全文。
 
-這個問題不是個案。工程師每天產生大量有價值的對話、debug session、設計討論，但 95% 不會被記錄下來 — 不是因為不重要，而是因為整理成文章太麻煩了。
+這個問題不是個案。
 
 ## 問題
 
@@ -168,7 +168,3 @@ batch() 把多個操作包成原子交易，避免並發寫入時的鎖爭用。
 
 **分批處理比一次處理好**：如果對話很長（超過 200 行），把它切成「問題描述段」和「解法段」分別 ingest，再手工合併，通常比一次扔給模型得到更好的結果。模型在較短的 context 下更容易抓到關鍵細節。
 
-## 參考資料
-
-- Claude Code 範例與文件（範例）：https://www.anthropic.com/
-- Prompt design 教學（範例）：https://platform.openai.com/docs/guides/prompting
