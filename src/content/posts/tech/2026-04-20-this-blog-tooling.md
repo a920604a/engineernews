@@ -51,7 +51,7 @@ graph LR
 
 > **Astro** 是以「內容優先」為設計哲學的前端框架。預設輸出純靜態 HTML，只在需要互動的元件注入 JavaScript（Island Architecture）。特別適合文章、文件類網站。
 
-Astro 不是 React、不是 Vue，它是一個以「內容」為核心設計的框架。預設輸出是靜態 HTML，JavaScript 只在需要互動的地方注入（Island Architecture）。
+Astro 不是 React、不是 Vue，它是一個以「內容」為核心設計的框架。
 
 對部落格來說這個設計很合理：大多數頁面是純閱讀，不需要任何 JS bundle。文章用 Markdown（Content Collections）管理，frontmatter 有 Zod schema 在 build 時驗證，欄位錯了本地就會報錯，不用等到 CI。
 
