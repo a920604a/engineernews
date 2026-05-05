@@ -9,7 +9,6 @@ description: "A exploration of the paradoxical pressures faced by young people i
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=NkvFy3GCCBo"
 draft: true
-audio_url: "/api/tts/r2/tts/tts_20260427_023602_339780.wav"
 ---
 The Fragmentation of Youth: Understanding the Conflict Between Inner Rebellion and Social Anxiety
 ====================================================================

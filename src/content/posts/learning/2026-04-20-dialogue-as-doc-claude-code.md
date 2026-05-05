@@ -6,9 +6,8 @@ tags: ["ai", "claude-code", "debugging", "writing-automation"]
 lang: zh-TW
 description: "示範如何把對話與除錯歷程透過 Claude Code 自動整理為技術文章，包含 prompt 設計與常見調整技巧。"
 tldr: "把對話當成可寫成文章的材料：用結構化 prompt 與範本，讓 Claude Code 自動把 debugging thread 轉為可發佈的技術文章。"
-draft: false
+draft: true
 pinned: true
-audio_url: "/api/tts/r2/tts/tts_20260427_023441_464616.wav"
 ---
 
 **Claude Code** 是 Anthropic 的 CLI 工具，讓開發者直接在終端機與 Claude 協作寫程式和文件。它支援「skill」擴充點 — 可自訂工作流程腳本。本站使用的 `post` skill 把對話或筆記輸入轉成結構化 Markdown 文章；底層的 `ingest.ts` 腳本負責偵測敏感資訊、呼叫 LLM 萃取 metadata，最終輸出帶完整 frontmatter 的文章檔案。

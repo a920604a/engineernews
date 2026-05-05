@@ -272,6 +272,7 @@ async function syncPosts() {
   const existingHashes = loadExistingHashes('posts');
   const localIds = new Set<string>();
   let skipped = 0;
+  let draftSkipped = 0;
 
   // Phase 1: Identify changed posts
   const changedPosts: PostData[] = [];
@@ -280,6 +281,13 @@ async function syncPosts() {
     const raw = fs.readFileSync(filePath, 'utf-8');
     const rel = path.relative(POSTS_DIR, filePath);
     const id = rel.replace(/\.md$/, '');
+
+    const { data, content } = matter(raw);
+    if (data.draft !== false) {
+      draftSkipped++;
+      continue;
+    }
+
     localIds.add(id);
 
     const hash = computeHash(raw);
@@ -288,7 +296,6 @@ async function syncPosts() {
       continue;
     }
 
-    const { data, content } = matter(raw);
     const slug = data.slug || path.basename(id);
     const title = data.title || 'Untitled';
     const category = data.category || id.split('/')[0] || 'tech';
@@ -308,7 +315,7 @@ async function syncPosts() {
     });
   }
 
-  console.log(`Found ${files.length} posts. ${changedPosts.length} changed, ${skipped} skipped.`);
+  console.log(`Found ${files.length} posts. ${changedPosts.length} changed, ${skipped} unchanged, ${draftSkipped} draft skipped.`);
 
   if (changedPosts.length === 0) {
     if (!targetFileArg) await cleanupOrphans('posts', localIds);
@@ -390,7 +397,7 @@ ON CONFLICT(id) DO UPDATE SET content=excluded.content, updated_at=excluded.upda
     }
   }
 
-  console.log(`  ✓ ${changedPosts.length} synced, ${skipped} skipped (unchanged)`);
+  console.log(`  ✓ ${changedPosts.length} synced, ${skipped} skipped (unchanged), ${draftSkipped} skipped (draft)`);
   if (!targetFileArg) await cleanupOrphans('posts', localIds);
 }
 

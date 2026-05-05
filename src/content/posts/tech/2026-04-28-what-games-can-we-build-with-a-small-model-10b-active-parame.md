@@ -10,7 +10,6 @@ description: "探討使用 10 億參數的小型模型可以打造什麼樣的�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=Yysg5-WnVhg"
 draft: true
-audio_url: "/api/tts/r2/tts/tts_20260428_053248_707286.wav"
 ---
 
 什麼樣的遊戲可以用小模型（10B 活躍參數）打造出來？本文探討了使用小模型開發遊戲的可能性和挑戰。

@@ -9,7 +9,6 @@ description: " DoorDash 的捐贈活動系統設計"
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=xbnrvkVf0s8"
 draft: true
-audio_url: "/api/tts/r2/tts/tts_20260429_230113_740044.wav"
 ---
 
 # 系統設計Mock：複盤 DoorDash 捐贈活動

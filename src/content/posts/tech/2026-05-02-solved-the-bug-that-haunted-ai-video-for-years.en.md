@@ -10,7 +10,6 @@ description: "A solution to the persistent bug impacting AI video has been found
 type: debug
 original_url: "https://www.youtube.com/watch?v=yzajLZXh9JU"
 draft: true
-audio_url: "/api/tts/r2/tts/tts_20260503_050416_990971.wav"
 ---
 
 # TL;DR

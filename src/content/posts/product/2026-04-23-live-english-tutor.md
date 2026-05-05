@@ -10,7 +10,6 @@ tldr: "即時語音 AI 英文家教：WebRTC 麥克風互動 + Gemini 即時糾�
 github: "https://github.com/a920604a/live-english-tutor"
 pinned: false
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260427_023632_025021.wav"
 ---
 
 Live English Tutor 是一個以即時語音互動為核心的 AI 英文家教平台，學生透過麥克風與 AI 教師 Emma 進行對話練習，系統即時糾錯並於課後生成中文學習報告。

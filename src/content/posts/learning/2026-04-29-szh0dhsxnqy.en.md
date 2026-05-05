@@ -9,7 +9,6 @@ description: "Delving into the connection between emotions and anxiety"
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=sZh0DhSXNQY"
 draft: true
-audio_url: "/api/tts/r2/tts/tts_20260429_230000_598590.wav"
 ---
 ## TL;DR
 The more you try to calm down, the more anxious you become. This is because your body is sounding the alarm, reminding you to take care of yourself.

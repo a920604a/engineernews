@@ -6,9 +6,8 @@ tags: ["astro", "cloudflare-workers", "cloudflare-pages", "deployment"]
 lang: zh-TW
 description: "實作指南：從空專案開始，用 Astro 建靜態前端、Cloudflare Workers / Pages 做後端與部署，減少開發摩擦的實作步驟與注意事項。"
 tldr: "以 Astro 做內容與 UI，Cloudflare Workers 提供 API 與邊緣處理，Cloudflare Pages 做靜態部署；關鍵在於 routes、環境變數與 D1/KV 的運用。"
-draft: false
+draft: true
 pinned: true
-audio_url: "/api/tts/r2/tts/tts_20260427_023715_983436.wav"
 ---
 
 想建一個技術部落格或小型 demo 平台，但不想每次部署都跟複雜的後端環境搏鬥。這篇記錄我用 Astro + Cloudflare Workers 把一切變輕的過程。

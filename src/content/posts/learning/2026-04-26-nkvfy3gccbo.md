@@ -9,7 +9,6 @@ description: "探討時代對年輕人的割裂現象"
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=NkvFy3GCCBo"
 draft: true
-audio_url: "/api/tts/r2/tts/tts_20260427_023606_639515.wav"
 ---
 時代的割裂現象是一種年輕人面臨的兩種相互矛盾的想法和感受。它是由現代社會的快速變遷和競爭加劇所導致的，讓年輕人在追求自由和自主的同時，又感到不得不在社會競爭中奮鬥。
 

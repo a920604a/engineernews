@@ -23,7 +23,8 @@ type R2Data = { count: number; truncated: boolean };
 type VecData = { chunk_count: number | null; embedding_model: string; dimensions: number; index_name: string; metadata_indexes: string[] };
 type CfgData = { embedding_model: string; embedding_dims: number; chat_model: string; vector_top_k: number; max_sources: number; vectorize_index: string; d1_database: string; r2_bucket: string; compatibility_date: string; astro_output: string };
 type PostRow = { id: string; title: string; category: string; lang: string; created_at: string; updated_at: string; chunk_count: number };
-type Overview = { d1: SF<D1Data>; r2: SF<R2Data>; vectorize: SF<VecData>; config: SF<CfgData>; posts: SF<PostRow[]> };
+type ContentStats = { draft_true: number; draft_false: number; published_with_audio: number };
+type Overview = { d1: SF<D1Data>; r2: SF<R2Data>; vectorize: SF<VecData>; config: SF<CfgData>; posts: SF<PostRow[]>; content_stats: SF<ContentStats> };
 type AppLogRow = { id: number; level: 'debug' | 'info' | 'warn' | 'error'; source: string; message: string; data: string | null; created_at: string };
 type SearchLog = { id: number; query: string; lang: string; vector_hits: number; keyword_hits: number; llm_ok: number; error: string | null; duration_ms: number; created_at: string };
 type ChunkRow = { source_id: string; title: string; category: string; lang: string; chunk_count: number; last_updated: string };
@@ -883,6 +884,7 @@ export default function AdminDashboard() {
   if (!token) return <AuthForm onSubmit={setToken} />;
 
   const d1 = data?.d1.data;
+  const contentStats = data?.content_stats.data;
 
   // ── Detail layer ───────────────────────────────────────────────────────────
   if (detail && data) {
@@ -929,7 +931,10 @@ export default function AdminDashboard() {
         <>
           {/* ── Row 1: Hero metrics ── */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: '12px', marginBottom: '16px' }}>
-            <Stat label="Posts" value={d1?.posts ?? '–'} sub={`${d1?.doc_chunks ?? 0} chunks`} onClick={() => setDetail('posts')} />
+            <Stat label="Posts in D1" value={d1?.posts ?? '–'} sub={`${d1?.doc_chunks ?? 0} chunks`} onClick={() => setDetail('posts')} />
+            <Stat label="Draft: true" value={contentStats?.draft_true ?? '–'} sub="content files" />
+            <Stat label="Draft: false" value={contentStats?.draft_false ?? '–'} sub="content files" />
+            <Stat label="Published + Audio" value={contentStats?.published_with_audio ?? '–'} sub="draft:false & audio_url" />
             <Stat label="Searches (all)" value={d1?.search_logs ?? '–'} sub="AI search queries" onClick={() => setDetail('searchlogs')} />
             <Stat
               label="LLM 成功率 (7d)"

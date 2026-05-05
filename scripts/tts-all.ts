@@ -34,6 +34,11 @@ async function processPost(filePath: string): Promise<void> {
   const raw = fs.readFileSync(filePath, 'utf-8');
   const { data } = matter(raw);
 
+  if (data.draft !== false) {
+    console.log(`  ⏭️  跳過（草稿）: ${path.basename(filePath)}`);
+    return;
+  }
+
   if (data.audio_url) {
     console.log(`  ⏭️  跳過（已有 audio_url）: ${path.basename(filePath)}`);
     return;
@@ -56,6 +61,11 @@ async function processPost(filePath: string): Promise<void> {
       apiToken: process.env.CLOUDFLARE_API_TOKEN,
       isProd,
     });
+    if (!audioUrl) {
+      console.warn(`  ⚠️  跳過（audioUrl 為空）: ${path.basename(filePath)}`);
+      return;
+    }
+
     setAudioUrl(filePath, audioUrl);
 
     if (isProd) {

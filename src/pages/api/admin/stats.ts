@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { getCollection } from 'astro:content';
 
 const EMBEDDING_MODEL = '@cf/baai/bge-m3';
 const EMBEDDING_DIMS = 1024;
@@ -11,6 +12,12 @@ const R2_BUCKET = 'engineer-news-og-images';
 const COMPAT_DATE = '2024-04-01';
 
 type SafeResult<T> = { data: T; error: null } | { data: null; error: string };
+
+type ContentStats = {
+  draft_true: number;
+  draft_false: number;
+  published_with_audio: number;
+};
 
 async function safe<T>(fn: () => Promise<T>): Promise<SafeResult<T>> {
   try {
@@ -150,7 +157,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
 
   // ── Overview (single batched call for main dashboard) ─────────────────────
 
-  const [d1Result, r2Result, postsResult] = await Promise.allSettled([
+  const [d1Result, r2Result, postsResult, contentStatsResult] = await Promise.allSettled([
     safe(async () => {
       const [counts, langDist, catDist, recentPosts, postsTrend, searchTrend, searchStats, pageViewsTop] = await Promise.all([
         env.DB.batch([
@@ -226,6 +233,23 @@ export const GET: APIRoute = async ({ request, locals }) => {
       ).all<{ id: string; title: string; category: string; lang: string; created_at: string; updated_at: string; chunk_count: number }>();
       return rows.results;
     }),
+    safe(async (): Promise<ContentStats> => {
+      const posts = await getCollection('posts');
+      return posts.reduce(
+        (stats, post) => {
+          if (post.data.draft === true) {
+            stats.draft_true += 1;
+          } else {
+            stats.draft_false += 1;
+            if (typeof post.data.audio_url === 'string' && post.data.audio_url.trim().length > 0) {
+              stats.published_with_audio += 1;
+            }
+          }
+          return stats;
+        },
+        { draft_true: 0, draft_false: 0, published_with_audio: 0 }
+      );
+    }),
   ]);
 
   const settle = <T>(r: PromiseSettledResult<SafeResult<T>>): SafeResult<T> =>
@@ -234,6 +258,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
   const d1 = settle(d1Result);
   const r2 = settle(r2Result);
   const posts = settle(postsResult);
+  const content_stats = settle(contentStatsResult);
 
   return Response.json({
     d1,
@@ -264,6 +289,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
       error: null,
     },
     posts,
+    content_stats,
   });
 };
 export const POST = GET;

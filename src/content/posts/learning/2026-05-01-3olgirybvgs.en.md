@@ -9,7 +9,6 @@ description: "A thought-provoking exploration of the concept of awakening and it
 type: "explainer"
 original_url: "https://www.youtube.com/shorts/3OLgIrybVgs"
 draft: true
-audio_url: "/api/tts/r2/tts/tts_20260501_083146_745087.wav"
 ---
 ## TL;DR
 Performance optimization is the process of analyzing and improving system performance to increase responsiveness, throughput, and stability, making us truly aware of the costs of our systems.

@@ -10,7 +10,6 @@ description: "解決影響 AI 影片的長期 BUG"
 type: debug
 original_url: "https://www.youtube.com/watch?v=yzajLZXh9JU"
 draft: true
-audio_url: "/api/tts/r2/tts/tts_20260503_050436_625101.wav"
 ---
 
 ## TL;DR

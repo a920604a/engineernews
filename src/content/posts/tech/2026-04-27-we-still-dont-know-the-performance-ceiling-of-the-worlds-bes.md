@@ -10,7 +10,6 @@ description: "探討資料庫效能的極限"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=wmGikV_393Y"
 draft: true
-audio_url: "/api/tts/r2/tts/tts_20260428_053102_871506.wav"
 ---
 
 你還不知道世界上最好的資料庫的效能天花板是什麼

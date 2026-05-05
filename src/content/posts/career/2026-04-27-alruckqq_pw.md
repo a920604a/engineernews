@@ -9,7 +9,6 @@ description: "如何在不良工作環境中保護自己"
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=ALruCKQQ_pw"
 draft: true
-audio_url: "/api/tts/r2/tts/tts_20260428_052851_644530.wav"
 ---
 ## TL;DR
 「上班」真的能夠毀掉人嗎？答案是肯定的。長時間的工作和高壓的工作環境可能會導致員工身心健康的嚴重問題。

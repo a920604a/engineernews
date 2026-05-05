@@ -9,7 +9,6 @@ description: "關於覺醒的反思"
 type: "explainer"
 original_url: "https://www.youtube.com/shorts/3OLgIrybVgs"
 draft: true
-audio_url: "/api/tts/r2/tts/tts_20260501_083207_263513.wav"
 ---
 ## TL;DR
 效能優化是一種透過分析和改進系統的效能，提高反應速度、吞吐量和穩定性的過程，讓我們真正意識到系統的代價。

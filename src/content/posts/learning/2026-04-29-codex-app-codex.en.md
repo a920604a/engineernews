@@ -9,7 +9,6 @@ description: "Get started with Codex APP and learn its practical applications wi
 type: "how-to"
 original_url: "https://www.youtube.com/watch?v=4gciWspBVHw"
 draft: true
-audio_url: "/api/tts/r2/tts/tts_20260429_225917_317162.wav"
 ---
 # TL;DR
 This article delves into the practical tutorial and technical details of Codex APP, helping you quickly master its usage and apply it to actual programming and data analysis.

@@ -9,7 +9,6 @@ description: "一步步學習 Codex APP 的實戰教程"
 type: "how-to"
 original_url: "https://www.youtube.com/watch?v=4gciWspBVHw"
 draft: true
-audio_url: "/api/tts/r2/tts/tts_20260429_225940_892740.wav"
 ---
 # TL;DR
 這篇文章將深入探討 Codex APP 的實戰教程和技術細節，讓您快速精通 Codex APP 的使用，並能夠運用於實際的程式設計和數據分析。

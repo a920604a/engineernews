@@ -10,7 +10,6 @@ description: "Discover Sakana AI's groundbreaking god simulator, a cutting-edge 
 type: explainer
 original_url: "https://www.youtube.com/watch?v=QzZ4VwDHAT4"
 draft: true
-audio_url: "/api/tts/r2/tts/tts_20260503_050339_679859.wav"
 ---
 
 Here is the translated article:

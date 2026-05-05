@@ -9,7 +9,6 @@ description: "Discover how to safeguard yourself in a hostile workplace"
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=ALruCKQQ_pw"
 draft: true
-audio_url: "/api/tts/r2/tts/tts_20260428_052831_349869.wav"
 ---
 ## TL;DR
 Can "going to work" really ruin someone? The answer is yes. Prolonged work and high-pressure work environments can lead to severe physical and mental health problems for employees.
