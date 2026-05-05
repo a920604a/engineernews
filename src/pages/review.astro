@@ -85,6 +85,31 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
     .preview-pane blockquote { border-left: 3px solid #ddd; padding-left: 1em; color: #666; margin: 0 0 0.7em; }
     .preview-pane a { color: #0066cc; } .preview-pane hr { border: none; border-top: 1px solid #e5e5e5; margin: 1em 0; }
     .preview-pane img { max-width: 100%; }
+
+    /* ── Fullscreen overlay ── */
+    #fs-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: #fff; flex-direction: column; }
+    #fs-overlay.open { display: flex; }
+    .fs-header { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #e5e5e5; flex-shrink: 0; }
+    .fs-header input[name=title] { flex: 1; font-size: 15px; font-weight: 600; }
+    .btn-fs-close { background: none; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; cursor: pointer; color: #555; padding: 2px 10px; line-height: 1.6; }
+    .btn-fs-close:hover { background: #f0f0f0; }
+    .fs-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 10px 20px; border-bottom: 1px solid #e5e5e5; flex-shrink: 0; }
+    .fs-editor { display: grid; grid-template-columns: 1fr 1fr; flex: 1; min-height: 0; }
+    .fs-editor textarea { border: none; border-right: 1px solid #e5e5e5; resize: none; padding: 14px 18px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; line-height: 1.6; outline: none; height: 100%; }
+    .fs-preview { padding: 14px 18px; overflow-y: auto; font-size: 13px; line-height: 1.7; }
+    .fs-preview h1,.fs-preview h2,.fs-preview h3 { font-weight: 600; margin: 0.8em 0 0.3em; }
+    .fs-preview h1 { font-size: 1.4em; } .fs-preview h2 { font-size: 1.2em; } .fs-preview h3 { font-size: 1.05em; }
+    .fs-preview p { margin: 0 0 0.7em; }
+    .fs-preview code { background: #f0f0f0; border-radius: 3px; padding: 1px 4px; font-family: 'SF Mono', monospace; font-size: 0.9em; }
+    .fs-preview pre { background: #1a1a1a; color: #e5e5e5; border-radius: 6px; padding: 12px; overflow-x: auto; margin-bottom: 0.8em; }
+    .fs-preview pre code { background: none; padding: 0; }
+    .fs-preview ul,.fs-preview ol { padding-left: 1.5em; margin-bottom: 0.7em; }
+    .fs-preview blockquote { border-left: 3px solid #ddd; padding-left: 1em; color: #666; margin: 0 0 0.7em; }
+    .fs-preview a { color: #0066cc; } .fs-preview hr { border: none; border-top: 1px solid #e5e5e5; margin: 1em 0; }
+    .fs-preview img { max-width: 100%; }
+    .fs-footer { display: flex; gap: 8px; justify-content: flex-end; padding: 10px 20px; border-top: 1px solid #e5e5e5; flex-shrink: 0; }
+    .btn-fs-trigger { background: none; border: none; cursor: pointer; font-size: 13px; color: #aaa; padding: 0 2px; line-height: 1; vertical-align: middle; margin-left: 4px; }
+    .btn-fs-trigger:hover { color: #333; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/marked@14/marked.min.js"></script>
 </head>
@@ -153,7 +178,10 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
               </div>
               <div class="form-row editor-split">
                 <div class="form-group">
-                  <label>Markdown 內容</label>
+                  <label>
+                    Markdown 內容
+                    <button type="button" class="btn-fs-trigger" data-slug={post.id} title="全螢幕編輯 (Ctrl+Shift+F)">⛶</button>
+                  </label>
                   <textarea name="body" rows="22"></textarea>
                 </div>
                 <div class="form-group">
@@ -172,6 +200,44 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
     </div>
   )}
 
+  <div id="fs-overlay">
+    <div class="fs-header">
+      <div class="form-group" style="flex:1;margin:0">
+        <label style="font-size:11px;font-weight:500;color:#888;margin-bottom:3px;display:block">標題</label>
+        <input name="title" type="text" />
+      </div>
+      <button class="btn-fs-close" id="fs-close-btn" title="關閉全螢幕 (ESC)">✕</button>
+    </div>
+    <div class="fs-meta">
+      <div class="form-group">
+        <label>TL;DR</label>
+        <input name="tldr" type="text" />
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <input name="description" type="text" />
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <select name="category">
+          {CATEGORIES.map(c => <option value={c}>{c}</option>)}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Tags (comma-separated)</label>
+        <input name="tags" type="text" />
+      </div>
+    </div>
+    <div class="fs-editor">
+      <textarea id="fs-textarea" name="body"></textarea>
+      <div class="fs-preview" id="fs-preview"></div>
+    </div>
+    <div class="fs-footer">
+      <button type="button" class="btn btn-save" id="fs-btn-save">儲存草稿</button>
+      <button type="button" class="btn btn-publish" id="fs-btn-publish">發布</button>
+    </div>
+  </div>
+
   <div class="toast-container" id="toasts"></div>
 
   <script define:vars={{ token }}>
@@ -186,6 +252,60 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
 
     function cardId(slug) { return `card-${slug.replace(/\//g, '-')}`; }
     function editId(slug) { return `edit-${slug.replace(/\//g, '-')}`; }
+
+    // ── Fullscreen editor ──
+    const fsOverlay = document.getElementById('fs-overlay');
+    const fsTextarea = document.getElementById('fs-textarea');
+    const fsPreview = document.getElementById('fs-preview');
+    const fsFields = ['title', 'tldr', 'description', 'category', 'tags'];
+    let fsCurrentSlug = null;
+
+    function openFullscreen(slug) {
+      const panel = document.getElementById(editId(slug));
+      if (!panel) return;
+      const cardForm = panel.querySelector('.edit-form.ready');
+      if (!cardForm) return;
+
+      fsCurrentSlug = slug;
+
+      fsFields.forEach(name => {
+        fsOverlay.querySelector(`[name=${name}]`).value = cardForm.querySelector(`[name=${name}]`).value;
+      });
+      fsTextarea.value = cardForm.querySelector('[name=body]').value;
+      fsOverlay.dataset.slug = slug;
+      fsOverlay.dataset.frontmatter = cardForm.dataset.frontmatter ?? '{}';
+
+      fsPreview.innerHTML = marked.parse(fsTextarea.value);
+
+      fsOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      fsTextarea.focus();
+    }
+
+    function closeFullscreen() {
+      if (!fsOverlay.classList.contains('open')) return;
+      const slug = fsOverlay.dataset.slug;
+
+      if (slug) {
+        const panel = document.getElementById(editId(slug));
+        if (panel) {
+          const cardForm = panel.querySelector('.edit-form');
+          if (cardForm) {
+            fsFields.forEach(name => {
+              cardForm.querySelector(`[name=${name}]`).value = fsOverlay.querySelector(`[name=${name}]`).value;
+            });
+            cardForm.querySelector('[name=body]').value = fsTextarea.value;
+            cardForm.dataset.frontmatter = fsOverlay.dataset.frontmatter;
+            const cardPreviewPane = cardForm.querySelector('.preview-pane');
+            if (cardPreviewPane) cardPreviewPane.innerHTML = marked.parse(fsTextarea.value);
+          }
+        }
+      }
+
+      fsOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+      fsCurrentSlug = null;
+    }
 
     document.querySelectorAll('.btn-edit').forEach(btn => {
       btn.addEventListener('click', async () => {
