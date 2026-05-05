@@ -263,6 +263,10 @@ Steps:
 
 ```mermaid
 sequenceDiagram
+  participant Developer
+  participant Orchestrator
+  participant TestAgent
+  participant CodeAgent
   Developer->>Orchestrator: 實作搜尋功能
   Orchestrator->>TestAgent: 先寫失敗的測試
   TestAgent-->>Orchestrator: tests/test_search.py

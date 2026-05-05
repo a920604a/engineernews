@@ -73,7 +73,7 @@ Fine-Tuning 解決的是**行為問題**，不是**知識問題**。如果模型
 把外部知識庫接進 LLM，查詢時動態取回相關片段塞進 prompt。
 
 ```mermaid
-sequenceDiagram
+graph LR
   User->>Retriever: 提問
   Retriever->>VectorDB: embed + 相似度搜尋
   VectorDB-->>Retriever: Top-K 相關文件片段
