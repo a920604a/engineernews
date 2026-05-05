@@ -23,6 +23,26 @@ type PublishResult = {
   commitSha: string;
 };
 
+function todayInTaipei(): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Taipei',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date());
+}
+
+function publishDraft(original: string, publishDate: string): string {
+  if (!/^draft:\s*true\s*$/m.test(original)) return original;
+
+  const withDraftFalse = original.replace(/^draft:\s*true\s*$/m, 'draft: false');
+  if (/^date:\s*.*$/m.test(withDraftFalse)) {
+    return withDraftFalse.replace(/^date:\s*.*$/m, `date: ${publishDate}`);
+  }
+
+  return withDraftFalse.replace(/^---\n/, `---\ndate: ${publishDate}\n`);
+}
+
 async function publishFile(
   filePath: string,
   token: string,
@@ -47,7 +67,7 @@ async function publishFile(
   const original = new TextDecoder().decode(
     Uint8Array.from(atob(file.content.replace(/\n/g, '')), c => c.charCodeAt(0))
   );
-  const updated = original.replace(/^draft:\s*true/m, 'draft: false');
+  const updated = publishDraft(original, todayInTaipei());
 
   if (original === updated) return null; // already published
 

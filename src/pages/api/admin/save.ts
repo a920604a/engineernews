@@ -13,6 +13,24 @@ type SaveRequest = {
   body: string;
 };
 
+type GitHubFileResponse = {
+  sha: string;
+  content: string;
+};
+
+function todayInTaipei(): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Taipei',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date());
+}
+
+function wasDraftTrue(raw: string): boolean {
+  return /^draft:\s*true\s*$/m.test(raw);
+}
+
 function buildFrontmatter(fm: Record<string, unknown>): string {
   const lines: string[] = ['---'];
   for (const [key, value] of Object.entries(fm)) {
@@ -64,7 +82,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return Response.json({ error: 'Missing frontmatter' }, { status: 400 });
   }
 
-  const content = `${buildFrontmatter(frontmatter)}\n\n${markdownBody.trimStart()}`;
   const filePath = `src/content/posts/${slug}.md`;
   const apiUrl = `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/${filePath}`;
 
@@ -79,10 +96,19 @@ export const POST: APIRoute = async ({ request, locals }) => {
   if (!getRes.ok) {
     return Response.json({ error: `GitHub GET ${getRes.status}` }, { status: getRes.status });
   }
-  const existing = await getRes.json() as { sha: string };
+  const existing = await getRes.json() as GitHubFileResponse;
+  const existingRaw = new TextDecoder().decode(
+    Uint8Array.from(atob(existing.content.replace(/\n/g, '')), c => c.charCodeAt(0))
+  );
 
   const title = String(frontmatter.title ?? slug.split('/').pop());
   const isDraft = frontmatter.draft === true;
+  const fmToSave = { ...frontmatter };
+  if (wasDraftTrue(existingRaw) && fmToSave.draft === false) {
+    fmToSave.date = todayInTaipei();
+  }
+
+  const content = `${buildFrontmatter(fmToSave)}\n\n${markdownBody.trimStart()}`;
 
   const putRes = await fetch(apiUrl, {
     method: 'PUT',
