@@ -258,15 +258,12 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
     const fsTextarea = document.getElementById('fs-textarea');
     const fsPreview = document.getElementById('fs-preview');
     const fsFields = ['title', 'tldr', 'description', 'category', 'tags'];
-    let fsCurrentSlug = null;
-
     function openFullscreen(slug) {
       const panel = document.getElementById(editId(slug));
       if (!panel) return;
       const cardForm = panel.querySelector('.edit-form.ready');
       if (!cardForm) return;
 
-      fsCurrentSlug = slug;
 
       fsFields.forEach(name => {
         fsOverlay.querySelector(`[name=${name}]`).value = cardForm.querySelector(`[name=${name}]`).value;
@@ -283,6 +280,7 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
     }
 
     function closeFullscreen() {
+      document.body.style.overflow = '';
       if (!fsOverlay.classList.contains('open')) return;
       const slug = fsOverlay.dataset.slug;
 
@@ -303,9 +301,89 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
       }
 
       fsOverlay.classList.remove('open');
-      document.body.style.overflow = '';
-      fsCurrentSlug = null;
     }
+
+    document.querySelectorAll('.btn-fs-trigger').forEach(btn => {
+      btn.addEventListener('click', () => openFullscreen(btn.dataset.slug));
+    });
+
+    document.getElementById('fs-close-btn').addEventListener('click', closeFullscreen);
+
+    document.addEventListener('keydown', e => {
+      // ESC 關閉全螢幕
+      if (e.key === 'Escape' && fsOverlay.classList.contains('open')) {
+        closeFullscreen();
+        return;
+      }
+      // Ctrl+Shift+F / Cmd+Shift+F 開啟全螢幕
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'f') {
+        if (fsOverlay.classList.contains('open')) return;
+        const openPanels = document.querySelectorAll('.edit-panel.open');
+        if (openPanels.length === 1) {
+          e.preventDefault();
+          const form = openPanels[0].querySelector('.edit-form.ready');
+          if (form) openFullscreen(form.dataset.slug);
+        }
+      }
+    });
+
+    // 同步捲動
+    let fsSyncing = false;
+    fsTextarea.addEventListener('scroll', () => {
+      if (fsSyncing) return;
+      fsSyncing = true;
+      const pct = fsTextarea.scrollTop / (fsTextarea.scrollHeight - fsTextarea.clientHeight) || 0;
+      fsPreview.scrollTop = pct * (fsPreview.scrollHeight - fsPreview.clientHeight);
+      fsSyncing = false;
+    });
+    fsPreview.addEventListener('scroll', () => {
+      if (fsSyncing) return;
+      fsSyncing = true;
+      const pct = fsPreview.scrollTop / (fsPreview.scrollHeight - fsPreview.clientHeight) || 0;
+      fsTextarea.scrollTop = pct * (fsTextarea.scrollHeight - fsTextarea.clientHeight);
+      fsSyncing = false;
+    });
+
+    // 即時預覽更新
+    fsTextarea.addEventListener('input', () => {
+      fsPreview.innerHTML = marked.parse(fsTextarea.value);
+    });
+
+    function syncOverlayToCardForm() {
+      const slug = fsOverlay.dataset.slug;
+      if (!slug) return null;
+      const panel = document.getElementById(editId(slug));
+      if (!panel) return null;
+      const cardForm = panel.querySelector('.edit-form');
+      if (!cardForm) return null;
+      fsFields.forEach(name => {
+        cardForm.querySelector(`[name=${name}]`).value = fsOverlay.querySelector(`[name=${name}]`).value;
+      });
+      cardForm.querySelector('[name=body]').value = fsTextarea.value;
+      cardForm.dataset.frontmatter = fsOverlay.dataset.frontmatter;
+      return cardForm;
+    }
+
+    document.getElementById('fs-btn-save').addEventListener('click', async () => {
+      const cardForm = syncOverlayToCardForm();
+      if (!cardForm) return;
+      const fsBtns = [document.getElementById('fs-btn-save'), document.getElementById('fs-btn-publish')];
+      fsBtns.forEach(b => { b.disabled = true; });
+      await submitEdit(cardForm, false);
+      fsBtns.forEach(b => { b.disabled = false; });
+    });
+
+    document.getElementById('fs-btn-publish').addEventListener('click', async () => {
+      const slug = fsOverlay.dataset.slug;
+      const cardForm = syncOverlayToCardForm();
+      if (!cardForm) return;
+      const fsBtns = [document.getElementById('fs-btn-save'), document.getElementById('fs-btn-publish')];
+      fsBtns.forEach(b => { b.disabled = true; });
+      await submitEdit(cardForm, true);
+      fsBtns.forEach(b => { b.disabled = false; });
+      // submitEdit 在發布成功後移除 card；若 card 已移除，closeFullscreen 會跳過 copy-back
+      if (!document.getElementById(cardId(slug))) closeFullscreen();
+    });
 
     document.querySelectorAll('.btn-edit').forEach(btn => {
       btn.addEventListener('click', async () => {
