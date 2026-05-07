@@ -50,6 +50,9 @@ sequenceDiagram
     Client->>Server: 監控安全性狀態
 
     Note over Client,Server,Database: 完成安全流程
+    alt
+        Note: 安全流程完成
+    end
 ```
 
 ## 跟 MySQL 的差別
