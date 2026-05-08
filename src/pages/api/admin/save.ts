@@ -88,7 +88,7 @@ async function renameAndSaveFile(
   const delRes = await fetch(`${base}/${oldPath}`, {
     method: 'DELETE',
     headers,
-    body: JSON.stringify({ message: commitMsg, sha: oldSha }),
+    body: JSON.stringify({ message: `${commitMsg} (remove draft)`, sha: oldSha }),
   });
   if (!delRes.ok) {
     const err = await delRes.text();
@@ -167,7 +167,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
   if (!isDraft && hasDraftPrefix) {
     const oldPath = filePath;
     const newPath = `src/content/posts/${cleanSlug}.md`;
-    commitSha = await renameAndSaveFile(oldPath, newPath, content, existing.sha, env.GITHUB_TOKEN, env.GITHUB_OWNER, env.GITHUB_REPO, commitMsg);
+    try {
+      commitSha = await renameAndSaveFile(oldPath, newPath, content, existing.sha, env.GITHUB_TOKEN, env.GITHUB_OWNER, env.GITHUB_REPO, commitMsg);
+    } catch (e) {
+      return Response.json({ error: String(e) }, { status: 502 });
+    }
   } else {
     const putRes = await fetch(apiUrl, {
       method: 'PUT',
