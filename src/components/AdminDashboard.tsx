@@ -36,6 +36,23 @@ type TTSRecord = { id: number; created_at: string; type: 'tts'; title: string; v
 type DetailView = 'posts' | 'vectorize' | 'r2' | 'pageviews' | 'searchlogs' | 'logs' | 'tts' | 'settings' | null;
 
 const TOKEN_KEY = 'admin_token';
+const SESSION_TTL = 36 * 60 * 60 * 1000; // 36 hours
+
+function saveSession(token: string) {
+  localStorage.setItem(TOKEN_KEY, JSON.stringify({ token, loginAt: Date.now() }));
+}
+
+function loadSession(): string | null {
+  try {
+    const raw = localStorage.getItem(TOKEN_KEY);
+    if (!raw) return null;
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed === 'string') { localStorage.removeItem(TOKEN_KEY); return null; }
+    const { token, loginAt } = parsed as { token: string; loginAt: number };
+    if (Date.now() - loginAt > SESSION_TTL) { localStorage.removeItem(TOKEN_KEY); return null; }
+    return token;
+  } catch { return null; }
+}
 
 // ── Cache ─────────────────────────────────────────────────────────────────────
 
@@ -917,7 +934,7 @@ export default function AdminDashboard() {
   const [fetchedAt, setFetchedAt] = useState<number | null>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem(TOKEN_KEY);
+    const saved = loadSession();
     if (saved) setToken(saved);
   }, []);
 
@@ -930,11 +947,11 @@ export default function AdminDashboard() {
     setFetchErr(null);
     fetch(`/api/admin/stats?token=${encodeURIComponent(t)}`)
       .then(async res => {
-        if (res.status === 401) { localStorage.removeItem(TOKEN_KEY); setToken(null); throw new Error('Unauthorized'); }
+        if (res.status === 401) { localStorage.removeItem(TOKEN_KEY); setToken(null); throw new Error('Unauthorized'); } // session cleared on 401
         return res.json() as Promise<Overview>;
       })
       .then(d => {
-        localStorage.setItem(TOKEN_KEY, t);
+        saveSession(t);
         cacheSet('overview', d);
         setData(d);
         setFetchedAt(Date.now());
