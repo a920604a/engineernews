@@ -116,7 +116,10 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
   <script src="https://cdn.jsdelivr.net/npm/marked@14/marked.min.js"></script>
 </head>
 <body>
-  <h1>Draft Review</h1>
+  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+    <h1 style="margin:0">Draft Review</h1>
+    <button id="btn-logout" class="btn" style="font-size:12px;color:#999;background:none;border:1px solid #e5e5e5;padding:4px 12px">登出</button>
+  </div>
   <p class="meta" id="meta">{drafts.length} 篇待審閱</p>
 
   {drafts.length === 0 ? (
@@ -292,6 +295,12 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
     }
 
     if (!token) showAuth();
+
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      localStorage.removeItem(TOKEN_KEY);
+      token = null;
+      showAuth();
+    });
 
     document.getElementById('auth-form').addEventListener('submit', async e => {
       e.preventDefault();
