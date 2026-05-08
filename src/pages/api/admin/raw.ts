@@ -43,7 +43,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
   if (!env.ADMIN_TOKEN || token !== env.ADMIN_TOKEN) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  if (!/^[a-z]+\/\d{4}-\d{2}-\d{2}-[\w-]+$/.test(slug)) {
+  if (!/^[a-z]+\/_?\d{4}-\d{2}-\d{2}-[\w-]+$/.test(slug)) {
     return Response.json({ error: 'Invalid slug' }, { status: 400 });
   }
   if (!env.GITHUB_TOKEN || !env.GITHUB_OWNER || !env.GITHUB_REPO) {

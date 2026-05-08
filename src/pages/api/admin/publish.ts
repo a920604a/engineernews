@@ -120,7 +120,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   if (!slug || typeof slug !== 'string') {
     return Response.json({ error: 'Missing slug' }, { status: 400 });
   }
-  if (!/^[a-z]+\/\d{4}-\d{2}-\d{2}-[\w-]+$/.test(slug)) {
+  if (!/^[a-z]+\/_?\d{4}-\d{2}-\d{2}-[\w-]+$/.test(slug)) {
     return Response.json({ error: 'Invalid slug format' }, { status: 400 });
   }
 
