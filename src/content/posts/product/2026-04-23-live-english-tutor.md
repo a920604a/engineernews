@@ -60,26 +60,26 @@ graph LR
 
 ```mermaid
 sequenceDiagram
-  participant 學生
-  participant 前端
-  participant 後端API
-  participant LiveKit
-  participant Emma
-  participant Ollama
+  participant 學生 as Student
+  participant 前端 as Frontend
+  participant 後端API as BackendAPI
+  participant LiveKit as LiveKit
+  participant Emma as Emma
+  participant Ollama as Ollama
 
-  學生->>前端: Google Sign-In
-  前端->>後端API: 建立課程 / 取得 LiveKit Token
-  後端API->>LiveKit: 建立 Room + Dispatch Agent
+  Student->>Frontend: Google Sign-In
+  Frontend->>BackendAPI: 建立課程 / 取得 LiveKit Token
+  BackendAPI->>LiveKit: 建立 Room + Dispatch Agent
   LiveKit->>Emma: 啟動 Emma (WARMUP)
-  前端->>LiveKit: 加入 Room (WebRTC)
+  Frontend->>LiveKit: 加入 Room (WebRTC)
   loop 對話練習 (PRACTICE)
-    學生->>Emma: 語音輸入
-    Emma->>學生: 回應 + 即時糾錯 (CORRECTION)
+    Student->>Emma: 語音輸入
+    Emma->>Student: 回應 + 即時糾錯 (CORRECTION)
   end
-  學生->>前端: 結束課程
-  前端->>後端API: 通知結束 (SUMMARY)
-  後端API->>Ollama: 觸發課後報告生成
-  後端API->>前端: 課後中文報告
+  Student->>Frontend: 結束課程
+  Frontend->>BackendAPI: 通知結束 (SUMMARY)
+  BackendAPI->>Ollama: 觸發課後報告生成
+  BackendAPI->>Frontend: 課後中文報告
 ```
 
 ## 成果

@@ -267,18 +267,18 @@ sequenceDiagram
   participant Orchestrator as 工作管理員
   participant TestAgent as 測試代理
   participant CodeAgent as 代碼代理
-  note "實作搜尋功能" as N1
+  Note "實作搜尋功能" as N1
   Developer->>Orchestrator: N1
-  note "先寫失敗的測試" as N2
+  Note "先寫失敗的測試" as N2
   Orchestrator->>TestAgent: N2
   TestAgent->>Orchestrator: tests/test_search.py
-  note "根據測試實作 GET /notes?q=" as N3
+  Note "根據測試實作 GET /notes?q=" as N3
   Orchestrator->>CodeAgent: N3
   CodeAgent->>Orchestrator: routers/notes.py 已更新
-  note "跑測試、確認通過" as N4
+  Note "跑測試、確認通過" as N4
   Orchestrator->>TestAgent: N4
   TestAgent->>Orchestrator: 4/4 passed
-  note "完成，PR ready" as N5
+  Note "完成，PR ready" as N5
   Orchestrator->>Developer: N5
 ```
 
