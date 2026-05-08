@@ -52,6 +52,52 @@ function buildFrontmatter(fm: Record<string, unknown>): string {
   return lines.join('\n');
 }
 
+async function renameAndSaveFile(
+  oldPath: string,
+  newPath: string,
+  content: string,
+  oldSha: string,
+  token: string,
+  owner: string,
+  repo: string,
+  commitMsg: string,
+): Promise<string> {
+  const base = `https://api.github.com/repos/${owner}/${repo}/contents`;
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    Accept: 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+    'User-Agent': 'engineer-news',
+    'Content-Type': 'application/json',
+  };
+
+  const putRes = await fetch(`${base}/${newPath}`, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify({
+      message: commitMsg,
+      content: btoa(unescape(encodeURIComponent(content))),
+    }),
+  });
+  if (!putRes.ok) {
+    const err = await putRes.text();
+    throw new Error(`GitHub create ${putRes.status}: ${err}`);
+  }
+  const result = await putRes.json() as { commit: { sha: string } };
+
+  const delRes = await fetch(`${base}/${oldPath}`, {
+    method: 'DELETE',
+    headers,
+    body: JSON.stringify({ message: commitMsg, sha: oldSha }),
+  });
+  if (!delRes.ok) {
+    const err = await delRes.text();
+    throw new Error(`GitHub delete ${delRes.status}: ${err}`);
+  }
+
+  return result.commit.sha;
+}
+
 export const POST: APIRoute = async ({ request, locals }) => {
   const env = (locals as { runtime: { env: Env } }).runtime.env;
   const url = new URL(request.url);
@@ -82,6 +128,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return Response.json({ error: 'Missing frontmatter' }, { status: 400 });
   }
 
+  const basename = slug.split('/').pop() ?? '';
+  const hasDraftPrefix = basename.startsWith('_');
+  const cleanSlug = hasDraftPrefix ? slug.replace(/\/_/, '/') : slug;
+
   const filePath = `src/content/posts/${slug}.md`;
   const apiUrl = `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/contents/${filePath}`;
 
@@ -101,7 +151,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     Uint8Array.from(atob(existing.content.replace(/\n/g, '')), c => c.charCodeAt(0))
   );
 
-  const title = String(frontmatter.title ?? slug.split('/').pop());
+  const title = String(frontmatter.title ?? cleanSlug.split('/').pop());
   const isDraft = frontmatter.draft === true;
   const fmToSave = { ...frontmatter };
   if (wasDraftTrue(existingRaw) && fmToSave.draft === false) {
@@ -109,34 +159,38 @@ export const POST: APIRoute = async ({ request, locals }) => {
   }
 
   const content = `${buildFrontmatter(fmToSave)}\n\n${markdownBody.trimStart()}`;
-
-  const putRes = await fetch(apiUrl, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${env.GITHUB_TOKEN}`,
-      Accept: 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-      'User-Agent': 'engineer-news',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      message: isDraft ? `draft: update ${title}` : `publish: ${title}`,
-      content: btoa(unescape(encodeURIComponent(content))),
-      sha: existing.sha,
-    }),
-  });
-
-  if (!putRes.ok) {
-    const err = await putRes.text();
-    return Response.json({ error: `GitHub PUT ${putRes.status}: ${err}` }, { status: 502 });
-  }
-
-  const result = await putRes.json() as { commit: { sha: string } };
+  const commitMsg = isDraft ? `draft: update ${title}` : `publish: ${title}`;
   const actionsUrl = `https://github.com/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/actions/workflows/deploy.yml`;
 
-  return Response.json({
-    commitSha: result.commit.sha,
-    actionsUrl,
-    draft: isDraft,
-  });
+  let commitSha: string;
+
+  if (!isDraft && hasDraftPrefix) {
+    const oldPath = filePath;
+    const newPath = `src/content/posts/${cleanSlug}.md`;
+    commitSha = await renameAndSaveFile(oldPath, newPath, content, existing.sha, env.GITHUB_TOKEN, env.GITHUB_OWNER, env.GITHUB_REPO, commitMsg);
+  } else {
+    const putRes = await fetch(apiUrl, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+        'User-Agent': 'engineer-news',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: commitMsg,
+        content: btoa(unescape(encodeURIComponent(content))),
+        sha: existing.sha,
+      }),
+    });
+    if (!putRes.ok) {
+      const err = await putRes.text();
+      return Response.json({ error: `GitHub PUT ${putRes.status}: ${err}` }, { status: 502 });
+    }
+    const result = await putRes.json() as { commit: { sha: string } };
+    commitSha = result.commit.sha;
+  }
+
+  return Response.json({ commitSha, actionsUrl, draft: isDraft });
 };
