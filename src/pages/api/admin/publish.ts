@@ -96,6 +96,60 @@ async function publishFile(
   return { file: filePath, commitSha: result.commit.sha };
 }
 
+async function renameAndPublishFile(
+  oldPath: string,
+  newPath: string,
+  token: string,
+  owner: string,
+  repo: string,
+  title: string,
+  publishDate: string,
+): Promise<PublishResult | null> {
+  const base = `https://api.github.com/repos/${owner}/${repo}/contents`;
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    Accept: 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+    'User-Agent': 'engineer-news',
+  };
+
+  const getRes = await fetch(`${base}/${oldPath}`, { headers });
+  if (!getRes.ok) return null;
+
+  const file = await getRes.json() as GitHubFileResponse;
+  const original = new TextDecoder().decode(
+    Uint8Array.from(atob(file.content.replace(/\n/g, '')), c => c.charCodeAt(0))
+  );
+  const updated = publishDraft(original, publishDate);
+  if (original === updated) return null;
+
+  const putRes = await fetch(`${base}/${newPath}`, {
+    method: 'PUT',
+    headers: { ...headers, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      message: `publish: ${title}`,
+      content: btoa(unescape(encodeURIComponent(updated))),
+    }),
+  });
+  if (!putRes.ok) {
+    const err = await putRes.text();
+    throw new Error(`GitHub create ${putRes.status}: ${err}`);
+  }
+  const result = await putRes.json() as { commit: { sha: string } };
+
+  const delRes = await fetch(`${base}/${oldPath}`, {
+    method: 'DELETE',
+    headers: { ...headers, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: `publish: rename ${title}`, sha: file.sha }),
+  });
+  if (!delRes.ok) {
+    const err = await delRes.text();
+    throw new Error(`GitHub delete ${delRes.status}: ${err}`);
+  }
+
+  return { file: newPath, commitSha: result.commit.sha };
+}
+
 export const POST: APIRoute = async ({ request, locals }) => {
   const env = (locals as { runtime: { env: Env } }).runtime.env;
   const url = new URL(request.url);
@@ -124,16 +178,26 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return Response.json({ error: 'Invalid slug format' }, { status: 400 });
   }
 
-  const slugTitle = slug.split('/').pop() ?? slug;
+  const basename = slug.split('/').pop() ?? '';
+  const hasDraftPrefix = basename.startsWith('_');
+  const cleanSlug = hasDraftPrefix ? slug.replace(/\/_/, '/') : slug;
+  const slugTitle = cleanSlug.split('/').pop() ?? cleanSlug;
+  const publishDate = todayInTaipei();
 
   const published: PublishResult[] = [];
 
-  const zhPath = `src/content/posts/${slug}.md`;
-  const zhResult = await publishFile(zhPath, env.GITHUB_TOKEN, env.GITHUB_OWNER, env.GITHUB_REPO, slugTitle);
+  const zhOldPath = `src/content/posts/${slug}.md`;
+  const zhNewPath = `src/content/posts/${cleanSlug}.md`;
+  const zhResult = hasDraftPrefix
+    ? await renameAndPublishFile(zhOldPath, zhNewPath, env.GITHUB_TOKEN, env.GITHUB_OWNER, env.GITHUB_REPO, slugTitle, publishDate)
+    : await publishFile(zhOldPath, env.GITHUB_TOKEN, env.GITHUB_OWNER, env.GITHUB_REPO, slugTitle);
   if (zhResult) published.push(zhResult);
 
-  const enPath = `src/content/posts/${slug}.en.md`;
-  const enResult = await publishFile(enPath, env.GITHUB_TOKEN, env.GITHUB_OWNER, env.GITHUB_REPO, slugTitle);
+  const enOldPath = `src/content/posts/${slug}.en.md`;
+  const enNewPath = `src/content/posts/${cleanSlug}.en.md`;
+  const enResult = hasDraftPrefix
+    ? await renameAndPublishFile(enOldPath, enNewPath, env.GITHUB_TOKEN, env.GITHUB_OWNER, env.GITHUB_REPO, slugTitle, publishDate)
+    : await publishFile(enOldPath, env.GITHUB_TOKEN, env.GITHUB_OWNER, env.GITHUB_REPO, slugTitle);
   if (enResult) published.push(enResult);
 
   if (published.length === 0) {
