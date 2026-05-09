@@ -37,21 +37,21 @@ const dateStr = post.data.date.toLocaleDateString('en-US', {
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description} jsonLd={jsonLd} layout="article" ogImage={ogImage}>
-  <div class="article-grid">
+  <div class="article-grid" style={`--cat-color: var(--cat-${post.data.category}, var(--cat-default, var(--accent)));`}>
   <article class="article-body">
-    <header style="padding: 32px 0 24px; border-bottom: 0.5px solid var(--separator); margin-bottom: 32px;">
-      <div style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--label-secondary); margin-bottom:12px;">
+    <header class="article-header">
+      <div style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--label-secondary); margin-bottom:12px; flex-wrap:wrap;">
         <time>{dateStr}</time>
         <span style="opacity:0.4;">·</span>
-        <span>{post.data.category}</span>
+        <a href={`/en/categories/${post.data.category}`} class="badge badge-category" data-category={post.data.category}>{post.data.category}</a>
         {post.data.type && <span class="badge badge-type" data-type={post.data.type}>{post.data.type}</span>}
       </div>
 
       <h1 style="margin:0 0 16px;">{post.data.title}</h1>
 
       {post.data.tldr && (
-        <div style="background:var(--glass); border:0.5px solid var(--separator); border-left: 3px solid var(--accent); border-radius:var(--radius-md); padding:14px 18px; margin-top:16px;">
-          <p style="font-size:12px; font-weight:600; color:var(--accent); margin:0 0 4px; text-transform:uppercase; letter-spacing:0.05em;">{t('post.tldr')}</p>
+        <div class="article-tldr">
+          <p style="font-size:12px; font-weight:600; color:var(--cat-color); margin:0 0 4px; text-transform:uppercase; letter-spacing:0.05em;">{t('post.tldr')}</p>
           <p style="margin:0; font-size:15px; color:var(--label-secondary); line-height:1.55;">{post.data.tldr}</p>
         </div>
       )}
@@ -114,6 +114,21 @@ const dateStr = post.data.date.toLocaleDateString('en-US', {
   .article-body {
     max-width: 720px;
     margin: 0 auto;
+  }
+
+  .article-header {
+    padding: 32px 0 24px;
+    border-bottom: 0.5px solid color-mix(in srgb, var(--cat-color) 28%, var(--separator));
+    margin-bottom: 32px;
+  }
+
+  .article-tldr {
+    background: color-mix(in srgb, var(--cat-color) 8%, var(--glass));
+    border: 0.5px solid color-mix(in srgb, var(--cat-color) 25%, var(--separator));
+    border-left: 3px solid var(--cat-color);
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    margin-top: 16px;
   }
 
   @media (min-width: 1024px) {

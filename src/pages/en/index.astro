@@ -12,15 +12,36 @@ allPosts.sort((a, b) => {
   if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
   return b.data.date.valueOf() - a.data.date.valueOf();
 });
+const featuredPost = allPosts[0];
+const feedPosts = allPosts.slice(1);
+const categoryCounts = allPosts.reduce<Record<string, number>>((acc, post) => {
+  acc[post.data.category] = (acc[post.data.category] ?? 0) + 1;
+  return acc;
+}, {});
+const topics = [
+  { key: 'tech', title: 'Tech', desc: 'Engineering practice, architecture, tooling, and debugging notes.' },
+  { key: 'learning', title: 'Learning', desc: 'AI, courses, knowledge work, and conceptual breakdowns.' },
+  { key: 'product', title: 'Product', desc: 'Product design, UX, strategy, and side project thinking.' },
+  { key: 'creative', title: 'Creative', desc: 'Film, design, travel, coffee, and creative references.' },
+  { key: 'career', title: 'Career', desc: 'Career decisions, collaboration, work style, and reflection.' },
+  { key: 'life', title: 'Life', desc: 'Personal notes and low-frequency observations.' },
+].filter(topic => categoryCounts[topic.key]);
 ---
 
 <BaseLayout title={t('nav.home')}>
-  <section style="padding-top: 40px;">
-    <p style="font-size:15px; color:var(--label-secondary); margin:0 0 32px; line-height:1.6;">
-      {t('site.tagline')}
-    </p>
+  <section class="home-hero">
+    <p class="eyebrow">Engineering Notes</p>
+    <h1>Engineering conversations turned into a usable knowledge base</h1>
+    <p class="hero-copy">{t('site.tagline')}</p>
+    <div class="hero-actions">
+      <a href="/en/categories" class="hero-link primary">Browse topics</a>
+      <a href="/search" class="hero-link">Search posts</a>
+    </div>
+  </section>
 
+  <section class="home-search">
     <Search client:load />
+  </section>
 
     {allPosts.length === 0 ? (
       <div style="border: 0.5px dashed var(--separator); padding: 40px; text-align: center; border-radius: var(--radius-lg); color: var(--label-secondary);">
@@ -28,29 +49,59 @@ allPosts.sort((a, b) => {
       </div>
     ) : (
       <div class="feed-section">
-        <PostCard
-          id={allPosts[0].id}
-          title={allPosts[0].data.title}
-          date={allPosts[0].data.date}
-          category={allPosts[0].data.category}
-          tags={allPosts[0].data.tags}
-          description={allPosts[0].data.description}
-          tldr={allPosts[0].data.tldr}
-          type={allPosts[0].data.type}
-          pinned={allPosts[0].data.pinned}
-          readingTime={allPosts[0].data.readingTime}
-          github={allPosts[0].data.github}
-          url={allPosts[0].data.url}
-          lang="en"
-          featured={true}
-        />
+        {featuredPost && (
+          <section>
+            <div class="section-head">
+              <p class="section-kicker">Featured</p>
+              <a href="/en/categories" class="section-link">All topics →</a>
+            </div>
+            <PostCard
+              id={featuredPost.id}
+              title={featuredPost.data.title}
+              date={featuredPost.data.date}
+              category={featuredPost.data.category}
+              tags={featuredPost.data.tags}
+              description={featuredPost.data.description}
+              tldr={featuredPost.data.tldr}
+              type={featuredPost.data.type}
+              pinned={featuredPost.data.pinned}
+              readingTime={featuredPost.data.readingTime}
+              github={featuredPost.data.github}
+              url={featuredPost.data.url}
+              lang="en"
+              featured={true}
+            />
+          </section>
+        )}
 
-        {allPosts.length > 1 && (
+        {topics.length > 0 && (
+          <section>
+            <div class="section-head">
+              <p class="section-kicker">Topics</p>
+              <a href="/en/categories" class="section-link">Explore all →</a>
+            </div>
+            <div class="topic-grid">
+              {topics.map((topic) => (
+                <a
+                  class="topic-card"
+                  href={`/en/categories/${topic.key}`}
+                  style={`--cat-color: var(--cat-${topic.key}, var(--cat-default, var(--accent)));`}
+                >
+                  <span class="topic-count">{categoryCounts[topic.key]}</span>
+                  <h2>{topic.title}</h2>
+                  <p>{topic.desc}</p>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {feedPosts.length > 0 && (
           <p class="feed-divider">Latest</p>
         )}
 
         <div class="feed">
-          {allPosts.slice(1).map((post) => (
+          {feedPosts.map((post) => (
             <PostCard
               id={post.id}
               title={post.data.title}
@@ -70,14 +121,124 @@ allPosts.sort((a, b) => {
         </div>
       </div>
     )}
-  </section>
 </BaseLayout>
 
 <style>
+  .home-hero { padding: 56px 0 28px; }
+  .eyebrow,
+  .section-kicker {
+    color: var(--heading-accent);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+  }
+  .home-hero h1 {
+    max-width: 760px;
+    margin: 0 0 16px;
+    font-size: clamp(32px, 7vw, 56px);
+    line-height: 1.05;
+  }
+  .hero-copy {
+    max-width: 620px;
+    font-size: 16px;
+    color: var(--label-secondary);
+    margin: 0;
+    line-height: 1.75;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+  }
+  .hero-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 0 15px;
+    border-radius: var(--radius-sm);
+    border: 0.5px solid var(--separator);
+    color: var(--label);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    background: var(--bg-secondary);
+  }
+  .hero-link.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .home-search { margin: 4px 0 28px; }
   .feed-section {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 28px;
+  }
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+  .section-head .section-kicker { margin: 0; }
+  .section-link {
+    color: var(--label-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 650;
+  }
+  .section-link:hover { color: var(--accent); }
+  .topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 10px;
+  }
+  .topic-card {
+    --cat-color: var(--accent);
+    display: block;
+    min-height: 148px;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    border: 0.5px solid color-mix(in srgb, var(--cat-color) 24%, var(--separator));
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--cat-color) 8%, transparent), transparent 80%),
+      var(--bg-secondary);
+    color: var(--label);
+    text-decoration: none;
+  }
+  .topic-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: color-mix(in srgb, var(--cat-color) 54%, var(--separator));
+  }
+  .topic-card h2 {
+    margin: 18px 0 8px;
+    color: var(--label);
+    font-size: 18px;
+  }
+  .topic-card p {
+    margin: 0;
+    color: var(--label-secondary);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .topic-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 24px;
+    padding: 0 8px;
+    border-radius: var(--radius-full);
+    background: color-mix(in srgb, var(--cat-color) 14%, transparent);
+    border: 0.5px solid color-mix(in srgb, var(--cat-color) 34%, transparent);
+    color: var(--cat-color);
+    font-size: 12px;
+    font-weight: 800;
   }
   .feed-divider {
     font-size: 11px;

@@ -4,6 +4,15 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 
 const posts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'en');
 
+const topicMeta: Record<string, { title: string; desc: string }> = {
+  tech: { title: 'Tech', desc: 'Engineering practice, architecture, tooling, and debugging notes.' },
+  product: { title: 'Product', desc: 'Product design, UX, strategy, and side project thinking.' },
+  learning: { title: 'Learning', desc: 'AI, courses, knowledge work, and conceptual breakdowns.' },
+  creative: { title: 'Creative', desc: 'Film, design, travel, coffee, and creative references.' },
+  career: { title: 'Career', desc: 'Career decisions, collaboration, work style, and reflection.' },
+  life: { title: 'Life', desc: 'Personal notes and low-frequency observations.' },
+};
+
 const categoryMap = posts.reduce<Record<string, number>>((acc, post) => {
   acc[post.data.category] = (acc[post.data.category] ?? 0) + 1;
   return acc;
@@ -12,25 +21,93 @@ const categoryMap = posts.reduce<Record<string, number>>((acc, post) => {
 const categories = Object.entries(categoryMap).sort((a, b) => b[1] - a[1]);
 ---
 
-<BaseLayout title="Categories">
-  <section style="padding-top: 32px;">
-    <h1 style="margin-bottom: 4px;">Categories</h1>
-    <p style="color:var(--label-secondary); font-size:15px; margin:0 0 32px;">{categories.length} categories</p>
+<BaseLayout title="Topics">
+  <section class="topics-hero">
+    <p class="eyebrow">Topics</p>
+    <h1>Topic Index</h1>
+    <p>Browse the knowledge base by topic instead of by time. Each topic groups writing around a durable area of engineering, product, learning, and creative work.</p>
+  </section>
 
-    <div style="display:flex; flex-wrap:wrap; gap:12px;">
-      {categories.map(([cat, count]) => (
+  <section class="topic-grid">
+    {categories.map(([cat, count]) => {
+      const meta = topicMeta[cat] ?? { title: cat, desc: 'Related posts and notes.' };
+      return (
         <a
           href={`/en/categories/${cat}`}
-          style="display:flex; align-items:center; gap:10px; padding:14px 20px; background:var(--bg-secondary); border:0.5px solid var(--separator); border-radius:12px; text-decoration:none; transition:border-color 0.15s;"
-          onmouseover="this.style.borderColor='var(--accent)'"
-          onmouseout="this.style.borderColor='var(--separator)'"
+          class="topic-card"
+          style={`--cat-color: var(--cat-${cat}, var(--cat-default, var(--accent)));`}
         >
-          <span style="font-size:16px; font-weight:600; color:var(--label);">{cat}</span>
-          <span style="font-size:12px; font-weight:600; color:var(--accent); background:color-mix(in srgb,var(--accent) 12%,transparent); padding:2px 8px; border-radius:999px;">
-            {count}
-          </span>
+          <span class="topic-count">{count}</span>
+          <h2>{meta.title}</h2>
+          <p>{meta.desc}</p>
         </a>
-      ))}
-    </div>
+      );
+    })}
   </section>
 </BaseLayout>
+
+<style>
+  .topics-hero { padding: 44px 0 24px; }
+  .eyebrow {
+    color: var(--heading-accent);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+  }
+  .topics-hero h1 {
+    margin: 0 0 12px;
+    font-size: clamp(32px, 7vw, 52px);
+  }
+  .topics-hero p {
+    max-width: 680px;
+    color: var(--label-secondary);
+    line-height: 1.75;
+    margin: 0;
+  }
+  .topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .topic-card {
+    --cat-color: var(--accent);
+    display: block;
+    min-height: 172px;
+    padding: 18px;
+    border-radius: var(--radius-md);
+    border: 0.5px solid color-mix(in srgb, var(--cat-color) 24%, var(--separator));
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--cat-color) 9%, transparent), transparent 78%),
+      var(--bg-secondary);
+    color: var(--label);
+    text-decoration: none;
+  }
+  .topic-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: color-mix(in srgb, var(--cat-color) 54%, var(--separator));
+  }
+  .topic-card h2 { margin: 22px 0 8px; font-size: 20px; }
+  .topic-card p {
+    margin: 0;
+    color: var(--label-secondary);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .topic-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 26px;
+    padding: 0 9px;
+    border-radius: var(--radius-full);
+    background: color-mix(in srgb, var(--cat-color) 14%, transparent);
+    border: 0.5px solid color-mix(in srgb, var(--cat-color) 34%, transparent);
+    color: var(--cat-color);
+    font-size: 12px;
+    font-weight: 800;
+  }
+</style>

@@ -32,6 +32,16 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
       --red: #c2410c;
       --red-soft: #fff4ed;
       --shadow: 0 18px 44px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.06);
+      --focus-bg: #0b1020;
+      --focus-shell: #111827;
+      --focus-panel: #162033;
+      --focus-panel-soft: #1e293b;
+      --focus-line: rgba(148, 163, 184, 0.22);
+      --focus-text: #e5e7eb;
+      --focus-muted: #94a3b8;
+      --focus-accent: #60a5fa;
+      --focus-green: #22c55e;
+      --focus-warn: #fbbf24;
       --mono: 'SF Mono', 'Fira Code', ui-monospace, Menlo, Consolas, monospace;
       --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC', sans-serif;
     }
@@ -113,6 +123,12 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
       color: #475467;
     }
     .tag-cat { background: var(--accent-soft); border-color: #bfdbfe; color: #1d4ed8; }
+    .tag-cat[data-category="tech"] { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+    .tag-cat[data-category="product"] { background: #f5f3ff; border-color: #ddd6fe; color: #6d28d9; }
+    .tag-cat[data-category="learning"] { background: #fffbeb; border-color: #fde68a; color: #b45309; }
+    .tag-cat[data-category="career"] { background: #ecfdf3; border-color: #bbf7d0; color: #15803d; }
+    .tag-cat[data-category="life"] { background: #f0fdfa; border-color: #99f6e4; color: #0f766e; }
+    .tag-cat[data-category="creative"] { background: #fff1f2; border-color: #fecdd3; color: #be123c; }
     .card-links { font-size: 13px; }
     .card-links a { color: var(--accent); text-decoration: none; font-weight: 700; }
     .card-links a:hover { text-decoration: underline; }
@@ -222,12 +238,21 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
     .preview-pane img { max-width: 100%; }
 
     /* ── Fullscreen overlay ── */
-    #fs-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: #f8fafc; flex-direction: column; color: var(--text); }
+    #fs-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: var(--focus-bg); flex-direction: column; color: var(--focus-text); }
     #fs-overlay.open { display: flex; }
-    .fs-header { display: flex; align-items: center; gap: 14px; padding: 12px 18px; border-bottom: 1px solid var(--line); background: #fff; flex-shrink: 0; }
+    .fs-header { display: flex; align-items: center; gap: 14px; padding: 12px 18px; border-bottom: 1px solid var(--focus-line); background: rgba(17,24,39,0.96); flex-shrink: 0; box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
     .fs-titlebar { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
     .fs-titlebar .form-group { flex: 1; min-width: 180px; }
-    .fs-header input[name=title] { flex: 1; font-size: 15px; font-weight: 700; }
+    .fs-header .form-group label { color: var(--focus-muted) !important; }
+    .fs-header input[name=title] {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 750;
+      background: var(--focus-panel);
+      border-color: var(--focus-line);
+      color: var(--focus-text);
+    }
+    .fs-header input[name=title]:focus { border-color: var(--focus-accent); box-shadow: 0 0 0 3px rgba(96,165,250,0.18); }
     .fs-status {
       display: inline-flex;
       align-items: center;
@@ -235,47 +260,75 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
       justify-content: center;
       height: 30px;
       border-radius: 999px;
-      border: 1px solid var(--line);
-      background: var(--surface-subtle);
-      color: var(--muted);
+      border: 1px solid var(--focus-line);
+      background: var(--focus-panel);
+      color: var(--focus-muted);
       font-size: 12px;
       font-weight: 800;
       white-space: nowrap;
     }
-    .fs-status.dirty { background: #fffbeb; border-color: #fde68a; color: #a16207; }
-    .fs-status.saving { background: var(--accent-soft); border-color: #bfdbfe; color: #1d4ed8; }
-    .fs-status.saved { background: var(--green-soft); border-color: #bbf7d0; color: var(--green); }
+    .fs-status.dirty { background: rgba(251,191,36,0.14); border-color: rgba(251,191,36,0.38); color: var(--focus-warn); }
+    .fs-status.saving { background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.42); color: var(--focus-accent); }
+    .fs-status.saved { background: rgba(34,197,94,0.14); border-color: rgba(34,197,94,0.36); color: var(--focus-green); }
     .fs-meta-toggle {
-      background: #fff;
-      border: 1px solid var(--line);
+      background: var(--focus-panel);
+      border: 1px solid var(--focus-line);
       border-radius: 8px;
-      color: #475467;
+      color: var(--focus-muted);
       cursor: pointer;
       font-size: 13px;
       font-weight: 800;
       padding: 7px 11px;
     }
-    .fs-meta-toggle:hover { background: var(--surface-subtle); }
-    .btn-fs-close { background: #fff; border: 1px solid var(--line); border-radius: 8px; font-size: 16px; cursor: pointer; color: #475467; padding: 4px 12px; line-height: 1.6; }
-    .btn-fs-close:hover { background: var(--surface-subtle); }
-    .fs-meta { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--line); background: #fff; flex-shrink: 0; }
+    .fs-meta-toggle:hover { background: var(--focus-panel-soft); color: var(--focus-text); }
+    .btn-fs-close { background: var(--focus-panel); border: 1px solid var(--focus-line); border-radius: 8px; font-size: 16px; cursor: pointer; color: var(--focus-muted); padding: 4px 12px; line-height: 1.6; }
+    .btn-fs-close:hover { background: var(--focus-panel-soft); color: var(--focus-text); }
+    .fs-meta { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--focus-line); background: var(--focus-shell); flex-shrink: 0; }
     .fs-meta.collapsed { display: none; }
-    .fs-tabs { display: none; background: #fff; border-bottom: 1px solid var(--line); padding: 8px 12px; gap: 8px; }
+    .fs-meta .form-group label { color: var(--focus-muted); }
+    .fs-meta input, .fs-meta select {
+      background: var(--focus-panel);
+      border-color: var(--focus-line);
+      color: var(--focus-text);
+    }
+    .fs-meta input:focus, .fs-meta select:focus { border-color: var(--focus-accent); box-shadow: 0 0 0 3px rgba(96,165,250,0.18); }
+    .fs-tabs { display: none; background: var(--focus-shell); border-bottom: 1px solid var(--focus-line); padding: 8px 12px; gap: 8px; }
     .fs-tab {
       flex: 1;
-      border: 1px solid var(--line);
-      background: #fff;
-      color: var(--muted);
+      border: 1px solid var(--focus-line);
+      background: var(--focus-panel);
+      color: var(--focus-muted);
       border-radius: 8px;
       padding: 8px 10px;
       font-size: 13px;
       font-weight: 800;
       cursor: pointer;
     }
-    .fs-tab.active { background: var(--accent-soft); border-color: #bfdbfe; color: #1d4ed8; }
-    .fs-editor { display: grid; grid-template-columns: 1fr 1fr; flex: 1; min-height: 0; }
-    .fs-editor textarea { border: none; border-right: 1px solid #1f2937; resize: none; padding: 20px 22px; font-family: var(--mono); font-size: 13px; line-height: 1.75; outline: none; height: 100%; background: #0f172a; color: #e5eefb; }
-    .fs-preview { padding: 24px 30px; overflow-y: auto; font-size: 15px; line-height: 1.78; background: #fff; color: #1f2937; }
+    .fs-tab.active { background: rgba(96,165,250,0.16); border-color: rgba(96,165,250,0.42); color: #bfdbfe; }
+    .fs-editor { display: grid; grid-template-columns: minmax(420px, 0.98fr) minmax(420px, 1.02fr); flex: 1; min-height: 0; background: var(--focus-bg); }
+    .fs-editor textarea {
+      border: none;
+      border-right: 1px solid var(--focus-line);
+      resize: none;
+      padding: 26px 28px;
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1.82;
+      outline: none;
+      height: 100%;
+      background: #0b1220;
+      color: #dbeafe;
+      caret-color: #93c5fd;
+    }
+    .fs-preview {
+      padding: 30px 38px;
+      overflow-y: auto;
+      font-size: 16px;
+      line-height: 1.82;
+      background: #f8fafc;
+      color: #1f2937;
+      border-left: 1px solid rgba(255,255,255,0.05);
+    }
     .fs-preview h1,.fs-preview h2,.fs-preview h3 { font-weight: 800; line-height: 1.28; margin: 1em 0 0.4em; color: #111827; }
     .fs-preview h1 { font-size: 1.4em; } .fs-preview h2 { font-size: 1.2em; } .fs-preview h3 { font-size: 1.05em; }
     .fs-preview p { margin: 0 0 0.7em; }
@@ -286,7 +339,10 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
     .fs-preview blockquote { border-left: 3px solid #cbd5e1; padding-left: 1em; color: #64748b; margin: 0 0 0.7em; }
     .fs-preview a { color: var(--accent); } .fs-preview hr { border: none; border-top: 1px solid var(--line-soft); margin: 1em 0; }
     .fs-preview img { max-width: 100%; }
-    .fs-footer { display: flex; gap: 10px; justify-content: flex-end; padding: 12px 18px; border-top: 1px solid var(--line); background: #fff; flex-shrink: 0; }
+    .fs-footer { display: flex; gap: 10px; justify-content: flex-end; padding: 12px 18px; border-top: 1px solid var(--focus-line); background: rgba(17,24,39,0.96); flex-shrink: 0; }
+    .fs-footer .btn-edit { background: var(--focus-panel); border-color: var(--focus-line); color: var(--focus-muted); }
+    .fs-footer .btn-save { background: var(--focus-green); box-shadow: 0 8px 18px rgba(34,197,94,0.18); }
+    .fs-footer .btn-publish { background: var(--focus-accent); box-shadow: 0 8px 18px rgba(96,165,250,0.18); color: #07101f; }
     .btn-fs-trigger { background: #fff; border: 1px solid var(--line); border-radius: 6px; cursor: pointer; font-size: 12px; color: #475467; padding: 2px 7px; line-height: 1.4; vertical-align: middle; margin-left: 6px; }
     .btn-fs-trigger:hover { background: var(--surface-subtle); color: var(--text); }
 
@@ -346,7 +402,7 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
               <div class="card-title">{post.data.title}</div>
               {post.data.tldr && <p class="card-tldr">{post.data.tldr}</p>}
               <div class="card-tags">
-                <span class="tag tag-cat">{post.data.category}</span>
+                <span class="tag tag-cat" data-category={post.data.category}>{post.data.category}</span>
                 {post.data.tags.map(tag => <span class="tag">{tag}</span>)}
               </div>
               {post.data.original_url && (
@@ -459,6 +515,7 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
       <div class="fs-preview" id="fs-preview"></div>
     </div>
     <div class="fs-footer">
+      <button type="button" class="btn btn-edit" id="fs-btn-exit">回到列表</button>
       <button type="button" class="btn btn-save" id="fs-btn-save">儲存草稿</button>
       <button type="button" class="btn btn-publish" id="fs-btn-publish">發布</button>
     </div>
@@ -648,6 +705,7 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
     });
 
     document.getElementById('fs-close-btn').addEventListener('click', closeFullscreen);
+    document.getElementById('fs-btn-exit').addEventListener('click', closeFullscreen);
     document.getElementById('fs-meta-toggle').addEventListener('click', () => {
       fsMeta.classList.toggle('collapsed');
     });

@@ -19,18 +19,51 @@ export async function getStaticPaths() {
 
 const { category } = Astro.params;
 const { posts } = Astro.props;
+const topicMeta: Record<string, string> = {
+  tech: 'Engineering practice, architecture, tooling, and debugging notes.',
+  product: 'Product design, UX, strategy, and side project thinking.',
+  learning: 'AI, courses, knowledge work, and conceptual breakdowns.',
+  creative: 'Film, design, travel, coffee, and creative references.',
+  career: 'Career decisions, collaboration, work style, and reflection.',
+  life: 'Personal notes and low-frequency observations.',
+};
+const featured = posts[0];
+const rest = posts.slice(1);
 ---
 
 <BaseLayout title={`Category: ${category}`}>
-  <section style="padding-top: 32px;">
-    <a href="/en/categories" style="font-size:13px; color:var(--label-secondary); text-decoration:none; margin-bottom:16px; display:inline-block;">
+  <section class="topic-page" style={`--cat-color: var(--cat-${category}, var(--cat-default, var(--accent)));`}>
+    <a href="/en/categories" class="back-link">
       ← All Categories
     </a>
-    <h1 style="margin-bottom: 4px;">{category}</h1>
-    <p style="color:var(--label-secondary); font-size:15px; margin:0 0 24px;">{posts.length} posts</p>
+    <div class="topic-hero">
+      <span class="badge badge-category" data-category={category}>{category}</span>
+      <h1>{category}</h1>
+      <p>{topicMeta[category] ?? 'Related posts and notes.'}</p>
+      <span class="topic-stat">{posts.length} posts</span>
+    </div>
+
+    {featured && (
+      <section class="featured">
+        <p class="section-label">Featured</p>
+        <PostCard
+          id={featured.id}
+          title={featured.data.title}
+          date={featured.data.date}
+          category={featured.data.category}
+          tags={featured.data.tags}
+          description={featured.data.description}
+          tldr={featured.data.tldr}
+          type={featured.data.type}
+          readingTime={featured.data.readingTime}
+          lang="en"
+          featured={true}
+        />
+      </section>
+    )}
 
     <div class="feed">
-      {posts.map((post) => (
+      {rest.map((post) => (
         <PostCard
           id={post.id}
           title={post.data.title}
@@ -47,3 +80,51 @@ const { posts } = Astro.props;
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .topic-page { padding-top: 32px; }
+  .back-link {
+    font-size: 13px;
+    color: var(--label-secondary);
+    text-decoration: none;
+    margin-bottom: 18px;
+    display: inline-block;
+  }
+  .back-link:hover { color: var(--cat-color); }
+  .topic-hero {
+    padding: 24px 0 28px;
+    border-bottom: 0.5px solid color-mix(in srgb, var(--cat-color) 28%, var(--separator));
+    margin-bottom: 24px;
+  }
+  .topic-hero h1 {
+    margin: 12px 0 10px;
+    font-size: clamp(32px, 7vw, 52px);
+  }
+  .topic-hero p {
+    max-width: 660px;
+    margin: 0;
+    color: var(--label-secondary);
+    line-height: 1.75;
+  }
+  .topic-stat {
+    display: inline-flex;
+    margin-top: 16px;
+    color: var(--cat-color);
+    font-size: 13px;
+    font-weight: 800;
+  }
+  .featured { margin-bottom: 24px; }
+  .section-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--label-tertiary);
+    margin: 0 0 10px;
+  }
+  .feed {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+</style>

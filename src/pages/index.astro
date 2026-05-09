@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/PostCard.astro';
+import Search from '../components/Search';
 import { useTranslations } from '../i18n/utils';
 
 const t = useTranslations('zh-TW');
@@ -11,13 +12,37 @@ const byDateDesc = (a: typeof allPosts[0], b: typeof allPosts[0]) =>
   b.data.date.valueOf() - a.data.date.valueOf();
 const pinnedPosts = allPosts.filter(p => p.data.pinned).sort(byDateDesc);
 const latestPosts = allPosts.filter(p => !p.data.pinned).sort(byDateDesc);
+const featuredPost = pinnedPosts[0] ?? latestPosts[0];
+const secondaryPinned = pinnedPosts.filter(p => p.id !== featuredPost?.id);
+const feedPosts = latestPosts.filter(p => p.id !== featuredPost?.id);
+const categoryCounts = allPosts.reduce<Record<string, number>>((acc, post) => {
+  acc[post.data.category] = (acc[post.data.category] ?? 0) + 1;
+  return acc;
+}, {});
+const topics = [
+  { key: 'tech', title: 'Tech', desc: '工程實作、架構設計、工具與踩坑紀錄。' },
+  { key: 'learning', title: 'Learning', desc: 'AI、知識整理、課程與概念拆解。' },
+  { key: 'product', title: 'Product', desc: '產品設計、UX、功能策略與 side project。' },
+  { key: 'creative', title: 'Creative', desc: '影像、設計、旅行與生活靈感。' },
+  { key: 'career', title: 'Career', desc: '職涯、工作方式與個人反思。' },
+  { key: 'life', title: 'Life', desc: '日常紀錄與低頻但重要的觀察。' },
+].filter(topic => categoryCounts[topic.key]);
 ---
 
 <BaseLayout title={t('nav.home')}>
-  <section style="padding-top: 40px;">
-    <p style="font-size:15px; color:var(--label-secondary); margin:0 0 32px; line-height:1.7;">
-      {t('site.tagline')}
-    </p>
+  <section class="home-hero">
+    <p class="eyebrow">Engineering Notes</p>
+    <h1>把工程對話整理成可以回頭使用的知識庫</h1>
+    <p class="hero-copy">{t('site.tagline')}</p>
+    <div class="hero-actions">
+      <a href="/categories" class="hero-link primary">瀏覽主題</a>
+      <a href="/search" class="hero-link">搜尋文章</a>
+    </div>
+  </section>
+
+  <section class="home-search">
+    <Search client:load />
+  </section>
 
     {pinnedPosts.length === 0 && latestPosts.length === 0 ? (
       <div style="border: 0.5px dashed var(--separator); padding: 48px; text-align: center; border-radius: var(--radius-lg); color: var(--label-secondary);">
@@ -25,9 +50,59 @@ const latestPosts = allPosts.filter(p => !p.data.pinned).sort(byDateDesc);
       </div>
     ) : (
       <div class="feed-section">
-        {pinnedPosts.length > 0 && (
-          <div class="feed">
-            {pinnedPosts.map((post, i) => (
+        {featuredPost && (
+          <section>
+            <div class="section-head">
+              <p class="section-kicker">Featured</p>
+              <a href="/categories" class="section-link">所有主題 →</a>
+            </div>
+            <PostCard
+              id={featuredPost.id}
+              title={featuredPost.data.title}
+              date={featuredPost.data.date}
+              category={featuredPost.data.category}
+              tags={featuredPost.data.tags}
+              description={featuredPost.data.description}
+              tldr={featuredPost.data.tldr}
+              type={featuredPost.data.type}
+              pinned={featuredPost.data.pinned}
+              readingTime={featuredPost.data.readingTime}
+              github={featuredPost.data.github}
+              url={featuredPost.data.url}
+              lang="zh-TW"
+              featured={true}
+            />
+          </section>
+        )}
+
+        {topics.length > 0 && (
+          <section class="topics-section">
+            <div class="section-head">
+              <p class="section-kicker">Topics</p>
+              <a href="/categories" class="section-link">展開全部 →</a>
+            </div>
+            <div class="topic-grid">
+              {topics.map((topic) => (
+                <a
+                  class="topic-card"
+                  href={`/categories/${topic.key}`}
+                  data-category={topic.key}
+                  style={`--cat-color: var(--cat-${topic.key}, var(--cat-default, var(--accent)));`}
+                >
+                  <span class="topic-count">{categoryCounts[topic.key]}</span>
+                  <h2>{topic.title}</h2>
+                  <p>{topic.desc}</p>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {secondaryPinned.length > 0 && (
+          <section>
+            <p class="feed-divider">置頂文章</p>
+            <div class="feed">
+            {secondaryPinned.map((post) => (
               <PostCard
                 id={post.id}
                 title={post.data.title}
@@ -42,17 +117,17 @@ const latestPosts = allPosts.filter(p => !p.data.pinned).sort(byDateDesc);
                 github={post.data.github}
                 url={post.data.url}
                 lang="zh-TW"
-                featured={i === 0}
               />
             ))}
           </div>
+          </section>
         )}
 
-        {latestPosts.length > 0 && (
-          <>
+        {feedPosts.length > 0 && (
+          <section>
             <p class="feed-divider">最新文章</p>
             <div class="feed">
-              {latestPosts.map((post) => (
+              {feedPosts.map((post) => (
                 <PostCard
                   id={post.id}
                   title={post.data.title}
@@ -70,18 +145,134 @@ const latestPosts = allPosts.filter(p => !p.data.pinned).sort(byDateDesc);
                 />
               ))}
             </div>
-          </>
+          </section>
         )}
       </div>
     )}
-  </section>
 </BaseLayout>
 
 <style>
+  .home-hero {
+    padding: 56px 0 28px;
+  }
+  .eyebrow,
+  .section-kicker {
+    color: var(--heading-accent);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+  }
+  .home-hero h1 {
+    max-width: 760px;
+    margin: 0 0 16px;
+    font-size: clamp(32px, 7vw, 56px);
+    line-height: 1.05;
+  }
+  .hero-copy {
+    max-width: 620px;
+    font-size: 16px;
+    color: var(--label-secondary);
+    margin: 0;
+    line-height: 1.75;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+  }
+  .hero-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 0 15px;
+    border-radius: var(--radius-sm);
+    border: 0.5px solid var(--separator);
+    color: var(--label);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    background: var(--bg-secondary);
+  }
+  .hero-link.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .home-search {
+    margin: 4px 0 28px;
+  }
   .feed-section {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 28px;
+  }
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+  .section-head .section-kicker { margin: 0; }
+  .section-link {
+    color: var(--label-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 650;
+  }
+  .section-link:hover { color: var(--accent); }
+  .topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 10px;
+  }
+  .topic-card {
+    --cat-color: var(--accent);
+    display: block;
+    min-height: 148px;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    border: 0.5px solid color-mix(in srgb, var(--cat-color) 24%, var(--separator));
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--cat-color) 8%, transparent), transparent 80%),
+      var(--bg-secondary);
+    color: var(--label);
+    text-decoration: none;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  }
+  .topic-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: color-mix(in srgb, var(--cat-color) 54%, var(--separator));
+  }
+  .topic-card h2 {
+    margin: 18px 0 8px;
+    color: var(--label);
+    font-size: 18px;
+  }
+  .topic-card p {
+    margin: 0;
+    color: var(--label-secondary);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .topic-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 24px;
+    padding: 0 8px;
+    border-radius: var(--radius-full);
+    background: color-mix(in srgb, var(--cat-color) 14%, transparent);
+    border: 0.5px solid color-mix(in srgb, var(--cat-color) 34%, transparent);
+    color: var(--cat-color);
+    font-size: 12px;
+    font-weight: 800;
   }
   .feed-divider {
     font-size: 11px;

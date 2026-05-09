@@ -24,15 +24,29 @@ const { category } = Astro.params;
 const { posts } = Astro.props;
 
 const types = [...new Set(posts.flatMap((p) => p.data.type ? [p.data.type] : []))];
+const topicMeta: Record<string, string> = {
+  tech: '工程實作、架構設計、工具介紹與踩坑紀錄。',
+  product: '產品設計、UX、功能策略與 side project 思考。',
+  learning: 'AI、教育、課程、知識整理與概念拆解。',
+  creative: '電影、動漫、設計、咖啡、旅遊與生活靈感。',
+  career: '職涯選擇、工作方式、溝通與個人反思。',
+  life: '日常紀錄、狀態整理與低頻但重要的觀察。',
+};
+const featured = posts[0];
+const rest = posts.slice(1);
 ---
 
 <BaseLayout title={`分類：${category}`}>
-  <section style="padding-top: 32px;">
-    <a href="/categories" style="font-size:13px; color:var(--label-secondary); text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:16px;">
+  <section class="topic-page" style={`--cat-color: var(--cat-${category}, var(--cat-default, var(--accent)));`}>
+    <a href="/categories" class="back-link">
       ← 所有分類
     </a>
-    <h1 style="margin-bottom: 4px;">{category}</h1>
-    <p style="color:var(--label-secondary); font-size:15px; margin:0 0 24px;">{posts.length} 篇文章</p>
+    <div class="topic-hero">
+      <span class="badge badge-category" data-category={category}>{category}</span>
+      <h1>{category}</h1>
+      <p>{topicMeta[category] ?? '相關文章與作品整理。'}</p>
+      <span class="topic-stat">{posts.length} 篇文章</span>
+    </div>
 
     {types.length > 0 && (
       <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px;" id="type-filters">
@@ -51,8 +65,27 @@ const types = [...new Set(posts.flatMap((p) => p.data.type ? [p.data.type] : [])
       </div>
     )}
 
+    {featured && (
+      <section class="featured">
+        <p class="section-label">代表文章</p>
+        <PostCard
+          id={featured.id}
+          title={featured.data.title}
+          date={featured.data.date}
+          category={featured.data.category}
+          tags={featured.data.tags}
+          description={featured.data.description}
+          tldr={featured.data.tldr}
+          type={featured.data.type}
+          readingTime={featured.data.readingTime}
+          lang="zh-TW"
+          featured={true}
+        />
+      </section>
+    )}
+
     <div class="feed" id="posts-feed">
-      {posts.map((post) => (
+      {rest.map((post) => (
         <div data-type={post.data.type ?? 'none'} class="post-item">
           <PostCard
             id={post.id}
@@ -85,9 +118,60 @@ const types = [...new Set(posts.flatMap((p) => p.data.type ? [p.data.type] : [])
     transition: all 0.15s;
   }
   .type-btn:hover, .type-btn.active {
-    background: var(--accent);
-    border-color: var(--accent);
+    background: var(--cat-color);
+    border-color: var(--cat-color);
     color: #fff;
+  }
+  .topic-page {
+    padding-top: 32px;
+  }
+  .back-link {
+    font-size: 13px;
+    color: var(--label-secondary);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 18px;
+  }
+  .back-link:hover { color: var(--cat-color); }
+  .topic-hero {
+    padding: 24px 0 28px;
+    border-bottom: 0.5px solid color-mix(in srgb, var(--cat-color) 28%, var(--separator));
+    margin-bottom: 24px;
+  }
+  .topic-hero h1 {
+    margin: 12px 0 10px;
+    font-size: clamp(32px, 7vw, 52px);
+  }
+  .topic-hero p {
+    max-width: 660px;
+    margin: 0;
+    color: var(--label-secondary);
+    line-height: 1.75;
+  }
+  .topic-stat {
+    display: inline-flex;
+    margin-top: 16px;
+    color: var(--cat-color);
+    font-size: 13px;
+    font-weight: 800;
+  }
+  .featured {
+    margin-bottom: 24px;
+  }
+  .section-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--label-tertiary);
+    margin: 0 0 10px;
+  }
+  .feed {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 </style>
 

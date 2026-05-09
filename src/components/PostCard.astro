@@ -38,11 +38,15 @@ const dateStr = date?.toLocaleDateString(isEn ? 'en-US' : 'zh-TW', {
 const excerpt = tldr || description || '';
 ---
 
-<article class={`card${pinned ? ' card--pinned' : ''}${featured ? ' card--featured' : ''}`}>
+<article
+  class={`card${pinned ? ' card--pinned' : ''}${featured ? ' card--featured' : ''}`}
+  data-category={category}
+  style={`--cat-color: var(--cat-${category}, var(--cat-default, var(--accent)));`}
+>
   <div class="card-header">
     <div class="card-badges">
       {pinned && <span class="badge badge-pinned">置頂</span>}
-      <a href={catHref} class="badge badge-cat">{category}</a>
+      <a href={catHref} class="badge badge-cat badge-category" data-category={category}>{category}</a>
       {type && <span class="badge badge-type" data-type={type}>{type}</span>}
     </div>
     <div class="card-meta">
@@ -85,6 +89,7 @@ const excerpt = tldr || description || '';
   .card {
     background: var(--bg-secondary);
     border: 0.5px solid var(--separator);
+    border-left: 3px solid color-mix(in srgb, var(--cat-color) 68%, var(--separator));
     border-radius: var(--radius-lg);
     padding: 22px 24px;
     display: flex;
@@ -96,7 +101,8 @@ const excerpt = tldr || description || '';
   .card:hover {
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
-    border-color: color-mix(in srgb, var(--accent) 30%, var(--separator));
+    border-color: color-mix(in srgb, var(--cat-color) 28%, var(--separator));
+    border-left-color: var(--cat-color);
   }
   .card--pinned {
     border-color: #ff3b30;
@@ -109,7 +115,8 @@ const excerpt = tldr || description || '';
   .card--featured {
     padding: 28px 32px;
     border-width: 1px;
-    border-color: color-mix(in srgb, var(--accent) 20%, var(--separator));
+    border-color: color-mix(in srgb, var(--cat-color) 22%, var(--separator));
+    border-left-width: 4px;
   }
   .card--featured.card--pinned {
     border-color: #ff3b30;
@@ -184,9 +191,9 @@ const excerpt = tldr || description || '';
     border: 0.5px solid color-mix(in srgb, var(--accent) 30%, transparent);
   }
   .badge-cat {
-    background: color-mix(in srgb, var(--accent) 10%, transparent);
-    color: var(--accent);
-    border: 0.5px solid color-mix(in srgb, var(--accent) 25%, transparent);
+    background: color-mix(in srgb, var(--cat-color) 12%, transparent);
+    color: var(--cat-color);
+    border: 0.5px solid color-mix(in srgb, var(--cat-color) 30%, transparent);
   }
 
   /* type badge — default */
@@ -221,6 +228,7 @@ const excerpt = tldr || description || '';
     transition: color 0.15s;
   }
   .card-title a:hover { color: var(--accent); }
+  .card:hover .card-title a { color: color-mix(in srgb, var(--cat-color) 88%, var(--label)); }
 
   /* Excerpt */
   .card-excerpt {

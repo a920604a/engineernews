@@ -54,7 +54,7 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
 
 <BaseLayout title={post.data.title} description={post.data.description} jsonLd={jsonLd} layout="article" ogImage={ogImage}>
   <!-- Full-bleed Hero Banner -->
-  <header class="post-hero" style={`--cat-color: var(--cat-${post.data.category});`}>
+  <header class="post-hero" data-category={post.data.category} style={`--cat-color: var(--cat-${post.data.category}, var(--cat-default, var(--accent)));`}>
     <!-- OG Background Layer -->
     <div class="hero-bg-wrapper">
       {ogImage && (
@@ -71,7 +71,7 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
     <div class="hero-inner">
       <div class="hero-content">
         <div class="hero-meta">
-          <a href={`/categories/${post.data.category}`} class="hero-badge">{post.data.category}</a>
+          <a href={`/categories/${post.data.category}`} class="hero-badge badge-category" data-category={post.data.category}>{post.data.category}</a>
           <time class="hero-date">{dateStr}</time>
           <span class="hero-sep">·</span>
           <span class="hero-reading">{readingTime} 分鐘閱讀</span>
