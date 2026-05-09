@@ -148,6 +148,7 @@ sequenceDiagram
   D1-->>Worker: chunks[]
   Worker->>WorkersAI: qwen-14b stream(query + chunks)
   WorkersAI-->>瀏覽器: 串流回答
+  note right of WorkersAI: 回答
 ```
 
 `sync-to-d1.ts` 核心片段：

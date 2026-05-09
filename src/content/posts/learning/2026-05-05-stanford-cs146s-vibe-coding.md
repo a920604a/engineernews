@@ -267,19 +267,19 @@ sequenceDiagram
   participant Orchestrator as 工作管理員
   participant TestAgent as 測試代理
   participant CodeAgent as 代碼代理
-  Note "實作搜尋功能" as N1
-  Developer->>Orchestrator: N1
-  Note "先寫失敗的測試" as N2
-  Orchestrator->>TestAgent: N2
+  Note over Developer,Orchestrator: 實作搜尋功能
+  Developer->>Orchestrator: 
+  Note over Orchestrator,TestAgent: 先寫失敗的測試
+  Orchestrator->>TestAgent: 
   TestAgent->>Orchestrator: tests/test_search.py
-  Note "根據測試實作 GET /notes?q=" as N3
-  Orchestrator->>CodeAgent: N3
+  Note over Orchestrator,CodeAgent: 根據測試實作 GET /notes?q=
+  Orchestrator->>CodeAgent: 
   CodeAgent->>Orchestrator: routers/notes.py 已更新
-  Note "跑測試、確認通過" as N4
-  Orchestrator->>TestAgent: N4
+  Note over Orchestrator,TestAgent: 跑測試、確認通過
+  Orchestrator->>TestAgent: 
   TestAgent->>Orchestrator: 4/4 passed
-  Note "完成，PR ready" as N5
-  Orchestrator->>Developer: N5
+  Note over Orchestrator,Developer: 完成，PR ready
+  Orchestrator->>Developer:
 ```
 
 這個 Test → Code → Verify 的 SubAgent 循環對應的是 TDD，差別是人的角色從「寫測試的人」變成「定義完成標準的人」。
