@@ -32,8 +32,8 @@ const topicMeta: Record<string, string> = {
   career: '職涯選擇、工作方式、溝通與個人反思。',
   life: '日常紀錄、狀態整理與低頻但重要的觀察。',
 };
-const featured = posts[0];
-const rest = posts.slice(1);
+const featured = posts.find(p => p.data.pinned) ?? null;
+const rest = featured ? posts.filter(p => p.id !== featured.id) : posts;
 ---
 
 <BaseLayout title={`分類：${category}`}>
