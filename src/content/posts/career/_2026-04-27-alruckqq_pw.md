@@ -44,6 +44,4 @@ graph LR
 
 ## 參考資料
 
-* [工作壓力和身心健康](https://www.who.int/news-room/q-and-a/detail/work-related-stress-and-mental-health)
-* [如何管理工作壓力](https://www.mayoclinic.org/healthy-lifestyle/adult-health/in-depth/manage-stress/art-20044289)
 * [為什麼「上班」是毀掉人最快的方式？如何在草台班子裡保護自己](https://www.youtube.com/watch?v=ALruCKQQ_pw)

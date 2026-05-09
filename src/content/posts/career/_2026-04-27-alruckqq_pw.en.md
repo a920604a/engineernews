@@ -44,6 +44,5 @@ However, these measures may be limited by the work environment. For example, in 
 
 ## References
 
-* [Work-related stress and mental health](https://www.who.int/news-room/q-and-a/detail/work-related-stress-and-mental-health)
-* [Managing work stress](https://www.mayoclinic.org/healthy-lifestyle/adult-health/in-depth/manage-stress/art-20044289)
+
 * [Why "going to work" is the fastest way to ruin someone and how to protect yourself in a high-pressure work environment](https://www.youtube.com/watch?v=ALruCKQQ_pw)

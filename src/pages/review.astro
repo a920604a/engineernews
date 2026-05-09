@@ -15,115 +15,328 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
   <title>Review Drafts</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 900px; margin: 0 auto; padding: 32px 16px; background: #f9f9f9; color: #1a1a1a; }
-    h1 { font-size: 20px; font-weight: 600; margin: 0 0 8px; }
-    .meta { font-size: 13px; color: #666; margin-bottom: 32px; }
-    .card { background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; padding: 20px 24px; margin-bottom: 16px; }
-    .card-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+    :root {
+      --bg: #f4f5f7;
+      --surface: #ffffff;
+      --surface-subtle: #f8fafc;
+      --surface-strong: #eef2f7;
+      --text: #121417;
+      --muted: #667085;
+      --faint: #98a2b3;
+      --line: #d9dee7;
+      --line-soft: #eaedf2;
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+      --green: #15803d;
+      --green-soft: #ecfdf3;
+      --red: #c2410c;
+      --red-soft: #fff4ed;
+      --shadow: 0 18px 44px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.06);
+      --mono: 'SF Mono', 'Fira Code', ui-monospace, Menlo, Consolas, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC', sans-serif;
+    }
+    html { background: var(--bg); }
+    body {
+      font-family: var(--sans);
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 20px 64px;
+      background:
+        radial-gradient(circle at 18% -10%, rgba(37, 99, 235, 0.12), transparent 34%),
+        linear-gradient(180deg, #fbfcff 0%, var(--bg) 320px);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    h1 { font-size: clamp(24px, 4vw, 34px); font-weight: 850; letter-spacing: 0; line-height: 1.12; margin: 0; }
+    button, input, select, textarea { font: inherit; }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 24px;
+      padding: 20px;
+      border: 1px solid rgba(217, 222, 231, 0.75);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .meta { font-size: 14px; color: var(--muted); margin: 10px 0 0; }
+    .top-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    .count-badge {
+      display: inline-flex;
+      align-items: center;
+      height: 34px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    #draft-list { display: flex; flex-direction: column; gap: 14px; }
+    .card {
+      background: rgba(255,255,255,0.92);
+      border: 1px solid var(--line-soft);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    }
+    .card:hover { border-color: #cfd7e6; box-shadow: var(--shadow); transform: translateY(-1px); }
+    .card-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: flex-start; gap: 18px; }
     .card-body { flex: 1; min-width: 0; }
-    .card-title { font-size: 16px; font-weight: 600; margin: 0 0 6px; }
-    .card-tldr { font-size: 13px; color: #555; margin: 0 0 10px; }
-    .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-    .tag { font-size: 11px; background: #f0f0f0; border-radius: 4px; padding: 2px 8px; color: #444; }
-    .tag-cat { background: #e8f0fe; color: #1a73e8; }
-    .card-links { font-size: 12px; }
-    .card-links a { color: #0066cc; text-decoration: none; }
+    .card-title { font-size: 18px; font-weight: 800; line-height: 1.42; margin: 0 0 8px; letter-spacing: 0; }
+    .card-tldr { font-size: 14px; line-height: 1.65; color: var(--muted); margin: 0 0 12px; max-width: 74ch; }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--surface-subtle);
+      border: 1px solid var(--line-soft);
+      border-radius: 999px;
+      padding: 2px 9px;
+      color: #475467;
+    }
+    .tag-cat { background: var(--accent-soft); border-color: #bfdbfe; color: #1d4ed8; }
+    .card-links { font-size: 13px; }
+    .card-links a { color: var(--accent); text-decoration: none; font-weight: 700; }
     .card-links a:hover { text-decoration: underline; }
-    .card-date { font-size: 12px; color: #999; }
-    .card-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
-    .btn { border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+    .card-date {
+      display: inline-flex;
+      align-items: center;
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: var(--surface-subtle);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 12px;
+      border: 1px solid var(--line-soft);
+    }
+    .card-actions { display: grid; grid-template-columns: repeat(3, auto); align-items: center; justify-content: end; gap: 8px; flex-shrink: 0; }
+    .card-actions .card-date { grid-column: 1 / -1; justify-self: end; }
+    .btn {
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 8px 13px;
+      font-size: 13px;
+      font-weight: 750;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
+      white-space: nowrap;
+    }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-edit { background: #f0f0f0; color: #333; }
-    .btn-edit:hover { background: #e0e0e0; }
-    .btn-edit.active { background: #e8f0fe; color: #1a73e8; }
-    .btn-publish { background: #0a84ff; color: #fff; }
-    .btn-publish:hover:not(:disabled) { background: #006edb; }
-    .btn-save { background: #34a853; color: #fff; }
-    .btn-save:hover:not(:disabled) { background: #2d8f47; }
-    .edit-panel { display: none; border-top: 1px solid #e5e5e5; margin-top: 16px; padding-top: 20px; }
+    .btn-edit { background: #fff; color: #344054; border-color: var(--line); }
+    .btn-edit:hover { background: var(--surface-subtle); border-color: #cbd5e1; }
+    .btn-edit.active { background: var(--accent-soft); border-color: #bfdbfe; color: #1d4ed8; }
+    .btn-publish { background: var(--accent); color: #fff; box-shadow: 0 8px 18px rgba(37,99,235,0.18); }
+    .btn-publish:hover:not(:disabled) { background: #1d4ed8; }
+    .btn-save { background: var(--green); color: #fff; box-shadow: 0 8px 18px rgba(21,128,61,0.14); }
+    .btn-save:hover:not(:disabled) { background: #166534; }
+    .edit-panel { display: none; border-top: 1px solid var(--line-soft); margin-top: 18px; padding-top: 18px; }
     .edit-panel.open { display: block; }
-    .edit-loading { color: #888; font-size: 13px; padding: 8px 0; }
+    .edit-loading { color: var(--muted); font-size: 13px; padding: 12px 0; }
     .edit-form { display: none; }
     .edit-form.ready { display: block; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
     .form-row.full { grid-template-columns: 1fr; }
-    .form-group { display: flex; flex-direction: column; gap: 4px; }
-    .form-group label { font-size: 12px; font-weight: 500; color: #555; }
+    .form-group { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+    .form-group label { font-size: 12px; font-weight: 800; color: #475467; letter-spacing: 0; }
     .form-group input, .form-group select, .form-group textarea {
-      border: 1px solid #ddd; border-radius: 6px; padding: 8px 10px; font-size: 13px;
-      font-family: inherit; outline: none; transition: border-color 0.15s;
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #fff;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
     }
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #0a84ff; }
-    .form-group textarea { resize: vertical; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; line-height: 1.6; }
-    .edit-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+    .form-group textarea { resize: vertical; font-family: var(--mono); font-size: 13px; line-height: 1.7; tab-size: 2; }
+    .edit-footer {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line-soft);
+    }
     .toast-container { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 8px; z-index: 100; }
-    .toast { background: #1a1a1a; color: #fff; border-radius: 8px; padding: 12px 16px; font-size: 13px; max-width: 360px; animation: slide-in 0.2s ease; }
-    .toast.success { background: #1c7c4a; }
-    .toast.error { background: #c0392b; }
+    .toast { background: #111827; color: #fff; border-radius: 8px; padding: 12px 16px; font-size: 13px; max-width: 380px; animation: slide-in 0.2s ease; box-shadow: var(--shadow); }
+    .toast.success { background: #166534; }
+    .toast.error { background: #b42318; }
     .toast a { color: #a8d8ff; text-decoration: none; }
     @keyframes slide-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    .empty { text-align: center; padding: 64px 0; color: #888; }
-    .btn-delete { background: #fef2f2; color: #dc2626; }
-    .btn-delete:hover:not(:disabled) { background: #fee2e2; }
+    .empty {
+      text-align: center;
+      padding: 72px 24px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.74);
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      font-weight: 700;
+    }
+    .btn-delete { background: var(--red-soft); border-color: #fed7aa; color: var(--red); }
+    .btn-delete:hover:not(:disabled) { background: #ffedd5; }
     .editor-split { grid-template-columns: 1fr 1fr !important; }
-    .editor-split textarea { height: 420px; min-height: 120px; }
-    .preview-pane { border: 1px solid #ddd; border-radius: 6px; padding: 12px 16px; height: 420px; overflow-y: auto; font-size: 13px; line-height: 1.7; background: #fafafa; }
-    .preview-pane h1,.preview-pane h2,.preview-pane h3 { font-weight: 600; margin: 0.8em 0 0.3em; }
+    .editor-split textarea { height: 520px; min-height: 260px; background: #0f172a; color: #e5eefb; border-color: #172033; }
+    .editor-split textarea:focus { box-shadow: 0 0 0 3px rgba(15,23,42,0.12); border-color: #334155; }
+    .preview-pane {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px 20px;
+      height: 520px;
+      overflow-y: auto;
+      font-size: 14px;
+      line-height: 1.75;
+      background: #fff;
+      color: #1f2937;
+    }
+    .preview-pane h1,.preview-pane h2,.preview-pane h3 { font-weight: 800; line-height: 1.3; margin: 1em 0 0.45em; color: #111827; }
     .preview-pane h1 { font-size: 1.4em; } .preview-pane h2 { font-size: 1.2em; } .preview-pane h3 { font-size: 1.05em; }
     .preview-pane p { margin: 0 0 0.7em; }
-    .preview-pane code { background: #f0f0f0; border-radius: 3px; padding: 1px 4px; font-family: 'SF Mono', monospace; font-size: 0.9em; }
-    .preview-pane pre { background: #1a1a1a; color: #e5e5e5; border-radius: 6px; padding: 12px; overflow-x: auto; margin-bottom: 0.8em; }
+    .preview-pane code { background: #f1f5f9; border-radius: 5px; padding: 1px 5px; font-family: var(--mono); font-size: 0.9em; }
+    .preview-pane pre { background: #0f172a; color: #e5eefb; border-radius: 8px; padding: 14px; overflow-x: auto; margin-bottom: 0.8em; }
     .preview-pane pre code { background: none; padding: 0; }
     .preview-pane ul,.preview-pane ol { padding-left: 1.5em; margin-bottom: 0.7em; }
-    .preview-pane blockquote { border-left: 3px solid #ddd; padding-left: 1em; color: #666; margin: 0 0 0.7em; }
-    .preview-pane a { color: #0066cc; } .preview-pane hr { border: none; border-top: 1px solid #e5e5e5; margin: 1em 0; }
+    .preview-pane blockquote { border-left: 3px solid #cbd5e1; padding-left: 1em; color: #64748b; margin: 0 0 0.7em; }
+    .preview-pane a { color: var(--accent); } .preview-pane hr { border: none; border-top: 1px solid var(--line-soft); margin: 1em 0; }
     .preview-pane img { max-width: 100%; }
 
     /* ── Fullscreen overlay ── */
-    #fs-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: #fff; flex-direction: column; }
+    #fs-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: #f8fafc; flex-direction: column; color: var(--text); }
     #fs-overlay.open { display: flex; }
-    .fs-header { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #e5e5e5; flex-shrink: 0; }
-    .fs-header input[name=title] { flex: 1; font-size: 15px; font-weight: 600; }
-    .btn-fs-close { background: none; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; cursor: pointer; color: #555; padding: 2px 10px; line-height: 1.6; }
-    .btn-fs-close:hover { background: #f0f0f0; }
-    .fs-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 10px 20px; border-bottom: 1px solid #e5e5e5; flex-shrink: 0; }
+    .fs-header { display: flex; align-items: center; gap: 14px; padding: 12px 18px; border-bottom: 1px solid var(--line); background: #fff; flex-shrink: 0; }
+    .fs-titlebar { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+    .fs-titlebar .form-group { flex: 1; min-width: 180px; }
+    .fs-header input[name=title] { flex: 1; font-size: 15px; font-weight: 700; }
+    .fs-status {
+      display: inline-flex;
+      align-items: center;
+      min-width: 86px;
+      justify-content: center;
+      height: 30px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface-subtle);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .fs-status.dirty { background: #fffbeb; border-color: #fde68a; color: #a16207; }
+    .fs-status.saving { background: var(--accent-soft); border-color: #bfdbfe; color: #1d4ed8; }
+    .fs-status.saved { background: var(--green-soft); border-color: #bbf7d0; color: var(--green); }
+    .fs-meta-toggle {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: #475467;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 7px 11px;
+    }
+    .fs-meta-toggle:hover { background: var(--surface-subtle); }
+    .btn-fs-close { background: #fff; border: 1px solid var(--line); border-radius: 8px; font-size: 16px; cursor: pointer; color: #475467; padding: 4px 12px; line-height: 1.6; }
+    .btn-fs-close:hover { background: var(--surface-subtle); }
+    .fs-meta { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--line); background: #fff; flex-shrink: 0; }
+    .fs-meta.collapsed { display: none; }
+    .fs-tabs { display: none; background: #fff; border-bottom: 1px solid var(--line); padding: 8px 12px; gap: 8px; }
+    .fs-tab {
+      flex: 1;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .fs-tab.active { background: var(--accent-soft); border-color: #bfdbfe; color: #1d4ed8; }
     .fs-editor { display: grid; grid-template-columns: 1fr 1fr; flex: 1; min-height: 0; }
-    .fs-editor textarea { border: none; border-right: 1px solid #e5e5e5; resize: none; padding: 14px 18px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; line-height: 1.6; outline: none; height: 100%; }
-    .fs-preview { padding: 14px 18px; overflow-y: auto; font-size: 13px; line-height: 1.7; }
-    .fs-preview h1,.fs-preview h2,.fs-preview h3 { font-weight: 600; margin: 0.8em 0 0.3em; }
+    .fs-editor textarea { border: none; border-right: 1px solid #1f2937; resize: none; padding: 20px 22px; font-family: var(--mono); font-size: 13px; line-height: 1.75; outline: none; height: 100%; background: #0f172a; color: #e5eefb; }
+    .fs-preview { padding: 24px 30px; overflow-y: auto; font-size: 15px; line-height: 1.78; background: #fff; color: #1f2937; }
+    .fs-preview h1,.fs-preview h2,.fs-preview h3 { font-weight: 800; line-height: 1.28; margin: 1em 0 0.4em; color: #111827; }
     .fs-preview h1 { font-size: 1.4em; } .fs-preview h2 { font-size: 1.2em; } .fs-preview h3 { font-size: 1.05em; }
     .fs-preview p { margin: 0 0 0.7em; }
-    .fs-preview code { background: #f0f0f0; border-radius: 3px; padding: 1px 4px; font-family: 'SF Mono', monospace; font-size: 0.9em; }
-    .fs-preview pre { background: #1a1a1a; color: #e5e5e5; border-radius: 6px; padding: 12px; overflow-x: auto; margin-bottom: 0.8em; }
+    .fs-preview code { background: #f1f5f9; border-radius: 5px; padding: 1px 5px; font-family: var(--mono); font-size: 0.9em; }
+    .fs-preview pre { background: #0f172a; color: #e5eefb; border-radius: 8px; padding: 14px; overflow-x: auto; margin-bottom: 0.8em; }
     .fs-preview pre code { background: none; padding: 0; }
     .fs-preview ul,.fs-preview ol { padding-left: 1.5em; margin-bottom: 0.7em; }
-    .fs-preview blockquote { border-left: 3px solid #ddd; padding-left: 1em; color: #666; margin: 0 0 0.7em; }
-    .fs-preview a { color: #0066cc; } .fs-preview hr { border: none; border-top: 1px solid #e5e5e5; margin: 1em 0; }
+    .fs-preview blockquote { border-left: 3px solid #cbd5e1; padding-left: 1em; color: #64748b; margin: 0 0 0.7em; }
+    .fs-preview a { color: var(--accent); } .fs-preview hr { border: none; border-top: 1px solid var(--line-soft); margin: 1em 0; }
     .fs-preview img { max-width: 100%; }
-    .fs-footer { display: flex; gap: 8px; justify-content: flex-end; padding: 10px 20px; border-top: 1px solid #e5e5e5; flex-shrink: 0; }
-    .btn-fs-trigger { background: none; border: none; cursor: pointer; font-size: 13px; color: #aaa; padding: 0 2px; line-height: 1; vertical-align: middle; margin-left: 4px; }
-    .btn-fs-trigger:hover { color: #333; }
+    .fs-footer { display: flex; gap: 10px; justify-content: flex-end; padding: 12px 18px; border-top: 1px solid var(--line); background: #fff; flex-shrink: 0; }
+    .btn-fs-trigger { background: #fff; border: 1px solid var(--line); border-radius: 6px; cursor: pointer; font-size: 12px; color: #475467; padding: 2px 7px; line-height: 1.4; vertical-align: middle; margin-left: 6px; }
+    .btn-fs-trigger:hover { background: var(--surface-subtle); color: var(--text); }
 
     /* ── Auth overlay ── */
-    #auth-overlay { display: none; position: fixed; inset: 0; z-index: 3000; background: #f9f9f9; align-items: center; justify-content: center; }
+    #auth-overlay { display: none; position: fixed; inset: 0; z-index: 3000; background: rgba(248,250,252,0.96); align-items: center; justify-content: center; }
     #auth-overlay.visible { display: flex; }
+    .auth-card { max-width: 420px; width: 100%; padding: 28px; margin: 20px; text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); }
     #auth-overlay form { display: flex; gap: 8px; }
-    #auth-overlay input { flex: 1; padding: 10px 14px; border-radius: 8px; font-size: 14px; border: 1px solid #ddd; background: #fff; outline: none; font-family: inherit; }
-    #auth-overlay input:focus { border-color: #0a84ff; }
-    #auth-overlay button[type=submit] { padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 700; background: #0a84ff; color: #fff; border: none; cursor: pointer; }
-    #auth-error { display: none; font-size: 13px; color: #c0392b; margin-top: 12px; }
+    #auth-overlay input { flex: 1; min-width: 0; padding: 11px 13px; border-radius: 8px; font-size: 14px; border: 1px solid var(--line); background: #fff; outline: none; font-family: inherit; }
+    #auth-overlay input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+    #auth-overlay button[type=submit] { padding: 11px 18px; border-radius: 8px; font-size: 14px; font-weight: 800; background: var(--accent); color: #fff; border: none; cursor: pointer; }
+    #auth-error { display: none; font-size: 13px; color: #b42318; margin-top: 12px; }
+    @media (max-width: 860px) {
+      body { padding: 16px 12px 48px; }
+      .topbar { flex-direction: column; padding: 16px; }
+      .top-actions { width: 100%; justify-content: space-between; }
+      .card-row { grid-template-columns: 1fr; }
+      .card-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); justify-content: stretch; }
+      .card-actions .card-date { justify-self: start; }
+      .card-actions .btn { width: 100%; }
+      .form-row, .editor-split, .fs-meta, .fs-editor { grid-template-columns: 1fr !important; }
+      .editor-split textarea, .preview-pane { height: 420px; }
+      .fs-header { align-items: flex-start; flex-wrap: wrap; }
+      .fs-titlebar { width: 100%; }
+      .fs-meta { max-height: 38vh; overflow-y: auto; }
+      .fs-tabs { display: flex; }
+      .fs-editor { overflow-y: auto; display: block; }
+      .fs-editor textarea, .fs-preview { min-height: calc(100vh - 220px); width: 100%; border-right: 0; }
+      #fs-overlay[data-mobile-pane="editor"] .fs-preview { display: none; }
+      #fs-overlay[data-mobile-pane="preview"] .fs-editor textarea { display: none; }
+      #auth-overlay form { flex-direction: column; }
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/marked@14/marked.min.js"></script>
 </head>
 <body>
-  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
-    <h1 style="margin:0">Draft Review</h1>
-    <button id="btn-logout" class="btn" style="font-size:12px;color:#999;background:none;border:1px solid #e5e5e5;padding:4px 12px">登出</button>
+  <div class="topbar">
+    <div>
+      <p class="eyebrow">Editorial Queue</p>
+      <h1>Draft Review</h1>
+      <p class="meta" id="meta">{drafts.length} 篇待審閱</p>
+    </div>
+    <div class="top-actions">
+      <span class="count-badge" id="count-badge">{drafts.length} drafts</span>
+      <button id="btn-logout" class="btn btn-edit">登出</button>
+    </div>
   </div>
-  <p class="meta" id="meta">{drafts.length} 篇待審閱</p>
 
   {drafts.length === 0 ? (
-    <div class="empty">🎉 沒有待審閱的文章</div>
+    <div class="empty">目前沒有待審閱的文章</div>
   ) : (
     <div id="draft-list">
       {drafts.map(post => (
@@ -144,7 +357,7 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
             </div>
             <div class="card-actions">
               <span class="card-date">{post.data.date.toISOString().slice(0, 10)}</span>
-              <button class="btn btn-edit" data-slug={post.id}>編輯 ▾</button>
+              <button class="btn btn-edit" data-slug={post.id}>寫作</button>
               <button class="btn btn-publish" data-slug={post.id} data-title={post.data.title}>發布</button>
               <button class="btn btn-delete" data-slug={post.id} data-title={post.data.title}>刪除</button>
             </div>
@@ -207,10 +420,14 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
 
   <div id="fs-overlay">
     <div class="fs-header">
-      <div class="form-group" style="flex:1;margin:0">
-        <label style="font-size:11px;font-weight:500;color:#888;margin-bottom:3px;display:block">標題</label>
-        <input name="title" type="text" />
+      <div class="fs-titlebar">
+        <div class="form-group" style="margin:0">
+          <label style="font-size:11px;font-weight:800;color:#667085;margin-bottom:3px;display:block">標題</label>
+          <input name="title" type="text" />
+        </div>
+        <span class="fs-status" id="fs-status">Ready</span>
       </div>
+      <button type="button" class="fs-meta-toggle" id="fs-meta-toggle">Metadata</button>
       <button class="btn-fs-close" id="fs-close-btn" title="關閉全螢幕 (ESC)">✕</button>
     </div>
     <div class="fs-meta">
@@ -233,6 +450,10 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
         <input name="tags" type="text" />
       </div>
     </div>
+    <div class="fs-tabs" role="tablist" aria-label="Editor panes">
+      <button type="button" class="fs-tab active" data-pane="editor">Editor</button>
+      <button type="button" class="fs-tab" data-pane="preview">Preview</button>
+    </div>
     <div class="fs-editor">
       <textarea id="fs-textarea" name="body"></textarea>
       <div class="fs-preview" id="fs-preview"></div>
@@ -244,10 +465,10 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
   </div>
 
   <div id="auth-overlay">
-    <div style="max-width:380px;width:100%;text-align:center;padding:0 16px">
-      <div style="font-size:40px;margin-bottom:12px">🛠</div>
-      <h1 style="font-size:22px;font-weight:900;margin:0 0 6px">Draft Review</h1>
-      <p style="font-size:14px;color:#666;margin:0 0 28px">請輸入 admin token 以繼續</p>
+    <div class="auth-card">
+      <p class="eyebrow">Protected Area</p>
+      <h1 style="font-size:26px;margin:0 0 8px">Draft Review</h1>
+      <p style="font-size:14px;color:var(--muted);margin:0 0 22px;line-height:1.6">請輸入 admin token 以繼續審稿與編輯。</p>
       <form id="auth-form">
         <input id="auth-input" type="password" placeholder="ADMIN_TOKEN" autocomplete="current-password" />
         <button type="submit">Enter</button>
@@ -332,12 +553,48 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
 
     function cardId(slug) { return `card-${slug.replace(/\//g, '-')}`; }
     function editId(slug) { return `edit-${slug.replace(/\//g, '-')}`; }
+    function updateDraftCount() {
+      const remaining = document.querySelectorAll('#draft-list .card').length;
+      document.getElementById('meta').textContent = `${remaining} 篇待審閱`;
+      document.getElementById('count-badge').textContent = `${remaining} drafts`;
+      if (remaining === 0) {
+        document.getElementById('draft-list').innerHTML = '<div class="empty">目前沒有待審閱的文章</div>';
+      }
+    }
 
     // ── Fullscreen editor ──
     const fsOverlay = document.getElementById('fs-overlay');
     const fsTextarea = document.getElementById('fs-textarea');
     const fsPreview = document.getElementById('fs-preview');
+    const fsStatus = document.getElementById('fs-status');
+    const fsMeta = fsOverlay.querySelector('.fs-meta');
     const fsFields = ['title', 'tldr', 'description', 'category', 'tags'];
+    let fsDirty = false;
+    let fsSavedTimer = null;
+
+    function setEditorStatus(label, state) {
+      fsStatus.textContent = label;
+      fsStatus.className = `fs-status ${state ?? ''}`;
+    }
+
+    function markEditorDirty() {
+      fsDirty = true;
+      setEditorStatus('Unsaved', 'dirty');
+    }
+
+    function markEditorClean() {
+      fsDirty = false;
+      setEditorStatus('Saved', 'saved');
+      clearTimeout(fsSavedTimer);
+      fsSavedTimer = setTimeout(() => {
+        if (!fsDirty && fsOverlay.classList.contains('open')) setEditorStatus('Ready', '');
+      }, 2200);
+    }
+
+    function renderPreview(markdown) {
+      fsPreview.innerHTML = marked.parse(markdown);
+    }
+
     function openFullscreen(slug) {
       const panel = document.getElementById(editId(slug));
       if (!panel) return;
@@ -351,8 +608,10 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
       fsTextarea.value = cardForm.querySelector('[name=body]').value;
       fsOverlay.dataset.slug = slug;
       fsOverlay.dataset.frontmatter = cardForm.dataset.frontmatter ?? '{}';
+      fsOverlay.dataset.mobilePane = 'editor';
 
-      fsPreview.innerHTML = marked.parse(fsTextarea.value);
+      renderPreview(fsTextarea.value);
+      markEditorClean();
 
       fsOverlay.classList.add('open');
       document.body.style.overflow = 'hidden';
@@ -360,8 +619,9 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
     }
 
     function closeFullscreen() {
-      document.body.style.overflow = '';
       if (!fsOverlay.classList.contains('open')) return;
+      if (fsDirty && !confirm('目前有尚未儲存的變更，確定要離開全螢幕編輯器？')) return;
+      document.body.style.overflow = '';
       const slug = fsOverlay.dataset.slug;
 
       if (slug) {
@@ -388,6 +648,20 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
     });
 
     document.getElementById('fs-close-btn').addEventListener('click', closeFullscreen);
+    document.getElementById('fs-meta-toggle').addEventListener('click', () => {
+      fsMeta.classList.toggle('collapsed');
+    });
+    document.querySelectorAll('.fs-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.fs-tab').forEach(t => t.classList.toggle('active', t === tab));
+        fsOverlay.dataset.mobilePane = tab.dataset.pane;
+      });
+    });
+
+    fsFields.forEach(name => {
+      fsOverlay.querySelector(`[name=${name}]`).addEventListener('input', markEditorDirty);
+      fsOverlay.querySelector(`[name=${name}]`).addEventListener('change', markEditorDirty);
+    });
 
     document.addEventListener('keydown', e => {
       // ESC 關閉全螢幕
@@ -404,6 +678,10 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
           const form = openPanels[0].querySelector('.edit-form.ready');
           if (form) openFullscreen(form.dataset.slug);
         }
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's' && fsOverlay.classList.contains('open')) {
+        e.preventDefault();
+        document.getElementById('fs-btn-save').click();
       }
     });
 
@@ -426,7 +704,8 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
 
     // 即時預覽更新
     fsTextarea.addEventListener('input', () => {
-      fsPreview.innerHTML = marked.parse(fsTextarea.value);
+      renderPreview(fsTextarea.value);
+      markEditorDirty();
     });
 
     function syncOverlayToCardForm() {
@@ -449,7 +728,10 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
       if (!cardForm) return;
       const fsBtns = [document.getElementById('fs-btn-save'), document.getElementById('fs-btn-publish')];
       fsBtns.forEach(b => { b.disabled = true; });
-      await submitEdit(cardForm, false);
+      setEditorStatus('Saving', 'saving');
+      const ok = await submitEdit(cardForm, false);
+      if (ok) markEditorClean();
+      else markEditorDirty();
       fsBtns.forEach(b => { b.disabled = false; });
     });
 
@@ -457,58 +739,67 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
       const slug = fsOverlay.dataset.slug;
       const cardForm = syncOverlayToCardForm();
       if (!cardForm) return;
+      const title = fsOverlay.querySelector('[name=title]').value.trim() || '未命名文章';
+      if (!confirm(`確定要發布「${title}」？\n這會儲存目前內容並將 draft 設為 false。`)) return;
       const fsBtns = [document.getElementById('fs-btn-save'), document.getElementById('fs-btn-publish')];
       fsBtns.forEach(b => { b.disabled = true; });
-      await submitEdit(cardForm, true);
+      setEditorStatus('Publishing', 'saving');
+      const ok = await submitEdit(cardForm, true);
       fsBtns.forEach(b => { b.disabled = false; });
       // submitEdit 在發布成功後移除 card；若 card 已移除，closeFullscreen 會跳過 copy-back
-      if (!document.getElementById(cardId(slug))) closeFullscreen();
+      if (ok && !document.getElementById(cardId(slug))) {
+        fsDirty = false;
+        closeFullscreen();
+      } else if (!ok) {
+        markEditorDirty();
+      }
     });
 
-    document.querySelectorAll('.btn-edit').forEach(btn => {
+    async function loadDraftIntoForm(slug, panel, form) {
+      const res = await fetch(`/api/admin/raw?slug=${encodeURIComponent(slug)}&token=${token}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      const fm = data.frontmatter;
+      form.querySelector('[name=title]').value = fm.title ?? '';
+      form.querySelector('[name=tldr]').value = fm.tldr ?? '';
+      form.querySelector('[name=description]').value = fm.description ?? '';
+      form.querySelector('[name=category]').value = fm.category ?? 'tech';
+      form.querySelector('[name=tags]').value = Array.isArray(fm.tags) ? fm.tags.join(', ') : (fm.tags ?? '');
+      const bodyTextarea = form.querySelector('[name=body]');
+      bodyTextarea.value = data.body;
+      form.dataset.frontmatter = JSON.stringify(fm);
+
+      panel.querySelector('.edit-loading').style.display = 'none';
+      form.classList.add('ready');
+
+      const previewPane = form.querySelector('.preview-pane');
+      const updatePreview = () => { previewPane.innerHTML = marked.parse(bodyTextarea.value); };
+      updatePreview();
+      bodyTextarea.addEventListener('input', updatePreview);
+    }
+
+    document.querySelectorAll('.card-actions .btn-edit').forEach(btn => {
       btn.addEventListener('click', async () => {
         const slug = btn.dataset.slug;
         const panel = document.getElementById(editId(slug));
-        const isOpen = panel.classList.contains('open');
+        const form = panel.querySelector('.edit-form');
 
-        if (isOpen) {
-          panel.classList.remove('open');
-          btn.classList.remove('active');
-          btn.textContent = '編輯 ▾';
+        if (form.classList.contains('ready')) {
+          openFullscreen(slug);
           return;
         }
 
-        panel.classList.add('open');
-        btn.classList.add('active');
-        btn.textContent = '收起 ▴';
-
-        const form = panel.querySelector('.edit-form');
-        if (form.classList.contains('ready')) return;
-
         try {
-          const res = await fetch(`/api/admin/raw?slug=${encodeURIComponent(slug)}&token=${token}`);
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error);
-
-          const fm = data.frontmatter;
-          form.querySelector('[name=title]').value = fm.title ?? '';
-          form.querySelector('[name=tldr]').value = fm.tldr ?? '';
-          form.querySelector('[name=description]').value = fm.description ?? '';
-          form.querySelector('[name=category]').value = fm.category ?? 'tech';
-          form.querySelector('[name=tags]').value = Array.isArray(fm.tags) ? fm.tags.join(', ') : (fm.tags ?? '');
-          const bodyTextarea = form.querySelector('[name=body]');
-          bodyTextarea.value = data.body;
-          form.dataset.frontmatter = JSON.stringify(fm);
-
-          panel.querySelector('.edit-loading').style.display = 'none';
-          form.classList.add('ready');
-
-          const previewPane = form.querySelector('.preview-pane');
-          const updatePreview = () => { previewPane.innerHTML = marked.parse(bodyTextarea.value); };
-          updatePreview();
-          bodyTextarea.addEventListener('input', updatePreview);
+          btn.disabled = true;
+          btn.textContent = '載入中';
+          await loadDraftIntoForm(slug, panel, form);
+          openFullscreen(slug);
         } catch (err) {
-          panel.querySelector('.edit-loading').textContent = `❌ 載入失敗：${err.message}`;
+          showToast(`載入失敗：${err.message}`, 'error');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = '寫作';
         }
       });
     });
@@ -546,20 +837,19 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
             `✅ 已發布 <strong>${fm.title}</strong>（${sha}）— <a href="${data.actionsUrl}" target="_blank">查看部署 →</a>`,
             'success', 8000
           );
-          const remaining = document.querySelectorAll('#draft-list .card').length;
-          document.getElementById('meta').textContent = `${remaining} 篇待審閱`;
-          if (remaining === 0) {
-            document.getElementById('draft-list').innerHTML = '<div class="empty">🎉 沒有待審閱的文章</div>';
-          }
+          updateDraftCount();
         } else {
           showToast(`💾 草稿已儲存（${sha}）`, 'success', 4000);
           form.dataset.frontmatter = JSON.stringify(fm);
           saveBtns.forEach(b => { b.disabled = false; });
+          return true;
         }
       } catch (err) {
         showToast(`❌ 儲存失敗：${err.message}`, 'error');
         saveBtns.forEach(b => { b.disabled = false; });
+        return false;
       }
+      return true;
     }
 
     document.querySelectorAll('.btn-save-draft').forEach(btn => {
@@ -586,11 +876,7 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
           if (!res.ok) throw new Error(data.error);
           document.getElementById(cardId(slug))?.remove();
           showToast(`🗑 已移至垃圾桶：${title}`, 'success', 4000);
-          const remaining = document.querySelectorAll('#draft-list .card').length;
-          document.getElementById('meta').textContent = `${remaining} 篇待審閱`;
-          if (remaining === 0) {
-            document.getElementById('draft-list').innerHTML = '<div class="empty">🎉 沒有待審閱的文章</div>';
-          }
+          updateDraftCount();
         } catch (err) {
           showToast(`❌ 刪除失敗：${err.message}`, 'error');
           btn.disabled = false;
@@ -621,17 +907,19 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
             `✅ 已發布 <strong>${title}</strong>（${sha}）— <a href="${data.actionsUrl}" target="_blank">查看部署 →</a>`,
             'success', 8000
           );
-          const remaining = document.querySelectorAll('#draft-list .card').length;
-          document.getElementById('meta').textContent = `${remaining} 篇待審閱`;
-          if (remaining === 0) {
-            document.getElementById('draft-list').innerHTML = '<div class="empty">🎉 沒有待審閱的文章</div>';
-          }
+          updateDraftCount();
         } catch (err) {
           showToast(`❌ 發布失敗：${err.message}`, 'error');
           btn.disabled = false;
           btn.textContent = '發布';
         }
       });
+    });
+
+    window.addEventListener('beforeunload', e => {
+      if (!fsDirty) return;
+      e.preventDefault();
+      e.returnValue = '';
     });
   </script>
 </body>
