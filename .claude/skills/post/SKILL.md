@@ -49,11 +49,24 @@ description: Convert a conversation, notes, experience, or GitHub project into a
 
 2. **收集資訊**：
    - 一般文章：從對話或筆記提取關鍵內容
-   - **case-study（有 GitHub URL）**：
+   - **有 GitHub URL 的工具 / case-study**：README 是起點，不是終點
+
+     **第一層：README**
      1. 先嘗試抓取 `https://raw.githubusercontent.com/<owner>/<repo>/main/README.md`
      2. 若失敗（404 / 空內容），fallback 改抓 `https://github.com/<owner>/<repo>`，從 HTML 萃取 README
      3. 若 main 失敗，改試 master 分支
-     4. 從 README / 對話萃取：背景、挑戰、解法、成果、技術堆疊
+
+     **第二層：深挖文件（README 讀完後必做）**
+     - 檢查是否有 `docs/`、`wiki`、官方網站、changelog / RELEASES
+     - 抓取時給 WebFetch 明確的問題，例如「OAuth refresh 機制、部署選項、已知限制、2024 以後的 breaking changes」——WebFetch 用小模型摘要，prompt 越具體，細節越不會被丟掉
+     - 重點抓：設計哲學、與替代方案的差異、適用與不適用情境、時效性資訊（deprecation、provider 下架、版本異動）
+
+     **第三層：交叉驗證**
+     - 搜尋是否有其他文章、討論串已介紹過這個工具
+     - 比對對方涵蓋的細節，確認自己沒有遺漏重要功能或限制
+     - 若找到更豐富的資訊來源，以它為準，補進草稿
+
+     **從資料萃取：** 背景、核心功能、設計哲學、與替代方案比較、適用情境、限制與注意事項、技術堆疊
 
 3. **判斷分類**：根據內容從上表選擇最適合的 category，並挑選相關 tags
 
