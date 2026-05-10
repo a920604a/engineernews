@@ -75,9 +75,8 @@ async function getRelevantSources(
 ): Promise<SearchResult[]> {
   const matches = await vectorize.query(queryEmbedding, {
     topK: MAX_MATCHES,
-    returnMetadata: 'indexed',
+    returnMetadata: 'none',
     returnValues: false,
-    filter: { lang },
   });
 
   const ids = matches.matches
@@ -103,8 +102,8 @@ async function getRelevantSources(
       p.tldr
     FROM doc_chunks d
     JOIN posts p ON p.id = d.source_id
-    WHERE d.id IN (${placeholders})
-  `).bind(...ids).all<ChunkRow>();
+    WHERE d.id IN (${placeholders}) AND p.lang = ?
+  `).bind(...ids, lang).all<ChunkRow>();
 
   const rowMap = new Map(rows.results.map((row) => [row.chunk_id, row]));
   const scoreMap = new Map<string, number>();
@@ -160,7 +159,7 @@ async function getKeywordSources(
   }
 
   const clauses = terms
-    .map(() => '(lower(title) LIKE ? OR lower(content) LIKE ? OR lower(description) LIKE ? OR lower(tldr) LIKE ? OR lower(tags) LIKE ?)')
+    .map(() => '(lower(p.title) LIKE ? OR lower(d.content) LIKE ? OR lower(p.description) LIKE ? OR lower(p.tldr) LIKE ? OR lower(p.tags) LIKE ?)')
     .join(' OR ');
 
   const bindings = terms.flatMap((term) => {
@@ -191,7 +190,7 @@ async function getKeywordSources(
     JOIN posts p ON p.id = d.source_id
     WHERE p.lang = ? AND (${clauses})
     GROUP BY d.source_id
-    ORDER BY score_rank DESC, p.updated_at DESC, p.date DESC
+    ORDER BY score_rank DESC, p.updated_at DESC, p.created_at DESC
     LIMIT 8
   `).bind(
     `%${query.toLowerCase()}%`,

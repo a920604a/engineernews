@@ -19,10 +19,10 @@ sequenceDiagram
   API->>BGE: text → embedding
   BGE-->>API: float[1024]
 
-  API->>Vec: query(vector, topK=8, filter={lang})
+  API->>Vec: query(vector, topK=8)
   Vec-->>API: [{ id, score }]
 
-  API->>DB: SELECT chunks + posts WHERE id IN (...)
+  API->>DB: SELECT chunks + posts WHERE id IN (...) AND lang = ?
   DB-->>API: title, category, content, excerpt
 
   alt 向量結果 > 0
@@ -48,7 +48,7 @@ sequenceDiagram
 | Chat 模型 | `@cf/qwen/qwen1.5-14b-chat-awq` | 串流輸出 |
 | Vectorize index | `engineer-news-index` | 1024 維，cosine |
 | Vectorize topK | 8 | 取前 8 個向量 |
-| Lang filter | `{ lang }` metadata filter | 在向量層過濾語言 |
+| Lang filter | D1 `AND p.lang = ?` | 在 D1 JOIN 層過濾語言（不依賴 Vectorize metadata index） |
 | Max sources | 5 | dedup by source_id |
 | Excerpt 長度 | 220 字元 | per chunk |
 | Source binding | `VECTORIZE`, `DB`, `AI` | wrangler.jsonc |
@@ -79,11 +79,18 @@ x-rag-lang: zh-TW
 ## Fallback 策略
 
 ```
-向量搜尋 → 0 結果
-  → Keyword SQL search（title / tldr / description / content / tags LIKE %query%）
+向量搜尋 → 0 結果（D1 lang filter 後）
+  → Keyword SQL search
+      doc_chunks d JOIN posts p
+      WHERE p.lang = ?
+        AND (p.title / d.content / p.description / p.tldr / p.tags LIKE %term%)
+      ORDER BY score_rank DESC, p.updated_at DESC, p.created_at DESC
   → 仍無結果 → LLM 告知找不到
   → LLM 失敗 → buildFallbackAnswer()（純文字，列出文章標題）
 ```
+
+> **注意**：keyword fallback 的 WHERE clause 所有欄位必須加表前綴（`p.` 或 `d.`），
+> 因為兩張表都有 `content` 欄位，未加前綴會導致 D1 拋出 `ambiguous column name` 錯誤。
 
 ---
 
