@@ -281,6 +281,8 @@ sequenceDiagram
   Note over Orchestrator,Developer: 完成，PR ready
   Orchestrator->>Developer: 
   Note over Developer,Orchestrator: 完成，PR ready
+  Developer->>Orchestrator: 
+  Orchestr
 ```
 
 這個 Test → Code → Verify 的 SubAgent 循環對應的是 TDD，差別是人的角色從「寫測試的人」變成「定義完成標準的人」。

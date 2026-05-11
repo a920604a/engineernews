@@ -147,7 +147,7 @@ sequenceDiagram
   Worker->>D1: SELECT chunks WHERE id IN (...)
   D1-->>Worker: chunks[]
   Worker->>WorkersAI: qwen-14b stream(query + chunks)
-  WorkersAI-->>瀏覽器: 串流回答
+  WorkersAI-->>瀏覽器: 回答
   note right of WorkersAI: 回答
 ```
 
