@@ -1,14 +1,13 @@
 ---
-title: "包租代管不只是當二房東，而是一門把空屋重新商品化、系統化的管理專業"
+title: 包租代管不只是當二房東，而是一門把空屋重新商品化、系統化的管理專業
 date: 2026-05-10T19:16:14.690Z
 category: learning
 tags: ["包租代管", "房地產", "管理專業", "職涯", "個人成長", "學習"]
 lang: zh-TW
-tldr: "包租代管是把空屋重新商品化、系統化的管理專業"
-description: "包租代管是把空屋重新商品化、系統化的管理專業"
-
+tldr: 包租代管是把空屋重新商品化、系統化的管理專業
+description: 包租代管是把空屋重新商品化、系統化的管理專業
 type: explainer
-original_url: "https://www.youtube.com/watch?v=VFjtZGXPxQ0"
+original_url: https://www.youtube.com/watch?v=VFjtZGXPxQ0
 draft: true
 ---
 
@@ -30,12 +29,12 @@ draft: true
 
 ```mermaid
 graph LR
-    A[房東] -->|委托|> B[包租代管公司]
-    B -->|尋找租客|> C[租客]
-    B -->|管理租約|> D[租約]
-    B -->|維護房屋|> E[房屋]
-    C -->|簽約|> D
-    D -->|交付租金|> A
+    A[房東] -->|委托| B[包租代管公司]
+    B -->|尋找租客| C[租客]
+    B -->|管理租約| D[租約]
+    B -->|維護房屋| E[房屋]
+    C -->|簽約| D
+    D -->|交付租金| A
 ```
 
 ## 跟物業管理的差別
