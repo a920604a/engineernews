@@ -839,6 +839,8 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
       var mermaidEls = [];
       nodes.forEach(function (node) {
         var pre = node.parentElement;
+        if (pre.dataset.mermaidRendered) return;
+        pre.dataset.mermaidRendered = '1';
         var text = pre.textContent || '';
         var div = document.createElement('div');
         div.className = 'mermaid';
@@ -1013,7 +1015,10 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
             cardForm.querySelector('[name=body]').value = fsTextarea.value;
             cardForm.dataset.frontmatter = fsOverlay.dataset.frontmatter;
             const cardPreviewPane = cardForm.querySelector('.preview-pane');
-            if (cardPreviewPane) cardPreviewPane.innerHTML = marked.parse(fsTextarea.value);
+            if (cardPreviewPane) {
+              cardPreviewPane.innerHTML = marked.parse(fsTextarea.value);
+              debouncedRenderMermaid(cardPreviewPane);
+            }
           }
         }
       }
