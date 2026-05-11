@@ -1,14 +1,11 @@
 ---
-title: "Untitled"
+title: 為什麼他總是不溝通？沉默不是不在乎，而是一種防衛
 date: 2026-05-11T02:59:23.848Z
 category: learning
-tags: [" ", "", "職涯", "個人成長", "學習"]
+tags: ["職涯", "個人成長", "學習"]
 lang: zh-TW
-tldr: ""
-description: ""
-
 type: explainer
-original_url: "https://www.youtube.com/watch?v=j0joxsq05_A"
+original_url: https://www.youtube.com/watch?v=j0joxsq05_A
 draft: true
 ---
 
@@ -28,11 +25,11 @@ draft: true
 
 ```mermaid
 graph LR;
-    A[壓力或傷害] -->|觸發|> B[沉默];
-    B -->|避免衝突|> C[保護自己];
-    B -->|表達需求|> D[溝通需求];
-    C -->|誤解|> E[不良結果];
-    D -->|有效溝通|> F[良好結果];
+    A[壓力或傷害] -->|觸發| B[沉默];
+    B -->|避免衝突| C[保護自己];
+    B -->|表達需求| D[溝通需求];
+    C -->|誤解| E[不良結果];
+    D -->|有效溝通| F[良好結果];
 ```
 
 ## 跟 直接表達 的差別
