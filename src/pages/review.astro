@@ -760,15 +760,30 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
         ty = Math.max(0, (vpH - baseH) / 2);
         apply();
       }
-      requestAnimationFrame(fitAndCenter);
+      var fitOnce = new ResizeObserver(function (entries, obs) {
+        var entry = entries[0];
+        if (entry && entry.contentRect.width > 0) {
+          obs.disconnect();
+          fitAndCenter();
+        }
+      });
+      fitOnce.observe(vp);
 
       var fsBtn = toolbar.querySelector('[data-action="fullscreen"]');
+      var fsAbort = new AbortController();
       document.addEventListener('fullscreenchange', function () {
         var isFs = document.fullscreenElement === wrap;
         fsBtn.textContent = isFs ? '✕' : '⛶';
         fsBtn.title = isFs ? 'Exit fullscreen' : 'Fullscreen';
         if (isFs) requestAnimationFrame(fitAndCenter);
-      });
+      }, { signal: fsAbort.signal });
+
+      new MutationObserver(function (_, obs) {
+        if (!document.contains(wrap)) {
+          fsAbort.abort();
+          obs.disconnect();
+        }
+      }).observe(document.body, { childList: true, subtree: true });
 
       toolbar.addEventListener('click', function (e) {
         var btn = e.target.closest('[data-action]');
