@@ -463,8 +463,21 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
       #fs-overlay[data-mobile-pane="preview"] .fs-editor textarea { display: none; }
       #auth-overlay form { flex-direction: column; }
     }
+
+    /* ── Mermaid zoom wrapper ── */
+    .mermaid-wrap { position: relative; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin: 1rem 0; background: var(--surface); }
+    .mermaid-toolbar { display: flex; gap: 4px; padding: 6px 10px; border-bottom: 1px solid var(--line); background: var(--surface-subtle); }
+    .mermaid-zoom-btn { width: 28px; height: 28px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--text); cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+    .mermaid-zoom-btn:hover { background: var(--glass); }
+    .mermaid-viewport { overflow: hidden; cursor: grab; padding: 16px; min-height: 120px; height: 340px; }
+    .mermaid-viewport:active { cursor: grabbing; }
+    .mermaid-wrap:fullscreen,
+    .mermaid-wrap:-webkit-full-screen { display: flex; flex-direction: column; background: var(--bg); border-radius: 0; border: none; }
+    .mermaid-wrap:fullscreen .mermaid-viewport,
+    .mermaid-wrap:-webkit-full-screen .mermaid-viewport { flex: 1; overflow: auto; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/marked@14/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.4.0/dist/mermaid.min.js"></script>
 </head>
 <body>
   <header class="site-header">
