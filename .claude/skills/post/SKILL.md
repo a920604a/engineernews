@@ -12,7 +12,7 @@ description: Convert a conversation, notes, experience, or GitHub project into a
 | 使用者說 | 模板 | type 值 |
 |---------|------|---------|
 | 「寫成文章」、「踩坑」、「debug」 | `templates/tech-post.md` | `debug` |
-| 「深入介紹」、「deep dive」、「架構解析」 | `templates/tech-deep-dive.md` | `deep-dive` |
+| 「深入介紹」、「深入研究」、「deep dive」、「架構解析」 | `templates/tech-deep-dive.md` | `deep-dive` |
 | 「怎麼做」、「步驟」、「how to」 | `templates/tech-post.md` | `how-to` |
 | 「X 個工具」、「清單」、「listicle」 | `templates/tech-post.md` | `listicle` |
 | 「什麼是」、「解釋」、「explainer」 | `templates/tech-deep-dive.md` | `explainer` |
