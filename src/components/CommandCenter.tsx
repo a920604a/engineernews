@@ -92,7 +92,6 @@ export default function CommandCenter() {
   const commands: Command[] = [
     { id: 'home', title: '回首頁', subtitle: '跳轉至工程師新聞首頁', action: () => window.location.href = '/', type: 'command' },
     { id: 'cats', title: '瀏覽分類', subtitle: '查看技術、產品、學習等分類', action: () => window.location.href = '/categories', type: 'command' },
-    { id: 'projs', title: '專案展示', subtitle: '查看過往的開發案例', action: () => window.location.href = '/projects', type: 'command' },
   ];
 
   const filteredCommands = commands.filter(c => 
