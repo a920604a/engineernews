@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface RagSource {
   citation: number;
@@ -35,34 +37,35 @@ function parseStreamPayload(payload: string) {
   }
 }
 
-function renderAnswer(answer: string, sources: RagSource[]) {
-  const parts = answer.split(/(\[\d+\])/g);
-
-  return parts.map((part, index) => {
-    const citation = part.match(/^\[(\d+)\]$/);
-    if (citation) {
-      const citationIndex = Number(citation[1]);
-      const source = sources.find((item) => item.citation === citationIndex);
-      if (source) {
-        return (
-          <a
-            key={`${part}-${index}`}
-            href={source.url}
-            title={source.title}
-            style={{
-              color: 'var(--accent)',
-              textDecoration: 'none',
-              fontWeight: 700,
-            }}
-          >
-            {part}
-          </a>
-        );
-      }
+function injectCitationLinks(text: string, sources: RagSource[]): string {
+  return text.replace(/\[(\d+)\]/g, (match, n) => {
+    const source = sources.find((s) => s.citation === Number(n));
+    if (source) {
+      const title = source.title.replace(/"/g, "'");
+      return `[[${n}]](${source.url} "${title}")`;
     }
-
-    return <span key={`${part}-${index}`}>{part}</span>;
+    return match;
   });
+}
+
+function renderAnswer(answer: string, sources: RagSource[]) {
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        a: ({ href, children }) => (
+          <a
+            href={href}
+            style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 700 }}
+          >
+            {children}
+          </a>
+        ),
+      }}
+    >
+      {injectCitationLinks(answer, sources)}
+    </ReactMarkdown>
+  );
 }
 
 export default function Search({ lang = 'zh-TW' }: Props) {
@@ -260,13 +263,7 @@ export default function Search({ lang = 'zh-TW' }: Props) {
               }}>
                 {resultsLabel}
               </p>
-              <div style={{
-                margin: 0,
-                fontSize: '15px',
-                lineHeight: 1.8,
-                color: 'var(--label)',
-                whiteSpace: 'pre-wrap',
-              }}>
+              <div style={{ margin: 0, fontSize: '15px', lineHeight: 1.8, color: 'var(--label)' }}>
                 {renderAnswer(answer, sources)}
               </div>
             </section>
