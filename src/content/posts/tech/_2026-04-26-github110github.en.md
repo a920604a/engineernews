@@ -38,7 +38,7 @@ sequenceDiagram
     P->>D: Provide plugin functionality
     D->>P: Install and manage plugins
     P->>C: Extend Codex functionality
-    Note over D,C: Interaction between Codex, oh-my-codex, and developer
+    Note over (D,C): Interaction between Codex, oh-my-codex, and developer
 ```
 
 ## Difference from other enhancement tools
