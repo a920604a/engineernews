@@ -37,7 +37,7 @@ type R2Object = { key: string; size: number; uploaded: string };
 type PageView = { slug: string; count: number; updated_at: string };
 type TTSRecord = { id: number; created_at: string; type: 'tts'; title: string; voice: string; audio_filename: string; srt_filename: string };
 
-type DetailView = 'posts' | 'vectorize' | 'r2' | 'pageviews' | 'searchlogs' | 'search-traces' | 'logs' | 'tts' | 'settings' | null;
+type MainTab = 'overview' | 'content' | 'search' | 'infra' | 'system';
 
 const TOKEN_KEY = 'admin_token';
 const SESSION_TTL = 36 * 60 * 60 * 1000; // 36 hours
@@ -171,10 +171,6 @@ function Skeleton({ h = 14, w = '100%' }: { h?: number; w?: string | number }) {
 
 function CardSkeleton({ lines = 4 }: { lines?: number }) {
   return <div>{Array.from({ length: lines }, (_, i) => <Skeleton key={i} w={`${60 + (i % 3) * 15}%`} />)}</div>;
-}
-
-function BackBtn({ onClick }: { onClick: () => void }) {
-  return <button style={{ ...s.btn(), marginBottom: '20px' }} onClick={onClick}>← 返回總覽</button>;
 }
 
 function FetchedAt({ ts }: { ts: number }) {
@@ -971,7 +967,6 @@ function SettingsDetail({ token }: { token: string }) {
 
   const handleSave = () => {
     setSaving(true);
-    // 儲存時補上預設值（若使用者未選）
     const toSave = { ...settings };
     for (const [k, v] of Object.entries(TTS_DEFAULTS)) {
       if (!toSave[k]) toSave[k] = v;
@@ -1046,21 +1041,87 @@ function SettingsDetail({ token }: { token: string }) {
   );
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────────
+// ── Infra: Config ─────────────────────────────────────────────────────────────
 
-const DETAIL_TITLES: Record<string, string> = {
-  posts: 'Post Timeline', vectorize: 'Vectorize 詳情', r2: 'R2 物件列表',
-  pageviews: 'Page Views Top 50', searchlogs: 'AI Search Logs', 'search-traces': 'RAG Trace 瀏覽器',
-  logs: 'Application Logs', tts: 'TTS Synthesis Logs', settings: '系統設定',
+function ConfigDetail({ config }: { config: CfgData }) {
+  return (
+    <div style={{ maxWidth: '480px' }}>
+      <div style={s.card}>
+        <p style={s.section}>AI Search Pipeline</p>
+        <KV k="embedding" v={config.embedding_model.split('/').at(-1)!} />
+        <KV k="dims" v={config.embedding_dims} />
+        <KV k="chat model" v={config.chat_model.split('/').at(-1)!} />
+        <KV k="topK" v={config.vector_top_k} />
+        <KV k="max sources" v={config.max_sources} />
+        <p style={{ ...s.section, marginTop: '16px' }}>Infra</p>
+        <KV k="D1" v={config.d1_database} />
+        <KV k="R2" v={config.r2_bucket} />
+        <KV k="Vectorize" v={config.vectorize_index} />
+        <KV k="compat" v={config.compatibility_date} />
+      </div>
+    </div>
+  );
+}
+
+// ── Tab navigation ────────────────────────────────────────────────────────────
+
+const MAIN_TABS = [
+  { id: 'overview' as MainTab, label: 'Overview' },
+  { id: 'content'  as MainTab, label: 'Content' },
+  { id: 'search'   as MainTab, label: 'Search' },
+  { id: 'infra'    as MainTab, label: 'Infra' },
+  { id: 'system'   as MainTab, label: 'System' },
+];
+
+const SUB_TABS: Record<string, { id: string; label: string }[]> = {
+  content: [{ id: 'posts', label: 'Posts' }, { id: 'tts', label: 'TTS' }],
+  search:  [{ id: 'analytics', label: 'Analytics' }, { id: 'searchlogs', label: 'Logs' }, { id: 'search-traces', label: 'Traces' }],
+  infra:   [{ id: 'vectorize', label: 'Vectorize' }, { id: 'r2', label: 'R2' }, { id: 'config', label: 'Config' }],
+  system:  [{ id: 'logs', label: 'App Logs' }, { id: 'pageviews', label: 'Page Views' }, { id: 'settings', label: 'Settings' }],
 };
+
+const DEFAULT_SUB: Record<MainTab, string> = {
+  overview: '', content: 'posts', search: 'analytics', infra: 'vectorize', system: 'logs',
+};
+
+function TabBar({ active, onChange }: { active: MainTab; onChange: (t: MainTab) => void }) {
+  return (
+    <div style={{ display: 'flex', borderBottom: '1px solid var(--separator,rgba(255,255,255,0.1))', marginBottom: '24px' }}>
+      {MAIN_TABS.map(tab => (
+        <button key={tab.id} onClick={() => onChange(tab.id)} style={{
+          padding: '10px 18px', fontSize: '14px', fontWeight: 600,
+          background: 'none', border: 'none', cursor: 'pointer',
+          borderBottom: active === tab.id ? '2px solid #0a84ff' : '2px solid transparent',
+          color: active === tab.id ? '#0a84ff' : 'var(--label-secondary)',
+          marginBottom: '-1px',
+        }}>
+          {tab.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function SubTabBar({ tabs, active, onChange }: { tabs: { id: string; label: string }[]; active: string; onChange: (id: string) => void }) {
+  return (
+    <div style={{ display: 'flex', gap: '6px', marginBottom: '20px' }}>
+      {tabs.map(t => (
+        <button key={t.id} style={s.btn(active === t.id)} onClick={() => onChange(t.id)}>{t.label}</button>
+      ))}
+    </div>
+  );
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
 
 export default function AdminDashboard() {
   const [token, setToken] = useState<string | null>(null);
   const [data, setData] = useState<Overview | null>(null);
   const [loading, setLoading] = useState(false);
   const [fetchErr, setFetchErr] = useState<string | null>(null);
-  const [detail, setDetail] = useState<DetailView>(null);
   const [fetchedAt, setFetchedAt] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState<MainTab>('overview');
+  const [subTabs, setSubTabs] = useState<Record<string, string>>(DEFAULT_SUB);
 
   useEffect(() => {
     const saved = loadSession();
@@ -1076,7 +1137,7 @@ export default function AdminDashboard() {
     setFetchErr(null);
     fetch(`/api/admin/stats?token=${encodeURIComponent(t)}`)
       .then(async res => {
-        if (res.status === 401) { localStorage.removeItem(TOKEN_KEY); setToken(null); throw new Error('Unauthorized'); } // session cleared on 401
+        if (res.status === 401) { localStorage.removeItem(TOKEN_KEY); setToken(null); throw new Error('Unauthorized'); }
         return res.json() as Promise<Overview>;
       })
       .then(d => {
@@ -1096,31 +1157,160 @@ export default function AdminDashboard() {
   const d1 = data?.d1.data;
   const contentStats = data?.content_stats.data;
 
-  // ── Detail layer ───────────────────────────────────────────────────────────
-  if (detail && data) {
-    return (
-      <div style={{ paddingTop: '24px', paddingBottom: '64px' }}>
-        <BackBtn onClick={() => setDetail(null)} />
-        <h2 style={{ fontSize: '20px', fontWeight: 900, margin: '0 0 24px' }}>{DETAIL_TITLES[detail]}</h2>
-        {detail === 'posts'      && data.posts.data     && <PostsDetail posts={data.posts.data} />}
-        {detail === 'vectorize'  && data.vectorize.data && <VectorizeDetail vec={data.vectorize.data} token={token} />}
-        {detail === 'r2'                                && <R2Detail token={token} />}
-        {detail === 'pageviews'                         && <PageViewsDetail token={token} />}
-        {detail === 'searchlogs'                        && <SearchLogsDetail token={token} />}
-        {detail === 'search-traces'                     && <SearchTracesDetail token={token} />}
-        {detail === 'logs'                              && <LogsPanel token={token} />}
-        {detail === 'tts'                               && <TTSDetail />}
-        {detail === 'settings'                          && <SettingsDetail token={token} />}
-      </div>
-    );
-  }
+  const goToTab = (tab: MainTab, sub?: string) => {
+    setActiveTab(tab);
+    if (sub) setSubTabs(prev => ({ ...prev, [tab]: sub }));
+  };
 
-  // ── Overview layer ─────────────────────────────────────────────────────────
+  const setSub = (tab: string) => (id: string) => setSubTabs(prev => ({ ...prev, [tab]: id }));
+
+  const renderContent = () => {
+    // ── Overview ──
+    if (activeTab === 'overview') {
+      return (
+        <>
+          {loading && <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>{[200, 300, 250, 180].map((w, i) => <Skeleton key={i} h={80} w={`${w}px`} />)}</div>}
+          {fetchErr && <p style={s.err}>Error: {fetchErr} <button style={{ color: '#0a84ff', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => token && fetchOverview(token, true)}>retry</button></p>}
+          {data && !loading && (
+            <>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: '12px', marginBottom: '16px' }}>
+                <Stat label="Posts in D1" value={d1?.posts ?? '–'} sub={`${d1?.doc_chunks ?? 0} chunks`} onClick={() => goToTab('content', 'posts')} />
+                <Stat label="Draft: true" value={contentStats?.draft_true ?? '–'} sub="content files" />
+                <Stat label="Draft: false" value={contentStats?.draft_false ?? '–'} sub="content files" />
+                <Stat label="Published + Audio" value={contentStats?.published_with_audio ?? '–'} sub="draft:false & audio_url" />
+                <Stat label="Searches (all)" value={d1?.search_logs ?? '–'} sub="AI search queries" onClick={() => goToTab('search', 'searchlogs')} />
+                <Stat label="RAG Traces" value={d1?.search_logs ?? '–'} sub="品質標記 & trace 瀏覽" onClick={() => goToTab('search', 'search-traces')} />
+                <Stat
+                  label="LLM 成功率 (7d)"
+                  value={`${pct(d1?.search_stats.llm_ok ?? 0, d1?.search_stats.total ?? 1)}%`}
+                  color={pct(d1?.search_stats.llm_ok ?? 0, d1?.search_stats.total ?? 1) >= 80 ? '#30d158' : '#ffd60a'}
+                  sub={`${d1?.search_stats.total ?? 0} queries`}
+                />
+                <Stat label="Avg 耗時 (7d)" value={`${d1?.search_stats.avg_ms ?? 0}`} sub="ms" />
+                <Stat label="R2 Objects" value={data.r2.data ? (data.r2.data.truncated ? '1000+' : data.r2.data.count) : '–'} sub="OG images" onClick={() => goToTab('infra', 'r2')} />
+                <Stat label="TTS Logs" value="View" sub="Synthesis history" onClick={() => goToTab('content', 'tts')} />
+                <Stat label="Vectorize" value={data.vectorize.data?.chunk_count ?? '–'} sub={`${data.vectorize.data?.dimensions ?? 0}D ${data.vectorize.data?.embedding_model.split('/').at(-1) ?? ''}`} onClick={() => goToTab('infra', 'vectorize')} />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: '16px', marginBottom: '16px' }}>
+                {d1 && <div style={s.card}><CategoryPieChart data={d1.category_distribution} total={d1.posts} /></div>}
+                {d1 && <div style={s.card}><LangDonutChart data={d1.lang_distribution} /></div>}
+                {d1 && (
+                  <div style={s.card}>
+                    <PostsTrendChart data={d1.posts_trend} />
+                    <div style={{ marginTop: '16px' }}><SearchTrendChart data={d1.search_trend} /></div>
+                  </div>
+                )}
+              </div>
+
+              {d1 && <RecentPosts posts={d1.recent_posts} onDrill={() => goToTab('content', 'posts')} />}
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: '16px', marginTop: '16px' }}>
+                {d1 && (
+                  <div style={s.card}>
+                    <p style={s.section}>Search Analytics (7d)</p>
+                    <SearchStatsGauges stats={d1.search_stats} />
+                  </div>
+                )}
+                {d1 && d1.page_views_top.length > 0 && (
+                  <div style={s.card}><PageViewsChart data={d1.page_views_top} /></div>
+                )}
+                {data.config.data && (
+                  <div style={s.card}>
+                    <p style={s.section}>AI Search Pipeline</p>
+                    <KV k="embedding" v={data.config.data.embedding_model.split('/').at(-1)!} />
+                    <KV k="dims" v={data.config.data.embedding_dims} />
+                    <KV k="chat model" v={data.config.data.chat_model.split('/').at(-1)!} />
+                    <KV k="topK" v={data.config.data.vector_top_k} />
+                    <KV k="max sources" v={data.config.data.max_sources} />
+                    <p style={{ ...s.section, marginTop: '16px' }}>Infra</p>
+                    <KV k="D1" v={data.config.data.d1_database} />
+                    <KV k="R2" v={data.config.data.r2_bucket} />
+                    <KV k="Vectorize" v={data.config.data.vectorize_index} />
+                    <KV k="compat" v={data.config.data.compatibility_date} />
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </>
+      );
+    }
+
+    // ── Content ──
+    if (activeTab === 'content') {
+      const sub = subTabs.content;
+      return (
+        <>
+          <SubTabBar tabs={SUB_TABS.content} active={sub} onChange={setSub('content')} />
+          {sub === 'posts' && (data?.posts.data
+            ? <PostsDetail posts={data.posts.data} />
+            : loading ? <CardSkeleton lines={6} /> : <p style={{ color: 'var(--label-secondary)' }}>No data</p>
+          )}
+          {sub === 'tts' && <TTSDetail />}
+        </>
+      );
+    }
+
+    // ── Search ──
+    if (activeTab === 'search') {
+      const sub = subTabs.search;
+      return (
+        <>
+          <SubTabBar tabs={SUB_TABS.search} active={sub} onChange={setSub('search')} />
+          {sub === 'analytics' && (
+            d1 ? (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: '16px' }}>
+                <div style={s.card}>
+                  <p style={s.section}>Search Stats (7d)</p>
+                  <SearchStatsGauges stats={d1.search_stats} />
+                </div>
+                <div style={s.card}><SearchTrendChart data={d1.search_trend} /></div>
+              </div>
+            ) : loading ? <CardSkeleton lines={4} /> : null
+          )}
+          {sub === 'searchlogs' && <SearchLogsDetail token={token} />}
+          {sub === 'search-traces' && <SearchTracesDetail token={token} />}
+        </>
+      );
+    }
+
+    // ── Infra ──
+    if (activeTab === 'infra') {
+      const sub = subTabs.infra;
+      return (
+        <>
+          <SubTabBar tabs={SUB_TABS.infra} active={sub} onChange={setSub('infra')} />
+          {sub === 'vectorize' && (data?.vectorize.data
+            ? <VectorizeDetail vec={data.vectorize.data} token={token} />
+            : loading ? <CardSkeleton lines={4} /> : null
+          )}
+          {sub === 'r2' && <R2Detail token={token} />}
+          {sub === 'config' && (data?.config.data
+            ? <ConfigDetail config={data.config.data} />
+            : loading ? <CardSkeleton lines={4} /> : null
+          )}
+        </>
+      );
+    }
+
+    // ── System ──
+    if (activeTab === 'system') {
+      const sub = subTabs.system;
+      return (
+        <>
+          <SubTabBar tabs={SUB_TABS.system} active={sub} onChange={setSub('system')} />
+          {sub === 'logs' && <LogsPanel token={token} />}
+          {sub === 'pageviews' && <PageViewsDetail token={token} />}
+          {sub === 'settings' && <SettingsDetail token={token} />}
+        </>
+      );
+    }
+  };
+
   return (
     <div style={{ paddingTop: '24px', paddingBottom: '64px' }}>
-
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '28px', flexWrap: 'wrap', gap: '12px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <h1 style={{ fontSize: '22px', fontWeight: 900, margin: '0 0 4px' }}>Engineer News Admin</h1>
           <p style={{ fontSize: '13px', color: 'var(--label-secondary)', margin: 0 }}>
@@ -1129,102 +1319,13 @@ export default function AdminDashboard() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
-          <button style={s.btn()} onClick={() => setDetail('settings')}>⚙ 設定</button>
           <button style={s.btn()} onClick={() => token && fetchOverview(token, true)}>↺ 重新整理</button>
           <button style={{ ...s.btn(), color: 'var(--label-secondary)' }} onClick={() => { localStorage.removeItem(TOKEN_KEY); setToken(null); }}>登出</button>
         </div>
       </div>
 
-      {loading && <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>{[200, 300, 250, 180].map((w, i) => <Skeleton key={i} h={80} w={`${w}px`} />)}</div>}
-      {fetchErr && <p style={s.err}>Error: {fetchErr} <button style={{ color: '#0a84ff', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => token && fetchOverview(token, true)}>retry</button></p>}
-
-      {data && !loading && (
-        <>
-          {/* ── Row 1: Hero metrics ── */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: '12px', marginBottom: '16px' }}>
-            <Stat label="Posts in D1" value={d1?.posts ?? '–'} sub={`${d1?.doc_chunks ?? 0} chunks`} onClick={() => setDetail('posts')} />
-            <Stat label="Draft: true" value={contentStats?.draft_true ?? '–'} sub="content files" />
-            <Stat label="Draft: false" value={contentStats?.draft_false ?? '–'} sub="content files" />
-            <Stat label="Published + Audio" value={contentStats?.published_with_audio ?? '–'} sub="draft:false & audio_url" />
-            <Stat label="Searches (all)" value={d1?.search_logs ?? '–'} sub="AI search queries" onClick={() => setDetail('searchlogs')} />
-            <Stat label="RAG Traces" value={d1?.search_logs ?? '–'} sub="品質標記 & trace 瀏覽" onClick={() => setDetail('search-traces')} />
-            <Stat
-              label="LLM 成功率 (7d)"
-              value={`${pct(d1?.search_stats.llm_ok ?? 0, d1?.search_stats.total ?? 1)}%`}
-              color={(pct(d1?.search_stats.llm_ok ?? 0, d1?.search_stats.total ?? 1)) >= 80 ? '#30d158' : '#ffd60a'}
-              sub={`${d1?.search_stats.total ?? 0} queries`}
-            />
-            <Stat label="Avg 耗時 (7d)" value={`${d1?.search_stats.avg_ms ?? 0}`} sub="ms" />
-            <Stat label="R2 Objects" value={data.r2.data ? (data.r2.data.truncated ? '1000+' : data.r2.data.count) : '–'} sub="OG images" onClick={() => setDetail('r2')} />
-            <Stat label="TTS Logs" value="View" sub="Synthesis history" onClick={() => setDetail('tts')} />
-            <Stat label="Vectorize" value={data.vectorize.data?.chunk_count ?? '–'} sub={`${data.vectorize.data?.dimensions ?? 0}D ${data.vectorize.data?.embedding_model.split('/').at(-1) ?? ''}`} onClick={() => setDetail('vectorize')} />
-          </div>
-
-          {/* ── Row 2: Charts ── */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: '16px', marginBottom: '16px' }}>
-            {d1 && (
-              <div style={s.card}>
-                <CategoryPieChart data={d1.category_distribution} total={d1.posts} />
-              </div>
-            )}
-            {d1 && (
-              <div style={s.card}>
-                <LangDonutChart data={d1.lang_distribution} />
-              </div>
-            )}
-            {d1 && (
-              <div style={s.card}>
-                <PostsTrendChart data={d1.posts_trend} />
-                <div style={{ marginTop: '16px' }}>
-                  <SearchTrendChart data={d1.search_trend} />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* ── Row 2.5: Recent Posts ── */}
-          {d1 && <RecentPosts posts={d1.recent_posts} onDrill={() => setDetail('posts')} />}
-
-          {/* ── Row 3: Search + Page Views ── */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: '16px', marginBottom: '16px' }}>
-            {d1 && (
-              <div style={s.card}>
-                <p style={s.section}>Search Analytics (7d)</p>
-                <SearchStatsGauges stats={d1.search_stats} />
-              </div>
-            )}
-            {d1 && d1.page_views_top.length > 0 && (
-              <div style={s.card}>
-                <PageViewsChart data={d1.page_views_top} />
-              </div>
-            )}
-            {data.config.data && (
-              <div style={s.card}>
-                <p style={s.section}>AI Search Pipeline</p>
-                <KV k="embedding" v={data.config.data.embedding_model.split('/').at(-1)!} />
-                <KV k="dims" v={data.config.data.embedding_dims} />
-                <KV k="chat model" v={data.config.data.chat_model.split('/').at(-1)!} />
-                <KV k="topK" v={data.config.data.vector_top_k} />
-                <KV k="max sources" v={data.config.data.max_sources} />
-                <p style={{ ...s.section, marginTop: '16px' }}>Infra</p>
-                <KV k="D1" v={data.config.data.d1_database} />
-                <KV k="R2" v={data.config.data.r2_bucket} />
-                <KV k="Vectorize" v={data.config.data.vectorize_index} />
-                <KV k="compat" v={data.config.data.compatibility_date} />
-              </div>
-            )}
-          </div>
-
-          {/* ── Row 4: Logs ── */}
-          <div style={{ ...s.card, marginBottom: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <p style={{ ...s.section, margin: 0 }}>Application Logs</p>
-              <button style={{ ...s.btn(), fontSize: '12px', color: '#0a84ff' }} onClick={() => setDetail('logs')}>展開全部 →</button>
-            </div>
-            <LogsPanel token={token} />
-          </div>
-        </>
-      )}
+      <TabBar active={activeTab} onChange={setActiveTab} />
+      {renderContent()}
     </div>
   );
 }
