@@ -268,19 +268,52 @@ ${query}`;
 async function writeLog(
   db: D1Database,
   log: { query: string; lang: string; vectorHits: number; keywordHits: number; llmOk: boolean; error?: string; durationMs: number }
-) {
+): Promise<number | null> {
+  try {
+    const result = await db.prepare(
+      `INSERT INTO search_logs (query, lang, vector_hits, keyword_hits, llm_ok, error, duration_ms)
+       VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id`
+    ).bind(log.query, log.lang, log.vectorHits, log.keywordHits, log.llmOk ? 1 : 0, log.error ?? null, log.durationMs).first<{ id: number }>();
+    return result?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function writeTrace(
+  db: D1Database,
+  logId: number,
+  llmAnswer: string,
+  sources: SearchSource[]
+): Promise<void> {
   try {
     await db.prepare(
-      `INSERT INTO search_logs (query, lang, vector_hits, keyword_hits, llm_ok, error, duration_ms)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`
-    ).bind(log.query, log.lang, log.vectorHits, log.keywordHits, log.llmOk ? 1 : 0, log.error ?? null, log.durationMs).run();
+      `UPDATE search_logs SET llm_answer = ?, sources_json = ? WHERE id = ?`
+    ).bind(llmAnswer, JSON.stringify(sources), logId).run();
   } catch {
     // non-critical, ignore
   }
 }
 
+function parseSseChunk(chunk: Uint8Array): string {
+  const text = new TextDecoder().decode(chunk);
+  let result = '';
+  for (const line of text.split('\n')) {
+    if (!line.startsWith('data: ')) continue;
+    const data = line.slice(6).trim();
+    if (!data || data === '[DONE]') continue;
+    try {
+      const parsed = JSON.parse(data);
+      const content = parsed?.response ?? parsed?.choices?.[0]?.delta?.content ?? '';
+      if (content) result += content;
+    } catch { /* ignore */ }
+  }
+  return result;
+}
+
 export const POST: APIRoute = async ({ request, locals }) => {
   const { AI, VECTORIZE, DB } = locals.runtime.env;
+  const ctx = locals.runtime.ctx;
   const log = createLogger(DB, 'api/search');
   const body = (await request.json()) as SearchBody;
   const parsed = parseBody(body);
@@ -333,15 +366,41 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const durationMs = Date.now() - t0;
     log.info('search done', { vectorHits, keywordHits, llmOk, durationMs });
 
-    // fire-and-forget search_logs
-    void writeLog(DB, { query: parsed.query, lang: parsed.lang, vectorHits, keywordHits, llmOk, durationMs });
-
     const headers = new Headers();
     headers.set('Content-Type', contentType);
     headers.set('Cache-Control', 'no-cache, no-transform');
     headers.set('x-rag-sources', JSON.stringify(sources));
     headers.set('x-rag-lang', parsed.lang);
 
+    // For SSE streams: tee to capture trace; for fallback text: skip trace
+    if (llmOk && answerStream instanceof ReadableStream) {
+      const [clientStream, traceStream] = (answerStream as ReadableStream<Uint8Array>).tee();
+
+      ctx.waitUntil((async () => {
+        const logId = await writeLog(DB, { query: parsed.query, lang: parsed.lang, vectorHits, keywordHits, llmOk, durationMs });
+        if (logId === null) return;
+
+        const reader = traceStream.getReader();
+        let accumulated = '';
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            accumulated += parseSseChunk(value);
+          }
+        } catch { /* stream cancelled — no trace */ return; }
+        finally { reader.releaseLock(); }
+
+        if (accumulated) {
+          await writeTrace(DB, logId, accumulated, sources);
+        }
+      })());
+
+      return new Response(clientStream, { headers });
+    }
+
+    // Fallback (plain text or AI error): log without trace
+    void writeLog(DB, { query: parsed.query, lang: parsed.lang, vectorHits, keywordHits, llmOk, durationMs });
     return new Response(answerStream as BodyInit, { headers });
   } catch (error) {
     const errMsg = error instanceof Error ? error.message : String(error);

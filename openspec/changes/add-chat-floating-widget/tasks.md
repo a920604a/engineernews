@@ -28,15 +28,15 @@
 
 - [x] 5.1 移除 `src/components/Search.tsx` 中的 `renderAnswer()` 函式
 - [x] 5.2 改用 react-markdown 渲染搜尋結果，保留 citation 連結自訂 renderer
-- [ ] 5.3 確認 `/ai-search` 頁面的渲染結果正確（本機測試）
+- [x] 5.3 確認 `/ai-search` 頁面的渲染結果正確（本機測試）
 
 ## 6. 驗證
 
-- [ ] 6.1 本機啟動 `make dev`，確認浮動按鈕在首頁、文章頁、分類頁正常顯示
-- [ ] 6.2 確認點擊後 popup 展開，輸入問題可取得 RAG 回答（需本機 D1 + Vectorize 環境）
-- [ ] 6.3 確認推薦問題按鈕正常顯示，點擊後自動送出並消失
-- [ ] 6.4 確認回答中的 Markdown 格式（code block、清單）正確渲染
-- [ ] 6.5 確認 citation 連結（`[1]`）可點擊並指向正確文章
-- [ ] 6.6 確認行動版 bottom sheet 樣式（瀏覽器 DevTools 模擬）
-- [ ] 6.7 確認 ESC 鍵可關閉 popup
+- [x] 6.1 本機啟動 `make dev`，確認浮動按鈕在首頁、文章頁、分類頁正常顯示
+- [x] 6.2 確認點擊後 popup 展開，輸入問題可取得 RAG 回答（需本機 D1 + Vectorize 環境）
+- [x] 6.3 確認推薦問題按鈕正常顯示，點擊後自動送出並消失
+- [x] 6.4 確認回答中的 Markdown 格式（code block、清單）正確渲染
+- [x] 6.5 確認 citation 連結（`[1]`）可點擊並指向正確文章
+- [x] 6.6 確認行動版 bottom sheet 樣式（瀏覽器 DevTools 模擬）
+- [x] 6.7 確認 ESC 鍵可關閉 popup
 - [x] 6.8 執行 `make build` 確認 TypeScript 無錯誤

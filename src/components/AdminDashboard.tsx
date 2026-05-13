@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, Fragment } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -28,12 +30,14 @@ type Overview = { d1: SF<D1Data>; r2: SF<R2Data>; vectorize: SF<VecData>; config
 type AppLogRow = { id: number; level: 'debug' | 'info' | 'warn' | 'error'; source: string; message: string; data: string | null; created_at: string };
 type AppLogPage = { rows: AppLogRow[]; total: number; limit: number; offset: number };
 type SearchLog = { id: number; query: string; lang: string; vector_hits: number; keyword_hits: number; llm_ok: number; error: string | null; duration_ms: number; created_at: string };
+type TraceRow = { id: number; query: string; lang: string; vector_hits: number; keyword_hits: number; llm_ok: number; duration_ms: number; llm_answer: string | null; sources_json: string | null; quality_score: number; created_at: string };
+type TracePage = { rows: TraceRow[]; total: number; limit: number; offset: number };
 type ChunkRow = { source_id: string; title: string; category: string; lang: string; chunk_count: number; last_updated: string };
 type R2Object = { key: string; size: number; uploaded: string };
 type PageView = { slug: string; count: number; updated_at: string };
 type TTSRecord = { id: number; created_at: string; type: 'tts'; title: string; voice: string; audio_filename: string; srt_filename: string };
 
-type DetailView = 'posts' | 'vectorize' | 'r2' | 'pageviews' | 'searchlogs' | 'logs' | 'tts' | 'settings' | null;
+type DetailView = 'posts' | 'vectorize' | 'r2' | 'pageviews' | 'searchlogs' | 'search-traces' | 'logs' | 'tts' | 'settings' | null;
 
 const TOKEN_KEY = 'admin_token';
 const SESSION_TTL = 36 * 60 * 60 * 1000; // 36 hours
@@ -462,6 +466,131 @@ function R2Detail({ token }: { token: string }) {
           </div>
         </>
       )}
+    </div>
+  );
+}
+
+function SearchTracesDetail({ token }: { token: string }) {
+  const [rows, setRows] = useState<TraceRow[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [filter, setFilter] = useState('');
+  const [expanded, setExpanded] = useState<number | null>(null);
+  const [quality, setQuality] = useState<Record<number, number>>({});
+
+  const fetchTraces = useCallback((q = '') => {
+    setLoading(true);
+    const qs = q ? `&q=${encodeURIComponent(q)}` : '';
+    fetch(`/api/admin/search-traces?token=${encodeURIComponent(token)}${qs}`)
+      .then(r => r.json() as Promise<TracePage>)
+      .then(d => { setRows(d.rows); setTotal(d.total); })
+      .catch(e => setErr((e as Error).message))
+      .finally(() => setLoading(false));
+  }, [token]);
+
+  useEffect(() => { fetchTraces(); }, [fetchTraces]);
+
+  const handleFilter = (v: string) => {
+    setFilter(v);
+    fetchTraces(v);
+  };
+
+  const setScore = async (id: number, score: number) => {
+    const current = quality[id] ?? rows.find(r => r.id === id)?.quality_score ?? -1;
+    const next = current === score ? -1 : score;
+    setQuality(prev => ({ ...prev, [id]: next }));
+    await fetch(`/api/admin/search-traces?token=${encodeURIComponent(token)}&id=${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ quality_score: next }),
+    });
+  };
+
+  const qualityIcon = (row: TraceRow) => {
+    const score = quality[row.id] ?? row.quality_score;
+    if (score === 1) return '✓';
+    if (score === 0) return '✗';
+    return '–';
+  };
+
+  const qualityColor = (row: TraceRow) => {
+    const score = quality[row.id] ?? row.quality_score;
+    if (score === 1) return '#30d158';
+    if (score === 0) return '#ff453a';
+    return 'var(--label-tertiary)';
+  };
+
+  if (err) return <Err msg={err} />;
+
+  const displayRows = filter
+    ? rows.filter(r => r.query.toLowerCase().includes(filter.toLowerCase()))
+    : rows;
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '16px' }}>
+        <input
+          value={filter}
+          onChange={e => handleFilter(e.target.value)}
+          placeholder="過濾查詢關鍵字..."
+          style={{ flex: 1, padding: '8px 12px', borderRadius: '8px', border: '0.5px solid var(--separator)', background: 'var(--bg-tertiary)', color: 'var(--label)', fontSize: '14px', outline: 'none' }}
+        />
+        <span style={{ fontSize: '13px', color: 'var(--label-secondary)', whiteSpace: 'nowrap' }}>
+          {loading ? '載入中…' : `共 ${total} 筆`}
+        </span>
+      </div>
+
+      <div style={{ maxHeight: '620px', overflowY: 'auto' }}>
+        {displayRows.map(row => (
+          <Fragment key={row.id}>
+            <div
+              onClick={() => setExpanded(expanded === row.id ? null : row.id)}
+              style={{ display: 'grid', gridTemplateColumns: '100px 1fr 50px 70px 40px', gap: '0 8px', padding: '8px 4px', borderBottom: '1px solid rgba(255,255,255,0.05)', alignItems: 'center', cursor: 'pointer' }}
+            >
+              <span style={{ fontSize: '11px', color: 'var(--label-secondary)', fontFamily: 'monospace' }}>{row.created_at.slice(0, 16).replace('T', ' ')}</span>
+              <div>
+                <span style={{ fontSize: '13px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.query}</span>
+                <span style={{ fontSize: '11px', color: 'var(--label-tertiary)' }}>{row.duration_ms}ms · {row.lang === 'zh-TW' ? '中文' : 'EN'} · vec:{row.vector_hits}</span>
+              </div>
+              <span style={{ fontSize: '13px', color: qualityColor(row), textAlign: 'center' }}>{qualityIcon(row)}</span>
+              <div style={{ display: 'flex', gap: '4px' }}>
+                <button onClick={e => { e.stopPropagation(); setScore(row.id, 1); }} style={{ padding: '2px 6px', borderRadius: '5px', border: '0.5px solid var(--separator)', background: (quality[row.id] ?? row.quality_score) === 1 ? '#30d158' : 'transparent', color: (quality[row.id] ?? row.quality_score) === 1 ? '#fff' : '#30d158', cursor: 'pointer', fontSize: '12px' }}>✓</button>
+                <button onClick={e => { e.stopPropagation(); setScore(row.id, 0); }} style={{ padding: '2px 6px', borderRadius: '5px', border: '0.5px solid var(--separator)', background: (quality[row.id] ?? row.quality_score) === 0 ? '#ff453a' : 'transparent', color: (quality[row.id] ?? row.quality_score) === 0 ? '#fff' : '#ff453a', cursor: 'pointer', fontSize: '12px' }}>✗</button>
+              </div>
+              <span style={{ fontSize: '12px', color: 'var(--label-tertiary)', textAlign: 'right' }}>{row.llm_answer ? '▾' : ''}</span>
+            </div>
+
+            {expanded === row.id && (
+              <div style={{ padding: '12px 16px', background: 'var(--bg-tertiary)', borderBottom: '1px solid var(--separator)', fontSize: '14px', lineHeight: 1.7 }}>
+                {row.llm_answer ? (
+                  <>
+                    <div className="chat-md" style={{ marginBottom: '12px' }}>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{row.llm_answer}</ReactMarkdown>
+                    </div>
+                    {row.sources_json && (() => {
+                      try {
+                        const srcs = JSON.parse(row.sources_json) as { title: string; url: string; citation: number; score: number }[];
+                        return (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', borderTop: '0.5px solid var(--separator)', paddingTop: '8px' }}>
+                            {srcs.map(s => (
+                              <a key={s.citation} href={s.url} style={{ fontSize: '11px', padding: '2px 7px', background: 'var(--glass)', border: '0.5px solid var(--separator)', borderRadius: '20px', color: 'var(--accent)', textDecoration: 'none' }}>
+                                [{s.citation}] {s.title}
+                              </a>
+                            ))}
+                          </div>
+                        );
+                      } catch { return null; }
+                    })()}
+                  </>
+                ) : (
+                  <span style={{ color: 'var(--label-tertiary)' }}>無 trace 資料（舊記錄或查詢失敗）</span>
+                )}
+              </div>
+            )}
+          </Fragment>
+        ))}
+      </div>
     </div>
   );
 }
@@ -921,8 +1050,8 @@ function SettingsDetail({ token }: { token: string }) {
 
 const DETAIL_TITLES: Record<string, string> = {
   posts: 'Post Timeline', vectorize: 'Vectorize 詳情', r2: 'R2 物件列表',
-  pageviews: 'Page Views Top 50', searchlogs: 'AI Search Logs', logs: 'Application Logs',
-  tts: 'TTS Synthesis Logs', settings: '系統設定',
+  pageviews: 'Page Views Top 50', searchlogs: 'AI Search Logs', 'search-traces': 'RAG Trace 瀏覽器',
+  logs: 'Application Logs', tts: 'TTS Synthesis Logs', settings: '系統設定',
 };
 
 export default function AdminDashboard() {
@@ -978,6 +1107,7 @@ export default function AdminDashboard() {
         {detail === 'r2'                                && <R2Detail token={token} />}
         {detail === 'pageviews'                         && <PageViewsDetail token={token} />}
         {detail === 'searchlogs'                        && <SearchLogsDetail token={token} />}
+        {detail === 'search-traces'                     && <SearchTracesDetail token={token} />}
         {detail === 'logs'                              && <LogsPanel token={token} />}
         {detail === 'tts'                               && <TTSDetail />}
         {detail === 'settings'                          && <SettingsDetail token={token} />}
@@ -1017,6 +1147,7 @@ export default function AdminDashboard() {
             <Stat label="Draft: false" value={contentStats?.draft_false ?? '–'} sub="content files" />
             <Stat label="Published + Audio" value={contentStats?.published_with_audio ?? '–'} sub="draft:false & audio_url" />
             <Stat label="Searches (all)" value={d1?.search_logs ?? '–'} sub="AI search queries" onClick={() => setDetail('searchlogs')} />
+            <Stat label="RAG Traces" value={d1?.search_logs ?? '–'} sub="品質標記 & trace 瀏覽" onClick={() => setDetail('search-traces')} />
             <Stat
               label="LLM 成功率 (7d)"
               value={`${pct(d1?.search_stats.llm_ok ?? 0, d1?.search_stats.total ?? 1)}%`}

@@ -8,7 +8,7 @@ export default defineConfig({
   site: 'https://engineer-news.pages.dev',
   output: 'server',
   adapter: cloudflare({
-    platformProxy: { enabled: true },
+    platformProxy: { enabled: true, persist: true, remoteBindings: false },
     wasmModuleImports: true,
   }),
   integrations: [react(), sitemap()],
