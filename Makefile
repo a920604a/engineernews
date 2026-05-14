@@ -1,3 +1,5 @@
+export PATH := $(HOME)/.nvm/versions/node/v20.20.2/bin:$(PATH)
+
 DB_NAME    = engineer-news-db
 VEC_INDEX  = engineer-news-index
 VEC_DIMS   = 1024
