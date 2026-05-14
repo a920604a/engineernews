@@ -1,0 +1,183 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export const prerender = true;
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'zh-TW');
+
+const countMap: Record<string, number> = {};
+for (const post of allPosts) {
+  for (const tag of post.data.tags ?? []) {
+    if (tag && tag.trim()) countMap[tag] = (countMap[tag] ?? 0) + 1;
+  }
+}
+
+const tagList = Object.entries(countMap)
+  .map(([tag, count]) => ({ tag, count }))
+  .sort((a, b) => b.count - a.count);
+---
+
+<BaseLayout title="標籤">
+  <section class="tags-page">
+    <div class="tags-hero">
+      <p class="eyebrow">Tags</p>
+      <h1>標籤索引</h1>
+      <p class="subtitle">共 <strong>{tagList.length}</strong> 個標籤</p>
+    </div>
+
+    <div class="filter-row">
+      <input
+        id="tag-filter"
+        type="search"
+        placeholder="篩選標籤..."
+        autocomplete="off"
+        spellcheck="false"
+      />
+    </div>
+
+    <div class="tag-grid" id="tag-grid">
+      {tagList.map(({ tag, count }) => (
+        <a href={`/tags/${tag}`} class="tag-chip" data-tag={tag}>
+          <span class="tag-hash">#</span>{tag}
+          <span class="tag-count">{count}</span>
+        </a>
+      ))}
+    </div>
+
+    <p class="empty-state" id="empty-state">找不到符合的標籤</p>
+  </section>
+</BaseLayout>
+
+<script>
+  const input = document.getElementById('tag-filter') as HTMLInputElement;
+  const chips = document.querySelectorAll<HTMLElement>('.tag-chip');
+  const empty = document.getElementById('empty-state')!;
+
+  input?.addEventListener('input', () => {
+    const q = input.value.toLowerCase().trim();
+    let visible = 0;
+    chips.forEach((chip) => {
+      const match = !q || chip.dataset.tag!.toLowerCase().includes(q);
+      chip.style.display = match ? '' : 'none';
+      if (match) visible++;
+    });
+    empty.style.display = visible === 0 ? 'block' : 'none';
+  });
+</script>
+
+<style>
+  .tags-page {
+    padding-top: 32px;
+  }
+
+  .tags-hero {
+    padding: 24px 0 28px;
+    border-bottom: 0.5px solid var(--separator);
+    margin-bottom: 24px;
+  }
+
+  .eyebrow {
+    color: var(--heading-accent);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+  }
+
+  .tags-hero h1 {
+    font-size: clamp(32px, 7vw, 52px);
+    margin: 0 0 12px;
+    line-height: 1.1;
+  }
+
+  .subtitle {
+    margin: 0;
+    font-size: 13px;
+    color: var(--label-secondary);
+  }
+
+  .subtitle strong {
+    color: var(--accent);
+  }
+
+  .filter-row {
+    margin-bottom: 20px;
+  }
+
+  #tag-filter {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 14px;
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--separator);
+    border-radius: var(--radius-md);
+    color: var(--label);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  #tag-filter::placeholder {
+    color: var(--label-tertiary);
+  }
+
+  #tag-filter:focus {
+    border-color: color-mix(in srgb, var(--accent) 60%, var(--separator));
+  }
+
+  .tag-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px 5px 8px;
+    background: var(--glass);
+    border: 0.5px solid var(--separator);
+    border-radius: var(--radius-full);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .tag-chip:hover {
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 40%, var(--separator));
+  }
+
+  .tag-hash {
+    opacity: 0.5;
+    font-size: 12px;
+  }
+
+  .tag-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: var(--radius-full);
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    border: 0.5px solid color-mix(in srgb, var(--accent) 28%, transparent);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-left: 2px;
+  }
+
+  .empty-state {
+    display: none;
+    margin-top: 40px;
+    text-align: center;
+    color: var(--label-tertiary);
+    font-size: 14px;
+  }
+</style>
