@@ -38,11 +38,11 @@ The operating system's workflow is as follows:
 
 ```mermaid
 graph LR
-    A[Application] -->|Request|> B[Operating System]
-    B -->|Allocate Resources|> C[Hardware Resources]
-    C -->|Execute|> A
-    B -->|Manage|> D[Process]
-    D -->|Execute|> A
+    A[Application] -->|Request| B[Operating System]
+    B -->|Allocate Resources| C[Hardware Resources]
+    C -->|Execute| A
+    B -->|Manage| D[Process]
+    D -->|Execute| A
 ```
 
 The operating system receives application requests, allocates hardware resources, executes applications, and manages processes to ensure system security and performance.
