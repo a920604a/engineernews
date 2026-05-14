@@ -54,7 +54,7 @@ sequenceDiagram
         Note right of Server: 安全流程完成
     else 
         Note right of Server: 安全流程未完成
-    end
+    end alt
 ```
 
 ## 跟 MySQL 的差別
