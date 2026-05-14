@@ -9,6 +9,7 @@ description: "從擴散模型的固有限制，到 2025 年 FramePack、Mixture 
 type: research
 original_url: "https://www.youtube.com/watch?v=yzajLZXh9JU"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260514_110826_048672.wav"
 ---
 
 如果你用過 Sora、Kling、Runway，或者任何一個 AI 影片生成工具，你可能都注意到一個共同的毛病：影片在前幾秒看起來很好，但過了某個長度之後，畫面開始漂移——角色的臉在不同幀之間長得不一樣，背景的細節悄悄改變，整體質感越來越模糊。這個問題有個名字：**時序漂移（Temporal Drift）**，它困擾 AI 影片生成超過三年，直到 2025 年才有了幾個系統性的解法。

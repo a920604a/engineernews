@@ -9,6 +9,7 @@ description: "從系統設計角度剖析 Sora 的技術架構：時空自編碼
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=ZuQ4B0CwNjo"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260514_111308_015869.wav"
 ---
 
 2024 年 2 月，OpenAI 發布了 Sora，展示了生成一分鐘高品質影片的能力，震驚了整個 AI 研究社群。之前最好的文字轉影片系統頂多生成幾秒、解析度有限、時間一致性很差的片段。Sora 的核心技術突破在哪裡？如果你要設計一個類似的系統，架構關鍵決策是什麼？這篇文章拆解 Sora 的技術報告（Video Generation Models as World Simulators），以及開源復刻版 Open-Sora 的工程選擇。

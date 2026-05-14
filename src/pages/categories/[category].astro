@@ -48,22 +48,34 @@ const rest = featured ? posts.filter(p => p.id !== featured.id) : posts;
       <span class="topic-stat">{posts.length} 篇文章</span>
     </div>
 
-    {types.length > 0 && (
-      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px;" id="type-filters">
-        <button
-          class="type-btn active"
-          data-type="all"
-          onclick="filterPosts('all')"
-        >全部</button>
-        {types.map((type) => (
+    <div class="controls-row">
+      {types.length > 0 && (
+        <div class="control-group" id="type-filters">
+          <span class="control-label">類型</span>
           <button
-            class="type-btn"
-            data-type={type}
-            onclick={`filterPosts('${type}')`}
-          >{type}</button>
-        ))}
+            class="type-btn active"
+            data-type="all"
+            onclick="filterPosts('all')"
+          >全部</button>
+          {types.map((type) => (
+            <button
+              class="type-btn"
+              data-type={type}
+              onclick={`filterPosts('${type}')`}
+            >{type}</button>
+          ))}
+        </div>
+      )}
+
+      <div class="control-group" id="sort-controls">
+        <span class="control-label">排序</span>
+        <button class="sort-btn active" data-sort="date-desc">日期 ↓</button>
+        <button class="sort-btn" data-sort="date-asc">日期 ↑</button>
+        <button class="sort-btn" data-sort="reading-time">閱讀時間</button>
+        <button class="sort-btn" data-sort="tags">標籤 A→Z</button>
+        <button class="sort-btn" data-sort="views" id="sort-views-btn">瀏覽次數</button>
       </div>
-    )}
+    </div>
 
     {featured && (
       <section class="featured">
@@ -86,7 +98,15 @@ const rest = featured ? posts.filter(p => p.id !== featured.id) : posts;
 
     <div class="feed" id="posts-feed">
       {rest.map((post) => (
-        <div data-type={post.data.type ?? 'none'} class="post-item">
+        <div
+          data-type={post.data.type ?? 'none'}
+          data-date={post.data.date.valueOf()}
+          data-reading-time={post.data.readingTime ?? 0}
+          data-tags={post.data.tags?.[0] ?? ''}
+          data-slug={post.id}
+          data-views="0"
+          class="post-item"
+        >
           <PostCard
             id={post.id}
             title={post.data.title}
@@ -106,7 +126,27 @@ const rest = featured ? posts.filter(p => p.id !== featured.id) : posts;
 </BaseLayout>
 
 <style>
-  .type-btn {
+  .controls-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .control-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--label-tertiary);
+    min-width: 32px;
+  }
+  .type-btn, .sort-btn {
     padding: 5px 14px;
     border-radius: 999px;
     border: 0.5px solid var(--separator);
@@ -121,6 +161,15 @@ const rest = featured ? posts.filter(p => p.id !== featured.id) : posts;
     background: var(--cat-color);
     border-color: var(--cat-color);
     color: #fff;
+  }
+  .sort-btn:hover, .sort-btn.active {
+    background: var(--bg-tertiary, var(--bg-secondary));
+    border-color: var(--label-secondary);
+    color: var(--label);
+  }
+  .sort-btn[data-sort="views"].loading {
+    opacity: 0.5;
+    cursor: wait;
   }
   .topic-page {
     padding-top: 32px;
@@ -176,7 +225,12 @@ const rest = featured ? posts.filter(p => p.id !== featured.id) : posts;
 </style>
 
 <script>
+  let activeFilter = 'all';
+  let activeSort = 'date-desc';
+  let viewsLoaded = false;
+
   function filterPosts(type: string) {
+    activeFilter = type;
     const items = document.querySelectorAll<HTMLElement>('.post-item');
     items.forEach((item) => {
       item.style.display = (type === 'all' || item.dataset.type === type) ? '' : 'none';
@@ -185,6 +239,70 @@ const rest = featured ? posts.filter(p => p.id !== featured.id) : posts;
       btn.classList.toggle('active', btn.dataset.type === type);
     });
   }
+
+  function sortPosts(key: string) {
+    activeSort = key;
+    document.querySelectorAll<HTMLElement>('.sort-btn').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.sort === key);
+    });
+
+    const feed = document.getElementById('posts-feed');
+    if (!feed) return;
+    const items = Array.from(feed.querySelectorAll<HTMLElement>('.post-item'));
+
+    items.sort((a, b) => {
+      switch (key) {
+        case 'date-asc':
+          return Number(a.dataset.date) - Number(b.dataset.date);
+        case 'date-desc':
+          return Number(b.dataset.date) - Number(a.dataset.date);
+        case 'reading-time':
+          return Number(a.dataset.readingTime) - Number(b.dataset.readingTime);
+        case 'tags':
+          return (a.dataset.tags ?? '').localeCompare(b.dataset.tags ?? '', 'zh-TW');
+        case 'views':
+          return Number(b.dataset.views) - Number(a.dataset.views);
+        default:
+          return 0;
+      }
+    });
+
+    items.forEach((item) => feed.appendChild(item));
+  }
+
+  // Attach sort button handlers
+  document.querySelectorAll<HTMLElement>('.sort-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.sort!;
+      if (key === 'views' && !viewsLoaded) {
+        loadViews().then(() => sortPosts(key));
+      } else {
+        sortPosts(key);
+      }
+    });
+  });
+
+  async function loadViews() {
+    const btn = document.getElementById('sort-views-btn');
+    if (btn) btn.classList.add('loading');
+
+    const items = document.querySelectorAll<HTMLElement>('.post-item[data-slug]');
+    await Promise.all(Array.from(items).map(async (item) => {
+      const slug = item.dataset.slug;
+      if (!slug) return;
+      try {
+        const res = await fetch(`/api/views?slug=${encodeURIComponent(slug)}`);
+        const { count } = await res.json();
+        item.dataset.views = String(count ?? 0);
+      } catch {
+        // 靜默失敗
+      }
+    }));
+
+    viewsLoaded = true;
+    if (btn) btn.classList.remove('loading');
+  }
+
   // support ?type= query param
   const params = new URLSearchParams(window.location.search);
   const t = params.get('type');
