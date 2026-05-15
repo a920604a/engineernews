@@ -19,6 +19,21 @@ export async function getStaticPaths() {
 
 const { category } = Astro.params;
 const { posts } = Astro.props;
+
+const types = [...new Set(posts.flatMap((p) => p.data.type ? [p.data.type] : []))];
+const typeLabels: Record<string, string> = {
+  'debug': 'Debug',
+  'deep-dive': 'Deep Dive',
+  'guide': 'Guide',
+  'how-to': 'How-To',
+  'listicle': 'Listicle',
+  'explainer': 'Explainer',
+  'case-study': 'Case Study',
+  'comparison': 'Comparison',
+  'research': 'Research',
+  'newsjacking': 'Newsjacking',
+};
+
 const topicMeta: Record<string, string> = {
   tech: 'Engineering practice, architecture, tooling, and debugging notes.',
   product: 'Product design, UX, strategy, and side project thinking.',
@@ -27,8 +42,8 @@ const topicMeta: Record<string, string> = {
   career: 'Career decisions, collaboration, work style, and reflection.',
   life: 'Personal notes and low-frequency observations.',
 };
-const featured = posts[0];
-const rest = posts.slice(1);
+const featured = posts.find(p => p.data.pinned) ?? null;
+const rest = featured ? posts.filter(p => p.id !== featured.id) : posts;
 ---
 
 <BaseLayout title={`Category: ${category}`}>
@@ -41,6 +56,28 @@ const rest = posts.slice(1);
       <h1>{category}</h1>
       <p>{topicMeta[category] ?? 'Related posts and notes.'}</p>
       <span class="topic-stat">{posts.length} posts</span>
+    </div>
+
+    <div class="controls-row">
+      {types.length > 0 && (
+        <div class="control-group" id="type-filters">
+          <span class="control-label">Type</span>
+          <button class="type-btn active" data-type="all">All</button>
+          {types.map((type) => (
+            <button class="type-btn" data-type={type}>
+              {typeLabels[type] ?? type}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div class="control-group" id="sort-controls">
+        <span class="control-label">Sort</span>
+        <button class="sort-btn active" data-sort="date-desc">Date ↓</button>
+        <button class="sort-btn" data-sort="date-asc">Date ↑</button>
+        <button class="sort-btn" data-sort="reading-time">Reading time</button>
+        <button class="sort-btn" data-sort="views" id="sort-views-btn">Views</button>
+      </div>
     </div>
 
     {featured && (
@@ -62,20 +99,30 @@ const rest = posts.slice(1);
       </section>
     )}
 
-    <div class="feed">
+    <div class="feed" id="posts-feed">
       {rest.map((post) => (
-        <PostCard
-          id={post.id}
-          title={post.data.title}
-          date={post.data.date}
-          category={post.data.category}
-          tags={post.data.tags}
-          description={post.data.description}
-          tldr={post.data.tldr}
-          type={post.data.type}
-          readingTime={post.data.readingTime}
-          lang="en"
-        />
+        <div
+          data-type={post.data.type ?? 'none'}
+          data-date={post.data.date.valueOf()}
+          data-reading-time={post.data.readingTime ?? 0}
+          data-tags={post.data.tags?.[0] ?? ''}
+          data-slug={post.id}
+          data-views="0"
+          class="post-item"
+        >
+          <PostCard
+            id={post.id}
+            title={post.data.title}
+            date={post.data.date}
+            category={post.data.category}
+            tags={post.data.tags}
+            description={post.data.description}
+            tldr={post.data.tldr}
+            type={post.data.type}
+            readingTime={post.data.readingTime}
+            lang="en"
+          />
+        </div>
       ))}
     </div>
   </section>
@@ -127,4 +174,104 @@ const rest = posts.slice(1);
     flex-direction: column;
     gap: 8px;
   }
+  .controls-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .control-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--label-tertiary);
+    min-width: 32px;
+  }
+  .type-btn, .sort-btn {
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: 0.5px solid var(--separator);
+    background: transparent;
+    color: var(--label-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .type-btn:hover, .type-btn.active {
+    background: var(--cat-color);
+    border-color: var(--cat-color);
+    color: #fff;
+  }
+  .sort-btn:hover, .sort-btn.active {
+    background: var(--bg-tertiary, var(--bg-secondary));
+    border-color: var(--label-secondary);
+    color: var(--label);
+  }
 </style>
+
+<script>
+  function filterPosts(type: string) {
+    document.querySelectorAll<HTMLElement>('.post-item').forEach((item) => {
+      item.style.display = (type === 'all' || item.dataset.type === type) ? '' : 'none';
+    });
+    document.querySelectorAll<HTMLElement>('.type-btn').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.type === type);
+    });
+  }
+
+  function sortPosts(key: string) {
+    document.querySelectorAll<HTMLElement>('.sort-btn').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.sort === key);
+    });
+    const feed = document.getElementById('posts-feed');
+    if (!feed) return;
+    const items = Array.from(feed.querySelectorAll<HTMLElement>('.post-item'));
+    items.sort((a, b) => {
+      switch (key) {
+        case 'date-asc':  return Number(a.dataset.date) - Number(b.dataset.date);
+        case 'date-desc': return Number(b.dataset.date) - Number(a.dataset.date);
+        case 'reading-time': return Number(a.dataset.readingTime) - Number(b.dataset.readingTime);
+        case 'views': return Number(b.dataset.views) - Number(a.dataset.views);
+        default: return 0;
+      }
+    });
+    items.forEach((item) => feed.appendChild(item));
+  }
+
+  document.querySelectorAll<HTMLElement>('.type-btn').forEach((btn) => {
+    btn.addEventListener('click', () => filterPosts(btn.dataset.type!));
+  });
+
+  let viewsLoaded = false;
+  document.querySelectorAll<HTMLElement>('.sort-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.sort!;
+      if (key === 'views' && !viewsLoaded) {
+        const items = document.querySelectorAll<HTMLElement>('.post-item[data-slug]');
+        Promise.all(Array.from(items).map(async (item) => {
+          const slug = item.dataset.slug;
+          if (!slug) return;
+          try {
+            const res = await fetch(`/api/views?slug=${encodeURIComponent(slug)}`);
+            const { count } = await res.json();
+            item.dataset.views = String(count ?? 0);
+          } catch {}
+        })).then(() => { viewsLoaded = true; sortPosts(key); });
+      } else {
+        sortPosts(key);
+      }
+    });
+  });
+
+  const params = new URLSearchParams(window.location.search);
+  const t = params.get('type');
+  if (t) filterPosts(t);
+</script>

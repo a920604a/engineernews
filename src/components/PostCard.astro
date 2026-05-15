@@ -37,19 +37,19 @@ const dateStr = date?.toLocaleDateString(isEn ? 'en-US' : 'zh-TW', {
 
 const excerpt = tldr || description || '';
 
-const typeLabels: Record<string, string> = {
-  'debug': '除錯',
-  'deep-dive': '深度解析',
-  'guide': '指南',
-  'how-to': '操作教學',
-  'listicle': '清單整理',
-  'explainer': '概念解析',
-  'case-study': '案例分析',
-  'comparison': '比較評測',
-  'research': '研究筆記',
-  'newsjacking': '時事觀察',
+const typeLabels: Record<string, { zh: string; en: string }> = {
+  'debug':       { zh: '除錯',    en: 'Debug' },
+  'deep-dive':   { zh: '深度解析', en: 'Deep Dive' },
+  'guide':       { zh: '指南',    en: 'Guide' },
+  'how-to':      { zh: '操作教學', en: 'How-To' },
+  'listicle':    { zh: '清單整理', en: 'Listicle' },
+  'explainer':   { zh: '概念解析', en: 'Explainer' },
+  'case-study':  { zh: '案例分析', en: 'Case Study' },
+  'comparison':  { zh: '比較評測', en: 'Comparison' },
+  'research':    { zh: '研究筆記', en: 'Research' },
+  'newsjacking': { zh: '時事觀察', en: 'Newsjacking' },
 };
-const typeLabel = type ? (typeLabels[type] ?? type) : undefined;
+const typeLabel = type ? (isEn ? (typeLabels[type]?.en ?? type) : (typeLabels[type]?.zh ?? type)) : undefined;
 ---
 
 <article
