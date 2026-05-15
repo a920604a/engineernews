@@ -67,11 +67,11 @@ sequenceDiagram
   participant Runtime
   User->>Interpreter: Natural language instruction
   Interpreter->>LLM: Code generation request
-  LLM-->>Interpreter: Code block
+  LLM->>Interpreter: Code block
   Interpreter->>Runtime: Execute (Python / JS / Shell)
-  Runtime-->>Interpreter: stdout / stderr / result
+  Runtime->>Interpreter: stdout / stderr / result
   Interpreter->>LLM: Feed results back, continue dialogue
-  LLM-->>User: Explanation or next step
+  LLM->>User: Explanation or next step
 ```
 
 The generate-execute-feedback loop allows the LLM to iterate toward complex goals rather than producing a single code output and stopping.

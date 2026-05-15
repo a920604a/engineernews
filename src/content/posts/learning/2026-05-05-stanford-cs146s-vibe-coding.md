@@ -262,7 +262,7 @@ Steps:
 把一個複雜任務拆給多個專屬 Agent：
 
 ```mermaid
-sequenceDiagram
+graph LR
   participant Developer as 開發者
   participant Orchestrator as 工作管理員
   participant TestAgent as 測試代理

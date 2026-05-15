@@ -146,20 +146,6 @@ sequenceDiagram
   W->>AI: query-14b stream(query + chunks)
   AI-->>Browser: 回答
   note right of AI: 回答
-  participant 瀏覽器
-  participant Worker
-  participant WorkersAI
-  participant Vectorize
-  participant D1
-  瀏覽器->>Worker: POST /api/search {query}
-  Worker->>WorkersAI: embed(query) via bge-m3
-  WorkersAI-->>Worker: query_vector[384]
-  Worker->>Vectorize: similaritySearch(top_k=5)
-  Vectorize-->>Worker: [{chunk_id, score}...]
-  Worker->>D1: SELECT chunks WHERE id IN (...)
-  D1-->>Worker: chunks[]
-  Worker->>WorkersAI: qwen-14b stream(query + chunks)
-  WorkersAI-->>瀏覽器: 串流回答
 ```
 
 `sync-to-d1.ts` 核心片段：

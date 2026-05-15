@@ -49,7 +49,6 @@ sequenceDiagram
     Server->>Client: 提供記錄和審計信息
     Client->>Server: 監控安全性狀態
 
-    Note over Client,Database: 完成安全流程
     alt 安全流程完成
         Note right of Server: 安全流程完成
     else 安全流程未完成
