@@ -47,7 +47,18 @@ const excerpt = tldr || description || '';
     <div class="card-badges">
       {pinned && <span class="badge badge-pinned">置頂</span>}
       <a href={catHref} class="badge badge-cat badge-category" data-category={category}>{category}</a>
-      {type && <span class="badge badge-type" data-type={type}>{type}</span>}
+      {type && <span class="badge badge-type" data-type={type}>{({
+        'debug': '除錯',
+        'deep-dive': '深度解析',
+        'guide': '指南',
+        'how-to': '操作教學',
+        'listicle': '清單整理',
+        'explainer': '概念解析',
+        'case-study': '案例分析',
+        'comparison': '比較評測',
+        'research': '研究筆記',
+        'newsjacking': '時事觀察',
+      } as Record<string,string>)[type] ?? type}</span>}
     </div>
     <div class="card-meta">
       {date && <time class="card-date">{dateStr}</time>}

@@ -24,6 +24,18 @@ const { category } = Astro.params;
 const { posts } = Astro.props;
 
 const types = [...new Set(posts.flatMap((p) => p.data.type ? [p.data.type] : []))];
+const typeLabels: Record<string, string> = {
+  'debug': '除錯',
+  'deep-dive': '深度解析',
+  'guide': '指南',
+  'how-to': '操作教學',
+  'listicle': '清單整理',
+  'explainer': '概念解析',
+  'case-study': '案例分析',
+  'comparison': '比較評測',
+  'research': '研究筆記',
+  'newsjacking': '時事觀察',
+};
 const topicMeta: Record<string, string> = {
   tech: '工程實作、架構設計、工具介紹與踩坑紀錄。',
   product: '產品設計、UX、功能策略與 side project 思考。',
@@ -52,17 +64,11 @@ const rest = featured ? posts.filter(p => p.id !== featured.id) : posts;
       {types.length > 0 && (
         <div class="control-group" id="type-filters">
           <span class="control-label">類型</span>
-          <button
-            class="type-btn active"
-            data-type="all"
-            onclick="filterPosts('all')"
-          >全部</button>
+          <button class="type-btn active" data-type="all">全部</button>
           {types.map((type) => (
-            <button
-              class="type-btn"
-              data-type={type}
-              onclick={`filterPosts('${type}')`}
-            >{type}</button>
+            <button class="type-btn" data-type={type}>
+              {typeLabels[type] ?? type}
+            </button>
           ))}
         </div>
       )}
@@ -269,6 +275,11 @@ const rest = featured ? posts.filter(p => p.id !== featured.id) : posts;
 
     items.forEach((item) => feed.appendChild(item));
   }
+
+  // Attach type filter button handlers
+  document.querySelectorAll<HTMLElement>('.type-btn').forEach((btn) => {
+    btn.addEventListener('click', () => filterPosts(btn.dataset.type!));
+  });
 
   // Attach sort button handlers
   document.querySelectorAll<HTMLElement>('.sort-btn').forEach((btn) => {
