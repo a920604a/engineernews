@@ -65,7 +65,7 @@ const typeLabel = type ? (isEn ? (typeLabels[type]?.en ?? type) : (typeLabels[ty
     </div>
     <div class="card-meta">
       {date && <time class="card-date">{dateStr}</time>}
-      {readingTime && <span class="card-rt">{readingTime} 分鐘</span>}
+      {readingTime && <span class="card-rt">{readingTime} {isEn ? 'min' : '分鐘'}</span>}
     </div>
   </div>
 
