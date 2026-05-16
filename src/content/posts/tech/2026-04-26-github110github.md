@@ -67,11 +67,11 @@ sequenceDiagram
   participant Runtime as Runtime
   User->>Interpreter: 自然語言指令
   Interpreter->>LLM: 轉換為程式碼生成請求
-  LLM-->>Interpreter: 生成程式碼片段
+  LLM->>Interpreter: 生成程式碼片段
   Interpreter->>Runtime: 執行程式碼（Python/JS/Shell）
-  Runtime-->>Interpreter: 執行結果 + stdout/stderr
+  Runtime->>Interpreter: 執行結果 + stdout/stderr
   Interpreter->>LLM: 把結果回饋，繼續對話
-  LLM-->>User: 解釋結果或繼續下一步
+  LLM->>User: 解釋結果或繼續下一步
 ```
 
 這個「生成 → 執行 → 回饋」的循環讓 LLM 能夠迭代地完成複雜任務，而不只是一次性生成程式碼。

@@ -60,12 +60,12 @@ graph LR
 
 ```mermaid
 sequenceDiagram
-  participant Student as 學生
-  participant Frontend as 前端
-  participant BackendAPI as 後端API
-  participant LiveKit as LiveKit
-  participant Emma as Emma
-  participant Ollama as Ollama
+  participant Student as "學生"
+  participant Frontend as "前端"
+  participant BackendAPI as "後端API"
+  participant LiveKit as "LiveKit"
+  participant Emma as "Emma"
+  participant Ollama as "Ollama"
 
   Student->>Frontend: Google Sign-In
   Frontend->>BackendAPI: 建立課程 / 取得 LiveKit Token
@@ -80,7 +80,7 @@ sequenceDiagram
   Frontend->>BackendAPI: 通知結束 (SUMMARY)
   BackendAPI->>Ollama: 觸發課後報告生成
   BackendAPI->>Frontend: 課後中文報告
-  Note over Student,Frontend: 結束課程
+  Note over Student, Frontend: 結束課程
 ```
 
 ## 成果

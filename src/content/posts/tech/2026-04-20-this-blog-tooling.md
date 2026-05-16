@@ -144,7 +144,8 @@ sequenceDiagram
   W->>Database: SELECT chunks WHERE id IN (...)
   Database-->>W: chunks[]
   W->>AI: query-14b stream(query + chunks)
-  AI-->>Browser: 回答
+  AI-->>W: 回答
+  W->>Browser: 回答
   note right of AI: 回答
 ```
 
