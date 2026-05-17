@@ -131,11 +131,11 @@ D1 的限制：單次查詢 25MB 上限，資料庫大小 10GB 上限。對部�
 
 ```mermaid
 sequenceDiagram
-  participant 瀏覽器 as Browser
-  participant Worker as W
-  participant WorkersAI as AI
-  participant Vectorize as V
-  participant D1 as Database
+  participant "瀏覽器" as Browser
+  participant "Worker" as W
+  participant "WorkersAI" as AI
+  participant "Vectorize" as V
+  participant "D1" as Database
   Browser->>W: POST /api/search {query}
   W->>AI: embed(query) via bge-m3
   AI-->>W: query_vector[384]

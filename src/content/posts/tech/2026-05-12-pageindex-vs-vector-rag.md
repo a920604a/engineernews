@@ -61,8 +61,8 @@ Agent 的 system prompt 強制它依序：先確認文件結構 → 定位相關
 ```mermaid
 sequenceDiagram
   participant User
-  participant Agent as LLM Agent
-  participant Index as PageIndex Tree
+  participant Agent as "LLM Agent"
+  participant Index as "Page Index Tree"
 
   User->>Agent: 問題：2023年毛利率是多少？
   Agent->>Index: get_document_structure()

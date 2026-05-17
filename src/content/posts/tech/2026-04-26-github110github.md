@@ -61,7 +61,7 @@ Open Interpreter 的核心架構相對直接：
 
 ```mermaid
 sequenceDiagram
-  participant 用戶 as User
+  participant User as 用戶
   participant Interpreter as Interpreter
   participant LLM as LLM
   participant Runtime as Runtime
