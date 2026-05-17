@@ -232,18 +232,18 @@ export const SOURCES: Source[] = [
     days: [6],
     maxAgeDays: 365,
   },
-  {
-    id: 'emmytw',
-    name: 'Emmy追劇時間',
-    type: 'youtube',
-    channelId: 'UCUkwvRrpvWkocNdk9qIpRSw',
-    url: 'https://www.youtube.com/@emmytw',
-    tags: ['財經', '時事', '國際'],
-    lang: 'zh-TW',
-    enabled: true,
-    days: [6],
-    maxAgeDays: 365,
-  },
+  // {
+  //   id: 'emmytw',
+  //   name: 'Emmy追劇時間',
+  //   type: 'youtube',
+  //   channelId: 'UCUkwvRrpvWkocNdk9qIpRSw',
+  //   url: 'https://www.youtube.com/@emmytw',
+  //   tags: ['財經', '時事', '國際'],
+  //   lang: 'zh-TW',
+  //   enabled: true,
+  //   days: [6],
+  //   maxAgeDays: 365,
+  // },
 
   // ── 未來可加 ───────────────────────────────────────────────────────────────
   // { id: 'example-rss', name: '...', type: 'rss', channelId: '', url: '...', ... }
