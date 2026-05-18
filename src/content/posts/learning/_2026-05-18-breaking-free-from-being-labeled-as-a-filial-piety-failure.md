@@ -1,14 +1,11 @@
 ---
-title: "Untitled"
+title: 開啟對話的門扉：破解父母嫌你「不孝」的真相
 date: 2026-05-18T12:37:54.841Z
 category: learning
-tags: ["", "職涯", "個人成長", "學習"]
+tags: ["職涯", "個人成長", "學習"]
 lang: zh-TW
-tldr: ""
-description: ""
-
 type: explainer
-original_url: "https://www.youtube.com/watch?v=ikQTtmGBLHQ"
+original_url: https://www.youtube.com/watch?v=ikQTtmGBLHQ
 draft: true
 ---
 
