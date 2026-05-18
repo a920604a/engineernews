@@ -62,9 +62,9 @@ Open Interpreter 的核心架構相對直接：
 ```mermaid
 sequenceDiagram
   participant User as 用戶
-  participant Interpreter as Interpreter
+  participant Interpreter as 解譯器
   participant LLM as LLM
-  participant Runtime as Runtime
+  participant Runtime as 執行環境
   User->>Interpreter: 自然語言指令
   Interpreter->>LLM: 轉換為程式碼生成請求
   LLM->>Interpreter: 生成程式碼片段
