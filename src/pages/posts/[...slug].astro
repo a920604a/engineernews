@@ -7,6 +7,8 @@ import ScrollToTop from '../../components/ScrollToTop.astro';
 import PostPrevNext from '../../components/PostPrevNext.astro';
 import { useTranslations } from '../../i18n/utils';
 import { TTSPlayer } from '../../components/TTSPlayer';
+import { InteractionBar } from '../../components/InteractionBar';
+import { CommentSection } from '../../components/CommentSection';
 import { getRelatedPosts } from '../../utils/relatedPosts';
 import { getSeriesNav } from '../../utils/seriesNav';
 import { calcReadingTime } from '../../utils/readingTime';
@@ -144,6 +146,10 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
     <div class="article-share-panel">
       <SharePanel title={post.data.title} url={Astro.url.href} imageUrl={ogImage ?? ''} />
     </div>
+
+    <!-- Interactions -->
+    <InteractionBar client:visible slug={post.id} />
+    <CommentSection client:visible slug={post.id} />
 
     <!-- Tags -->
     {post.data.tags.length > 0 && (
