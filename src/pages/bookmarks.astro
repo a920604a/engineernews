@@ -1,0 +1,71 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'zh-TW');
+const postsJson = JSON.stringify(allPosts.map(p => ({
+  id: p.id,
+  title: p.data.title,
+  date: p.data.date.toISOString(),
+  category: p.data.category,
+  tags: p.data.tags,
+  tldr: p.data.tldr,
+  description: p.data.description,
+})));
+---
+
+<BaseLayout title="我的書籤" description="你儲存的文章">
+  <div style="max-width:720px; margin:0 auto; padding:40px 24px;">
+    <h1 style="font-size:28px; font-weight:900; margin:0 0 8px;">🔖 我的書籤</h1>
+    <p style="color:var(--label-secondary); font-size:14px; margin:0 0 32px;">以下是你儲存的文章（儲存於此裝置）</p>
+    <div id="bookmarks-list">
+      <p style="color:var(--label-tertiary); font-size:14px;">載入中⋯</p>
+    </div>
+    <p id="bookmarks-empty" style="display:none; color:var(--label-tertiary); font-size:15px;">
+      還沒有書籤。閱讀文章時點 🔖 即可儲存。
+    </p>
+  </div>
+</BaseLayout>
+
+<script define:vars={{ postsJson }}>
+  const posts = JSON.parse(postsJson);
+  const VISITOR_KEY = 'visitor_id';
+
+  function getVisitorId() {
+    let id = localStorage.getItem(VISITOR_KEY);
+    if (!id) { id = crypto.randomUUID(); localStorage.setItem(VISITOR_KEY, id); }
+    return id;
+  }
+
+  async function render() {
+    const visitorId = getVisitorId();
+    const list = document.getElementById('bookmarks-list');
+    const empty = document.getElementById('bookmarks-empty');
+
+    try {
+      const res = await fetch('/api/bookmarks', { headers: { 'X-Visitor-ID': visitorId } });
+      const { slugs } = await res.json();
+
+      if (!slugs || slugs.length === 0) {
+        list.style.display = 'none';
+        empty.style.display = 'block';
+        return;
+      }
+
+      const saved = posts.filter(p => slugs.includes(p.id));
+      saved.sort((a, b) => slugs.indexOf(a.id) - slugs.indexOf(b.id));
+
+      list.innerHTML = saved.map(p => `
+        <a href="/posts/${p.id}" style="display:block; padding:16px; border:0.5px solid var(--separator); border-radius:var(--radius-md); margin-bottom:12px; text-decoration:none; background:var(--bg-secondary);">
+          <div style="font-size:11px; color:var(--label-tertiary); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">${p.category} · ${new Date(p.date).toLocaleDateString('zh-TW')}</div>
+          <div style="font-size:17px; font-weight:700; color:var(--label); margin-bottom:6px;">${p.title}</div>
+          ${p.tldr ? `<div style="font-size:14px; color:var(--label-secondary);">${p.tldr}</div>` : ''}
+        </a>
+      `).join('');
+    } catch {
+      list.innerHTML = '<p style="color:var(--label-tertiary);">載入失敗，請重整頁面。</p>';
+    }
+  }
+
+  render();
+</script>
