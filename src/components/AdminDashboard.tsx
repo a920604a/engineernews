@@ -37,7 +37,10 @@ type R2Object = { key: string; size: number; uploaded: string };
 type PageView = { slug: string; count: number; updated_at: string };
 type TTSRecord = { id: number; created_at: string; type: 'tts'; title: string; voice: string; audio_filename: string; srt_filename: string };
 
-type MainTab = 'overview' | 'content' | 'search' | 'infra' | 'system';
+type CommentRow = { id: number; post_slug: string; author_name: string; body: string; hidden: number; created_at: string };
+type CommentsData = { rows: CommentRow[]; total: number };
+
+type MainTab = 'overview' | 'content' | 'search' | 'infra' | 'system' | 'moderation';
 
 const TOKEN_KEY = 'admin_token';
 const SESSION_TTL = 36 * 60 * 60 * 1000; // 36 hours
@@ -1063,14 +1066,100 @@ function ConfigDetail({ config }: { config: CfgData }) {
   );
 }
 
+// ── Moderation ────────────────────────────────────────────────────────────────
+
+function ModerationTab({ token }: { token: string }) {
+  const [comments, setComments] = useState<CommentRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showHidden, setShowHidden] = useState(false);
+
+  async function fetchComments() {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/admin/comments-list?token=${token}`);
+      const data: CommentsData = await res.json();
+      setComments(data.rows ?? []);
+    } catch {
+      setComments([]);
+    }
+    setLoading(false);
+  }
+
+  useEffect(() => { fetchComments(); }, [token]);
+
+  async function toggleHidden(id: number, currentHidden: number) {
+    const newHidden = currentHidden === 1 ? 0 : 1;
+    await fetch(`/api/admin/comments/${id}?token=${token}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hidden: newHidden }),
+    });
+    setComments(prev => prev.map(c => c.id === id ? { ...c, hidden: newHidden } : c));
+  }
+
+  async function deleteComment(id: number) {
+    if (!confirm('確定刪除這則留言？')) return;
+    await fetch(`/api/admin/comments/${id}?token=${token}`, { method: 'DELETE' });
+    setComments(prev => prev.filter(c => c.id !== id));
+  }
+
+  const visible = showHidden ? comments : comments.filter(c => c.hidden === 0);
+
+  if (loading) return <p style={{ color: 'var(--label-tertiary)', padding: '20px' }}>載入中⋯</p>;
+
+  return (
+    <div style={{ padding: '20px 0' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <span style={{ fontSize: '13px', color: 'var(--label-secondary)' }}>共 {comments.length} 則留言（{comments.filter(c => c.hidden).length} 則已隱藏）</span>
+        <label style={{ fontSize: '13px', color: 'var(--label-secondary)', cursor: 'pointer' }}>
+          <input type="checkbox" checked={showHidden} onChange={e => setShowHidden(e.target.checked)} style={{ marginRight: '6px' }} />
+          顯示已隱藏
+        </label>
+      </div>
+      {visible.length === 0 && <p style={{ color: 'var(--label-tertiary)', fontSize: '14px' }}>沒有留言</p>}
+      {visible.map(c => (
+        <div key={c.id} style={{
+          padding: '14px', marginBottom: '10px', borderRadius: 'var(--radius-sm)',
+          border: '0.5px solid var(--separator)', background: c.hidden ? 'color-mix(in srgb, #e53e3e 8%, var(--bg-secondary))' : 'var(--bg-secondary)',
+          opacity: c.hidden ? 0.6 : 1,
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: '12px', color: 'var(--label-tertiary)', marginBottom: '6px' }}>
+                <strong style={{ color: 'var(--label-secondary)' }}>{c.author_name}</strong>
+                {' · '}
+                <a href={`/posts/${c.post_slug}`} style={{ color: 'var(--accent)', textDecoration: 'none' }}>{c.post_slug}</a>
+                {' · '}{c.created_at}
+                {c.hidden === 1 && <span style={{ color: '#e53e3e', marginLeft: '8px' }}>已隱藏</span>}
+              </div>
+              <p style={{ margin: 0, fontSize: '14px', color: 'var(--label)', whiteSpace: 'pre-wrap' }}>{c.body}</p>
+            </div>
+            <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+              <button onClick={() => toggleHidden(c.id, c.hidden)}
+                style={{ padding: '4px 10px', fontSize: '12px', borderRadius: '4px', border: '0.5px solid var(--separator)', background: 'var(--bg)', color: 'var(--label-secondary)', cursor: 'pointer' }}>
+                {c.hidden ? '顯示' : '隱藏'}
+              </button>
+              <button onClick={() => deleteComment(c.id)}
+                style={{ padding: '4px 10px', fontSize: '12px', borderRadius: '4px', border: '0.5px solid #e53e3e', background: 'transparent', color: '#e53e3e', cursor: 'pointer' }}>
+                刪除
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ── Tab navigation ────────────────────────────────────────────────────────────
 
 const MAIN_TABS = [
-  { id: 'overview' as MainTab, label: 'Overview' },
-  { id: 'content'  as MainTab, label: 'Content' },
-  { id: 'search'   as MainTab, label: 'Search' },
-  { id: 'infra'    as MainTab, label: 'Infra' },
-  { id: 'system'   as MainTab, label: 'System' },
+  { id: 'overview'    as MainTab, label: 'Overview' },
+  { id: 'content'     as MainTab, label: 'Content' },
+  { id: 'search'      as MainTab, label: 'Search' },
+  { id: 'infra'       as MainTab, label: 'Infra' },
+  { id: 'system'      as MainTab, label: 'System' },
+  { id: 'moderation'  as MainTab, label: '🗨️ 留言' },
 ];
 
 const SUB_TABS: Record<string, { id: string; label: string }[]> = {
@@ -1081,7 +1170,7 @@ const SUB_TABS: Record<string, { id: string; label: string }[]> = {
 };
 
 const DEFAULT_SUB: Record<MainTab, string> = {
-  overview: '', content: 'posts', search: 'analytics', infra: 'vectorize', system: 'logs',
+  overview: '', content: 'posts', search: 'analytics', infra: 'vectorize', system: 'logs', moderation: '',
 };
 
 function TabBar({ active, onChange }: { active: MainTab; onChange: (t: MainTab) => void }) {
@@ -1305,6 +1394,11 @@ export default function AdminDashboard() {
           {sub === 'settings' && <SettingsDetail token={token} />}
         </>
       );
+    }
+
+    // ── Moderation ──
+    if (activeTab === 'moderation') {
+      return <ModerationTab token={token} />;
     }
   };
 
