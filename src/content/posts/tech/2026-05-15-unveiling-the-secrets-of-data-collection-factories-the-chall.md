@@ -9,6 +9,7 @@ description: "深入解析機器人資料採集工廠的運作方式、瓶頸所
 type: explainer
 original_url: "https://www.youtube.com/watch?v=ZvHIuIIZ3Is"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260519_001025_087744.wav"
 ---
 
 當 ChatGPT 橫空出世的時候，大多數人把焦點放在模型架構與算力競賽上。但在機器人領域，業界最頭痛的問題從來都不是算法——而是資料。不是那種可以從網路上爬取的文字或圖片，而是機器人在真實空間裡抓取一顆草莓、折一件衣服、把螺絲鎖進正確孔位的每一幀動作序列。這類資料的採集成本之高、難度之大，催生了一個完全不同的行業：資料採集工廠（Data Collection Factory）。

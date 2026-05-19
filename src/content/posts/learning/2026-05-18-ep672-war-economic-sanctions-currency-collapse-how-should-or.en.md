@@ -7,6 +7,7 @@ lang: en
 tldr: "Extreme events aren't 'impossible for me' — they're 'do you have a buffer when they happen.' Financial resilience is about diversification, liquidity, and not keeping all your eggs in one country."
 description: "Starting from geopolitical risks like war, sanctions, and currency devaluation, this piece explores how ordinary people can build financial resilience beyond single-currency, single-market dependency."
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260519_000819_128602.wav"
 ---
 
 A few years ago, "war," "sanctions," and "currency collapse" were words most people filed away as news events that happened to other people. That's harder to do now. Russia got cut off from SWIFT. Turkey's currency lost enormous value in a single year. Cross-strait tension has moved from academic seminars into everyday conversation.

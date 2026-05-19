@@ -9,6 +9,7 @@ description: "深入解析 NVIDIA 新一代 AI 推論優化技術的原理、與
 type: explainer
 original_url: "https://www.youtube.com/watch?v=4wC8hnQawiA"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260519_001136_807547.wav"
 ---
 
 訓練一個大型語言模型需要幾週、幾個月，但真正花錢的往往是之後幾年的推論（inference）成本。每次使用者送出一個查詢，資料中心就要轉動晶片、耗掉電力、吐出結果。在這個維度上，效率的微小進步會被放大成鉅額節省。NVIDIA 近期展示的推論優化技術，正是瞄準這個戰場——用一套量化、稀疏性與專用硬體的協同設計，把推論效率推向新的邊界。
