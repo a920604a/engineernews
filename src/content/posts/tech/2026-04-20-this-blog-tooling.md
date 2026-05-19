@@ -135,14 +135,14 @@ sequenceDiagram
   participant "Worker" as W
   participant "WorkersAI" as AI
   participant "Vectorize" as V
-  participant "D1" as Database
+  participant "Database" as D1
   Browser->>W: POST /api/search {query}
   W->>AI: embed(query) via bge-m3
   AI-->>W: query_vector[384]
   W->>V: similaritySearch(top_k=5)
   V-->>W: [{chunk_id, score}...]
-  W->>Database: SELECT chunks WHERE id IN (...)
-  Database-->>W: chunks[]
+  W->>D1: SELECT chunks WHERE id IN (...)
+  D1-->>W: chunks[]
   W->>AI: query-14b stream(query + chunks)
   AI-->>W: 回答
   W->>Browser: 回答

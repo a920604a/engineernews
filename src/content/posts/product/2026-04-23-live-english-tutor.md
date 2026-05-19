@@ -80,7 +80,7 @@ sequenceDiagram
   Frontend->>BackendAPI: 通知結束 (SUMMARY)
   BackendAPI->>Ollama: 觸發課後報告生成
   BackendAPI->>Frontend: 課後中文報告
-  Note over Frontend,Student: 結束課程
+  note over Frontend,Student: 結束課程
 ```
 
 ## 成果
