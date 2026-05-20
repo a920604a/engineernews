@@ -1,14 +1,13 @@
 ---
-title: "AI Agent 的工作原理是什么，Harness 又是什么？"
+title: AI Agent 的工作原理是什么，Harness 又是什么？
 date: 2026-05-20T11:51:47.353Z
 category: tech
 tags: ["AI", "Agent", "Harness", "動畫", "工程", "技術", "資安"]
 lang: zh-TW
-tldr: "透過動畫了解 AI Agent 的工作原理和 Harness 的概念"
-description: "透過動畫了解 AI Agent 的工作原理和 Harness 的概念"
-
+tldr: 透過動畫了解 AI Agent 的工作原理和 Harness 的概念
+description: 透過動畫了解 AI Agent 的工作原理和 Harness 的概念
 type: explainer
-original_url: "https://www.youtube.com/watch?v=B91bZL8wcAI"
+original_url: https://www.youtube.com/watch?v=B91bZL8wcAI
 draft: true
 ---
 
