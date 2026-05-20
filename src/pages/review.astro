@@ -431,9 +431,6 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
     .fs-footer .btn-edit { background: var(--focus-panel); border-color: var(--focus-line); color: var(--focus-muted); }
     .fs-footer .btn-save { background: var(--focus-green); box-shadow: 0 8px 18px rgba(34,197,94,0.18); }
     .fs-footer .btn-publish { background: var(--focus-accent); box-shadow: 0 8px 18px rgba(96,165,250,0.18); color: #07101f; }
-    .btn-fs-trigger { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; cursor: pointer; font-size: 12px; color: var(--muted); padding: 2px 7px; line-height: 1.4; vertical-align: middle; margin-left: 6px; }
-    .btn-fs-trigger:hover { background: var(--surface-subtle); color: var(--text); }
-
     /* ── Auth overlay ── */
     #auth-overlay { display: none; position: fixed; inset: 0; z-index: 3000; background: color-mix(in srgb, var(--bg) 96%, transparent); backdrop-filter: blur(8px); align-items: center; justify-content: center; }
     #auth-overlay.visible { display: flex; }
@@ -580,10 +577,7 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
               </div>
               <div class="form-row editor-split">
                 <div class="form-group">
-                  <label>
-                    Markdown 內容
-                    <button type="button" class="btn-fs-trigger" data-slug={post.id} title="全螢幕編輯 (Ctrl+Shift+F)">⛶</button>
-                  </label>
+                  <label>Markdown 內容</label>
                   <textarea name="body" rows="22"></textarea>
                 </div>
                 <div class="form-group">
@@ -1025,10 +1019,6 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
       fsOverlay.classList.remove('open');
     }
 
-    document.querySelectorAll('.btn-fs-trigger').forEach(btn => {
-      btn.addEventListener('click', () => openFullscreen(btn.dataset.slug));
-    });
-
     document.getElementById('fs-close-btn').addEventListener('click', closeFullscreen);
     document.getElementById('fs-btn-exit').addEventListener('click', closeFullscreen);
     document.getElementById('fs-meta-toggle').addEventListener('click', () => {
@@ -1051,16 +1041,6 @@ const CATEGORIES = ['tech', 'product', 'learning', 'career', 'life', 'creative']
       if (e.key === 'Escape' && fsOverlay.classList.contains('open')) {
         closeFullscreen();
         return;
-      }
-      // Ctrl+Shift+F / Cmd+Shift+F 開啟全螢幕
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'f') {
-        if (fsOverlay.classList.contains('open')) return;
-        const openPanels = document.querySelectorAll('.edit-panel.open');
-        if (openPanels.length === 1) {
-          e.preventDefault();
-          const form = openPanels[0].querySelector('.edit-form.ready');
-          if (form) openFullscreen(form.dataset.slug);
-        }
       }
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's' && fsOverlay.classList.contains('open')) {
         e.preventDefault();
