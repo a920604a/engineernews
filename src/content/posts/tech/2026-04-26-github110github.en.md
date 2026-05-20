@@ -82,7 +82,7 @@ sequenceDiagram
     Runtime->>Interpreter: stdout / stderr / result
     Interpreter->>LLM: Feed results back, continue dialogue
     LLM->>User: Explanation or next step
-  end loop
+  end
 ```
 
 The generate-execute-feedback loop allows the LLM to iterate toward complex goals rather than producing a single code output and stopping.

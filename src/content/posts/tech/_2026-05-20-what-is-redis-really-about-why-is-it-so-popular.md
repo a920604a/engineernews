@@ -29,10 +29,10 @@ Redis解決了傳統資料庫的效能瓶頸，提供了高效的資料存取和
 sequenceDiagram
     participant Client as "使用者程式"
     participant Redis as "Redis伺服器"
-    Client->>Redis:連線請求
-    Redis->>Client:連線成功
-    Client->>Redis:資料存取請求
-    Redis->>Client:資料存取結果
+    Client->>Redis: 連線請求
+    Redis->>Client: 連線成功
+    Client->>Redis: 資料存取請求
+    Redis->>Client: 資料存取結果
 ```
 
 ## 跟 Memcached 的差別
