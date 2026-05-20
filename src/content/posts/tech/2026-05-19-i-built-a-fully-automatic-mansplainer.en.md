@@ -9,6 +9,7 @@ description: "How to build an automatic mansplainer bot using LLM APIs — syste
 type: how-to
 original_url: "https://www.youtube.com/watch?v=xHi8PUIVyoo"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260520_234800_641980.wav"
 ---
 
 Mansplaining is a specific conversational art form: regardless of what the other person knows, assume they know nothing, explain it from the beginning with total confidence — ideally with some unsolicited background information they didn't ask for.
