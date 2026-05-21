@@ -5,6 +5,7 @@ import { useTranslations } from '../../../i18n/utils';
 import SharePanel from '../../../components/SharePanel.astro';
 import { getOgImageUrl } from '../../../lib/shareCard';
 import { normalizeEnglishPostId } from '../../../lib/postPaths';
+import { TTSPlayer } from '../../../components/TTSPlayer';
 
 export const prerender = true;
 
@@ -93,19 +94,42 @@ const dateStr = post.data.date.toLocaleDateString('en-US', {
     </div>
   </article>
 
-  {tocHeadings.length > 2 && (
-    <aside class="article-toc-sidebar">
-      <p class="toc-sidebar-title">Table of Contents</p>
-      <ol>
-        {tocHeadings.map(h => (
-          <li class={h.depth === 3 ? 'toc-item toc-item--sub' : 'toc-item'}>
-            <a href={`#${h.slug}`}>{h.text}</a>
-          </li>
-        ))}
-      </ol>
-    </aside>
-  )}
+  <aside class="article-toc-sidebar">
+    <!-- TTS Player (desktop sidebar) -->
+    <TTSPlayer
+      client:load
+      title={post.data.title}
+      tldr={post.data.tldr}
+      content={post.body ?? ''}
+      initialAudioUrl={post.data.audio_url}
+      initialSrtUrl={post.data.srt_url}
+    />
+
+    {tocHeadings.length > 2 && (
+      <div class="sidebar-block">
+        <p class="toc-sidebar-title">Table of Contents</p>
+        <ol>
+          {tocHeadings.map(h => (
+            <li class={h.depth === 3 ? 'toc-item toc-item--sub' : 'toc-item'}>
+              <a href={`#${h.slug}`}>{h.text}</a>
+            </li>
+          ))}
+        </ol>
+      </div>
+    )}
+  </aside>
   </div>
+
+  <!-- TTS Mini Bar (mobile fixed bottom) -->
+  <TTSPlayer
+    client:load
+    title={post.data.title}
+    tldr={post.data.tldr}
+    content={post.body ?? ''}
+    initialAudioUrl={post.data.audio_url}
+    initialSrtUrl={post.data.srt_url}
+    compact={true}
+  />
 </BaseLayout>
 
 <style>
@@ -160,6 +184,12 @@ const dateStr = post.data.date.toLocaleDateString('en-US', {
       border: 0.5px solid var(--separator);
       border-radius: var(--radius-md);
     }
+  }
+
+  .sidebar-block {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 0.5px solid var(--separator);
   }
 
   .toc-sidebar-title {
