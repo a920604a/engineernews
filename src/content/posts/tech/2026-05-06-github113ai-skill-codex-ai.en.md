@@ -9,6 +9,7 @@ description: "This week's GitHub trending highlights: Warp terminal open-sources
 type: listicle
 original_url: "https://www.youtube.com/watch?v=jjtfs8lug2s"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260521_020224_531961.mp3"
 ---
 
 The first week of May 2026 on GitHub told a clear story: AI coding tools are evolving from standalone assistants into a shared agent infrastructure. Warp open-sourcing, Agent Skills standardizing, and Codex CLI shipping together paint a picture of a rapidly consolidating developer workflow.

@@ -9,6 +9,7 @@ description: "A systematic introduction to the four main positional encoding sch
 type: explainer
 original_url: "https://www.youtube.com/watch?v=Ll-wk8x3G_g"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260521_020739_476056.mp3"
 ---
 
 Feed "cat bites dog" and "dog bites cat" into a Transformer — without positional information, these two sentences are identical to the model: just the tokens "cat," "bites," "dog" in some order. Self-attention lets each token attend to all others, but that "fully connected" design loses the concept of sequence order entirely. Positional Encoding was introduced in the original Transformer paper as the fix, but from 2017 to today, the solution to this problem has evolved through several generations.

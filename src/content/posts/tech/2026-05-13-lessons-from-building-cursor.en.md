@@ -9,6 +9,7 @@ description: "Engineering lessons from building Cursor: the VSCode fork decision
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=dUMsFQ8y3gM"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260521_021019_241412.mp3"
 ---
 
 Cursor is the fastest-growing AI code editor. Built by Sualeh Asif, Arvid Lunnemark, Aman Sanger, and Michael Truell — four friends who met studying at MIT — it's the flagship product of Anysphere Inc., founded in 2022. Two years after launch, Cursor crossed $500M in annual revenue, likely the fastest any developer tools company has reached that milestone. Outlets including Pragmatic Engineer and ByteByteGo have covered the engineering in depth. This article distills what's most useful.

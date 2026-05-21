@@ -9,6 +9,7 @@ description: "Github 一周熱點第 111 期：介紹 Karpathy 的 Claude Code �
 type: "listicle"
 original_url: "https://www.youtube.com/watch?v=MreEoXnLysc"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260521_022628_636588.mp3"
 ---
 # TL;DR
 

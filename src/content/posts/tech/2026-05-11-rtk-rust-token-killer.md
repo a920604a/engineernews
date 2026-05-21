@@ -7,6 +7,7 @@ lang: zh-TW
 description: "RTK (Rust Token Killer) 攔截 shell 命令輸出，在進入 AI context 前壓縮 60-90%，支援 100+ 命令與 12 個 AI coding 工具，overhead < 10ms。"
 tldr: "裝一個 Rust binary，git/npm/docker 等命令的輸出自動壓縮後再送進 AI context，30 分鐘 session 從 118,000 token 壓到 23,900。"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260521_020853_017287.mp3"
 ---
 
 用 Claude Code 寫程式，一次 `git diff` 就可能吃掉幾千 token。問題不在 AI 笨，而在輸出本身充滿對 AI 沒意義的內容——顏色 escape code、空白行、重複的 header、冗長的 stack trace。

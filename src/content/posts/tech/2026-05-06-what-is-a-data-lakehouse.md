@@ -9,6 +9,7 @@ description: "深入解析 Data Lakehouse 架構：為什麼出現、怎麼運�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=taSmwcqdkQk"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260521_023032_441952.mp3"
 ---
 
 資料基礎設施在過去十年走過了一段彎路：先是資料倉儲（Data Warehouse）主宰一切，接著資料湖（Data Lake）以低成本儲存大量原始資料的姿態崛起，但資料湖在治理和查詢效能上的缺陷讓工程師頭痛多年。Data Lakehouse 是試圖終結這場拉鋸的架構模式——在同一個儲存層上，同時提供資料倉儲的可靠性和資料湖的彈性。

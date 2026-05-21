@@ -9,6 +9,7 @@ description: "Why Chinese-language tech YouTube channels have a unique appeal fo
 type: explainer
 original_url: "https://www.youtube.com/watch?v=bZSw2y1xCXE"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260521_013904_182419.mp3"
 ---
 
 Chinese-speaking engineers working abroad share a common experience: reading English technical content is fine, but when you need to really think something through — talk to your own brain about it — your native language just works faster.

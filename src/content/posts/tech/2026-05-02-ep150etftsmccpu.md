@@ -9,6 +9,7 @@ description: "2026 年 4 月金管會放寬主動型基金與 ETF 的單股集�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=zpmBleCwvGo"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260521_020033_897152.mp3"
 ---
 
 2026 年 4 月 24 日，台積電股價盤中再創歷史新高，背後的觸媒是金管會前一天公告的一則看似平淡的法規修正：將國內主動型基金與主動型 ETF 的單一個股持股上限，從原本的 10% 調高至 25%。市場立刻讀懂這道「隱形台積電條款」的意涵——全台股市值佔比逾 44% 的台積電，是唯一一家會被舊規則強制壓抑的個股。

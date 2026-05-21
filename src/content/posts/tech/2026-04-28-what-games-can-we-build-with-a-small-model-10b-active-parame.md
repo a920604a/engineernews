@@ -9,6 +9,7 @@ description: "探討 10B 參數小型語言模型在遊戲開發中的實際應�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=Yysg5-WnVhg"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260521_015917_510595.mp3"
 ---
 
 GPT-4 當然可以生成精彩的遊戲對話。但 GPT-4 每秒要花錢，延遲在幾百毫秒到數秒之間，而且把所有 NPC 對話都送去雲端 API 會有隱私問題——玩家的行為資料會離開設備。小型語言模型（SLM）正是為了解決這些問題而存在。這篇看 10B 左右的模型在遊戲場景實際能做什麼。

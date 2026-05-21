@@ -9,6 +9,7 @@ description: "深入解析 Meta Ray-Ban Display 智慧眼鏡的技術架構、�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=7YrdI7h2XoY"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260521_023101_556713.mp3"
 ---
 
 AR 眼鏡做了十幾年，真正能讓人戴出門的幾乎沒有。Google Glass 失敗了，Snap Spectacles 賣不動，Magic Leap 燒掉幾十億之後幾乎消聲匿跡。但 Meta 在 Connect 2025 發表的 Ray-Ban Display 看起來不太一樣——它的鏡框就是一般的 Ray-Ban 眼鏡，重量只有 69 公克，而且內建了一個真正可用的顯示器。「玻璃就是玻璃」——意思是，這次不是概念展示，是能出貨的產品。

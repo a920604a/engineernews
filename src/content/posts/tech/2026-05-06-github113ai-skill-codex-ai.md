@@ -9,6 +9,7 @@ description: "本週 GitHub 熱門開源專案導覽：Warp 終端機開源、Gi
 type: listicle
 original_url: "https://www.youtube.com/watch?v=jjtfs8lug2s"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260521_023019_564909.mp3"
 ---
 
 2026 年 5 月第一週，GitHub Trending 的走向非常清楚：AI 編碼工具生態正在從「獨立 AI 助手」演化成「跨工具的 Agent 基礎設施」。Warp 開源、Agent Skills 標準化、Codex CLI 正式上線，三件事放在一起看，是一幅正在成形的全新開發者工作流程圖。

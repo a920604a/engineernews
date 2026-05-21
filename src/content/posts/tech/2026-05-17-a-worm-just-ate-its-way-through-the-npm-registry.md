@@ -9,6 +9,7 @@ description: "Mini Shai-Hulud 攻擊事件深度解析：42 個 TanStack 套件�
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=gwTQLZSIlsU"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260521_021239_231246.mp3"
 ---
 
 2026 年 5 月 11 日，一隻蠕蟲悄悄爬進了 npm 生態系。6 分鐘之內，42 個屬於 TanStack 的套件全數遭到入侵。這不是鑽研已久的 0-day 漏洞利用，而是一場精心設計的供應鏈攻擊，甚至帶著一張從未有惡意套件擁有過的「通關憑證」——有效的 SLSA Build Level 3 provenance。
