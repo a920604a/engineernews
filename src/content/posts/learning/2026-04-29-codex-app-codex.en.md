@@ -9,6 +9,7 @@ description: "What OpenAI Codex CLI actually is, how it works, what distinguishe
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=4gciWspBVHw"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260521_032326_091407.mp3"
 ---
 
 If you've used Claude Code, you know what terminal-based AI collaboration feels like: staying in the command line while an AI reads your codebase, proposes changes, runs tests, and helps you commit — without breaking your flow.

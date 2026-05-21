@@ -7,6 +7,7 @@ lang: en
 tldr: "When your thinking habitually runs decades into the future, today's actions lose weight. Recalibrating the time scale you use for different decisions is how you get your drive back."
 description: "Exploring why habitual long-range thinkers often slide into a sense of meaninglessness — and how deliberately shifting between time scales can restore motivation."
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260521_024150_562698.mp3"
 ---
 
 A friend of mine is one of the sharpest people I know. In college he was already asking whether a given industry would still exist in ten years. Job hunting, he'd wonder if the company could survive until his retirement. Starting a relationship, he'd calculate whether value-system gaps might become a problem decades down the road.
