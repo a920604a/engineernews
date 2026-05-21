@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
 import matter from 'gray-matter';
-import { synthesizeWithFallback, processTextForTTS, DEFAULT_TTS_API_URL } from '../src/lib/tts';
+import { synthesizeWithFallback, generateTTSScript, DEFAULT_TTS_API_URL } from '../src/lib/tts';
 
 const POSTS_DIR = path.join(process.cwd(), 'src/content/posts');
 const TTS_API_URL = process.env.TTS_API_URL || DEFAULT_TTS_API_URL;
@@ -53,7 +53,8 @@ async function processPost(filePath: string): Promise<void> {
 
   console.log(`  🎙️  合成: ${title}`);
   try {
-    const ttsText = processTextForTTS(title, tldr, content);
+    const scriptPath = filePath.replace(/\.md$/, '.tts-script.txt');
+    const ttsText = generateTTSScript(title, tldr, content, lang, scriptPath);
     const audioUrl = await synthesizeWithFallback(ttsText, lang, slug, {
       ttsApiUrl: TTS_API_URL,
       voice,
