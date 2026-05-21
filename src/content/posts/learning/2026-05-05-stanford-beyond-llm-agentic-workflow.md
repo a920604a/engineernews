@@ -73,16 +73,12 @@ Fine-Tuning 解決的是**行為問題**，不是**知識問題**。如果模型
 把外部知識庫接進 LLM，查詢時動態取回相關片段塞進 prompt。
 
 ```mermaid
-sequenceDiagram
-  participant User
-  participant Retriever
-  participant VectorDB
-  participant LLM
-  User->>Retriever: 提問
-  Retriever->>VectorDB: embed + 相似度搜尋
-  VectorDB->>Retriever: Top-K 相關文件片段
-  Retriever->>LLM: 問題 + 相關片段 → 生成答案
-  LLM->>User: 有根據的答案
+graph LR
+  User --> Retriever: 提問
+  Retriever --> VectorDB: embed + 相似度搜尋
+  VectorDB --> Retriever: Top-K 相關文件片段
+  Retriever --> LLM: 問題 + 相關片段 → 生成答案
+  LLM --> User: 有根據的答案
 ```
 
 解決的問題：知識截止、知識量太大塞不進 context、知識需要頻繁更新。

@@ -146,7 +146,8 @@ sequenceDiagram
   W->>AI: query-14b stream(query + chunks)
   AI-->>W: 回答
   W->>Browser: 回答
-  note right of AI: 回答
+  note right of AI
+    回答
 ```
 
 `sync-to-d1.ts` 核心片段：
