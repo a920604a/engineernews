@@ -84,16 +84,8 @@ function applyGlossary() {
   glossaryApplied = true;
 }
 
-function removeGlossary() {
-  document.querySelectorAll('.gloss').forEach(span => {
-    span.replaceWith(document.createTextNode(span.textContent ?? ''));
-  });
-  glossaryApplied = false;
-}
-
 export function ReadingModeBar({ hasZh }: Props) {
   const [bilingual, setBilingual] = useState(false);
-  const [focus, setFocus] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -104,19 +96,13 @@ export function ReadingModeBar({ hasZh }: Props) {
   }, []);
 
   useEffect(() => {
-    const grid = document.querySelector('.article-grid');
-    grid?.classList.toggle('bilingual-on', bilingual);
-  }, [bilingual]);
+    applyGlossary();
+  }, []);
 
   useEffect(() => {
     const grid = document.querySelector('.article-grid');
-    grid?.classList.toggle('focus-on', focus);
-    if (focus) {
-      applyGlossary();
-    } else {
-      removeGlossary();
-    }
-  }, [focus]);
+    grid?.classList.toggle('bilingual-on', bilingual);
+  }, [bilingual]);
 
   const bilingualDisabled = !hasZh || isMobile;
   const bilingualTitle = !hasZh
@@ -135,14 +121,6 @@ export function ReadingModeBar({ hasZh }: Props) {
         aria-pressed={bilingual}
       >
         ⇄ Bilingual
-      </button>
-      <button
-        className={`rm-btn${focus ? ' active' : ''}`}
-        onClick={() => setFocus(f => !f)}
-        title="Toggle focus reading mode"
-        aria-pressed={focus}
-      >
-        📖 Focus
       </button>
     </div>
   );

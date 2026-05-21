@@ -1,4 +1,6 @@
 ---
+import { readFileSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import PostCard from '../../../components/PostCard.astro';
@@ -22,21 +24,21 @@ export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'en');
   const allPosts = await getCollection('posts');
   return posts.map(post => {
-    const zhId = post.id.replace(/\.en$/, '').replace(/en$/, '');
-    const zhPost = allPosts.find(
-      p => p.data.lang === 'zh-TW' && p.id === zhId
-    );
+    const baseId = post.id.replace(/\.en$/, '');
+    const scriptBase = join(process.cwd(), 'src/content/posts', baseId);
+    const enScriptPath = `${scriptBase}.en.tts-script.txt`;
+    const zhScriptPath = `${scriptBase}.tts-script.txt`;
+    const enScript = existsSync(enScriptPath) ? readFileSync(enScriptPath, 'utf-8') : null;
+    const zhScript = existsSync(zhScriptPath) ? readFileSync(zhScriptPath, 'utf-8') : null;
     return {
       params: { slug: normalizeEnglishPostId(post.id) },
-      props: { post, allPosts, zhPost },
+      props: { post, allPosts, enScript, zhScript },
     };
   });
 }
 
-const { post, allPosts, zhPost } = Astro.props;
+const { post, allPosts, enScript, zhScript } = Astro.props;
 const { Content, headings } = await render(post);
-const zhRendered = zhPost ? await render(zhPost) : null;
-const ZhContent = zhRendered?.Content;
 const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 const t = useTranslations('en');
 const related = getRelatedPosts(post, allPosts).filter(p => p.data.lang === 'en');
@@ -138,15 +140,26 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
       </details>
     )}
 
-    <ReadingModeBar client:load hasZh={!!ZhContent} />
+    <ReadingModeBar client:load hasZh={!!(enScript && zhScript)} />
     <div class="bilingual-wrapper">
       <div class="en-col">
-        <div class="prose"><Content /></div>
+        <div class="prose article-view"><Content /></div>
+        {enScript && (
+          <div class="prose script-view">
+            {enScript.split('\n\n').filter(p => p.trim()).map(para => (
+              <p>{para}</p>
+            ))}
+          </div>
+        )}
       </div>
-      {ZhContent && (
+      {zhScript && (
         <div class="zh-col">
           <p class="zh-label">中文版</p>
-          <div class="prose"><ZhContent /></div>
+          <div class="prose">
+            {zhScript.split('\n\n').filter(p => p.trim()).map(para => (
+              <p>{para}</p>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -496,6 +509,10 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
     display: block;
   }
 
+  :global(.script-view) {
+    display: none;
+  }
+
   :global(.zh-col) {
     display: none;
   }
@@ -525,6 +542,14 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
       grid-template-columns: 1fr 1fr;
       gap: 40px;
       align-items: start;
+    }
+
+    :global(.article-grid.bilingual-on .article-view) {
+      display: none;
+    }
+
+    :global(.article-grid.bilingual-on .script-view) {
+      display: block;
     }
 
     :global(.article-grid.bilingual-on .zh-col) {
