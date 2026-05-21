@@ -162,9 +162,10 @@ export function generateTTSScript(
     });
 
     if (result.error) throw result.error;
-    if (result.status !== 0) throw new Error(result.stderr || `exit code ${result.status}`);
+    if (result.signal) throw new Error(`claude killed by signal ${result.signal}`);
+    if (result.status !== 0) throw new Error(result.stderr?.trim() || `exit code ${result.status}`);
 
-    const script = (result.stdout as string).trim();
+    const script = result.stdout?.trim() ?? '';
     if (!script) throw new Error('claude 回傳空字串');
 
     fs.writeFileSync(outputPath, script, 'utf-8');
