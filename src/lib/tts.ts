@@ -24,6 +24,21 @@ export const DEFAULT_TTS_API_URL = 'http://localhost:8008';
 export const R2_BUCKET_NAME = 'engineer-news-og-images';
 
 /**
+ * 回傳指定分類的 TTS 輸出目錄（src/tts/<category>/）
+ */
+export function getTTSDir(category: string): string {
+  return path.join(process.cwd(), 'src/tts', category);
+}
+
+/**
+ * 從 EN slug 移除 .en 後綴，得到配對基礎名稱
+ * 例：'2026-04-27-slug.en' → '2026-04-27-slug'
+ */
+export function getTTSBasename(enSlug: string): string {
+  return enSlug.replace(/\.en$/, '');
+}
+
+/**
  * Feature toggle: controls which TTS backend is used.
  *
  *   edge   – local Edge TTS server only (default; CF AI code is preserved but skipped)
