@@ -8,7 +8,7 @@ export const GET: APIRoute = async (context) => {
 
   return rss({
     title: 'Engineer News',
-    description: '捕捉工程對話中的精華，轉化為結構化的技術知識庫。',
+    description: '捕捉工程對話中的精華，轉化為結構化的技術知識庫。需要的不是更多輸出，是更低成本的理解',
     site: context.site ?? 'https://engineer-news.pages.dev',
     items: sorted.map((post) => ({
       title: post.data.title,

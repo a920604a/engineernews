@@ -39,11 +39,6 @@ async function processPost(filePath: string): Promise<void> {
     return;
   }
 
-  if (data.audio_url) {
-    console.log(`  ⏭️  跳過（已有 audio_url）: ${path.basename(filePath)}`);
-    return;
-  }
-
   const title = data.title ?? path.basename(filePath, '.md');
   const tldr = data.tldr ?? '';
   const content = raw.replace(/^---[\s\S]*?---\n*/, '');
@@ -51,10 +46,16 @@ async function processPost(filePath: string): Promise<void> {
   const voice = lang === 'en' ? 'en-US-AvaNeural' : 'zh-TW-HsiaoChenNeural';
   const slug = path.basename(filePath, '.md');
 
+  const scriptPath = filePath.replace(/\.md$/, '.tts-script.txt');
+  const ttsText = generateTTSScript(title, tldr, content, lang, scriptPath);
+
+  if (data.audio_url) {
+    console.log(`  ⏭️  跳過音頻（已有 audio_url）: ${path.basename(filePath)}`);
+    return;
+  }
+
   console.log(`  🎙️  合成: ${title}`);
   try {
-    const scriptPath = filePath.replace(/\.md$/, '.tts-script.txt');
-    const ttsText = generateTTSScript(title, tldr, content, lang, scriptPath);
     const audioUrl = await synthesizeWithFallback(ttsText, lang, slug, {
       ttsApiUrl: TTS_API_URL,
       voice,
