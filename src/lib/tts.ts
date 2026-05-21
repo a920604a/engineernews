@@ -144,6 +144,20 @@ Summary: {tldr}
 ---
 {content}`;
 
+const ALIGNMENT_PROMPT_TEMPLATE = `你是雙語 Podcast 腳本的對齊專家。以下是同一篇文章的英文版與中文版腳本，各段落已標上索引。
+
+英文段落：
+{enParagraphs}
+
+中文段落：
+{zhParagraphs}
+
+請根據語意對應關係，輸出 JSON 對齊映射。規則：
+- 只輸出 JSON，不加任何說明或 markdown 標記
+- 格式：{"pairs": [{"en": 0, "zh": 0}, ...]}
+- "en" 與 "zh" 的值可以是單一數字，或多個數字組成的陣列（多對一或一對多）
+- 省略無明確語意對應的段落（如開頭/結尾的格式標記行）`;
+
 /**
  * 用 claude --print CLI 將文章改寫為適合朗讀的腳本，快取為 outputPath。
  * 若 outputPath 已存在則直接回傳快取（冪等）。
@@ -189,6 +203,58 @@ export function generateTTSScript(
   } catch (e) {
     console.warn(`  ⚠️  LLM 劇本生成失敗，改用原始文字清理: ${e instanceof Error ? e.message : e}`);
     return processTextForTTS(title, tldr, content);
+  }
+}
+
+/**
+ * 透過 LLM 對齊英中腳本段落，輸出 bilingual-map.json。
+ * 若已存在則跳過（冪等）。失敗時退化為 identity map。
+ */
+export async function generateBilingualMap(
+  enScript: string,
+  zhScript: string,
+  outputPath: string
+): Promise<void> {
+  if (fs.existsSync(outputPath)) {
+    console.log(`  📄 使用快取對齊映射: ${path.basename(outputPath)}`);
+    return;
+  }
+
+  const enParas = enScript.split('\n\n').filter(p => p.trim());
+  const zhParas = zhScript.split('\n\n').filter(p => p.trim());
+
+  const enParagraphs = enParas.map((p, i) => `[${i}]: ${p.slice(0, 200)}`).join('\n');
+  const zhParagraphs = zhParas.map((p, i) => `[${i}]: ${p.slice(0, 200)}`).join('\n');
+
+  const prompt = ALIGNMENT_PROMPT_TEMPLATE
+    .replace('{enParagraphs}', enParagraphs)
+    .replace('{zhParagraphs}', zhParagraphs);
+
+  try {
+    console.log(`  🤖 LLM 生成段落對齊映射...`);
+    const result = spawnSync('claude', ['--print', '--dangerously-skip-permissions'], {
+      input: prompt,
+      encoding: 'utf8',
+      timeout: 60_000,
+    });
+
+    if (result.error) throw result.error;
+    if (result.status !== 0) throw new Error(result.stderr?.trim() || `exit code ${result.status}`);
+
+    const output = result.stdout?.trim() ?? '';
+    const jsonMatch = output.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('LLM 回傳內容不含 JSON');
+
+    const parsed = JSON.parse(jsonMatch[0]);
+    if (!Array.isArray(parsed.pairs)) throw new Error('JSON 格式不符：缺少 pairs 陣列');
+
+    fs.writeFileSync(outputPath, JSON.stringify(parsed, null, 2), 'utf-8');
+    console.log(`  💾 對齊映射已存: ${path.basename(outputPath)}`);
+  } catch (e) {
+    console.warn(`  ⚠️  對齊映射生成失敗，使用 identity map: ${e instanceof Error ? e.message : e}`);
+    const len = Math.min(enParas.length, zhParas.length);
+    const fallback = { pairs: Array.from({ length: len }, (_, i) => ({ en: i, zh: i })) };
+    fs.writeFileSync(outputPath, JSON.stringify(fallback, null, 2), 'utf-8');
   }
 }
 
