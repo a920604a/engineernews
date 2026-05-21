@@ -85,9 +85,10 @@ async function synthesizeIfNeeded(
     }
     setAudioUrl(filePath, audioUrl);
     if (isProd) {
-      const escaped = audioUrl.replace(/'/g, "''");
+      const escapedUrl = audioUrl.replace(/'/g, "''");
+      const escapedSlug = audioSlug.replace(/'/g, "''");
       execSync(
-        `wrangler d1 execute engineer-news-db --command "UPDATE posts SET audio_url='${escaped}' WHERE slug='${audioSlug}'" --remote`,
+        `wrangler d1 execute engineer-news-db --command "UPDATE posts SET audio_url='${escapedUrl}' WHERE slug='${escapedSlug}'" --remote`,
         { stdio: 'inherit' }
       );
     }
