@@ -239,6 +239,7 @@ export async function generateBilingualMap(
     });
 
     if (result.error) throw result.error;
+    if (result.signal) throw new Error(`claude killed by signal ${result.signal}`);
     if (result.status !== 0) throw new Error(result.stderr?.trim() || `exit code ${result.status}`);
 
     const output = result.stdout?.trim() ?? '';
@@ -247,6 +248,11 @@ export async function generateBilingualMap(
 
     const parsed = JSON.parse(jsonMatch[0]);
     if (!Array.isArray(parsed.pairs)) throw new Error('JSON 格式不符：缺少 pairs 陣列');
+    for (const pair of parsed.pairs) {
+      if (!('en' in pair) || !('zh' in pair)) {
+        throw new Error('JSON 格式不符：pairs 必須包含 "en" 和 "zh" 鍵');
+      }
+    }
 
     fs.writeFileSync(outputPath, JSON.stringify(parsed, null, 2), 'utf-8');
     console.log(`  💾 對齊映射已存: ${path.basename(outputPath)}`);
