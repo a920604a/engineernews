@@ -7,6 +7,7 @@ import ScrollToTop from '../../../components/ScrollToTop.astro';
 import PostPrevNext from '../../../components/PostPrevNext.astro';
 import { useTranslations } from '../../../i18n/utils';
 import { TTSPlayer } from '../../../components/TTSPlayer';
+import { ReadingModeBar } from '../../../components/ReadingModeBar';
 import { InteractionBar } from '../../../components/InteractionBar';
 import { CommentSection } from '../../../components/CommentSection';
 import { getRelatedPosts } from '../../../utils/relatedPosts';
@@ -20,14 +21,22 @@ export const prerender = true;
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'en');
   const allPosts = await getCollection('posts');
-  return posts.map(post => ({
-    params: { slug: normalizeEnglishPostId(post.id) },
-    props: { post, allPosts },
-  }));
+  return posts.map(post => {
+    const zhId = post.id.replace(/\.en$/, '').replace(/en$/, '');
+    const zhPost = allPosts.find(
+      p => p.data.lang === 'zh-TW' && p.id === zhId
+    );
+    return {
+      params: { slug: normalizeEnglishPostId(post.id) },
+      props: { post, allPosts, zhPost },
+    };
+  });
 }
 
-const { post, allPosts } = Astro.props;
+const { post, allPosts, zhPost } = Astro.props;
 const { Content, headings } = await render(post);
+const zhRendered = zhPost ? await render(zhPost) : null;
+const ZhContent = zhRendered?.Content;
 const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 const t = useTranslations('en');
 const related = getRelatedPosts(post, allPosts).filter(p => p.data.lang === 'en');
@@ -129,7 +138,18 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
       </details>
     )}
 
-    <div class="prose"><Content /></div>
+    <ReadingModeBar client:load hasZh={!!ZhContent} />
+    <div class="bilingual-wrapper">
+      <div class="en-col">
+        <div class="prose"><Content /></div>
+      </div>
+      {ZhContent && (
+        <div class="zh-col">
+          <p class="zh-label">中文版</p>
+          <div class="prose"><ZhContent /></div>
+        </div>
+      )}
+    </div>
 
     <PostPrevNext
       prev={prevPost ? { id: normalizeEnglishPostId(prevPost.id), title: prevPost.data.title } : undefined}
@@ -430,6 +450,118 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
   .article-toc-sidebar a:hover {
     color: var(--accent);
     transform: translateX(2px);
+  }
+
+  /* ── ReadingModeBar ── */
+  .reading-mode-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  :global(.rm-btn) {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: var(--radius-full);
+    border: 0.5px solid var(--separator);
+    background: var(--bg-secondary);
+    color: var(--label-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+
+  :global(.rm-btn:hover:not(:disabled)) {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  :global(.rm-btn.active) {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  :global(.rm-btn:disabled) {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* ── 雙語 wrapper ── */
+  .bilingual-wrapper {
+    display: block;
+  }
+
+  :global(.zh-col) {
+    display: none;
+  }
+
+  :global(.zh-label) {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--label-tertiary);
+    margin: 0 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 0.5px solid var(--separator);
+  }
+
+  @media (min-width: 1140px) {
+    :global(.article-grid.bilingual-on) {
+      grid-template-columns: 1fr;
+    }
+
+    :global(.article-grid.bilingual-on .article-toc-sidebar) {
+      display: none;
+    }
+
+    :global(.article-grid.bilingual-on .bilingual-wrapper) {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    :global(.article-grid.bilingual-on .zh-col) {
+      display: block;
+    }
+  }
+
+  /* ── 精讀模式 tooltip ── */
+  :global(.gloss) {
+    border-bottom: 1px dashed var(--accent);
+    cursor: help;
+    position: relative;
+    display: inline;
+  }
+
+  :global(.gloss::after) {
+    content: attr(data-def);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--separator);
+    border-radius: var(--radius-sm);
+    padding: 4px 8px;
+    font-size: 12px;
+    color: var(--label);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  :global(.gloss:hover::after) {
+    opacity: 1;
   }
 </style>
 
