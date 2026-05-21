@@ -9,7 +9,6 @@ description: "Why system design interviews aren't about recitation: analyzing wh
 type: explainer
 original_url: "https://www.youtube.com/watch?v=a7JHJ8Tzwpg"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260514_062842_539742.wav"
 ---
 
 Every few months, someone posts in a tech community: "How do I prep for system design?" Then all the "must-know" lists come pouring out: consistent hashing, Kafka architecture, CAP theorem, database sharding strategies... But if memorizing these were enough to pass, the interview itself would be meaningless.

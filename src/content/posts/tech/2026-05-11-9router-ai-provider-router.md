@@ -7,7 +7,6 @@ lang: zh-TW
 description: "9Router 在 localhost:20128 跑一個 OpenAI-compatible proxy，三層 fallback 路由跨 40+ AI provider，內建 OAuth auto-refresh 與跨 API 格式轉換。"
 tldr: "Claude Code 的 endpoint 指向 localhost:20128，9Router 自動從訂閱服務 → 便宜 API → 免費服務做三層 fallback，OAuth token 自動刷新，格式轉換透明。"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260510_232658_006688.wav"
 ---
 
 訂了 Claude Pro、Cursor、GitHub Copilot，但各自的額度管理很麻煩——某個服務用完要手動切換，OAuth token 過期要重新登入，而且不同工具送的 API 格式不一樣，沒辦法統一管理。

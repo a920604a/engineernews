@@ -9,7 +9,6 @@ description: "A technical breakdown of NVIDIA's new AI inference efficiency tech
 type: explainer
 original_url: "https://www.youtube.com/watch?v=4wC8hnQawiA"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260519_001101_766701.wav"
 ---
 
 Training a large language model might take weeks, but the real money is spent during years of inference afterward. Every user query spins up GPUs, consumes power, and produces a response. Small efficiency gains at this stage compound into massive cost savings at scale. NVIDIA's recent inference optimization work targets exactly this lever — a coordinated combination of quantization, sparsity, and hardware-aware system design pushing inference efficiency to new limits.

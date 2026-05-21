@@ -9,7 +9,6 @@ description: "An assessment of OpenAI's spring 2025 releases — o3, o4-mini, an
 type: explainer
 original_url: "https://www.youtube.com/watch?v=4nQnhjimB4Y"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260514_064746_827221.wav"
 ---
 
 In April 2025, OpenAI launched three differently positioned models within a few weeks: GPT-4.1, o3, and o4-mini. A YouTube creator gave the release the clickbait title "GPT 5.5 Instant," but none of these models actually carries that name — GPT-5 wouldn't arrive until later in 2025. Still, each of these three models has things genuinely worth discussing, along with design decisions that made developers raise their eyebrows.

@@ -9,7 +9,6 @@ description: "Exploring Python's evolving role in the AI era: from scripting glu
 type: explainer
 original_url: "https://www.youtube.com/watch?v=pa_DHVnj_uU"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260514_065306_905209.wav"
 ---
 
 "Reptile warriors" — this is an affectionate nickname for Python programmers. Python's mascot is a snake (and there's the Monty Python reference), so the Python community sometimes gets playfully called the "snake tribe" or "reptile warriors." In 2025, with AI tools everywhere, the way this community works is undergoing a fundamental change — not because Python is less important, but because the act of *writing Python* itself is transforming.

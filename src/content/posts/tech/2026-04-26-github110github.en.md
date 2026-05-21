@@ -9,7 +9,6 @@ description: "A look at the fastest-growing open-source projects on GitHub in 20
 type: explainer
 original_url: "https://www.youtube.com/watch?v=iBGVMcXnkWo"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260514_062156_857535.wav"
 ---
 
 GitHub hosts hundreds of millions of repositories, but only a handful have ever hit 100,000 stars in under a year. Since 2023, that short list has been dominated almost entirely by AI tools. This piece looks at the standout projects, why they exploded, and what that tells us about where the developer community is headed.

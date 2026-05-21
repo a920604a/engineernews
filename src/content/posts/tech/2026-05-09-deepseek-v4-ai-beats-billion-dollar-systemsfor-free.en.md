@@ -9,7 +9,6 @@ description: "A deep dive into DeepSeek V3's MoE architecture, training efficien
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=p7K3xfViWCE"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260514_064619_345968.wav"
 ---
 
 In December 2024, Chinese AI company DeepSeek published a technical report that made a lot of people in the AI research community run the numbers twice: they trained a 671B-parameter model using 2.78 million H800 GPU-hours at a cost of approximately $5.57 million. By comparison, GPT-4's training cost is estimated to exceed $100 million. Comparable performance, roughly one-twentieth the training cost, fully open source. The implications go beyond "cheap AI" — this was a fundamental recalibration of the industry's assumptions about training efficiency.

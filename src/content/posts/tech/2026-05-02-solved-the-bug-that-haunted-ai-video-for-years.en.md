@@ -9,7 +9,6 @@ description: "A systematic look at why AI video generation kept breaking over lo
 type: research
 original_url: "https://www.youtube.com/watch?v=yzajLZXh9JU"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260514_063244_284872.wav"
 ---
 
 If you've used Sora, Kling, Runway, or any AI video generation tool, you've probably noticed the same failure mode: the first few seconds look good, then something starts to drift. A character's face changes subtly between frames. Background details shift. Motion becomes unnatural. By thirty seconds in, the video barely resembles what you asked for. This is **temporal drift** — and it's been the defining unsolved problem in AI video generation since these tools emerged. In 2025, several research groups converged on systematic solutions. Here's what they found.

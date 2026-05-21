@@ -8,7 +8,6 @@ tldr: "本文將介紹如何在新電腦上從零開始安裝和設定 Claude Co
 description: "本文將介紹如何在新電腦上從零開始安裝和設定 Claude Code 等 Agent 框架，支援 Windows、macOS 和 Linux 三大作業系統。"
 original_url: "https://www.youtube.com/watch?v=7JltMHmSvuY"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260505_033833_972702.wav"
 ---
 # TL;DR
  Claude Code 等 Agent 框架可以跨越三大作業系統（Windows、macOS 和 Linux），提供統一的程式開發和 DevOps 工作流程。

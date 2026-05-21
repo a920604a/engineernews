@@ -9,7 +9,6 @@ description: "Lyra 2.0 是 NVIDIA Spatial Intelligence Lab 發布的開源 3D �
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=eCw33snvoNI"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260514_063716_456014.wav"
 ---
 
 你上傳一張咖啡廳的照片，AI 把它變成一個你可以自由穿梭、走進去探索的 3D 空間——不是死板的 360 全景，而是真正可以走進去轉彎、看到你原本照片裡看不到的角落。這件事聽起來像科幻，但 NVIDIA Spatial Intelligence Lab 在 2026 年 4 月發布的 **Lyra 2.0**，已經把它變成可以在瀏覽器互動界面裡體驗的現實，並且以 Apache 2.0 開源。

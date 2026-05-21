@@ -9,7 +9,6 @@ description: "系統性介紹 Transformer 位置編碼的四種主要方案：Si
 type: explainer
 original_url: "https://www.youtube.com/watch?v=Ll-wk8x3G_g"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260514_065222_255545.wav"
 ---
 
 把「貓咬狗」和「狗咬貓」丟進 Transformer，如果沒有位置資訊，這兩個句子對模型來說是一樣的——都是「貓、咬、狗」三個 token，順序不知道。Self-attention 機制讓每個 token 能關注所有其他 token，但這個「全連接」的設計本身就失去了序列順序的概念。位置編碼（Positional Encoding）是 Transformer 原始論文就引入的解決方案，但從 2017 年到現在，這個問題的解法已經演進了好幾代。

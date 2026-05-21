@@ -9,7 +9,6 @@ description: "Cursor 工程團隊分享的真實挑戰：VSCode Fork 的決策�
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=dUMsFQ8y3gM"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260514_111441_628440.wav"
 ---
 
 Cursor 是目前成長最快的 AI 程式編輯器。由 Sualeh Asif、Arvid Lunnemark、Aman Sanger、Michael Truell 四位在 MIT 相識的朋友於 2022 年創建，背後公司是 Anysphere。2024 年推出後兩年，年度營收突破 5 億美元——這在開發者工具史上可能是最快的里程碑。Pragmatic Engineer 等技術媒體對其工程細節做了深度報導，這篇文章整理其中最有工程參考價值的教訓。

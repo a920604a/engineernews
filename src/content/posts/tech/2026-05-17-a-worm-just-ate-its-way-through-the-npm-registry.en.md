@@ -9,7 +9,6 @@ description: "A deep dive into the Mini Shai-Hulud attack: 42 TanStack npm packa
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=gwTQLZSIlsU"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260519_001211_680264.wav"
 ---
 
 On May 11, 2026, a worm quietly burrowed into the npm ecosystem. Within 6 minutes, 42 TanStack packages were compromised. This wasn't a zero-day exploit — it was a precisely engineered supply chain attack carrying something no malicious package had ever possessed before: a valid SLSA Build Level 3 provenance attestation.

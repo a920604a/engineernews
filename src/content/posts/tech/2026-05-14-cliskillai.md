@@ -9,7 +9,6 @@ description: "介紹 OpenClaw × Playwright CLI 的三段式 AI 瀏覽器自動�
 type: how-to
 original_url: "https://www.youtube.com/watch?v=nlK7-zuYDcs"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260514_234323_253631.wav"
 ---
 
 一樣的登入流程、一樣的表單填寫、一樣的資料爬取——這些任務明明寫過一次，卻每次還是得呼叫 AI 推理，Token 一直在燒。

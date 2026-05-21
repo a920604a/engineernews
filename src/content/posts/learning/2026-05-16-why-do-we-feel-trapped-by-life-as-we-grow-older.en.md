@@ -7,7 +7,6 @@ lang: en
 tldr: "Growing older means accumulating responsibilities and roles — Luo Xiang's insight is that feeling trapped is not your fault, but an inevitable consequence of living seriously."
 description: "Drawing on Luo Xiang's perspective on life's constraints, this piece explores why adults feel increasingly boxed in — and how to find breathing room within unavoidable frameworks."
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260519_000529_431069.wav"
 ---
 
 There was a period when my first thought every morning was a mental accounting: years left on the mortgage, tutoring fees for the kids, my parents' upcoming health checks, work deadlines. Before I'd even washed my face, I was already tired.

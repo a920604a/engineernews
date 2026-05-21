@@ -9,7 +9,6 @@ description: "深入解析 DeepSeek V3 的 MoE 架構、訓練效率突破與成
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=p7K3xfViWCE"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260514_064700_638535.wav"
 ---
 
 2024 年 12 月，中國 AI 公司 DeepSeek 發布了一篇技術報告，內容讓 AI 研究圈的很多人重新算了一遍數字：他們用 278 萬 H800 GPU 小時訓練了一個 671B 參數的模型，成本約 557 萬美元。相比之下，GPT-4 的訓練成本估計超過 1 億美元。同等效能，約二十分之一的訓練成本，完全開源。這件事的影響不只是「便宜的 AI」，而是整個產業對訓練效率假設的重新校準。

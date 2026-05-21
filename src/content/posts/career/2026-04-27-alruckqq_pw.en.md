@@ -9,7 +9,6 @@ description: "'Grass-stage troupe' (草台班子) is a term for organizations th
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=ALruCKQQ_pw"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260514_055821_631715.wav"
 ---
 
 "Grass-stage troupe" (草台班子) has become a popular term in workplace discussions recently. The original meaning is a hastily assembled performance troupe — maintaining appearances on stage while chaotic behind the scenes. Applied to organizations with poor management, weak systems, and barely-functional operations, it fits remarkably well.

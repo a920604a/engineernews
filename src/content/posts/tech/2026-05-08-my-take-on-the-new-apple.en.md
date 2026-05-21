@@ -9,7 +9,6 @@ description: "An engineer's perspective on Apple's 2025 M4 product line: MacBook
 type: explainer
 original_url: "https://www.youtube.com/watch?v=i9TvUGeTltE"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260514_064411_049150.wav"
 ---
 
 Apple's 2025 hardware story can be summarized in one sentence: M4 chips across the lineup, and Apple Intelligence shipping on entry-level products for the first time. The MacBook Air M4 and Mac Studio M4 Max are the core of this wave. Both represent clear spec improvements, but Apple Intelligence's software integration has left the engineering community somewhat disappointed. This article breaks down what actually matters in this update.

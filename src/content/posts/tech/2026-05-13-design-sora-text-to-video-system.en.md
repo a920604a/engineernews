@@ -9,7 +9,6 @@ description: "A system design analysis of Sora's technical architecture: spatiot
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=ZuQ4B0CwNjo"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260514_111227_606546.wav"
 ---
 
 In February 2024, OpenAI released Sora, demonstrating the ability to generate one minute of high-quality video — shocking the AI research community. The previous best text-to-video systems could only produce a few seconds of low-resolution, temporally incoherent clips. What was Sora's core technical breakthrough? If you were designing a similar system, what would the key architectural decisions be? This article breaks down Sora's technical report ("Video Generation Models as World Simulators") and the engineering choices in the open-source recreation Open-Sora.

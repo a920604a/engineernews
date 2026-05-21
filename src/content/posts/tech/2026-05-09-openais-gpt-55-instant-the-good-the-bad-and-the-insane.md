@@ -9,7 +9,6 @@ description: "評析 OpenAI 2025 年春季發布的 o3、o4-mini 和 GPT-4.1 三
 type: explainer
 original_url: "https://www.youtube.com/watch?v=4nQnhjimB4Y"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260514_064831_928257.wav"
 ---
 
 2025 年 4 月，OpenAI 在幾週內推出了三款不同定位的模型：GPT-4.1、o3 和 o4-mini。YouTube 創作者給了這波發布一個誇張標題「GPT 5.5 Instant」，但實際上這三款模型都不叫那個名字——GPT-5 要到 2025 年稍晚才發布。儘管如此，這三款模型每一款都有值得深入討論的特點，以及讓開發者皺眉的設計決策。

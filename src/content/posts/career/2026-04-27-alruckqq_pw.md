@@ -9,7 +9,6 @@ description: "「草台班子」是近年流行的說法，指那些表面上正
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=ALruCKQQ_pw"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260514_110543_009910.wav"
 ---
 
 「草台班子」這個詞近年在職場圈越來越流行。它的原意是指倉促湊合的劇團，表演時勉強維持，台下卻一團亂。用來形容組織管理混亂、制度不健全、但還是在勉強維持運作的公司，非常貼切。
