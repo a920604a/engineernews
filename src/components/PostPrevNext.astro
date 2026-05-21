@@ -7,24 +7,27 @@ interface Post {
 interface Props {
   prev?: Post;
   next?: Post;
+  basePath?: string;
+  prevLabel?: string;
+  nextLabel?: string;
 }
 
-const { prev, next } = Astro.props;
+const { prev, next, basePath = '/posts', prevLabel = '← 上一篇', nextLabel = '下一篇 →' } = Astro.props;
 ---
 
 <div class="prev-next-nav">
   <div class="nav-item">
     {prev && (
-      <a href={`/posts/${prev.id}`} class="nav-link prev">
-        <span class="nav-label">← 上一篇</span>
+      <a href={`${basePath}/${prev.id}`} class="nav-link prev">
+        <span class="nav-label">{prevLabel}</span>
         <span class="nav-title">{prev.title}</span>
       </a>
     )}
   </div>
   <div class="nav-item">
     {next && (
-      <a href={`/posts/${next.id}`} class="nav-link next">
-        <span class="nav-label">下一篇 →</span>
+      <a href={`${basePath}/${next.id}`} class="nav-link next">
+        <span class="nav-label">{nextLabel}</span>
         <span class="nav-title">{next.title}</span>
       </a>
     )}
