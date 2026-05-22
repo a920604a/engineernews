@@ -161,6 +161,7 @@ async function main() {
   } else {
     const pairs = getPairs();
     console.log(`🔍 找到 ${pairs.length} 個配對`);
+    // 純中文文章（無對應 .en.md）不在此批次範圍，需另行處理音頻合成
     for (const pair of pairs) {
       await processPair(pair);
     }
