@@ -71,8 +71,6 @@ sequenceDiagram
   Runtime->>Interpreter: 執行結果 + stdout/stderr
   Interpreter->>LLM: 把結果回饋，繼續對話
   LLM->>User: 解釋結果或繼續下一步
-
-改正後的代碼是使用了 sequenceDiagram 的正確語法。
 ```
 
 這個「生成 → 執行 → 回饋」的循環讓 LLM 能夠迭代地完成複雜任務，而不只是一次性生成程式碼。
