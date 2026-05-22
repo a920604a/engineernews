@@ -1,0 +1,27 @@
+If you're building an NPC that talks back to players in real time, you might think you need a massive cloud model — the kind of thing that costs per token and adds half a second of network round-trip to every line of dialogue. But there's a genuinely compelling alternative sitting on consumer hardware right now, and it's worth understanding what it can and can't do.
+
+We're talking about small language models in the 7 to 13 billion parameter range. Names like Mistral 7B, Google's Gemma 9B, Meta's Llama 3.2 at 11 billion parameters, and Microsoft's Phi-3.5 Mini at under 4 billion. With 4-bit quantization — a compression technique that shrinks model weights without gutting quality — these models fit in 4 to 8 gigabytes of memory. That means they run on an RTX 4060 Ti, or on any M2 or M3 Mac with 16 to 32 gigs of unified memory. And on an RTX 4090, they generate 20 to 50 tokens per second. That's fast enough to feel real-time to a player.
+
+So what can you actually build?
+
+**Dynamic NPC dialogue** is the most mature use case. Traditional RPG conversation is a dialogue tree — the player picks from a menu, the NPC says its scripted line, repeat. SLMs break that open. A player can type or say anything, and the NPC responds in character. The magic is in the system prompt: you give the model the NPC's personality, their secrets, their speech patterns, what they know and crucially what they *don't* know, plus the current scene context — time of day, location, how much the player has earned their trust. Within those constraints, the model improvises. "Keep your voice down. The guards rotate at midnight — that's when I can talk." That kind of specificity, generated on the fly, from a model running entirely on the player's machine.
+
+**Procedural narrative generation** is the second big area. Roguelikes are a natural fit. Every time a player enters a new area, generate a paragraph: who used this dungeon last, what happened here, what did they leave behind. A 2025 arXiv paper showed that SLMs can actually approach large model quality on short, clearly-contexted creative tasks — and they produce more variety than purely rule-based generation. The constraint is "short and well-defined," which is exactly what these moment-to-moment game descriptions are.
+
+**Interactive fiction** is where small models genuinely shine. Text adventures with a tight worldbuilding setup, where the model drives the story based on player input. No cloud dependency, no latency, no player data leaving the device.
+
+Now, the honest comparison with GPT-4o. On raw token generation speed, they're actually in the same ballpark — 20 to 50 tokens per second locally versus 50 to 100 from the API. But the API adds 300 milliseconds to 2 full seconds of network round-trip. Local inference can respond in under 100 milliseconds. And over time, the local model is a one-time hardware cost versus something like 5 to 15 dollars per million tokens from the API. Plus all player behavior data stays on device.
+
+The real gap isn't speed — it's **long-range consistency**. When a conversation stretches past a few thousand tokens, small models start to drift. They forget character details established earlier, or lose track of plot threads. The fix is to not rely on the model's memory at all: maintain important state externally in a game database, and re-inject the relevant facts into the context on every call. The model doesn't remember — the game engine does, and reminds it.
+
+The other gap is complex reasoning. Multi-step logic, intricate cause-and-effect chains — large models are noticeably better here. For simple creative generation and in-character responses, the gap is small. For anything requiring the NPC to work through a puzzle or maintain a long deception across many sessions? Design around it.
+
+The architecture for all of this is straightforward. Your game engine tracks state — player position, inventory, relationship values. When an event fires, a system prompt builder pulls that state together with the NPC's character description and sends it to the local model via llama.cpp or Ollama. The output goes through a filter for content safety and format validation before it hits the UI. llama.cpp in particular is the workhorse here — it's a C++ library that can be embedded directly into game engines, and there are community packages for both Unity and Unreal.
+
+Three things to take away from this.
+
+First, 10 billion parameter models in 2025 are legitimately capable of real-time NPC dialogue, short procedural text, and interactive narrative — running locally, privately, with no per-token cost.
+
+Second, the constraints are real and need to be designed around: short context windows, limited long-range memory, weaker reasoning. Games built with explicit state management and tightly scoped prompts work well; games that assume the model will track everything itself will frustrate players.
+
+Third — and this is the interesting part — games designed *within* these constraints might end up with mechanics that wouldn't exist otherwise. The limitation shapes the design, and that pressure can produce something genuinely new.

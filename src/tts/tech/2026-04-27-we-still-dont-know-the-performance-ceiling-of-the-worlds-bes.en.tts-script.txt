@@ -1,0 +1,25 @@
+Here's the podcast script:
+
+---
+
+If you benchmarked DuckDB a year ago and moved on, you might want to take another look — because it has moved considerably since then. This isn't a story about hype. It's about actual benchmark numbers, what they mean, and why the question of DuckDB's performance ceiling remains genuinely open.
+
+Let's start with what DuckDB actually is. Think of it as SQLite's analytical counterpart. SQLite is built for the kind of database work where you're reading and writing individual records — your typical app database. DuckDB flips that entirely. It's built for analytical queries: aggregations, scans across millions or billions of rows, the kind of work data scientists do. And like SQLite, it's embedded — it runs inside your program, no separate server to spin up, no network to traverse, no connection pool to manage. You just import it and start querying.
+
+For data scientists, this matters a lot. The old local workflow was either pandas — which runs fine until your dataset gets big enough to crash your session — or spinning up a local PostgreSQL instance, which is an OLTP database and not really designed for analytical workloads. DuckDB fills that gap: data too large for pandas, not worth launching a Spark cluster. And it reads Parquet, CSV, and JSON directly, no ETL required.
+
+Now, how does it actually get the performance it does? Three architectural decisions stand out. First, vectorized execution — instead of processing one row at a time, it processes thousands of values together in a batch. This lets modern CPUs use their SIMD instructions, the kind of parallel math operations that modern chips are extremely good at. Second, columnar storage — when you run a query that only touches three columns out of fifty, DuckDB only reads those three columns. That alone can cut I/O by an order of magnitude. Third, adaptive query execution — rather than committing to a static plan before the query runs, DuckDB adjusts its strategy based on what it actually sees in the data. And since version 0.10.0, it can also spill data to disk when queries exceed available RAM, which was a significant unlock.
+
+Now for the numbers. DuckDB tracks its own performance over time, and the trajectory is striking. Group-by and aggregation operations — the most critical workload for OLAP — improved by more than twelve times over three years. Join performance improved by four times. And this wasn't a straight-line improvement that plateaued; even in a zoomed-in view of 2023 to 2024, there's still roughly twenty percent continued improvement after what looked like a ceiling.
+
+The most striking demonstration: running TPC-H at SF3000 — that's roughly three terabytes of data — on a twelve-core laptop takes about thirty-one minutes. Push it to SF10000, which is ten terabytes, and you're looking at about four hours. On a laptop. Not a server cluster. A laptop.
+
+How does it compare to alternatives? Polars is close in speed for single-machine workloads, also embedded, no distributed support. pandas is the baseline everyone's replacing — it's RAM-limited and significantly slower. ClickHouse is genuinely faster for distributed, high-concurrency scenarios at terabyte-to-petabyte scale, but it's a server you deploy and operate, not an in-process library. Exasol ran a benchmark in 2025 that showed it running more than four times faster than DuckDB on a high-spec machine — but again, that's a dedicated server deployment, a completely different operational model.
+
+DuckDB's edge isn't claiming to beat everything everywhere. It's that for what it does — embedded, in-process, single-node analytics — the performance gap with "real" analytical databases has been closing fast enough that the question isn't whether it's fast enough anymore. The question is whether you should design your data workflow around it.
+
+Where it's a great fit: data science preprocessing, local analysis of large files, embedding analytics directly into a Python or Go or Node.js application, running data quality checks in CI pipelines. Where it's the wrong tool: anything involving many concurrent users, distributed real-time analytics, or environments where you need fine-grained access control across multiple users.
+
+So here are the three things to take away from this. One: DuckDB's performance trajectory has been more aggressive than most engineers expected — if you haven't revisited it recently, your mental model of its limits is probably out of date. Two: the design constraints are clear and haven't changed — single node, single user, embedded OLAP — but what's achievable within those constraints in 2025 is dramatically more than what was imaginable in 2022. And three: the ceiling question is still genuinely open. Each release has moved the bar. At this point, the more interesting engineering question isn't whether DuckDB is fast enough — it's whether your data architecture is shaped to take advantage of it.
+
+---

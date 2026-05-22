@@ -1,0 +1,59 @@
+Here's the pitch — a feature that looks dead simple from the outside turns into one of the most instructive distributed systems problems you'll encounter in an interview: the DoorDash checkout donation feature.
+
+You've seen it. You're about to place your order, and there's a small prompt — want to round up and donate a dollar or two? Feels trivial. But now imagine millions of users hitting that button simultaneously during the dinner rush, every donation needing to be recorded exactly once, and somewhere on a campaign page, a live running total that needs to feel real-time. Suddenly this is anything but simple.
+
+Let's break it down.
+
+---
+
+The first thing you want to do in any system design interview is get the requirements crisp. On the functional side: users should be able to donate at checkout, the system should show a cumulative campaign total — something like "Campaign total: one point two million dollars" — users should get a notification when their donation goes through, and the backend needs to support queries on donation stats over time.
+
+On the non-functional side, here's where it gets interesting. Donation records cannot be lost — this is a financial transaction, full stop. Donations cannot be double-counted — if a user clicks donate once, the system should record it once, even if retries happen under the hood. The cumulative total, though? That can tolerate a few seconds of lag. Nobody's going to notice if the displayed total is two seconds behind reality. And at peak — dinner hours, maybe a three-hour window — you're looking at potentially hundreds of orders per second.
+
+That last point is worth sitting with. DoorDash processes something in the range of a few million orders per day. Assume thirty percent of users donate — that's about a million donations a day. Concentrate forty percent of that into a three-hour dinner window, and you're looking at around a hundred to a hundred eighty donations per second at peak. That's honestly manageable for a single Postgres database. But here's the trap: the problem isn't writing individual donation records. It's maintaining an accurate running total under that kind of concurrent write pressure.
+
+---
+
+So let's talk architecture. DoorDash's real infrastructure is built around Apache Kafka — their internal event pipeline processes hundreds of billions of events per day. That context matters, because it explains why the natural answer here is event-driven.
+
+Here's how the flow works in plain language. When a user checks out, the order service coordinates with the payment service to actually charge the card. Only after payment succeeds does the donation service get involved. That's critical — you never record a donation before the money clears. The donation service writes the record to a Postgres database, then publishes an event to a Kafka topic. From there, two things happen in parallel downstream: a counter aggregation service consumes those events and updates a Redis counter, and a notification service consumes the same events to send the user a push notification. The dashboard showing the live campaign total just reads from Redis.
+
+That separation is the key insight. The heavy lifting — accumulating the total — is decoupled from the checkout flow entirely. The user's checkout experience doesn't wait on counter updates. It just fires an event and moves on.
+
+---
+
+Now let's talk about the three design decisions that make or break this system.
+
+**First: making donation records bulletproof.**
+
+The payment service might fire the same callback multiple times. Network hiccups, retries — this is normal distributed systems behavior. If you naively write to the database on every callback, you'll end up with duplicate donations. The fix is idempotency. You use the payment system's unique reference ID as a unique constraint in your donations table. If the same payment fires twice, the second insert simply fails silently with a "do nothing on conflict" — one record, guaranteed, no matter how many times the callback arrives.
+
+**Second: Redis for the running total, not a database query.**
+
+The naive approach is to query your donations table with a sum aggregation every time someone loads the campaign page. That works fine at small scale. At millions of records under heavy load, it falls apart fast — it's an expensive scan every single time. Instead, you maintain a Redis counter. Every time the Kafka consumer processes a new donation event, it increments the counter atomically. Redis's atomic increment operation runs in constant time regardless of how large the counter gets. The display layer just reads one key from Redis — done.
+
+The obvious follow-up question: what happens if Redis goes down and you lose the counter? You rebuild it. Redis supports persistence modes that minimize the loss window, but even in a worst case, you can recalculate the true total from your Postgres database and backfill the Redis key. The system accepts eventual consistency on the display — the true record of truth is always the database.
+
+**Third: handling Kafka's at-least-once delivery guarantee.**
+
+Kafka guarantees your consumer will see every event — but it might see some events more than once. If your counter aggregation service crashes and restarts mid-batch, it'll re-consume events it already processed. Without protection, you'd double-count those donations in Redis. The fix is tracking which event IDs you've already processed. Before incrementing the counter, you check a Redis set of processed donation IDs. If the ID's already there, you skip it. If it's new, you increment and add the ID to the set. You clean up that set after a week or so to keep memory bounded.
+
+---
+
+Let me quickly walk through the alternatives and why they get ruled out.
+
+You could skip Redis entirely and just run a sum query on every page load. Simple, strongly consistent — but it hammers the database under load. You could use a database materialized view that pre-aggregates the total — more consistent, but expensive to keep fresh when thousands of donations are hitting per minute. You could go full distributed transaction with two-phase commit to guarantee every write is atomic across services — technically airtight, but the complexity and performance cost make it a serious bottleneck at scale. Event-driven with Redis wins on the tradeoff matrix: fast, scalable, and resilient enough for the consistency requirements here.
+
+---
+
+If an interviewer wants to push deeper, here's where the conversation can go. What if the campaign goes viral and you get thirty million donations? Redis still works — an atomic increment is constant time, Redis handles millions of operations per second without breaking a sweat. What about fraud — someone making a thousand small donations rapidly? You add rate limiting and anomaly detection at the donation service layer before the record ever hits the database. What about the final official campaign total when the campaign closes — do you trust the Redis counter? No. You stop consuming new events, run a verified sum from the database, and use that as the canonical final number, overwriting the Redis key with the confirmed value.
+
+---
+
+So here's what to take away from this.
+
+One: financial records and display counters have different consistency requirements — and your architecture should reflect that. Write to the database for the permanent record; use a fast cache for display. These don't have to be the same operation.
+
+Two: idempotency isn't an afterthought. In any system where retries can happen — and they always can — you need a strategy for making repeated operations safe. Unique constraints and idempotency keys are your first line of defense.
+
+Three: the DoorDash donation question is worth studying not because it's tricky, but because it packs idempotency, counter aggregation, eventual versus strong consistency, and event-driven decoupling into one compact problem. Master the reasoning here and you've got a mental model that transfers to a dozen other system design scenarios.

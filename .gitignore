@@ -28,5 +28,3 @@ Thumbs.db
 # TypeScript
 *.tsbuildinfo
 
-# TTS generated scripts (local cache, not committed)
-*.tts-script.txt

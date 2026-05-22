@@ -9,6 +9,7 @@ description: "從心理師周慕姿的角度解析：為什麼越想讓自己冷
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=sZh0DhSXNQY"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260522_042025_693049.mp3"
 ---
 
 很多人在情緒起伏的時候，會對自己說：「冷靜一點。」「不要亂想。」「深呼吸，沒什麼大不了的。」

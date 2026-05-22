@@ -1,0 +1,41 @@
+Here's the podcast script:
+
+---
+
+Every few months, someone posts in a tech community asking how to prep for system design interviews. And every time, the same lists pour in — consistent hashing, Kafka architecture, CAP theorem, database sharding. Memorize all of that, and you're set, right?
+
+Not quite. If pure memorization were enough to pass, the interview itself wouldn't be worth running.
+
+Here's what a system design interview actually is. You're given a vague requirement — design Twitter, design a URL shortener, design a food delivery donation feature — and in forty-five to sixty minutes, you propose an architecture that handles the required scale, while explaining every decision you make. But it's also a two-way conversation. The interviewer is watching how you think. You're figuring out what the problem actually requires. There's no single correct answer. It's not an exam.
+
+So why does rote memorization fall apart? It's not that knowing things is useless — it's that knowing things alone can't survive follow-up questions.
+
+Say you put Kafka in your architecture diagram. The next question is always: why Kafka? Why not SQS? Why not just poll the database? If your answer is "because Kafka is a high-throughput messaging system" — that's a description you read somewhere, not a judgment call. A convincing answer sounds more like: "I have multiple downstream services that each need to consume the same batch of events independently. I also need replay capability because my aggregation logic might have bugs and I'll need to reprocess from scratch. That combination makes Kafka the right call here. But if I only needed a simple one-to-one task queue, I'd pick SQS — it's simpler to operate and that's all I'd need."
+
+That's engineering judgment. Not "this technology is popular, so I'm using it."
+
+What are interviewers actually scoring? A few things consistently show up. First: did you clarify requirements before designing anything? Scale, read-write ratio, consistency needs — these questions change everything. Second: can you decompose a vague problem into concrete sub-problems? Third: does every design decision have a reason, with alternatives and trade-offs mentioned? Fourth: does your design hold under ten times, a hundred times the load, and do you know where the bottlenecks are? And fifth: can you explain complex ideas clearly to someone with a different background?
+
+Notice what's not on that list. Nobody's counting how many correct technical terms you dropped.
+
+So how do you actually build this kind of thinking?
+
+Start reading real engineering blogs. DoorDash, Airbnb, Uber, Netflix — they all publish write-ups about real design decisions and the hard lessons behind them. The value isn't learning an architecture. It's learning which solution fits which situation, and why. DoorDash's piece on their event system explains why they built a custom Kafka proxy. Uber's sharding strategy article explains what triggered their switch from single-region to multi-region at a specific point in their growth. These are real trade-offs, not textbook examples.
+
+Second habit: ask "why" about the systems you already work with. Why does your team use Redis for sessions instead of Postgres? Why is this endpoint polling instead of using a webhook? Why is this service its own deployment instead of part of the monolith? Try to reason through the answer yourself, then verify. That habit, practiced consistently, is worth more than ten system design books.
+
+Third: mock interviews need to involve another person and real-time explanation. Drawing a beautiful architecture on a whiteboard alone doesn't prepare you for the actual interview, where you have to draw and explain simultaneously, out loud, under pressure, while someone's asking follow-ups. Find a colleague, a friend, a paid platform — get someone asking questions while you talk through your thinking.
+
+And fourth: learn the trade-off framework, not the answers. For any design problem, there are four dimensions to work through: consistency requirements — do you need strong or eventual? Availability requirements — what's your SLA? Scale — how many requests per second, how much data? And latency — what's your P99 target? Once you've clarified all four of those, the design decisions often surface on their own.
+
+A few common mistakes worth knowing before you walk in. Jumping straight to technical details before clarifying requirements is one of the biggest. You end up designing something that doesn't match what's actually needed. Another is being passive — only answering when asked, never proactively explaining your reasoning. Interviewers can't read your mind. Even if your design is right, they can't tell whether you derived it or guessed. Saying "I'm not sure about this detail, but my intuition is X because Y — can you help me confirm?" is always better than bluffing. And presenting only one option is a red flag. A good system design answer considers at least two approaches, compares the trade-offs, then makes a grounded choice. One option looks like recitation, not design.
+
+Three things to take away from all this.
+
+One: system design interviews are evaluating judgment, not knowledge breadth. The goal is showing you can derive reasonable decisions from first principles in a novel context — not that you memorized the right answers in advance.
+
+Two: knowing Kafka, Redis, and consistent hashing is useful background, not the answer itself. What matters is being able to explain *why this tool in this situation, and what it costs you*.
+
+Three: the preparation that actually works is reading real engineering case studies, building the habit of asking "why" about systems you touch every day, and practicing explanation under live follow-up pressure. That's what builds the instinct interviewers are looking for.
+
+---

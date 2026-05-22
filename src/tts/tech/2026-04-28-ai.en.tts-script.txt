@@ -1,0 +1,47 @@
+Here's the podcast script:
+
+---
+
+Something interesting happened to the semiconductor market starting around 2023. Consumer chip demand went soft — phones, laptops, the usual stuff — while data center memory became so scarce that the biggest buyers in the world couldn't get enough of it. The reason is AI, and it's not just "AI is hot" hype. There's a very specific technical reason why AI workloads are eating memory in a way nothing before them has.
+
+Let me walk you through it.
+
+When you run a large language model — say, a 70-billion-parameter model — just holding those weights in memory costs roughly 140 gigabytes at standard precision. And those weights can't live in some slow storage tier. They have to be right there, instantly accessible to the GPU compute cores on every single forward pass. If you start swapping to regular CPU memory, your latency blows up and the whole thing becomes useless for real-time inference.
+
+But here's the really counterintuitive part: inference isn't bottlenecked by compute. It's bottlenecked by memory bandwidth.
+
+During the decode phase — when the model is generating tokens one by one — the transformer attention mechanism is constantly reading through the KV cache and weight matrices. The GPU cores are mostly *waiting* for data to show up from memory. They're not crunching numbers; they're standing around. You could throw more compute cores at this problem and it wouldn't help at all. What you need is memory that can move data faster.
+
+And then there's the KV cache problem, which gets worse as models get smarter. Every token in your context window requires the model to store key-value states. A four-thousand token context? A few gigabytes. A hundred-and-twenty-eight-thousand token context — which users increasingly want — is orders of magnitude larger. Longer context equals more memory pressure, full stop.
+
+This is exactly why HBM exists.
+
+High Bandwidth Memory stacks multiple DRAM layers vertically, connects them to the GPU via a silicon interposer, and delivers bandwidth and capacity that conventional graphics memory simply cannot match. Compare them directly: HBM3e on a modern GPU can push over a terabyte per second of bandwidth, versus around 768 gigabytes per second for GDDR6. And capacity-wise, you're looking at 80 to 192 gigabytes on HBM versus 24 to 48 on GDDR. The H100 ships with 80 gigs of HBM3. The H200 steps up to 141 gigs of HBM3e. Those aren't marketing specs — they're the minimum viable configuration for running large models in production.
+
+Now here's where it becomes a market story.
+
+Making HBM is genuinely hard. The vertical stacking and bonding processes are complex enough that only three companies in the world do it commercially: SK Hynix with about 62% of the market, Micron with around 21%, and Samsung with the remaining 17% — though Samsung has been struggling with yield issues that have kept them behind. SK Hynix alone supplies roughly 90% of NVIDIA's HBM. All three manufacturers have their capacity committed through the end of 2026. The memory market grew 78% in 2024. DRAM prices rose 30 to 60 percent. NAND roughly doubled.
+
+What makes this cycle different from, say, the 2021 COVID chip shortage? That was a demand shock plus supply-chain chaos — painful, but temporary. This one has a different structure underneath.
+
+Hyperscalers — Google, Microsoft, Meta, Amazon — are signing multi-year procurement contracts. This isn't consumer demand that snaps back after a shock; it's capital expenditure planned years in advance. And even if AI investment cools at some point, every GPU that's already been deployed still needs HBM to run inference. The installed base creates persistent demand regardless of new purchases. Analyst projections put the HBM addressable market at around 35 billion dollars in 2025, growing toward 100 billion by 2028. That's a 40 percent compounded annual growth rate over three years.
+
+So what does this mean if you're an engineer working with these systems?
+
+GPU rental costs are staying high for exactly this reason — HBM is a major cost component of every H100 and A100 in every cloud. As long as supply is constrained, prices stay elevated.
+
+Model compression stops being academic. Quantization to INT8 or INT4, weight pruning, knowledge distillation — these aren't just clever tricks. They directly reduce how much HBM your model needs, which directly reduces your infrastructure bill. The economics are real.
+
+And memory-efficient attention techniques are now a legitimate engineering discipline. FlashAttention, PagedAttention from vLLM — these exist specifically to shrink the KV cache footprint in HBM, letting the same hardware serve more concurrent users or handle longer contexts. If you're not aware of these techniques, you're leaving performance on the table.
+
+Three things to take away from all this.
+
+First: LLM inference is memory-bandwidth-bound, not compute-bound. That single fact explains most of what's happening in the AI hardware market.
+
+Second: HBM isn't "faster RAM" — it's the enabling technology that makes large-scale inference possible at all. Without it, the largest models simply don't run.
+
+Third: this supercycle has structural legs that previous chip cycles didn't. Multi-year procurement contracts, genuinely constrained supply, and a persistent installed base of accelerators that keeps demanding the product. The current tight conditions are expected to run at least through 2026, with the broader cycle projected through 2028.
+
+The memory story is, in many ways, the AI story.
+
+---

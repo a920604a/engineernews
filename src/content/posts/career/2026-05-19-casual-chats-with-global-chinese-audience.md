@@ -9,6 +9,7 @@ description: "探討為什麼中文技術 YouTube 頻道對全球華語工程師
 type: explainer
 original_url: "https://www.youtube.com/watch?v=bZSw2y1xCXE"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260522_041340_528431.mp3"
 ---
 
 散落在世界各地的華語工程師，有一個共同的體驗：用英文看技術內容很流暢，但當你需要跟自己的腦袋對話、整理思緒的時候，母語的效率就是不一樣。

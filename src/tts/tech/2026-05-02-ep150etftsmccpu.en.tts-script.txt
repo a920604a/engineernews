@@ -1,0 +1,35 @@
+April 23rd, 2026. Taiwan's Financial Supervisory Commission quietly announces a rule change for domestic equity funds. The next morning, TSMC opens up five percent and hits an all-time high. If you know anything about Taiwan's market, you already understand exactly why.
+
+Here's the story.
+
+For years, Taiwan's fund regulations capped how much any single stock could represent in an actively managed fund — the limit was ten percent of net asset value. The logic was sound: diversification, investor protection, no single-bet blowups. Classic prudent regulation.
+
+The problem is that TSMC didn't get the memo.
+
+TSMC now sits at roughly forty-four percent of the TAIEX — Taiwan's benchmark index. So you had this absurd situation where active fund managers were supposed to track a market where the biggest name is nearly half the index, but a legal cap stopped them from holding more than a tenth of their fund in that stock. The tracking error wasn't a management mistake. It was a government mandate.
+
+This had been building for years. When TSMC was twenty percent of the index, fine. Thirty percent, uncomfortable. Forty-four percent? The rule had stopped being investor protection and started being a structural distortion.
+
+The FSC's fix: raise the single-stock cap from ten percent to twenty-five percent, effective immediately for active funds and active ETFs. Passive index ETFs had already been addressed in earlier changes. This was the last piece.
+
+And here's the key thing — this change is almost entirely about one stock. TSMC is the only name in the TAIEX with a weight above ten percent. So while the rule is written broadly, the market knew instantly what this actually was: a TSMC clause.
+
+Now let's talk about the money.
+
+Analysts estimated that the aggregate institutional underweight in TSMC — positions that were too small simply because the old cap forced them there — sat somewhere between a hundred eighty and two hundred billion New Taiwan dollars. That's a lot of capital that had essentially been locked out of its natural destination by regulation. With the cap raised to twenty-five percent, fund managers could finally start correcting those positions.
+
+The catch? That capital has to come from somewhere. In the days following the announcement, small and mid-cap Taiwan tech stocks sold off as institutional money rotated toward TSMC. Classic capital rotation — the tide shifted, and anything that wasn't TSMC felt it.
+
+For some context on how this compares internationally: US funds have their own concentration rules — diversified funds generally can't put more than five percent of assets into a single name. But US law also lets funds elect non-diversified status, which many concentrated thematic funds do deliberately. Taiwan's twenty-five percent ceiling is more pragmatic — it's set well above any other stock in the index, so it functions as a real limit rather than a political one.
+
+The FSC's deputy director acknowledged this is the third time in roughly twelve months they've loosened concentration rules, and each time the trigger has been the same: TSMC keeps growing, keeps grabbing more index weight, and the regulations keep needing to catch up.
+
+That pattern itself is telling. Taiwan's equity market has essentially become TSMC plus everything else. And regulators have progressively adapted the rulebook to reflect that reality rather than fight it.
+
+Three things to take away from all of this.
+
+First: this was a structural fix, not a broad deregulation. The FSC wasn't philosophically reversing course on concentration limits — they were correcting a mechanical mismatch between index reality and fund rules.
+
+Second: the capital effect is real and already visible. Roughly two hundred billion dollars in institutional underweight positions can now be corrected, and that repricing happened fast.
+
+Third: when a single company reaches this level of dominance in a national index, regulators run out of neutral options. Every rule becomes a TSMC rule. That's worth watching as a signal of where the market structure is heading — not just for Taiwan, but for any market where one company starts absorbing that kind of weight.

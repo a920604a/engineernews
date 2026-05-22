@@ -1,0 +1,45 @@
+If you've ever played with AI video tools — Sora, Runway, Kling, any of them — you've seen it happen. The first few seconds look impressive. Then, slowly, something starts to go wrong. A character's face shifts. Background objects warp or disappear. Motion gets choppy and weird. By the thirty-second mark, you're watching something that barely resembles what you asked for.
+
+This phenomenon has a name: temporal drift. And it has been the defining, unsolved problem in AI video generation since these tools were first released. In 2025, multiple research groups converged on real solutions — and this year finally felt like a turning point.
+
+So what exactly is going wrong under the hood?
+
+AI video models — like everything in diffusion-based generation — operate with a finite context window. Think of it like working memory. Still image generation only needs spatial consistency within one frame. But video adds a time dimension: you need that character's face to match at frame one and at frame three hundred. You need physics to feel plausible. Lighting and shadows need to evolve coherently across the whole sequence.
+
+The way these models work, they use a denoising network that processes spatial and temporal tokens together. Sounds powerful — and it is — but only up to the point where the context window runs out. After that, you're working with compressed summaries instead of actual pixel data. And that's where the trouble starts.
+
+There are actually two distinct failure modes here, and understanding them is key to understanding why this problem is so hard.
+
+The first is **forgetting**. As the video gets longer, early frames fall out of the context window entirely. The model loses access to the fine-grained visual details — the exact shape of a character's nose, the specific texture of a wall. What it retains is a kind of rough sketch. And from that rough sketch, it starts hallucinating details that may or may not match what came before. Face changes. Objects shift. This is forgetting.
+
+The second is **drifting**. AI video generates autoregressively — each new clip depends on the previous one. Here's the problem: during training, the model learned from real, high-quality frames. But during inference, it's feeding off its own generated output. Which is imperfect. Which introduces errors. Which get amplified in the next step. And the next. By the time you're thirty seconds in, you've accumulated a chain of compounding mistakes.
+
+Here's the painful part: these two problems are actually in tension with each other. If you strengthen the model's memory to fight forgetting, you risk amplifying drifted, erroneous early frames. If you cut memory dependency to fight drifting, you accelerate forgetting. Every solution in 2025 attacks this trade-off from a different angle.
+
+Let's go through the four main approaches.
+
+**FramePack** does something counterintuitive: it flips the generation order. Instead of building a video from beginning to end, it generates anchor frames at key points first — think of it like sketching the start and end of a scene before filling in the middle — then works backward from each endpoint to fill in the gaps.
+
+Why does this help? Because when the model generates any given frame, it can see both a starting anchor and an ending anchor for its local segment. Error accumulation paths get dramatically shorter. And critically, FramePack maintains a fixed-length context window regardless of how long the total video is. Per-step compute stays constant. That's what made it possible for researchers to demonstrate hour-long video generation on high-end hardware in lab conditions. Practically speaking, it's what pushes the ceiling from thirty seconds to minutes or beyond.
+
+**Mixture of Contexts**, or MoC, takes a different approach. Instead of changing the generation order, it reframes the problem as a memory retrieval problem. Rather than attending to every historical frame — which would be computationally explosive — the model learns a routing mechanism that dynamically selects the most relevant frames to pull into attention for each new generation step.
+
+It also designates mandatory anchors: certain frames, like the first time a character appears or the beginning of a scene, are always in the attention window no matter what. This directly fights forgetting without requiring full history recall. And because you're only attending to a sparse selection rather than everything, compute scales much more efficiently.
+
+**A2RD — Agentic Autoregressive Diffusion** — takes the most ambitious approach. It combines three mechanisms: it breaks long videos into segments with clean memory reset points between them; it maintains a multimodal memory that includes not just visual frames but text descriptions and scene summaries; and — this is the interesting part — it runs a self-correction loop. After generating each segment, the model evaluates its own consistency and revises before moving on. It's essentially doing its own QA mid-generation. This approach particularly shines for narrative content where you need to track character states across scenes.
+
+The fourth solution, **Direct Forcing**, is more of a training strategy than an architecture change. The idea is simple: during training, expose the model to its own generated frames, not just ground truth real footage. This trains the model to handle imperfect inputs without spiraling. It closes the gap between training conditions and real inference conditions. It's not a silver bullet, but it measurably reduces error accumulation with relatively modest compute overhead.
+
+What did all of this add up to in practice?
+
+The practical ceiling for coherent AI video generation used to be somewhere between ten and thirty seconds. With these techniques, we're now seeing several minutes of coherent output. Some commercial systems have hit 120-second continuous video. The research prototypes have gone further. Character consistency across scenes — which was a real barrier for advertising and short film production — is now viable in actual workflows. And the open-source ecosystem is picking up: FramePack and MoC techniques are being integrated into tools like ComfyUI and Hugging Face Diffusers, so this isn't staying locked inside research labs.
+
+That said, some hard problems remain. Facial micro-detail in extreme close-ups is still unreliable. True physics consistency — objects that reliably behave the way real objects do — is still largely research territory. And the field doesn't yet have great evaluation metrics; existing tools don't fully capture whether a human would perceive a video as temporally consistent or not.
+
+So here's what to take away from all of this.
+
+First: temporal drift isn't one bug, it's two — forgetting and drifting — and they trade off against each other. Any solution that claims to fix both completely is probably oversimplifying.
+
+Second: 2025 produced real, systematic progress on this. FramePack's fixed context windows, MoC's sparse retrieval, A2RD's self-correction loop — these aren't marginal improvements. They represent a genuine architectural shift in how the field thinks about long-form video.
+
+And third: the path to production-quality AI video is now clearer than it's ever been. We're not there yet, but for the first time, the road is mapped.

@@ -1,0 +1,23 @@
+If you've spent time with Claude Code in the terminal, you have a feel for what this category of tool does: stay in your flow, read the codebase, make edits, run tests — all without breaking your concentration or switching to a browser. OpenAI launched their answer to that in April 2025, and by now it's become a real presence in developer workflows.
+
+It's called Codex CLI. Open source under the MIT license, built in Rust for performance, ships as an npm package, and runs entirely in your local terminal. You get a full-screen conversational interface where you describe what you want in plain language — "find potential race conditions in the auth module," or "standardize all our API response shapes" — and Codex reads the relevant files, explains what it's seeing, and proposes or makes the actual changes.
+
+What sets Codex CLI apart in its design is a three-tier safety model, and this is genuinely thoughtful. At the most cautious level, Suggest mode, every action Codex wants to take requires your explicit confirmation. It proposes, you decide. This is the right choice when you're working in an unfamiliar codebase or you just want maximum visibility into what's happening.
+
+One step up is Auto-edit mode: Codex can modify files on its own, but it still has to ask before running any system commands — builds, tests, anything that touches your environment beyond the code itself. A reasonable middle ground for day-to-day work on repos you know well.
+
+And then there's Full-auto, where Codex just runs — reads, edits, executes — without asking at each step. This one's designed for isolated environments: containers, separate git worktrees, CI pipelines. The key insight behind all three tiers is that this isn't a binary trust-it-or-don't decision. You calibrate the autonomy to the situation. That's a thoughtful piece of product design.
+
+Getting set up is minimal friction. Install it globally as an npm package, set your OpenAI API key as an environment variable, and launch it in your project directory. From there you're in the terminal UI, typing natural language.
+
+Now, the obvious comparison is Claude Code. Both tools do the same job. The real differences come down to ecosystem and philosophy. Codex CLI is open source — the only MIT-licensed option in this space — which matters to a lot of teams with licensing constraints or a preference for auditability. It runs on the GPT model family. Claude Code runs on the Claude series, isn't open source, but has its own sandbox configuration. Both support MCP — the Model Context Protocol — for pulling in third-party tools, so integration capabilities are converging. The practical choice really comes down to which model you prefer and which API you're already paying into.
+
+A couple of other things worth knowing: you can run multiple Codex subagents in parallel on independent tasks — useful for large refactors touching different parts of the codebase simultaneously. And you can spin up a separate Codex agent to review your changes before committing, essentially an automated code reviewer baked into the same workflow.
+
+So here are the things to carry away from this.
+
+First: Codex CLI is a legitimate, capable terminal coding agent. If you're already in the OpenAI ecosystem, the setup friction is close to zero, and it fits naturally into an existing workflow.
+
+Second: the three-tier safety model is the most interesting design decision here. It reframes the question from "do I trust this AI?" to "how much autonomy is appropriate for this specific task?" That's the right question to be asking.
+
+Third: this whole space is moving fast. Model quality — which drives most of the real-world quality difference between tools — shifts every few months. Any comparison that's accurate today may not be accurate by year-end. The honest evaluation is to run it on your actual work and see what happens.
