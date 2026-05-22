@@ -1,0 +1,35 @@
+On May 11, 2026, a worm quietly burrowed into the npm ecosystem. Forty-two TanStack packages — compromised in under six minutes. And the thing that made this attack truly unprecedented wasn't the speed, wasn't even the scale. It was that the malicious packages came with a valid, legitimate security certification. The attackers didn't just break in — they got the building's official stamp of approval on their way out.
+
+This is the story of Mini Shai-Hulud.
+
+The attack was carried out by a group called TeamPCP, targeting TanStack — the widely-used frontend toolkit family. If you've built anything with React in the last few years, you've almost certainly used TanStack Query, TanStack Router, or TanStack Table. These are foundational packages. The kind that sit deep in your dependency tree, quietly doing their job, trusted by default.
+
+So how did the attackers get in?
+
+They didn't compromise TanStack's source code directly. Instead, they exploited a structural weakness in how GitHub Actions workflows are configured. Specifically, a workflow trigger called `pull_request_target`. Here's why that's dangerous: this trigger was designed to let pull requests from external contributors kick off limited, low-privilege tasks — things like adding labels to a PR. But it runs in the context of the base branch, meaning it has access to secrets and elevated permissions. Many projects, for convenience, also attached build and publish steps to this trigger. That combination created a backdoor.
+
+The attackers submitted a malicious pull request. That triggered the workflow. Through a technique called cache poisoning, they injected malicious code into that trusted execution environment. And once they were executing inside a trusted environment, they did something clever and frankly alarming — they read authentication tokens directly out of memory.
+
+GitHub Actions uses something called OIDC tokens to authenticate package publications to registries like npm. These tokens live in memory during a workflow run. Linux has a virtual filesystem under slash proc that, with the right permissions, lets processes read the memory of other processes. In a shared CI environment like GitHub Actions, that's a real attack surface. The attackers pulled the token straight from memory, bypassing any environment variable protections entirely.
+
+Now they had a valid npm publishing credential. They published malicious versions of TanStack packages under the official TanStack identity. And then the worm component kicked in.
+
+This is what separates Mini Shai-Hulud from previous supply chain attacks. Most supply chain attacks are passive — plant the bad package, wait for downloads. This one was active. The malicious code spread laterally from one package to its dependencies, self-propagating through the dependency graph. Forty-two packages in six minutes. One hundred and seventy-plus packages across npm and PyPI when you account for the full downstream scope. Cumulative download count: over 518 million.
+
+That 518 million number isn't theoretical. Modern CI/CD pipelines reinstall dependencies on every single build. Any project that pulled those packages during the attack window may have executed malicious code — not in production necessarily, but in development machines and build environments. That's still a serious exposure.
+
+Now, here's the detail that made the security community do a double-take. The malicious packages came with valid SLSA Build Level 3 provenance.
+
+SLSA — pronounced "salsa" — is Google's supply chain security framework. Build Level 3 is a high bar. It certifies that the build process was auditable and tamper-proof. A lot of security tooling and organizational policy treats SLSA provenance as a hard trust signal. If the provenance says it's clean, it passes the gate.
+
+Mini Shai-Hulud is the first malicious package cluster to carry valid SLSA Build Level 3 attestation. The attackers didn't forge anything — they hijacked a legitimate build process and let it generate a legitimate attestation for malicious code. The certificate is real. The build process was real. The identity was stolen. That's a fundamental crack in the "trust the signature" assumption that underpins a lot of modern supply chain security thinking.
+
+The deeper implication is this: SLSA provenance answers the question "was the build process legitimate?" It doesn't answer "was the person who triggered the build authorized to do so?" After this attack, the SLSA community needs to revisit that distinction seriously.
+
+A few things to watch going forward. First, whether npm introduces stricter publish rate limits or anomaly detection — forty-two packages in six minutes should be a detectable signal. Second, whether GitHub changes the default behavior of `pull_request_target` to make the dangerous pattern harder to fall into accidentally. Third, and most concerning: this attack demonstrated that worm-based supply chain propagation works. That successful demonstration is a template. Imitators will follow.
+
+The full post-incident picture is still emerging — what the malicious versions actually executed in active CI environments, whether we're talking data exfiltration, backdoor implantation, or a proof-of-concept demonstration. Those details matter enormously.
+
+So the three things to take away from this. One: worm behavior in supply chain attacks compresses the response window from days to minutes — no human monitoring system is fast enough, which means automated detection has to get there first. Two: a valid provenance signature is no longer sufficient as a trust signal on its own — the authorization of who triggered the build matters just as much as the integrity of the build itself. Three: `pull_request_target` combined with publish permissions is a loaded gun. If you maintain any open source project on GitHub, audit your workflows today. The fix is simple — limit that trigger to tasks that genuinely need no secrets, and keep your publish pipeline on protected branch pushes only.
+
+The worm has been named. The technique is documented. The question now is how fast the ecosystem responds before the next one.

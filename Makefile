@@ -85,6 +85,14 @@ rewrite-post:
 fix-mermaid:
 	npx tsx scripts/fix-mermaid.ts
 
+# 稽核所有文章狀態：草稿、音檔、逐字稿統計
+audit:
+	npx tsx scripts/audit-posts.ts
+
+# 同上，輸出指定分類
+audit-category:
+	npx tsx scripts/audit-posts.ts --category=$(CATEGORY)
+
 # 針對所有未有 audio_url 的文章合成語音並上傳 R2，回寫 frontmatter（需 TTS_API_URL）
 tts-all:
 	npx tsx scripts/tts-all.ts

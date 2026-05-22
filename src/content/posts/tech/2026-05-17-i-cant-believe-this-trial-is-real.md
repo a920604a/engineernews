@@ -9,6 +9,7 @@ description: "加州陪審團 2026 年 3 月 25 日裁決：Meta 和 YouTube 對
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=3tbB2dffx0s"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260522_225329_865656.wav"
 ---
 
 「無限滾動是被設計出來的。自動播放是被設計出來的。讓你停不下來，也是被設計出來的。」

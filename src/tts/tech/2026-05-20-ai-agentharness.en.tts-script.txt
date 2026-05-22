@@ -1,0 +1,41 @@
+Here's every AI conference in 2026 has the same buzzword on the agenda: AI Agents. And yet, if you talk to engineers who've actually shipped them to production, you'll hear the same frustration over and over — the demo looked incredible, but the thing falls apart the moment real users touch it.
+
+So what's going wrong? Almost never the model. Almost always the harness.
+
+Let's break both of these down.
+
+An AI Agent, at its core, is an AI system that doesn't just answer a question — it actually completes a task autonomously. The difference matters. Traditional language model interaction is a straight line: you send something in, you get something back. Done. Agent interaction is a loop. The agent perceives the current state of the world, the model decides what to do next, it executes some action — maybe a web search, maybe running code, maybe filling out a form — then it observes the result of that action, and the whole cycle repeats. It keeps going until the task is finished.
+
+That loop is what enables an agent to do things like: write code, run it, read the error, fix the bug, run it again. Or browse a page, extract information, decide what to look for next, navigate somewhere else. Each iteration gives the agent a better picture of where things stand, which drives the next decision.
+
+Now here's where Harness Engineering comes in — and this is the part most people skip.
+
+A capable model is necessary but nowhere near sufficient. Real environments are messy and full of uncertainty. Harness Engineering is the discipline focused on everything that surrounds the model — the scaffolding, the guardrails, the plumbing.
+
+Think about five specific problems it has to solve.
+
+First: tool definitions and permission boundaries. What tools can the agent actually use? What can it touch? An agent that has unrestricted access to your systems is a security incident waiting to happen. The harness defines exactly what actions are available and walls off everything else.
+
+Second: context management. Language models have a memory limit — what's called a context window. If a task runs long enough, the agent will start to "forget" what it was doing in the first place. The harness has to make active decisions: what information stays? What gets compressed? What gets dropped? This is a design problem, not a model problem.
+
+Third: observation and error handling. What happens when a tool call fails? What if the agent gets stuck in a loop, calling the same thing over and over? The harness monitors every step, implements retry logic, sets timeouts, and defines fallback paths when things go sideways.
+
+Fourth: output parsing. The model produces natural language. But software systems need structured, executable instructions. The harness translates model output into actions the system can actually run — and it has to handle gracefully the cases where that translation fails.
+
+Fifth: state persistence. Agent tasks can span multiple sessions. If something crashes halfway through, you don't want to start over from zero. The harness manages how task state gets saved and recovered.
+
+Now, traditional AI engineering versus Harness Engineering — they're aiming at different targets. Traditional AI engineering is about making the model smarter. Better training data, better architecture, higher accuracy on benchmarks. Harness Engineering is about making a smart model reliably usable. The metric isn't accuracy on a test set — it's task completion rate in production, across thousands of real runs, with all the chaos that implies.
+
+This distinction is why 2026 became the year everyone started taking this seriously. Model capabilities made a genuine leap in 2025. But agent reliability didn't keep pace. Engineers discovered that building a demo with the latest model takes a weekend. Getting that same agent to complete a thousand production tasks with 95% reliability? That's a different problem entirely.
+
+The failure gap — that missing 30 to 40 percent — isn't because the model isn't smart enough. It's because the harness is underdone. Context fills up and hallucinations creep in. A tool returns an unexpected format and the agent has no idea how to continue. The task goal was too vague and the agent drifted. There are no checkpoints, so a failure at step eight means restarting from step one.
+
+Harness Engineering is the engineering field that's rising up to close that gap.
+
+So here are the three things to take away from this.
+
+One: an AI Agent is a perception-action loop, not a one-shot call. The model keeps making decisions until the task is done.
+
+Two: the model is the brain. The harness is the nervous system plus the safety mechanisms. A brilliant brain with no nervous system still can't do anything.
+
+Three: if you're building agents and you're frustrated with reliability, the answer is almost certainly in the harness — not in upgrading to a newer model. Time invested in harness design tends to pay off far more than chasing the next benchmark.

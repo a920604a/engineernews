@@ -9,6 +9,7 @@ description: "用一篇文章搞懂 AI Agent 的運作機制，以及 2026 年�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=B91bZL8wcAI"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260522_225509_403254.wav"
 ---
 
 2026 年，「AI Agent」幾乎成了每個技術會議的關鍵詞。但很多人在討論 Agent 的時候，忽略了一個更根本的問題：為什麼有些 Agent 在演示時很驚艷，部署到生產環境就頻繁翻車？

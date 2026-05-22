@@ -1,0 +1,27 @@
+On March 25, 2026, a California jury did something that the tech industry has been dreading for years. They looked at Meta and YouTube, and said: you are legally responsible for a child's social media addiction. Six million dollars in damages. And more importantly — a legal principle that could reshape how every product in Silicon Valley gets built.
+
+Let's talk about why this is a bigger deal than the dollar amount suggests.
+
+The case centered on a deceptively simple question: can a company deliberately engineer a product to be hard to stop using, and then hide behind "user autonomy" when a child gets hurt? The jury's answer was no. The specific features called out weren't some obscure backend system — they were infinite scroll and autoplay. Two things you interact with every single day.
+
+Here's what makes those features technically significant. Infinite scroll removes what researchers call a natural stopping point. Old-school pagination — you hit the bottom of a page, you make a conscious choice to load more. Infinite scroll eliminates that moment entirely. The feed just... continues. There's no terminal state. Browsing becomes an action without an end condition.
+
+Autoplay is sneakier. The moment a video finishes is when your decision-making willpower is at its lowest. You're in a passive state. Autoplay steps into that gap and makes the next decision for you. Studies show continuation rates are dramatically higher when autoplay fires versus when someone has to actively click. The platform is engineering behavior at the exact moment you're least equipped to resist it.
+
+Now here's the thing — these effects are real for adults too. But for children and adolescents, whose prefrontal cortex — the brain region that governs impulse control — is literally still developing, the impact is significantly more pronounced. That's the argument that landed.
+
+And then there's the deeper layer: the recommendation algorithm itself. When you optimize for engagement, you're not optimizing for what makes people happy or informed. You're optimizing for what triggers the strongest emotional response. And the strongest emotional responses tend to be negative ones — anger, anxiety, envy. The algorithm learns this. For a teenager actively building their sense of self, that's a particularly corrosive feedback loop.
+
+Now, the companies will absolutely appeal. Six million dollars is a rounding error for Meta and Alphabet. But that's not the point. The point is that a jury was willing to find them liable at all. And there are dozens of similar cases — many of them class actions representing thousands of plaintiffs — working their way through courts right now. If this verdict holds on appeal, the exposure scales to a completely different order of magnitude.
+
+There's also a crucial legal angle here that product and engineering teams need to understand. Platforms have historically defended themselves using Section 230 — the US law that protects them from liability for content their users upload. But this case wasn't about content. It was about the mechanisms the platform itself designed to present that content. Infinite scroll and autoplay are not user-generated. They're product decisions. That distinction significantly weakens the traditional shield.
+
+Three things to take away from this.
+
+First, algorithmic design is now a legal risk category, not just an ethical one. Objective functions, notification timing, UI interaction patterns — these are all potentially subject to legal scrutiny. "Increase time-on-app" is no longer just a KPI. It's a potential liability vector.
+
+Second, the regulatory momentum is real. The EU's Digital Services Act already has provisions targeting exactly this kind of design. The US is behind, but a verdict like this accelerates legislative pressure considerably.
+
+Third, watch for what comes next in the industry. Some platforms will make genuine design changes. Others will make changes that are primarily legal defense strategies — a "take a break" reminder buried three menus deep. The difference matters, and regulators are paying attention to the difference.
+
+The age of "move fast and break things" had a good run. The age of algorithmic product liability might be what follows it.

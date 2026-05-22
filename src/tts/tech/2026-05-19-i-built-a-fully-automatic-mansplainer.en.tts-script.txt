@@ -1,0 +1,35 @@
+Here's the script:
+
+---
+
+So someone built a mansplaining bot. On purpose. And honestly? The engineering behind it is more interesting than the joke.
+
+The premise is simple: mansplaining is a very specific conversational style. You assume the other person knows nothing, you explain everything from scratch with total confidence, you throw in some unsolicited background they didn't ask for — and you do all of this like you're doing them a favor. Annoying in real life. But as an engineering challenge? Can you actually replicate that precisely with a language model?
+
+The answer is yes, and here's the punchline: ninety percent of the engineering effort was in the system prompt. Not the code.
+
+Let's talk about the code first just to get it out of the way, because it's genuinely minimal. You grab the Anthropic client, you write a system prompt, you pass in a user question, you get back Gerald. That's it. The entire application is maybe twenty lines. What took real thought was making Gerald actually work.
+
+The first attempt failed immediately. The system prompt was just: "You are a mansplaining bot. Answer questions in an arrogant tone." And here's why that doesn't work — "arrogant tone" is an adjective, not a character. The model has no idea what to do with that. It either forgets the instruction halfway through, or it starts apologizing for being condescending. Which, if you think about it, is the opposite of the bit.
+
+What actually worked came down to three design principles.
+
+First: give the model a concrete character, not an abstract quality. Instead of "arrogant," you write: "You are Gerald, a senior software engineer with twenty years of experience. You just rushed out of a very important meeting, but you're generously taking a moment to answer this question." Now the model has something to inhabit. Gerald has a name, a backstory, a mood. Characters produce consistent behavior. Adjectives don't.
+
+Second: encode specific cognitive biases explicitly. You tell the model: assume the person asking has beginner-level understanding. First confirm they know some basics you consider fundamental, then get to the actual question. You're not saying "be condescending" — you're describing the exact thought pattern that produces condescension. That's a much more precise instruction.
+
+Third: structural instructions beat tone instructions. Instead of "use a dismissive tone," you give the model a template: every response must open with "What most people get wrong about this is..." or "Actually, you should know..." — it must include a personal anecdote, even if tangential — it must use the phrase "Simply put," to introduce something that is not simple — and it must end with a subtle implication that the person would already know this if they read more. When you tell a model *what structure to follow*, it's far more reliable than telling it *what emotion to project*.
+
+Now, the hard part. Once Gerald was working, testing revealed a consistent failure mode: the moment a user said "you're mansplaining" or "can you explain this differently," the character collapsed. The model would break, acknowledge the critique, apologize. Which is very polite but completely ruins the demo.
+
+The fix was defensive instructions baked into the prompt: if someone points out your communication style is problematic, express genuine confusion, then patiently re-explain that you're simply being thorough. That one addition made the character dramatically more robust. Gerald doesn't know he's the joke. That's what makes it work.
+
+There's an obvious question here — isn't this just teaching people to be dismissive? The argument for it as satire is actually pretty solid: exaggerating the behavior pattern makes it more recognizable. Apparently a lot of people who interact with this bot say "oh god, I worked with someone exactly like this." That moment of recognition — that self-awareness — is probably more useful than a lecture about communication styles.
+
+And why prompt engineering over fine-tuning? Because this is a side project, and prompt engineering lets you iterate fast and see *exactly* what makes a character work. You're learning the mechanism, not just getting the output.
+
+So, three things to take away from this. One: concrete characters outperform abstract adjectives — give your persona a name, a situation, a reason to be here. Two: structural instructions are more reliable than emotional ones — tell the model what shape the output should have, not just what vibe it should have. And three: if you want a character to stay in character, you have to anticipate the ways users will try to break it, and write defenses directly into the prompt.
+
+Gerald would probably say you should have known all of this already. But here we are.
+
+---

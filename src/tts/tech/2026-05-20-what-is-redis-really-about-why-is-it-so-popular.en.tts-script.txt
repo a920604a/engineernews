@@ -1,0 +1,69 @@
+Redis consistently lands near the top of Stack Overflow's most-loved databases survey. Not because it has the most features, and definitely not because it's the cheapest option. It's there because it does what it does with almost eerie reliability — and once you understand *how* it works, the popularity stops being a mystery.
+
+So let's get into it.
+
+Redis stands for Remote Dictionary Server. The official description is "in-memory data structure store," and that phrase actually tells you everything you need to know — if you break it apart. In-memory means all your data lives in RAM. Data structure store means it's not just dumb key-value pairs — it supports a whole family of types. And store means it can act as a cache, a database, a message queue, or all three at once.
+
+Most engineers first meet Redis as a cache layer in front of a database. That's a fine introduction, but it undersells what's actually there.
+
+---
+
+Here's the thing that surprises people: Redis is single-threaded. One thread, handling every command, one at a time. That sounds like a disaster for performance, right? Traditional databases throw threads at concurrency. How does Redis handle hundreds of thousands of requests per second with just one?
+
+The answer is that Redis's bottleneck isn't the CPU — it's I/O. And since all the data is already in memory, every operation finishes so fast that the overhead of managing multiple threads would actually *hurt* more than it helps. Single-threaded means no locks, no deadlocks, no race conditions. Every command is atomic, automatically. You never have to worry about two operations stomping on each other.
+
+Redis 6 introduced multi-threaded *network* I/O — so it can receive and send data on multiple threads — but the actual business logic, the part where commands execute and data changes, stays single-threaded. That's a clever line to walk: more throughput without giving up the simplicity.
+
+And then there's just the physics. Disk access takes milliseconds. Memory access takes nanoseconds. That's not a small gap — it's orders of magnitude. Redis sitting entirely in RAM, with tight data structure implementations, routinely delivers sub-millisecond latency. Not as a best case. As the norm.
+
+---
+
+What really separates Redis from a simple key-value store is its type system. Let's walk through the important ones.
+
+Strings are the baseline — but even they're more capable than you'd think. Redis strings support atomic increment and decrement operations, which makes them perfect for counters, rate limiters, and sequence generation.
+
+Hashes let you store an object's fields under one key. Think of it like storing a user record — name, email, preferences — all grouped together efficiently.
+
+Lists are ordered sequences where you can push and pop from either end. Classic use case: task queues, or an activity feed.
+
+Sets store unique members with no ordering. The power here is set math — intersections, unions, differences. Great for things like "which users follow both of these topics" or "mutual friends."
+
+Then there's the Sorted Set, which might be the most elegant data structure in Redis. Every member has a numeric score, and Redis keeps them sorted by that score automatically. Leaderboards are the textbook example — updating a score and fetching the top ten players are both fast operations regardless of how many players you have.
+
+Beyond those, there's HyperLogLog for approximate cardinality — answering "how many unique visitors today" with very little memory. There's Streams, which gives you a persistent message log — a lightweight Kafka alternative for many use cases. And there's geospatial support for storing coordinates and running distance queries.
+
+That breadth is why Redis ends up in so many different places in a stack.
+
+---
+
+One thing that surprises people who think of Redis purely as a cache: it has real persistence options.
+
+The first is RDB — periodic snapshots of the entire dataset written to disk. Fast to restore, compact on disk, but if Redis goes down between snapshots, you lose whatever happened in that window.
+
+The second is AOF — Append-Only File — where every write command gets logged as it happens. On restart, Redis replays the log to reconstruct state. More complete, but larger files and slower recovery.
+
+The smart production setup uses both: AOF for data safety so you don't lose writes, RDB to make recovery fast when you need to bring the system back up. Redis isn't purely ephemeral — it can be a proper database if you need it to be.
+
+---
+
+Let's talk about the comparison everyone asks about: Redis versus Memcached.
+
+They're both in-memory caches, so the surface similarity is real. But the gap in capability is significant. Memcached stores strings only. No persistence. No pub/sub. No native clustering — you shard on the client side. Redis does all of that, plus the rich data types we just covered.
+
+The honest summary: unless your use case is so narrow that you only need a plain string cache with zero other requirements, there's almost no reason to reach for Memcached over Redis in 2026.
+
+---
+
+Speaking of 2026 — there's a new angle worth mentioning. Redis announced a Memory Layer specifically for enterprise AI agents. And the fit makes a lot of sense: AI agents need to maintain state across conversations and tasks, they need fast reads and writes, and they benefit from the kind of structured data storage Redis already provides. About 43% of enterprise AI agent stacks already include Redis as a component. It started as a cache layer for web apps, and it's quietly become infrastructure for AI systems too.
+
+---
+
+So what's the actual takeaway?
+
+First: Redis is fast because of where data lives, not just how it's built. Memory access versus disk access is a fundamental physical difference, and Redis is designed to exploit that gap.
+
+Second: the single-threaded architecture isn't a bug — it's a feature. Atomic operations, no locking complexity, predictable performance. The threading model is what makes Redis reliable at scale.
+
+Third: the data type richness is what makes Redis genuinely general-purpose. It's not just a cache in front of your database. It's a tool that can replace several different specialized systems for the right use cases.
+
+If any layer of your system needs fast, structured, low-latency data access — Redis is almost always the first thing worth evaluating.
