@@ -9,6 +9,7 @@ description: "Sakana AI's God Simulator is an interactive simulation built on ne
 type: explainer
 original_url: "https://www.youtube.com/watch?v=QzZ4VwDHAT4"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260522_125109_517208.wav"
 ---
 
 What happens if you control the rules of survival rather than the survivors themselves? Sakana AI turned that question into a browser-based simulation anyone can run. The God Simulator isn't a game — it's a research tool that makes evolutionary dynamics tangible, and the insights it surfaces connect directly to Sakana AI's core research thesis: that evolution and collective intelligence offer a fundamentally different path to capable AI systems than raw scale alone.

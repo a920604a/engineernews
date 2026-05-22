@@ -9,6 +9,7 @@ description: "A technical breakdown of the Meta Ray-Ban Display smart glasses: d
 type: explainer
 original_url: "https://www.youtube.com/watch?v=7YrdI7h2XoY"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260522_125835_122358.wav"
 ---
 
 AR glasses have been in development for over a decade, and almost none of them were things you'd actually wear outside. Google Glass failed. Snap Spectacles didn't sell. Magic Leap burned through billions and nearly disappeared. But the Ray-Ban Display that Meta announced at Connect 2025 looks different — the frame is a regular pair of Ray-Bans, it weighs 69 grams, and it has a genuinely functional display built in. "Glass is glass" — meaning this isn't a concept demo, it's a shippable product.

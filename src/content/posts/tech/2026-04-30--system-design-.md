@@ -9,6 +9,7 @@ description: "系統設計面試不是八股文：分析為什麼死背架構圖
 type: explainer
 original_url: "https://www.youtube.com/watch?v=a7JHJ8Tzwpg"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260522_124916_371175.wav"
 ---
 
 每隔一段時間就會有人在社群上問：「系統設計要怎麼準備？」接著各種「必背知識點」清單就冒出來：一致性雜湊、Kafka 架構、CAP 定理、資料庫分片策略……。但如果這些東西能背下來就通過面試，那面試本身就失去意義了。

@@ -1,0 +1,33 @@
+When OpenAI dropped Sora in February 2024, the AI research community had one of those collective "wait, what just happened" moments. Because the previous state of the art for text-to-video was, generously speaking, a few seconds of blurry, jittery footage that could barely maintain consistency frame to frame. Sora showed up with a full minute of high-quality, physically coherent video. That's not an incremental improvement — that's a category shift. So let's talk about what's actually going on under the hood.
+
+The foundation of Sora's design is a philosophy baked into its technical report title: "Video Generation Models as World Simulators." That's not just a catchy name. It's an architectural commitment. The idea is that a model generating video isn't just making pixels look pretty — it's learning how the physical world actually behaves. Objects have mass. Light has direction. Cause and effect are real. That philosophical framing drives every major design decision.
+
+Take input shape, for example. Most early video models were trained on fixed-size inputs — one resolution, one aspect ratio, one clip length. Sora throws that constraint out entirely. It trains simultaneously on portrait video, landscape video, square video, short clips, long clips — all at once. Why does that matter? Because if you force the model into a fixed frame, it learns to generate "movie frames," not "windows into a world." Variable input forces the model to develop a more general understanding of what's actually happening in the scene.
+
+Now let's get into the architecture. There are two main components working together here.
+
+The first is what's called a spatiotemporal autoencoder. Running a diffusion model directly on raw video pixels is computationally insane — the numbers just don't work at scale. So Sora first compresses the video into a much smaller latent representation, and that's where the actual generation happens. The clever part is that this compression works in both space *and* time simultaneously. It squishes down the pixel grid spatially, and it also compresses consecutive frames temporally. What you're left with is a compact 3D tensor — think of it as a compressed cube of information that captures both what the video looks like and how it moves.
+
+Then Sora slices that 3D latent cube into small 3D patches — little cubes of space-time information. Each patch gets flattened into a token, and you now have a sequence of tokens representing the entire video. Sound familiar? That's exactly what language models do with text. You've turned video into a sequence problem.
+
+The second component is the Diffusion Transformer, or DiT. Traditional diffusion models — think Stable Diffusion — use a U-Net architecture. U-Net works great for images at fixed sizes, but it's fundamentally built around a convolutional structure that doesn't naturally handle variable-length inputs. Sora swaps U-Net out entirely and puts a Transformer in its place.
+
+The diffusion process works like this: you start with a noisy version of your video in latent space. The Transformer looks at all those spatiotemporal patch tokens, combines them with information about the current noise level and the text prompt, and predicts what noise to remove. You repeat that denoising step many times until you've recovered a clean latent video. Then the decoder converts it back to actual pixels.
+
+The reason Transformer is the right choice here has everything to do with scaling. Language researchers discovered years ago that Transformers follow a reliable scaling law — more parameters, more data, better results, predictably. U-Net doesn't have that property in the same way. By choosing Transformer, Sora is essentially betting on the same playbook that made GPT work.
+
+One detail worth pausing on: how does the model know where each patch is in space and time? You need positional encoding — but not just "this is token number 47." You need "this patch is in the upper-left corner of frame 3 of 120." Sora uses 3D positional encoding that separately encodes the time position, the vertical position, and the horizontal position of each patch. That's what lets the model maintain that a person's face needs to look consistent from second one to second ten — it knows *where* and *when* everything is.
+
+For text conditioning, Sora uses a T5 text encoder to convert your prompt into rich semantic representations, which then influence the Transformer through cross-attention at every layer. There's also a technique borrowed from DALL-E 3: using a language model to expand short, simple captions into detailed, descriptive ones before training. Turns out the model learns much better when the training captions are richly detailed rather than sparse.
+
+Where does this all land in practice? Sora is genuinely impressive for rapid prototyping — advertising concepts, film previs, educational animations, game scene exploration. But there are clear limits right now. Real-time generation isn't happening — inference takes minutes. Anything beyond about a minute of video starts losing temporal consistency. And if you need precise camera control or reliable face consistency for a specific real person, you'll run into trouble.
+
+If you wanted to build something in this space yourself, the good news is that Open-Sora 2.0 — an open-source recreation from Zhejiang University and Shanghai AI Lab — implements the same DiT architecture with support for variable resolution and length, and all the training code is public. It's the fastest entry point into this technical territory without starting from zero.
+
+So here's what to take away from all of this.
+
+First: the key architectural insight is treating video as 3D spatiotemporal tokens rather than sequences of frames. That single decision is what enables both variable-length support and the kind of global coherence that makes Sora's output feel physically real.
+
+Second: replacing U-Net with Transformer isn't just a technical preference — it's a deliberate bet on the scaling law. Sora's quality is expected to grow predictably as you throw more compute at it, which is the same reason language models kept getting better for years.
+
+And third: the "world simulator" framing is genuinely meaningful. The hardest part of video generation isn't making individual frames look good — it's making the world behave consistently over time. That's the problem Sora is really solving, and it's why temporal consistency is treated as a first-class architectural concern rather than an afterthought.

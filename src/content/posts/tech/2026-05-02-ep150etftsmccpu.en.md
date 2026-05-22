@@ -9,6 +9,7 @@ description: "On April 24, 2026, Taiwan's Financial Supervisory Commission eased
 type: explainer
 original_url: "https://www.youtube.com/watch?v=zpmBleCwvGo"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260522_124953_017832.wav"
 ---
 
 On April 23, 2026, Taiwan's Financial Supervisory Commission (FSC) announced it would raise the single-stock holding cap for domestic actively managed funds and active ETFs from 10% to 25%. The next day, TSMC surged 5% to a fresh all-time high. Anyone following Taiwan's market understood the connection immediately: TSMC is the only stock in the TAIEX with a weighting above 10% — currently sitting at roughly 44% of the index.

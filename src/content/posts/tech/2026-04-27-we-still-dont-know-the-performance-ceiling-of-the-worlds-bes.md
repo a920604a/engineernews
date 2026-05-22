@@ -9,6 +9,7 @@ description: "DuckDB 的效能演進分析：從 2022 到 2025 年的 benchmark 
 type: explainer
 original_url: "https://www.youtube.com/watch?v=wmGikV_393Y"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260522_124448_222400.wav"
 ---
 
 DuckDB 最近幾年的效能提升速度，讓不少原本以為「夠用就好」的使用者不斷驚訝。這篇梳理 DuckDB 的實際 benchmark 資料、它跟其他 OLAP 系統的比較，以及為什麼在 2025 年，它的效能天花板仍然是個值得探索的問題。

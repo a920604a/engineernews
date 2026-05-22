@@ -9,6 +9,7 @@ description: "Counseling psychologist Chou Mu-Tzu responds to a reader letter ab
 type: explainer
 original_url: "https://www.youtube.com/watch?v=j0joxsq05_A"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260522_123847_412327.wav"
 ---
 
 You're in the middle of a difficult conversation and the other person just... stops. They go quiet. Not calm-quiet — the kind of quiet that feels like a wall going up. You try again, they retreat further. The more you push, the more they disappear.

@@ -1,0 +1,31 @@
+Here's the script:
+
+---
+
+Every time you run a browser automation workflow — logging in, filling forms, scraping data — you're burning AI inference tokens. Same workflow, same steps, same cost, every single run. OpenClaw asks a simple question: what if the AI only had to learn it once?
+
+That's the entire premise. Let the AI figure out the workflow once, distill it into a reusable file, then run it forever with zero tokens at runtime.
+
+Let's walk through how that actually works.
+
+The tool pairing here is OpenClaw with Playwright CLI — and it's worth noting this is Playwright CLI, not Playwright MCP. The difference matters. When you connect Playwright MCP directly to an AI agent, the model has to re-reason between every single browser step. That's high token cost, high latency, every time. Playwright CLI instead serializes browser state into compact, AI-friendly snapshots — structured summaries rather than raw DOM dumps. The result is roughly four times lower token consumption compared to MCP-based approaches.
+
+Now, the workflow has three stages, and understanding the token distribution across those stages is the key insight.
+
+Stage one is AI Exploration, which accounts for about 41% of your total token spend. You run the AI agent against the target site once. It navigates in real time, discovers the UI structure, finds the right selectors, handles dynamic content, figures everything out. Token cost is highest here — but this only happens once. Ever.
+
+Stage two is Skill Distillation, about 5% of tokens. Once the AI has figured out the workflow, you encode it into what OpenClaw calls a Skill file. This is just a Markdown file. It describes each browser step explicitly: navigate to this URL, fill this field with this value, click this button, wait for this element to appear, take a snapshot. No AI reasoning required to follow it — it's a plain operations playbook.
+
+Stage three is where things get interesting: zero-token execution. With the Skill file in place, every subsequent run just executes those steps directly. Playwright CLI follows the script. No model inference, no token spend. Run it three times, a hundred times, schedule it on a cron job — the inference cost stays at zero.
+
+Skills have a few design properties worth calling out. They're parameterized, meaning you use placeholder variables for things like URLs, usernames, and passwords — so one Skill can cover multiple accounts or environments without rewriting anything. They're also composable: a Skill can call other Skills, so you can build compound workflows out of smaller, reusable pieces. And they're shareable — there's a registry called ClawHub with thousands of community Skills you can install directly.
+
+So where does this actually shine? Recurring data extraction is the obvious one — daily price scraping, social metrics, anything you'd otherwise run on a schedule. Account operations at scale: bulk logins, form fills, notification handling. Recording QA test flows so manual paths become repeatable automated checks. And cross-platform data sync when there's no API available.
+
+Where it breaks down: anything requiring real-time decision-making based on what's actually on the page. Sites that change their UI frequently enough that your selectors go stale. And flows blocked by CAPTCHA or interactive verification — those are walls Skills can't climb.
+
+The mental model to take away is this: AI inference is expensive at runtime but cheap as a one-time investment. OpenClaw is essentially amortizing that cost across every future run. You pay once for the AI to learn, then you own the workflow.
+
+Three things to remember. First, Playwright CLI's compact browser snapshots are why this is four times more efficient than MCP approaches — the model doesn't re-reason every step. Second, a Skill file is just Markdown, which means it's readable, editable, and version-controllable by any engineer on your team. And third, the ClawHub registry means you probably don't have to write many Skills from scratch — search first, install, adapt if needed.
+
+---

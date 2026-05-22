@@ -1,0 +1,47 @@
+Here's the script:
+
+---
+
+If your LLM application isn't performing the way you want, there's a good chance you're reaching for the wrong fix. And the reason that happens so often is that people treat LLM optimization as one big knob to turn, when actually there are three completely separate layers — each solving a different problem, each optimized differently.
+
+Let's walk through them.
+
+**The first layer is decoding.** This is the most overlooked one. When an LLM generates text, it doesn't just pick words — it's sampling from a probability distribution over its entire vocabulary at every single step. How you do that sampling matters a lot.
+
+The simplest approach is greedy decoding: always pick the highest probability token. It's fast, deterministic, and reproducible. The downside is it can get stuck — one early wrong choice locks you into a suboptimal path.
+
+Sampling with temperature does the opposite: instead of always taking the most likely token, you sample from the distribution. High temperature makes outputs more creative and varied. Low temperature pulls you back toward greedy. This is great for creative writing, but it's actually bad for reasoning.
+
+Beam search is the middle ground for reasoning-heavy tasks: instead of committing to one path, you maintain several candidate sequences in parallel, then return the globally best one. It costs more compute, but it finds better answers.
+
+There's a finding from 2025 research that's worth calling out directly: for reasoning models trained with reinforcement learning, temperature zero — meaning pure greedy — significantly outperforms any sampling. That's the opposite of what most people intuitively do when they want better outputs.
+
+**The second layer is workflow.** This is where you, as the developer, decide how to structure the task. The model doesn't change — your architecture does.
+
+Chain-of-thought prompting is the classic move: instead of asking the model to jump straight to an answer, you prompt it to write out its reasoning steps. This works because errors that would be invisible in a one-shot answer become visible mid-chain, giving the model a chance to catch and correct them. Simple, effective, almost free.
+
+ReAct goes a step further: the model alternates between reasoning and action. It thinks about what it needs, calls a tool — a search engine, a database, a calculator — then continues reasoning from the result. This is the right pattern when the model needs external information it doesn't have in its weights.
+
+Self-consistency is a heavier-weight technique: generate the same question multiple times with sampling turned up, then take the majority vote across answers. It's expensive — you might run the same query five or ten times — but for high-stakes reasoning tasks, the accuracy gains can justify it.
+
+Multi-agent workflows are the most complex: decompose a task across several specialized agents that each handle a subtask, then aggregate their outputs. Best for tasks that genuinely benefit from parallelism or specialized domain knowledge.
+
+**The third layer is reasoning capability itself** — this is about what the model can intrinsically do, not how you prompt it.
+
+Inference-time scaling is the big one. Instead of training a bigger model, you give the model more thinking time: longer chains of thought, explicit budget tokens for exploration. OpenAI's o-series models, Gemini Thinking, Claude's extended thinking — they all work this way. The returns follow a roughly log-linear curve. Doubling compute doesn't double accuracy, but meaningful gains continue well past the point where scaling the model size stops helping.
+
+Early Stopping Chain-of-Thought is a clever efficiency trick: you monitor the reasoning chain, and when the model's answer has been stable for several consecutive steps, you stop early. Research shows this cuts token usage by around 41% while keeping accuracy basically intact. No retraining required. If you're running inference at scale and costs are biting, this is worth knowing about.
+
+And then there's Coconut — Chain of Continuous Thought — which is more experimental but conceptually fascinating. Standard chain-of-thought forces reasoning to happen in natural language tokens. Coconut instead lets the model's internal hidden state serve directly as the input to the next step. Reasoning happens in continuous latent space rather than in words you can read. The theoretical advantage is that it enables something like breadth-first search across reasoning paths, rather than committing to one linear chain. It requires special training and isn't widely deployed yet, but it points at where the research is heading.
+
+---
+
+So, here are the three things to take away from this.
+
+First: diagnose the layer before you reach for a fix. Low reasoning accuracy doesn't always mean you need a bigger model — it might just mean temperature is too high, or you haven't added chain-of-thought. High inference costs don't always require a model downgrade — early stopping might cut your token usage by 40% without touching anything else.
+
+Second: for reasoning tasks, temperature zero is your default. This surprises a lot of people, but the evidence is clear — sampling hurts reasoning models.
+
+Third: workflow design is underrated. A well-structured chain-of-thought or ReAct loop running on a mid-tier model will often outperform an expensive model being queried naively. The architecture matters as much as the model.
+
+These three layers — decoding, workflow, reasoning — are separate tools. Use the right one for the problem you actually have.

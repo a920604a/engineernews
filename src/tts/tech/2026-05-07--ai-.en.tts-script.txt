@@ -1,0 +1,29 @@
+Here's a pattern you've probably run into if you've spent any real time with AI coding agents. You kick off a long task — the agent starts strong, makes good decisions, writes clean code. Then somewhere around the halfway point, things start going sideways. It repeats a mistake it already fixed. It undoes working code. It seems confused by instructions it wrote itself twenty turns ago. And your first instinct is to think the model is getting dumb, or that your prompts are degrading somehow.
+
+Neither of those is what's happening. There's a name for this: Context Rot.
+
+Context Rot is the gradual degradation in AI agent output quality as the context window fills up with accumulated session history. Failed fix attempts. Outdated versions of code. Error messages. Contradictory instructions from earlier in the conversation. All of it is still sitting there in the context — the model hasn't "forgotten" it. The problem is subtler than that. Every single token in context competes for the model's attention. So failed attempt number three from forty turns ago is competing for attention alongside your current, relevant instructions. As the noise piles up, the signal-to-noise ratio drops, and output reliability follows.
+
+This is a structural property of how Transformers work. The attention mechanism doesn't distinguish between "current instruction" and "record of a failed approach from half an hour ago." Both are just tokens. There's no concept of relevance or recency baked in at a fundamental level.
+
+And the research backs this up pretty specifically. Chroma ran tests at different context fill levels and found something interesting: when the context window is less than half full, models tend to lose track of tokens in the middle. When it's more than half full, they start losing the earliest tokens. In both cases, critical context gets deprioritized before the window is even close to full. Databricks found that correctness starts measurably dropping after around 32,000 tokens, and agents begin favoring repetitive actions drawn from their growing history rather than generating novel solutions to the problem in front of them.
+
+Now here's where a lot of people go wrong: the intuitive fix is to just use a bigger context window. More space, more room, problem solved. This is a fallacy. Context Rot can start when the window is only thirty percent full. The issue isn't running out of space — it's that noise accumulates and degrades signal quality regardless of how much total space you have. A bigger window just delays the problem. It doesn't address the root cause.
+
+So what does actually fix it?
+
+The most dramatic solution is what AWS demonstrated with something called the Memory Pointer Pattern. The core idea: instead of pushing data directly into the context, you push only a reference to where that data lives externally. Think of it like a variable pointing to memory rather than a copy of the data inline. AWS tested this on a materials science workflow. The traditional approach — tool outputs placed directly in context — consumed over twenty million tokens and the workflow failed. The Memory Pointer approach stored outputs externally and kept only an index reference in context. That same workflow completed successfully on just over a thousand tokens. That's a sixteen-thousand-times efficiency difference.
+
+The broader mental model here comes from mem0 and MindStudio, and it's the one I think is most clarifying: treat the context window like RAM, not like a filing cabinet. RAM is fast and immediately accessible, but it's structurally the wrong tool for anything that needs to persist. You wouldn't store your database in RAM. The context window is the same — it should hold only what this specific task needs right now. Long-term memory, project conventions, past decisions — those belong in an external database. Technical documentation and API references belong in a vector store. The context window is for working memory, full stop.
+
+Two more practical techniques worth knowing: Context Compaction, which is essentially garbage collection for conversation history — you periodically compress old turns into a summary, keeping the key facts and discarding the execution details. Both Claude Code and LangChain have built-in mechanisms for this. And Clean Context Resets, recommended by StackOne — instead of carrying all session history forward between tasks, you reset context and load a fresh copy of a permanent rules file. Critical architecture decisions live in something like `PROJECT_RULES.md` and get loaded at the start of each new task rather than inherited from a long, noisy conversation history.
+
+So let me leave you with three things to take away from this.
+
+First, when an AI agent degrades mid-task, that's not a model quality problem — it's a context management problem. The architecture is working as designed; the context just wasn't managed.
+
+Second, bigger context windows are not the answer. They're a delay, not a fix. The engineering work is in controlling what enters the context and when it gets cleaned out.
+
+And third, the mental model shift that actually changes how you build agents: context window is RAM. Manage it like a finite, precious resource — budget it deliberately, compact it regularly, and don't treat it like a place to store things.
+
+The agents that stay sharp in production are the ones where someone thought carefully about context hygiene from the start. Everyone else ends up debugging a pile of quietly accumulated garbage.

@@ -1,0 +1,37 @@
+The first week of May 2026 was one of those moments on GitHub where you could feel the ground shifting. Three things dropped in close succession, and together they tell a story about where AI developer tools are actually headed — not just smarter autocomplete, but a shared infrastructure for agents that work alongside you.
+
+Let's start with the headline that broke GitHub Trending.
+
+Warp — the AI-native terminal written in Rust — went open source. And not quietly. Within days it had over 37,000 stars and briefly hit number two on Trending. The code dropped under AGPL-3.0, with the UI framework separately under MIT. That licensing choice matters: AGPL means if you build something on top of Warp and distribute it, you have to open source your changes too. It's a community-first signal, not a corporate one.
+
+What makes Warp interesting isn't just that it's a nicer terminal. The team calls it an "agentic development environment." The vision is that AI agents take over the entire lifecycle — triaging issues, writing a plan, editing code, running tests, opening the pull request — while human engineers shift into a directing and reviewing role. You stop typing commands and start approving decisions.
+
+Technically, the codebase is almost entirely Rust. It's organized into four main pieces: a terminal emulation layer, a block-based UI system, an AI integration layer that speaks GraphQL, and a workspace state persistence layer. That AI integration layer is the key one — it's the seam where you plug in whatever model you want.
+
+And the community immediately ran with that. Someone forked it into a project called OpenWarp, which lets you connect DeepSeek, Ollama, Anthropic, or local models — with your API keys staying on your machine. That's the kind of fork that only happens when a project opens up at exactly the right moment.
+
+Now, while Warp was dominating the headlines, a quieter but arguably more consequential standard was maturing: GitHub Copilot Agent Skills.
+
+This one started back in December 2025. The idea is a common format for packaging instructions, scripts, and context that AI agents can load automatically when they're relevant to a task. Think of it like a plugin system, except the plugin is a folder of plain text — markdown files, shell scripts, reference docs — that an agent reads and acts on without you having to prompt it manually.
+
+Agent Skills work across three environments today: the Copilot CLI in your terminal, the cloud-based Copilot coding agent, and VS Code Insiders in agent mode. GitHub maintains an official reference repository, and there's a community-driven index called awesome-copilot that already covers things like framework conventions, code review rules, and API documentation summaries. You can also write your own by creating a dot-agent-md file or using an interactive wizard.
+
+The ambition here is standardization. If skills can be written once and loaded by any compatible agent — whether it's Copilot, Claude Code, or something else entirely — then teams stop rebuilding the same context over and over. That's a real productivity unlock.
+
+And speaking of the Copilot ecosystem, the third piece of this week's story: Codex CLI hit general availability.
+
+Copilot CLI became available to all Copilot subscribers in February 2026. It's a terminal-native autonomous agent — meaning it lives in your command line and can handle multi-step tasks without you babysitting it. It plans, edits multiple files, runs tests, reads the results, and iterates. No UI, no hand-holding.
+
+The other change worth noting: OpenAI Codex is now integrated directly into Copilot Pro+. You don't need a separate OpenAI account. Model calls go through your Copilot subscription and count against standard rate limits. That's a meaningful simplification for teams who don't want to manage multiple API accounts.
+
+Rounding things out: there's a community index called awesome-skills — different from awesome-copilot, more agent-agnostic — that collects reusable skills for Claude Code, Codex, Gemini CLI, and GitHub Copilot. If your team is trying to get into agent workflows without building everything from scratch, that's the first place to browse.
+
+So what do you take away from all of this?
+
+First, the AI dev tool space is consolidating around shared infrastructure. Warp, Agent Skills, and Codex CLI are all solving the same underlying problem: how do agents become a first-class part of the workflow, not just a fancy autocomplete.
+
+Second, open source is still the forcing function for adoption. Warp got 37,000 stars in days because developers could read the code, fork it, and immediately make it their own. That energy can't be manufactured.
+
+Third — and this one's practical — the skills layer is where the real leverage is. If you invest time building Agent Skills that capture your team's conventions and context, every agent your team uses gets smarter, immediately. That's compounding value.
+
+The tooling is here. The standard is forming. The question now is how your team actually integrates it — and that's very much still an open experiment.

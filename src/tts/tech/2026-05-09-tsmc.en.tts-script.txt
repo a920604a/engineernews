@@ -1,0 +1,31 @@
+TSMC just crossed two trillion dollars in market cap. Let that sink in. A Taiwanese semiconductor company is now the fifth-largest company on the planet — bigger than Alphabet, Google's parent. And it got there by more than doubling its stock price in a single year.
+
+So what actually happened, and why should engineers care?
+
+Here's the raw story: TSMC's American depositary shares went from around $196 at the start of 2025 to over $390 by year-end. That's a 103% gain. Revenue hit the equivalent of about $116 billion US dollars for the full year — up 31% from 2024. And it wasn't just Taiwanese investors riding this wave. Korean retail traders were piling in through their brokerage apps. US giants like BlackRock, Fidelity, and Vanguard kept increasing their positions. Even Japan's government pension fund — the largest retirement fund in the world — bought more TSMC. This was a global pile-in.
+
+The question is: why?
+
+The answer is almost frustratingly simple. Nearly every meaningful AI chip on the planet runs through TSMC's factories. Nvidia's H200, B200, GB200. Google's TPUs. Amazon's Trainium chips. Apple's M4. All of them fabbed on TSMC's 3-nanometer or 5-nanometer processes. If you want compute to run ChatGPT, Gemini, or any large-scale AI workload — there is essentially one road, and TSMC owns it.
+
+On the supply side, TSMC controls over 90% of all leading-edge chip manufacturing — anything below 7 nanometers. Samsung is trying to catch up, but their 3-nanometer yields have been rough enough that Nvidia, Qualcomm, and AMD haven't made the jump. Intel's foundry ambitions were still in ramp-up mode through 2025. So there's no real alternative at scale.
+
+Now here's the part that's less talked about but arguably more important: packaging. It's not enough to just make a fast GPU — you also need to connect it tightly to high-bandwidth memory. TSMC's CoWoS technology does exactly that. It's what lets you stack a GPU die and HBM memory modules into a single dense package, which is the physical foundation of chips like the H100 and H200. CoWoS capacity was the single most constrained resource in the AI supply chain in 2025. And TSMC owns that too. That scarcity gave them significant pricing leverage.
+
+Think of the chain like this: AI applications explode in usage, cloud providers scramble to buy GPUs, Nvidia and AMD flood TSMC with orders, and TSMC is the only passage through. It's a short chain with almost no detours. That's why so much global "invest in AI" capital ultimately flows to TSMC — because it's the unavoidable bottleneck.
+
+One number that frames this perfectly: 75% of TSMC's 2025 revenue came from North American customers. Apple, Nvidia, AMD, Qualcomm, Google. TSMC is essentially a Taiwanese company manufacturing the backbone of American tech. When American tech wins, TSMC wins.
+
+There's also an interesting lens if you follow Taiwanese markets: TSMC makes up over 40% of the Taiwan stock index. So when you hear "Taiwan's market hit an all-time high," you're really mostly hearing "TSMC hit an all-time high." That's concentration risk, but it also honestly reflects TSMC's actual weight in Taiwan's economy.
+
+Looking ahead, three things to watch. First, TSMC's N2 process — their next-generation node — is ramping into full production in 2026. Apple's M5 and Nvidia's next GPU generation both depend on it. Yield rates and production speed there will define the AI chip spec race for the next two years.
+
+Second, CoWoS capacity. TSMC is targeting a doubling of CoWoS output by end of 2026. That timeline directly controls how fast next-gen AI accelerators like Nvidia's GB300 can ship.
+
+Third, geopolitics. A $2 trillion company headquartered on a geopolitically sensitive island is a risk that everyone is watching. The Arizona fab is targeting 2-nanometer production in 2026. Kumamoto in Japan is already running. Dresden in Germany targets 2027. These are real diversification moves — but Taiwan remains the irreplaceable core for the foreseeable future.
+
+Some analysts think TSMC has a credible path to $3 trillion before 2030, assuming AI data center demand holds and the N2 process ramp goes smoothly. Whether or not that target hits, the underlying story is the same.
+
+Three takeaways. One: TSMC's rise isn't hype — it's a direct reflection of AI infrastructure demand, and the company sits at the only chokepoint that matters. Two: the CoWoS packaging business is just as strategically important as the chips themselves — it's where the physical constraints of AI hardware actually live. And three: geographic diversification is happening, but slowly — Taiwan remains the center of gravity for years to come, which means the geopolitical risk isn't going away.
+
+This is what it looks like when a single company becomes load-bearing infrastructure for a global technology wave.

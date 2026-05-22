@@ -9,6 +9,7 @@ description: "Indie developer 案例研究：用 AI 視訊通話幫助社交焦�
 type: case-study
 original_url: "https://www.youtube.com/watch?v=M1bifAQSVcY"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260522_130734_228835.wav"
 ---
 
 有些產品來自市場調查，有些來自自身痛點，這個案例來自一封粉絲信。一位有相當粉絲數的技術 YouTuber 收到粉絲留言：「我很想在 YouTube 問你問題，但我有社交焦慮，連打字都緊張，更不用說真人通話了。」他決定做點什麼——不是寫一篇建議文，而是直接建立一個產品。

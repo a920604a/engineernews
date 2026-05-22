@@ -1,0 +1,27 @@
+AR glasses have been a promised future for over a decade. Google Glass, Snap Spectacles, Magic Leap — they all took a shot and none of them became something regular people actually wore. What Meta announced at Connect 2025 is different, and the difference comes down to one brutal engineering constraint: it has to look like a normal pair of Ray-Bans.
+
+That constraint — appearance first — is what makes this product interesting. The frame is a standard Ray-Ban Headliner design. The display is built into the lens, not bolted onto the frame. Someone walking past you on the street cannot easily tell you're wearing smart glasses. And that design decision cascaded through every engineering trade-off they made: no heat fins, no thick battery compartment, the whole thing packed into 69 grams.
+
+So what are you actually getting for $799? A monocular display embedded in the right lens — 600 by 600 resolution, 20 degree field of view, up to 5,000 nits of peak brightness. You've got a 12 megapixel camera with 3x optical zoom, open-ear speakers, six microphones, and six hours of battery life. The charging case extends that to about 30 hours across a full day out.
+
+Now let's talk about how the display actually works, because this is where it gets technically interesting. The lens uses waveguide optics — the same fundamental approach that Microsoft HoloLens uses. A tiny micro-projector injects an image into the edge of the lens. That light bounces through the glass via total internal reflection, then exits at specific angles directly into your eye, creating a virtual image floating in your field of view. The trick is doing this in a lens thin enough to look like normal eyewear.
+
+Meta went monocular — one eye only — rather than two eyes. That's a trade-off. Two eyes feel more immersive, but the alignment problem is incredibly hard, cost goes up dramatically, and the lenses get thicker. At consumer price points in a glasses form factor, monocular is the only way to ship right now. The 20 degree field of view is narrower than HoloLens's 52 degrees, but that narrowness is exactly what lets the lenses stay thin and the weight stay low.
+
+The most genuinely novel part of this product isn't the display — it's the input method. The $799 price includes a Neural Band wristband, and this thing is worth understanding. It uses EMG sensors — electromyography — which detect the faint electrical signals your muscles produce when they contract. You don't need to physically move your finger. The intention to move is enough to register as input. This technology came from a company called CTRL-labs that Meta acquired back in 2019, and it's spent years in the lab before making it into a consumer product.
+
+The wristband itself is built for durability — the electrodes have a diamond-like carbon coating, and the band uses a material called Vectran braid, which is the same stuff NASA used in the airbag landing systems for Mars rovers. Stronger than steel under tension, but flexible. Battery on the wristband is 18 hours — notably longer than the glasses themselves.
+
+Why does input matter so much for AR glasses? Because voice has obvious privacy problems in public. Touchpads are unintuitive and require you to reach up to your face. Camera-based gesture recognition burns through battery. EMG sidesteps all of those. If the interaction pattern gets validated at scale, it could become the default input model for wearables well beyond this product.
+
+On the AI side — the glasses handle lightweight processing on-device, heavier computation goes to your paired phone or Meta's cloud. The camera can capture on a schedule or on demand, send that visual data up to Llama-based models, and surface the results as a HUD overlay on your lens. Navigation, real-time translation, object recognition, notifications — these are the use cases. And the key shift is that all of it is available without taking your phone out of your pocket.
+
+To put the specs in perspective: Apple Vision Pro gives you roughly 120 degree field of view and full spatial computing, but it weighs 600 grams and costs $3,500. HoloLens 2 is 52 degrees at similar weight and price, but it's an enterprise helmet. Meta's positioning here isn't "replace your headset." It's "make AI available all day, on your face, without people noticing." That's a completely different product category.
+
+So where does this land? Three takeaways.
+
+First, appearance acceptability is the actual breakthrough. Not the display specs, not the AI integration — the fact that you might actually wear this to a coffee shop. Every previous AR product required you to sacrifice how you look. This one doesn't.
+
+Second, the EMG wristband is the part of this product with the largest implications beyond itself. If people adopt this interaction pattern, it changes how we think about input for the next generation of wearables entirely.
+
+And third, $799 and 6 hours of battery means this is still early-adopter hardware. The 20 degree FOV won't replace your phone. But Meta ships new generations fast with better specs and lower prices — and the hard part, actually getting this thing wearable in public, is already done.

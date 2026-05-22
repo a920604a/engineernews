@@ -9,6 +9,7 @@ description: "從工程師角度評析 2025 年 Apple M4 產品線：MacBook Air
 type: explainer
 original_url: "https://www.youtube.com/watch?v=i9TvUGeTltE"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260522_125958_083985.wav"
 ---
 
 Apple 2025 年上半年的硬體陣容基本上就是一句話：M4 晶片全面普及，Apple Intelligence 正式從 Pro 機型下放到入門級產品。MacBook Air M4 和 Mac Studio M4 Max 是這波更新的核心，規格上都有明確的進步，但 Apple Intelligence 的軟體整合卻讓工程師社群有點失望。這篇文章從技術角度拆解這次更新真正重要的地方。

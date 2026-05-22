@@ -9,6 +9,7 @@ description: "拆解 DoorDash 捐贈活動的系統設計 Mock 題：功能需�
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=xbnrvkVf0s8"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260522_124812_774654.wav"
 ---
 
 DoorDash 的捐贈活動系統設計是一道在系統設計面試中出現頻率較高的題目，曾在 LeetCode Discuss 和多個面試分享平台上被記錄。題目看似簡單（用戶結帳時可以選擇捐款），但細節處理和規模討論可以展開很多。這篇複盤一個完整的 Mock 過程，重點在設計決策背後的推理，而不是記答案。

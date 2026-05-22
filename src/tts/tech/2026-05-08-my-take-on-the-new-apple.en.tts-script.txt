@@ -1,0 +1,27 @@
+Apple's 2025 hardware update is a story in two acts. Act one: chips. Act two: AI software. The hardware is genuinely impressive. The software? Still a work in progress. Let's dig in.
+
+Start with the MacBook Air M4, which shipped in March. The headline change isn't the chip — it's the baseline RAM. Apple finally moved the entry-level configuration from 8GB to 16GB, at the same price. That matters more than it sounds. By last year, 8GB on macOS was already showing its age. Run a local language model through Ollama, open a few Chrome tabs, throw a Docker container in there — and you're hitting swap memory on the SSD. That means slower performance and faster SSD wear. 16GB makes the $999 MacBook Air a genuinely capable machine for everyday AI workloads.
+
+The M4 chip itself gets a 10-core CPU — four performance cores, six efficiency cores — up from eight cores in the M3. The GPU bumps to ten cores, and there's a 16-core Neural Engine for on-device AI tasks. In real-world rendering tests, a 4K Final Cut Pro sequence that took three minutes 45 seconds on M3 finishes in under three minutes on M4. If you're upgrading from an M2 or M1, you'll feel that jump. M3 users? The difference is more subtle. Apple also swapped the front camera from a 1080p unit to a 12-megapixel sensor with Center Stage, which is a meaningful quality leap for video calls. And the 13-inch starts at $999, the 15-inch at $1,199 — both cheaper than the M3 equivalents were.
+
+Now, the Mac Studio M4 Max. This is a different beast entirely. Sixteen-core CPU, 40-core GPU, up to 128 gigabytes of unified memory, and 410 gigabytes per second of memory bandwidth. Apple puts the performance gain at 3.5 times faster than the M1 Max version — a real jump for anyone still running that machine. There's also an M3 Ultra configuration that goes even further: 32-core CPU, 80-core GPU, up to 512 gigabytes of unified memory at 800 gigabytes per second bandwidth.
+
+Why does memory bandwidth matter so much for AI? When you're running a large language model locally, the bottleneck isn't raw compute — it's how fast you can move model weights between storage and the processor. The M3 Ultra variant in the Mac Studio can reportedly fit language models with over 600 billion parameters entirely in unified memory. That's approaching GPT-4 territory. For researchers and engineers who need to run large models without cloud dependencies, that's a serious capability.
+
+The fanless design of the MacBook Air is worth flagging here. Passive cooling is great for silence and portability, but if your workload runs the chip at full capacity for extended periods — long inference jobs, large compilation tasks — you will hit thermal throttling. The Mac Studio and MacBook Pro don't have this problem. Know your workload before you choose.
+
+Okay, Apple Intelligence. This is where the story gets more complicated.
+
+Apple shipped Apple Intelligence with iOS 18 and macOS Sequoia, and the M4 MacBook Air is the first entry-level Mac to include it out of the box. Some of it works really well. System-level Writing Tools — the ability to rewrite, summarize, or proofread text in almost any input field — are genuinely useful and fast. Siri can now maintain context across follow-up questions in a conversation, which is a real improvement. Priority Notifications does a decent job of surfacing what actually matters. Image generation is fast and functional.
+
+But Siri's cross-app integration is a mess. The pitch is that you can give Siri complex, multi-step commands — something like "grab the latest photo from Instagram and send it to Mom." In practice, that works maybe half the time. The failure rate is high enough that you can't rely on it. And for non-English languages, including Chinese, voice recognition accuracy is noticeably behind ChatGPT. That's a problem for a global product.
+
+The developer angle is frustrating in a different way. Apple opened third-party app access to on-device AI models in a late-2025 update — but only through narrow interfaces: Writing Tools, Image Playground, Genmoji. The underlying model is not directly accessible. Apple wants apps to route everything through Siri, positioning Apple as the AI aggregator across your device. Most developers find that limiting. If you want to build a custom AI pipeline using Apple's on-device model, you currently can't.
+
+So here's where things land. Three takeaways.
+
+First, the 16GB baseline shift is the most practically significant change in this MacBook Air. It's not glamorous, but it's what makes the $999 machine genuinely useful for modern workloads.
+
+Second, the Mac Studio M4 Max — and especially the M3 Ultra configuration — is the most capable consumer hardware for running large models locally. If that's your use case and you want to stay off cloud infrastructure, nothing else at this price point competes.
+
+Third, Apple's AI story is a hardware-software gap problem. The Neural Engine has the compute. Siri doesn't have the reliability, and the developer API doesn't have the openness. iOS 19 and the next-generation Siri will be the real test of whether Apple can close that gap — or whether Google and OpenAI continue to set the pace.

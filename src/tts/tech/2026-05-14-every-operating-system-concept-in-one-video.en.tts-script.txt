@@ -1,0 +1,89 @@
+Every single day you press a power button and expect magic to happen. But between that button press and the moment your browser opens — there's an entire story playing out, and it maps almost perfectly to every major concept in operating systems.
+
+Fireship made a video that compresses all of it into 15 minutes. Let's walk through that same arc.
+
+---
+
+So what even is an operating system? At its core, it's the software layer sitting between your hardware and your applications. It has four jobs: manage resources — who gets CPU time, memory, disk space. Provide isolation — so one crashing app doesn't take everything else with it. Abstract away the hardware — your app shouldn't need to know if it's running on an Intel chip or an ARM chip. And expose a standard interface — a set of APIs that every application can rely on.
+
+Without this, every developer would have to write their own CPU scheduler and memory allocator. The OS absorbs that complexity so the rest of us can focus on building things.
+
+---
+
+**The boot sequence is where the story starts.**
+
+The moment you hit that power button, the CPU doesn't run Linux or Windows — it runs firmware. On modern machines, that's UEFI. On older machines, BIOS. The firmware does something called POST — Power-On Self Test — which is just the machine checking that its CPU, RAM, and storage are actually working. Then it hands control to the bootloader.
+
+UEFI is meaningfully better than legacy BIOS, by the way. It supports large disks over two terabytes, has a graphical interface, and enables Secure Boot — which prevents unsigned code from running during startup.
+
+The bootloader — on Linux systems this is typically GRUB — has one job: find the kernel image on disk, load it into RAM, and get out of the way. It's a bridge between the firmware world and the OS world.
+
+---
+
+**Then the kernel takes over, and this is where things get interesting.**
+
+The kernel runs in what's called kernel mode — it has direct, unrestricted access to every piece of hardware. Everything else — your apps, your shell, your browser — runs in user mode, which is sandboxed and limited. That distinction is fundamental to how modern OSes work.
+
+The kernel itself is responsible for four big things: process management, memory management, the file system, and device drivers. Linux is what's called a monolithic kernel — all of those subsystems live in one shared memory space, which makes internal calls fast. macOS uses a hybrid approach, where some components run in user space for added stability.
+
+---
+
+**Processes.**
+
+Once the kernel is running, it starts creating processes. A process is an independent execution instance — it gets its own virtual address space, its own set of open files, its own process ID. Crash one process and the others keep running, because they're isolated from each other.
+
+Inside a process, you have threads — the actual units of execution. Threads within the same process share memory, which makes them efficient for parallelism. But it also means they can step on each other's data, which is why you need locks.
+
+Now, with potentially dozens of processes wanting to run, the scheduler decides who gets CPU time and when. Linux uses something called CFS — the Completely Fair Scheduler. It tracks how much CPU time each process has used and always picks the one that's been waiting the longest. This prevents any single process from hogging the CPU indefinitely. Real-time tasks like audio playback get higher priority so they don't stutter.
+
+---
+
+**Memory management.**
+
+Here's something subtle but important: when a process thinks about memory addresses, it's not looking at physical RAM directly. It sees a virtual address space. The OS maintains a mapping table — called a page table — that translates those virtual addresses to actual physical locations in RAM.
+
+This gives you three powerful properties. Isolation — process A can't read process B's memory, even though they're on the same machine. Demand paging — physical memory isn't actually allocated until you touch it, which is why programs start fast even if they'd use a lot of memory eventually. And swap — when physical RAM fills up, the OS can quietly move pages that haven't been used recently out to disk, freeing space for what's actively running.
+
+---
+
+**IPC — how processes talk to each other.**
+
+Processes are isolated, but sometimes they need to cooperate. The OS gives you several mechanisms for this.
+
+Pipes are the one-directional flow you see in shell commands — pipe the output of one program into the input of another. Unix sockets give you bidirectional local communication. Shared memory is the fastest option — two processes literally map the same physical memory region. Signals are lightweight notifications, like when you hit Control-C to send SIGTERM. And message queues handle asynchronous passing.
+
+---
+
+**The file system.**
+
+To your application, everything is a file. Whether it's data on an SSD, a network share, or even a device — the OS presents a uniform interface. That's the Virtual File System layer. Underneath, the actual storage could be ext4, APFS, NTFS — doesn't matter. The app talks to VFS, and VFS handles the rest.
+
+Linux takes this further with its "everything is a file" philosophy. Hardware devices show up as file paths. Process information is readable as files. Kernel settings are files you can write to. One consistent interface for the entire system.
+
+---
+
+**System calls.**
+
+This is how user space talks to the kernel. Whenever your app needs to do something privileged — open a file, create a socket, spawn a new process — it makes a system call. That triggers a context switch from user mode into kernel mode. The kernel does the work, then switches back.
+
+That switch has overhead. It's small, but measurable. This is exactly why high-performance I/O frameworks are designed to minimize how many syscalls they make — batching work, using event loops, reducing the back-and-forth between user space and kernel space.
+
+If you want to see what syscalls a process is making in real time, there's a tool called strace that intercepts them and prints them out. It's a brilliant way to understand what a program is actually asking the OS to do.
+
+---
+
+**And quickly — OS versus VMs versus containers.**
+
+A virtual machine runs its own full kernel on top of a hypervisor. Full isolation, but real overhead and slower startup. A container is different — it's not a lightweight VM. It's an isolated process sharing the host's kernel. Linux uses cgroups to limit what resources a container can use, and namespaces to control what it can see. The result is near-native performance with fast startup.
+
+This is also why Docker on macOS or Windows runs a Linux VM underneath. Neither of those operating systems has a Linux kernel — so containers need one imported.
+
+---
+
+**Three things to take away from all of this.**
+
+First, the boot sequence is a clean handoff chain — firmware initializes hardware, the bootloader loads the kernel, the kernel takes control and never gives it back. Each layer solves one specific problem.
+
+Second, isolation is the recurring theme. Processes are isolated from each other through virtual address spaces. User space is isolated from the kernel through mode switching and syscalls. Containers get isolation through cgroups and namespaces. The whole system is built in layers of controlled separation.
+
+And third — understanding this chain changes how you think about performance. Context switches cost time. Syscalls cost time. Memory access patterns matter because the OS is paging behind the scenes. Once you see the OS as a pipeline instead of a black box, you can actually reason about why your code behaves the way it does.

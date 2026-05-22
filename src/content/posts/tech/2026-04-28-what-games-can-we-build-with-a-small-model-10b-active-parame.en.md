@@ -9,6 +9,7 @@ description: "Exploring real-world uses of 10B-parameter small language models i
 type: explainer
 original_url: "https://www.youtube.com/watch?v=Yysg5-WnVhg"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260522_124616_885809.wav"
 ---
 
 GPT-4 can obviously generate great game dialogue. But GPT-4 costs money per second, latency runs hundreds of milliseconds to seconds, and routing all NPC dialogue to a cloud API raises privacy concerns — player behavior data leaves the device. Small language models (SLMs) exist precisely to address these problems. Let's look at what models around 10B parameters can actually do in a gaming context.

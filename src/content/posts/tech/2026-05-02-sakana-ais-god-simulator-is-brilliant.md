@@ -9,6 +9,7 @@ description: "Sakana AI 的 God Simulator 是一個基於神經細胞自動機�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=QzZ4VwDHAT4"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260522_125127_210656.wav"
 ---
 
 如果你可以調整生存的規則，世界會長什麼樣子？Sakana AI 把這個問題做成了一個可以在瀏覽器裡玩的模擬器。它不是遊戲，而是一個讓你親手操作演化環境、觀察數位生態系動態的研究工具。有趣的是，這個「神明模擬器」（God Simulator）所揭示的洞察，跟 Sakana AI 一直以來研究的核心主題高度一致：演化、集體智慧、以及 AI 系統如何在沒有頂層設計的前提下，自發湧現出複雜行為。
