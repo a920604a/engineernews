@@ -9,7 +9,6 @@ description: "NVIDIA Isaac GR00T N1 用雙系統架構（視覺語言模型 + �
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=Xf_v62TQOx4"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_022930_825743.mp3"
 ---
 
 機器人 AI 一直以來有個讓人頭痛的問題：你為 Robot A 訓練的模型，換到 Robot B 身上就要從零開始。NVIDIA 在 2025 年初發布的 Isaac GR00T N1，是第一個認真嘗試解決這個問題的開放基礎模型。它的架構讓我重新想了很多關於「通用機器人 AI 應該長什麼樣子」的問題。

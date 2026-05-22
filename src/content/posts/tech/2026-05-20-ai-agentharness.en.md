@@ -9,7 +9,6 @@ description: "A clear explainer on how AI Agents work and what Harness Engineeri
 type: explainer
 original_url: "https://www.youtube.com/watch?v=B91bZL8wcAI"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_011323_221181.mp3"
 ---
 
 "AI Agent" has become a fixture at every tech conference in 2026. But when people discuss agents, they often miss a more fundamental question: why do some agents look impressive in demos but fail constantly in production?

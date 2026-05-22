@@ -8,7 +8,6 @@ description: "從空專案開始，用 Astro 建靜態前端、Cloudflare Worker
 tldr: "Astro + Cloudflare 的關鍵在四個地方：adapter 的 platformProxy 要開、wrangler.jsonc 集中管理所有 bindings、env vars 和 bindings 是兩個不同系統、D1 Preview 環境要指向獨立 staging database。"
 draft: false
 pinned: true
-audio_url: "/api/tts/r2/tts/tts_20260521_015437_843021.mp3"
 ---
 
 想建一個技術部落格或小型 demo 平台，但不想每次部署都跟複雜的後端環境搏鬥。這篇記錄我用 Astro + Cloudflare Workers 把一切變輕的過程，包含踩到的坑和真正重要的細節。

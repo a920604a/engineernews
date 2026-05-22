@@ -9,7 +9,6 @@ description: "Why so many young people simultaneously want to opt out of the rat
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=NkvFy3GCCBo"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_014353_692385.mp3"
 ---
 
 Here's a feeling that's hard to put into words but almost universal: you see a peer announce a new job, a promotion, a salary milestone — and something tightens in your chest. Then you scroll down and find someone saying "lying flat is a valid choice" — and that resonates too.

@@ -9,7 +9,6 @@ description: "Open Dev Society 打造的免費股市平台，Next.js 15 + MongoD
 tldr: "可自架的股市儀表板，Next.js 15 App Router + Better Auth + Finnhub，Inngest 排程 Gemini 生成個人化摘要 Email，含 Reddit/X/Polymarket 情緒分析，免費 tier 有延遲數據。"
 github: "https://github.com/Open-Dev-Society/OpenStock"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_020824_583613.mp3"
 ---
 
 Bloomberg 和 Refinitiv 的訂閱費擋掉了大部分散戶和學生。OpenStock 的起點是一個直白的信念：「技術應該屬於所有人，知識應該是開放的、免費的、可取得的。」

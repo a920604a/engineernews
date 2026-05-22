@@ -9,7 +9,6 @@ description: "A walkthrough of the DoorDash donation feature system design mock:
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=xbnrvkVf0s8"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_015927_331616.mp3"
 ---
 
 The DoorDash donation feature system design question has appeared in interviews frequently enough to be documented across LeetCode Discuss and multiple interview sharing platforms. The premise seems simple — users can choose to donate at checkout — but the detail handling and scale discussion can go deep. This is a complete mock walkthrough with focus on the reasoning behind design decisions, not on memorizing the "right" answer.

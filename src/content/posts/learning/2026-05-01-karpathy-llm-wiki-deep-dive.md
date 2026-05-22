@@ -8,7 +8,6 @@ tldr: "LLM Wiki 不是查詢工具，是讓知識隨時間複利成長的架構�
 description: "深入解析 Andrej Karpathy 於 2026 年 4 月提出的 LLM Wiki 模式：三層架構設計、與傳統 RAG 的根本差異、適合的使用場景，以及社群的實作現況。"
 type: deep-dive
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_031836_729791.mp3"
 ---
 
 RAG（Retrieval-Augmented Generation）已經是業界標準答案好幾年了：把文件切塊、向量化、查詢時找相關 chunk 塞進 context。它解決了「LLM 不知道你的私有資料」這個問題，但它沒有解決另一個問題：**知識是靜態的**。每次查詢都從零開始，文件之間沒有連結，系統不會因為你使用得越多而變得越聰明。

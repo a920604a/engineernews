@@ -23,6 +23,17 @@ interface PostPair {
   slug: string;
 }
 
+interface StageStats {
+  generated: number;
+  cached: number;
+  skipped: number;
+  failed: number;
+}
+
+function newStats(): StageStats {
+  return { generated: 0, cached: 0, skipped: 0, failed: 0 };
+}
+
 function getCategory(filePath: string): string {
   const rel = path.relative(POSTS_DIR, filePath);
   return rel.split(path.sep)[0];
@@ -58,91 +69,226 @@ function setAudioUrl(filePath: string, audioUrl: string): void {
   fs.writeFileSync(filePath, raw);
 }
 
-async function synthesizeIfNeeded(
-  filePath: string,
-  data: Record<string, unknown>,
-  script: string,
-  lang: 'en' | 'zh',
-  audioSlug: string,
-): Promise<void> {
-  if (data.audio_url) {
-    console.log(`  ⏭️  跳過音頻（已有 audio_url）: ${path.basename(filePath)}`);
-    return;
-  }
-  const voice = lang === 'en' ? 'en-US-AvaNeural' : 'zh-TW-HsiaoChenNeural';
-  console.log(`  🎙️  合成: ${data.title}`);
-  try {
-    const audioUrl = await synthesizeWithFallback(script, lang, audioSlug, {
-      ttsApiUrl: TTS_API_URL,
-      voice,
-      accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
-      apiToken: process.env.CLOUDFLARE_API_TOKEN,
-      isProd,
-    });
-    if (!audioUrl) {
-      console.warn(`  ⚠️  跳過（audioUrl 為空）`);
-      return;
+// ── Stage 1: 逐字稿 ──────────────────────────────────────────────────────────
+
+async function stageScripts(pairs: PostPair[]): Promise<{ en: StageStats; zh: StageStats }> {
+  console.log('\n══════════════════════════════════════');
+  console.log('階段一：逐字稿生成');
+  console.log('══════════════════════════════════════');
+
+  const en = newStats();
+  const zh = newStats();
+
+  for (const { enPath, zhPath, category, slug } of pairs) {
+    const enRaw = fs.readFileSync(enPath, 'utf-8');
+    const { data: enData } = matter(enRaw);
+    if (enData.draft !== false) {
+      console.log(`  ⏭️  草稿跳過: ${slug}`);
+      en.skipped++;
+      zh.skipped++;
+      continue;
     }
-    setAudioUrl(filePath, audioUrl);
-    if (isProd) {
-      const escapedUrl = audioUrl.replace(/'/g, "''");
-      const escapedSlug = audioSlug.replace(/'/g, "''");
-      execSync(
-        `wrangler d1 execute engineer-news-db --command "UPDATE posts SET audio_url='${escapedUrl}' WHERE slug='${escapedSlug}'" --remote`,
-        { stdio: 'inherit' }
-      );
+
+    const zhRaw = fs.readFileSync(zhPath, 'utf-8');
+    const { data: zhData } = matter(zhRaw);
+
+    const ttsDir = getTTSDir(category);
+    fs.mkdirSync(ttsDir, { recursive: true });
+
+    const enScriptPath = path.join(ttsDir, `${slug}.en.tts-script.txt`);
+    const zhScriptPath = path.join(ttsDir, `${slug}.tts-script.txt`);
+    const enContent = enRaw.replace(/^---[\s\S]*?---\n*/, '');
+    const zhContent = zhRaw.replace(/^---[\s\S]*?---\n*/, '');
+
+    console.log(`\n📄 ${slug}`);
+
+    const enCached = fs.existsSync(enScriptPath);
+    try {
+      generateTTSScript(String(enData.title ?? ''), String(enData.tldr ?? ''), enContent, 'en', enScriptPath);
+      enCached ? en.cached++ : en.generated++;
+    } catch (e) {
+      console.warn(`  ⚠️  EN 逐字稿失敗: ${e instanceof Error ? e.message : e}`);
+      en.failed++;
     }
-    console.log(`  ✅ ${audioUrl}`);
-  } catch (e) {
-    console.warn(`  ⚠️  失敗: ${e instanceof Error ? e.message : e}`);
+
+    const zhCached = fs.existsSync(zhScriptPath);
+    try {
+      generateTTSScript(String(zhData.title ?? enData.title ?? ''), String(zhData.tldr ?? ''), zhContent, 'zh', zhScriptPath);
+      zhCached ? zh.cached++ : zh.generated++;
+    } catch (e) {
+      console.warn(`  ⚠️  ZH 逐字稿失敗: ${e instanceof Error ? e.message : e}`);
+      zh.failed++;
+    }
   }
+
+  return { en, zh };
 }
 
-async function processPair(pair: PostPair): Promise<void> {
-  const { enPath, zhPath, category, slug } = pair;
+// ── Stage 2: 對齊映射 ─────────────────────────────────────────────────────────
 
-  const enRaw = fs.readFileSync(enPath, 'utf-8');
-  const { data: enData } = matter(enRaw);
-  if (enData.draft !== false) {
-    console.log(`  ⏭️  跳過（草稿）: ${path.basename(enPath)}`);
-    return;
+async function stageMaps(pairs: PostPair[]): Promise<StageStats> {
+  console.log('\n══════════════════════════════════════');
+  console.log('階段二：雙語對齊映射');
+  console.log('══════════════════════════════════════');
+
+  const stats = newStats();
+
+  for (const { enPath, category, slug } of pairs) {
+    const { data: enData } = matter(fs.readFileSync(enPath, 'utf-8'));
+    if (enData.draft !== false) { stats.skipped++; continue; }
+
+    const ttsDir = getTTSDir(category);
+    const enScriptPath = path.join(ttsDir, `${slug}.en.tts-script.txt`);
+    const zhScriptPath = path.join(ttsDir, `${slug}.tts-script.txt`);
+    const mapPath = path.join(ttsDir, `${slug}.bilingual-map.json`);
+
+    if (!fs.existsSync(enScriptPath) || !fs.existsSync(zhScriptPath)) {
+      console.warn(`  ⚠️  跳過（逐字稿不存在）: ${slug}`);
+      stats.skipped++;
+      continue;
+    }
+
+    const cached = fs.existsSync(mapPath);
+    console.log(`\n🗺️  ${slug}`);
+    try {
+      const enScript = fs.readFileSync(enScriptPath, 'utf-8');
+      const zhScript = fs.readFileSync(zhScriptPath, 'utf-8');
+      await generateBilingualMap(enScript, zhScript, mapPath);
+      cached ? stats.cached++ : stats.generated++;
+    } catch (e) {
+      console.warn(`  ⚠️  對齊映射失敗: ${e instanceof Error ? e.message : e}`);
+      stats.failed++;
+    }
   }
 
-  const zhRaw = fs.readFileSync(zhPath, 'utf-8');
-  const { data: zhData } = matter(zhRaw);
-
-  const ttsDir = getTTSDir(category);
-  fs.mkdirSync(ttsDir, { recursive: true });
-
-  const enScriptPath = path.join(ttsDir, `${slug}.en.tts-script.txt`);
-  const zhScriptPath = path.join(ttsDir, `${slug}.tts-script.txt`);
-  const mapPath = path.join(ttsDir, `${slug}.bilingual-map.json`);
-
-  const enContent = enRaw.replace(/^---[\s\S]*?---\n*/, '');
-  const zhContent = zhRaw.replace(/^---[\s\S]*?---\n*/, '');
-
-  console.log(`\n📄 配對: ${slug}`);
-  const enScript = generateTTSScript(
-    String(enData.title ?? ''),
-    String(enData.tldr ?? ''),
-    enContent,
-    'en',
-    enScriptPath
-  );
-  const zhScript = generateTTSScript(
-    String(zhData.title ?? enData.title ?? ''),
-    String(zhData.tldr ?? ''),
-    zhContent,
-    'zh',
-    zhScriptPath
-  );
-
-  await generateBilingualMap(enScript, zhScript, mapPath);
-  await synthesizeIfNeeded(enPath, enData, enScript, 'en', `${slug}.en`);
-  await synthesizeIfNeeded(zhPath, zhData, zhScript, 'zh', slug);
+  return stats;
 }
+
+// ── Stage 3: 音頻合成 ─────────────────────────────────────────────────────────
+
+async function stageAudio(pairs: PostPair[]): Promise<{ en: StageStats; zh: StageStats }> {
+  console.log('\n══════════════════════════════════════');
+  console.log('階段三：音頻合成與上傳');
+  console.log('══════════════════════════════════════');
+
+  const en = newStats();
+  const zh = newStats();
+
+  for (const { enPath, zhPath, category, slug } of pairs) {
+    const enRaw = fs.readFileSync(enPath, 'utf-8');
+    const { data: enData } = matter(enRaw);
+    if (enData.draft !== false) { en.skipped++; zh.skipped++; continue; }
+
+    const zhRaw = fs.readFileSync(zhPath, 'utf-8');
+    const { data: zhData } = matter(zhRaw);
+
+    const ttsDir = getTTSDir(category);
+    const enScriptPath = path.join(ttsDir, `${slug}.en.tts-script.txt`);
+    const zhScriptPath = path.join(ttsDir, `${slug}.tts-script.txt`);
+
+    if (!fs.existsSync(enScriptPath) || !fs.existsSync(zhScriptPath)) {
+      console.warn(`  ⚠️  跳過（逐字稿不存在）: ${slug}`);
+      en.skipped++;
+      zh.skipped++;
+      continue;
+    }
+
+    console.log(`\n🎙️  ${slug}`);
+    const enScript = fs.readFileSync(enScriptPath, 'utf-8');
+    const zhScript = fs.readFileSync(zhScriptPath, 'utf-8');
+
+    if (enData.audio_url) {
+      console.log(`  ⏭️  EN 已有音頻，跳過`);
+      en.skipped++;
+    } else {
+      try {
+        const audioUrl = await synthesizeWithFallback(enScript, 'en', `${slug}.en`, {
+          ttsApiUrl: TTS_API_URL,
+          voice: 'en-US-AvaNeural',
+          accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
+          apiToken: process.env.CLOUDFLARE_API_TOKEN,
+          isProd,
+        });
+        if (audioUrl) {
+          setAudioUrl(enPath, audioUrl);
+          if (isProd) syncD1(audioUrl, `${slug}.en`);
+          console.log(`  ✅ EN: ${audioUrl}`);
+          en.generated++;
+        }
+      } catch (e) {
+        console.warn(`  ⚠️  EN 合成失敗: ${e instanceof Error ? e.message : e}`);
+        en.failed++;
+      }
+    }
+
+    if (zhData.audio_url) {
+      console.log(`  ⏭️  ZH 已有音頻，跳過`);
+      zh.skipped++;
+    } else {
+      try {
+        const audioUrl = await synthesizeWithFallback(zhScript, 'zh', slug, {
+          ttsApiUrl: TTS_API_URL,
+          voice: 'zh-TW-HsiaoChenNeural',
+          accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
+          apiToken: process.env.CLOUDFLARE_API_TOKEN,
+          isProd,
+        });
+        if (audioUrl) {
+          setAudioUrl(zhPath, audioUrl);
+          if (isProd) syncD1(audioUrl, slug);
+          console.log(`  ✅ ZH: ${audioUrl}`);
+          zh.generated++;
+        }
+      } catch (e) {
+        console.warn(`  ⚠️  ZH 合成失敗: ${e instanceof Error ? e.message : e}`);
+        zh.failed++;
+      }
+    }
+  }
+
+  return { en, zh };
+}
+
+function syncD1(audioUrl: string, slug: string): void {
+  const escapedUrl = audioUrl.replace(/'/g, "''");
+  const escapedSlug = slug.replace(/'/g, "''");
+  execSync(
+    `wrangler d1 execute engineer-news-db --command "UPDATE posts SET audio_url='${escapedUrl}' WHERE slug='${escapedSlug}'" --remote`,
+    { stdio: 'inherit' }
+  );
+}
+
+// ── 報告 ──────────────────────────────────────────────────────────────────────
+
+function printReport(
+  scriptStats: { en: StageStats; zh: StageStats },
+  mapStats: StageStats,
+  audioStats: { en: StageStats; zh: StageStats },
+): void {
+  const pad = (n: number, label: string) => `${label}${n}`;
+  const row = (s: StageStats) =>
+    `新${s.generated} 快取${s.cached} 跳過${s.skipped} 失敗${s.failed}`;
+
+  console.log('\n══════════════════════════════════════');
+  console.log('TTS Pipeline 報告');
+  console.log('══════════════════════════════════════');
+  console.log(`階段一（逐字稿）  EN: ${row(scriptStats.en)}   ZH: ${row(scriptStats.zh)}`);
+  console.log(`階段二（對齊映射）     ${row(mapStats)}`);
+  console.log(`階段三（音頻）     EN: 新${audioStats.en.generated} 已有${audioStats.en.skipped} 失敗${audioStats.en.failed}   ZH: 新${audioStats.zh.generated} 已有${audioStats.zh.skipped} 失敗${audioStats.zh.failed}`);
+
+  const totalFailed =
+    scriptStats.en.failed + scriptStats.zh.failed +
+    mapStats.failed +
+    audioStats.en.failed + audioStats.zh.failed;
+  console.log('══════════════════════════════════════');
+  console.log(totalFailed > 0 ? `⚠️  完成（${totalFailed} 項失敗）` : '✅ 全部完成');
+}
+
+// ── 主流程 ────────────────────────────────────────────────────────────────────
 
 async function main() {
+  let pairs: PostPair[];
+
   if (targetFileArg) {
     const filePath = path.isAbsolute(targetFileArg)
       ? targetFileArg
@@ -157,16 +303,18 @@ async function main() {
     }
     const category = getCategory(enPath);
     const slug = getTTSBasename(path.basename(enPath, '.md'));
-    await processPair({ enPath, zhPath, category, slug });
+    pairs = [{ enPath, zhPath, category, slug }];
   } else {
-    const pairs = getPairs();
-    console.log(`🔍 找到 ${pairs.length} 個配對`);
+    pairs = getPairs();
     // 純中文文章（無對應 .en.md）不在此批次範圍，需另行處理音頻合成
-    for (const pair of pairs) {
-      await processPair(pair);
-    }
+    console.log(`🔍 找到 ${pairs.length} 個配對`);
   }
-  console.log('✅ 完成');
+
+  const scriptStats = await stageScripts(pairs);
+  const mapStats = await stageMaps(pairs);
+  const audioStats = await stageAudio(pairs);
+
+  printReport(scriptStats, mapStats, audioStats);
 }
 
 main().catch(console.error);

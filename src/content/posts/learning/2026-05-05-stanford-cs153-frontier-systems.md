@@ -7,7 +7,6 @@ lang: zh-TW
 description: "Stanford CS153 Frontier Systems 深度解析：四大瓶頸框架、Compute 商品化問題、RL 的邊界、語音與視覺 AI 的崛起路徑，以及 Anthropic 的對齊哲學。"
 tldr: "CS153 的核心命題：AI 基礎設施正在全棧重寫，而四大瓶頸（Context、Compute、Capital、Culture）決定了誰能跑在最前面。這篇整理課程的核心框架與各場演講的實質洞察。"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_015042_001529.mp3"
 ---
 
 Stanford CS153 是一門有點反常的課程：65% 成績靠出席，每週講師要上課當天才知道是誰，500 個名額秒殺，數萬人在 YouTube 追課。課名叫 **Frontier Systems**，命題直接：AI 基礎設施正在從頭到腳重寫，而且不只是模型層。

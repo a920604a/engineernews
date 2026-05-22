@@ -9,7 +9,6 @@ description: "Da-Ren Small Talk EP668: An interview with Jess, exploring the bus
 type: explainer
 original_url: "https://www.youtube.com/watch?v=VFjtZGXPxQ0"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_022438_901493.mp3"
 ---
 
 When most people hear "property management company," the immediate reaction is: isn't that just being an intermediary landlord?

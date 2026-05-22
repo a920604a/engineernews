@@ -7,7 +7,6 @@ lang: en
 tldr: "When parents accuse you of being unfilial, it's rarely actually about filial piety — it's a compressed expression of unmet needs. Seeing this clearly is what opens the door to real dialogue."
 description: "What's actually beneath the accusation of 'you're unfilial'? Looking at parent-child conflict through the lens of needs rather than moral judgment."
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_022529_750372.mp3"
 ---
 
 A lot of people know this scene: you've finally made it home after a long stretch away. Dinner isn't even finished before your parents start — "you never come home," "how can you treat us like this," "what was the point of raising you." You sit there not knowing whether to apologize, push back, or just go quiet. None of the options seem to help.

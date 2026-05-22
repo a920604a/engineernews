@@ -9,7 +9,6 @@ description: "An analysis of DuckDB's performance trajectory from 2022 to 2025: 
 type: explainer
 original_url: "https://www.youtube.com/watch?v=wmGikV_393Y"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_015730_554757.mp3"
 ---
 
 DuckDB has been improving faster than most people expected. Engineers who benchmarked it a year ago and set it aside are discovering it has moved considerably since then. This piece covers the actual benchmark numbers, what it compares to, and why the performance ceiling question remains genuinely open.

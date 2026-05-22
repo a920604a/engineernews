@@ -9,7 +9,6 @@ description: "從零開始用 LLM API 建立一個全自動 Mansplainer Bot：�
 type: how-to
 original_url: "https://www.youtube.com/watch?v=xHi8PUIVyoo"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_021354_156556.mp3"
 ---
 
 Mansplaining 是一種特殊的溝通藝術：不管對方懂不懂，都假設他不懂，然後以高度自信的語氣從頭解釋，通常還附帶一些你沒問過的背景知識。

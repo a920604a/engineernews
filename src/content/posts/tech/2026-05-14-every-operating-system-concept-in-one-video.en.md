@@ -9,7 +9,6 @@ description: "Following the arc of Fireship's OS video: from firmware (UEFI/BIOS
 type: explainer
 original_url: "https://www.youtube.com/watch?v=MtxP2pyCvYA"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_021109_624272.mp3"
 ---
 
 You use an operating system every day. But do you know what actually happens between pressing the power button and your first process running?

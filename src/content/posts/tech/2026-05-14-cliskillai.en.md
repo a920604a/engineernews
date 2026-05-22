@@ -9,7 +9,6 @@ description: "A guide to OpenClaw × Playwright CLI's three-stage AI browser aut
 type: how-to
 original_url: "https://www.youtube.com/watch?v=nlK7-zuYDcs"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_024625_968990.mp3"
 ---
 
 The same login flow, the same form fills, the same data scraping — you've done these workflows before, yet every run still burns tokens on AI inference.

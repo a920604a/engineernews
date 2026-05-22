@@ -9,7 +9,6 @@ description: "TypeScript + Bun 打造的 autonomous financial research agent，�
 tldr: "問一個財務問題，Dexter 自動拆解成子任務、選工具執行（財報 API + 搜尋）、自我驗證直到結果夠充分，所有推理步驟記錄到 JSONL scratchpad。TypeScript + Bun，支援多個 LLM provider。"
 github: "https://github.com/virattt/dexter"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_024614_794499.mp3"
 ---
 
 問一個問題：「分析 AAPL 最近三年的財務健康度」。傳統方式是你自己去抓財報、讀新聞、整理數字。Dexter 讓這件事變成：你丟問題進去，agent 自己跑完整個研究流程，最後給你結論。

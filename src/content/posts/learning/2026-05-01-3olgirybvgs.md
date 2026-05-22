@@ -9,7 +9,6 @@ description: "我們常說「覺醒」，但真正的覺醒究竟是什麼？這
 type: "explainer"
 original_url: "https://www.youtube.com/shorts/3OLgIrybVgs"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_014756_569665.mp3"
 ---
 
 有多少次，你說自己「想通了」，結果兩週後又回到原點？

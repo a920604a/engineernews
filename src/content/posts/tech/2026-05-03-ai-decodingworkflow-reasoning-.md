@@ -9,7 +9,6 @@ description: "從 greedy decoding 到 chain-of-thought、從 ReAct 到 ES-CoT，
 type: explainer
 original_url: "https://www.youtube.com/watch?v=m3i2mk5hs8U"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_033020_041440.mp3"
 ---
 
 當你的 LLM 應用效果不理想，問題通常出在三個不同的層次：模型在生成每個 token 時的決策方式（decoding）、你把任務拆成幾步來解決（workflow）、或者模型本身是否具備足夠的推理能力（reasoning）。這三個層次經常被混在一起討論，但它們解決的問題不同，最佳化的方向也截然不同。

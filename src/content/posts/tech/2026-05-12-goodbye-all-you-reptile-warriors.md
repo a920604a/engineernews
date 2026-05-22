@@ -9,7 +9,6 @@ description: "探討 Python 在 AI 時代的角色演變：從脫稿語言到 AI
 type: explainer
 original_url: "https://www.youtube.com/watch?v=pa_DHVnj_uU"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_020917_189549.mp3"
 ---
 
 「爬蟲勇士」——這是 Python 程式設計師的一個非正式稱號，因為 Python 的吉祥物是蟒蛇（Monty Python 梗），寫 Python 的人有時被戲稱為「蛇族」或「爬蟲類勇士」。而在 AI 工具鋪天蓋地的 2025 年，這個社群的工作方式正在發生根本性的改變——不是 Python 不重要了，而是「怎麼寫 Python」這件事本身在改變。

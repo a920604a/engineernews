@@ -9,7 +9,6 @@ description: "Indie developer case study: using AI video calling to help users w
 type: case-study
 original_url: "https://www.youtube.com/watch?v=M1bifAQSVcY"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_020956_038181.mp3"
 ---
 
 Some products come from market research. Some come from personal pain points. This one came from a fan message. A tech YouTuber with a significant following received a comment: "I'd love to ask you questions on YouTube, but I have social anxiety — even typing feels stressful, let alone a real call." He decided to do something about it — not write an advice post, but actually build a product.

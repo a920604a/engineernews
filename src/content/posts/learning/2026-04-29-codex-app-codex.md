@@ -9,7 +9,6 @@ description: "介紹 OpenAI Codex CLI：一個開源的終端機 AI Coding Agent
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=4gciWspBVHw"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_014639_379218.mp3"
 ---
 
 如果你用過 Claude Code，你大概知道「在終端機裡跟 AI 協作寫程式」是什麼感覺：不用離開命令列，AI 直接讀你的程式碼、提出修改、跑測試、幫你 commit。

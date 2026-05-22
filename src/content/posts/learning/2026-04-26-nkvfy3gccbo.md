@@ -9,7 +9,6 @@ description: "探討當代年輕人面對「反內卷」與「龍蝦焦慮」兩
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=NkvFy3GCCBo"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260521_023904_260086.mp3"
 ---
 
 有一種感覺，很多人說不清楚，但幾乎人人都有過：白天看著某個朋友曬出新工作、新薪水、新職稱，心裡有一種莫名的不舒服；晚上滑到某個人說「躺平也是一種選擇」，又覺得對，為什麼要這麼拼？
