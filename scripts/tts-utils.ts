@@ -18,7 +18,7 @@ export async function downloadFile(url: string, destPath: string): Promise<void>
  */
 export function uploadToR2(localPath: string, r2Key: string, isProd: boolean = false): void {
   const remoteFlag = isProd ? '--remote' : '--local';
-  const contentType = r2Key.endsWith('.wav') ? 'audio/wav' : r2Key.endsWith('.srt') ? 'text/plain' : 'application/octet-stream';
+  const contentType = r2Key.endsWith('.wav') ? 'audio/wav' : r2Key.endsWith('.mp3') ? 'audio/mpeg' : r2Key.endsWith('.srt') ? 'text/plain' : 'application/octet-stream';
   console.log(`  📤 上傳至 R2: ${r2Key} (${isProd ? 'remote' : 'local'})`);
   execSync(`wrangler r2 object put ${R2_BUCKET_NAME}/${r2Key} --file="${localPath}" --content-type="${contentType}" ${remoteFlag}`, { stdio: 'inherit' });
 }
