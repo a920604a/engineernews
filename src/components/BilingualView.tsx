@@ -124,7 +124,7 @@ export function BilingualView({ enScript, zhScript, alignmentMap }: Props) {
         setActiveCard({
           term,
           x: Math.min(rect.left, window.innerWidth - 320),
-          y: rect.bottom + 8,
+          y: Math.min(rect.bottom + 8, window.innerHeight - 160),
         });
         e.stopPropagation();
         return;
@@ -195,6 +195,7 @@ export function BilingualView({ enScript, zhScript, alignmentMap }: Props) {
         <div
           className="gloss-card"
           style={{ position: 'fixed', top: activeCard.y, left: activeCard.x }}
+          onClick={e => e.stopPropagation()}
         >
           <p className="gloss-card-term">{activeCard.term}</p>
           <p className="gloss-card-zh">{activeEntry.zh}</p>

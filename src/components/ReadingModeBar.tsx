@@ -62,7 +62,7 @@ function applyGlossary() {
         markedTerms.add(term);
         const span = document.createElement('span');
         span.className = 'gloss';
-        span.dataset.def = def;
+        span.dataset.def = def.zh;
         span.textContent = match[0];
         fragment.appendChild(span);
       } else {
