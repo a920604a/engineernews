@@ -25,7 +25,7 @@ export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft && data.lang === 'en');
   const allPosts = await getCollection('posts');
   return posts.map(post => {
-    const baseId = post.id.replace(/\.en$/, '');
+    const baseId = normalizeEnglishPostId(post.id);
     const [category, slugBase] = baseId.split('/');
     const ttsBase = join(process.cwd(), 'src/tts', category, slugBase);
     const enScriptPath = `${ttsBase}.en.tts-script.txt`;
