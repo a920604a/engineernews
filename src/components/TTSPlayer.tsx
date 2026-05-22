@@ -196,10 +196,15 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
+        setIsPlaying(false);
       } else {
-        audioRef.current.play();
+        audioRef.current.play().then(() => {
+          setIsPlaying(true);
+        }).catch(() => {
+          setIsPlaying(false);
+          setTtsError('音檔無法播放，請重新整理或重新合成');
+        });
       }
-      setIsPlaying(!isPlaying);
     }
   };
 
