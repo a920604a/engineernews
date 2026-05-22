@@ -33,7 +33,7 @@ export const ui = {
     'nav.home': 'Engineer News',
     'nav.tags': 'Topics',
     'nav.tagIndex': 'Tags',
-    'site.tagline': 'Capturing the essence of engineering conversations into a structured knowledge base. What's needed isn't more output, but lower-cost understanding.',
+    'site.tagline': "Capturing the essence of engineering conversations into a structured knowledge base. What's needed isn't more output, but lower-cost understanding.",
     'post.tldr': 'TL;DR',
     'post.tags': 'Tags',
     'post.prev': 'Previous',

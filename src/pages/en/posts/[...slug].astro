@@ -10,6 +10,7 @@ import PostPrevNext from '../../../components/PostPrevNext.astro';
 import { useTranslations } from '../../../i18n/utils';
 import { TTSPlayer } from '../../../components/TTSPlayer';
 import { ReadingModeBar } from '../../../components/ReadingModeBar';
+import { BilingualView } from '../../../components/BilingualView';
 import { InteractionBar } from '../../../components/InteractionBar';
 import { CommentSection } from '../../../components/CommentSection';
 import { getRelatedPosts } from '../../../utils/relatedPosts';
@@ -25,19 +26,24 @@ export async function getStaticPaths() {
   const allPosts = await getCollection('posts');
   return posts.map(post => {
     const baseId = post.id.replace(/\.en$/, '');
-    const scriptBase = join(process.cwd(), 'src/content/posts', baseId);
-    const enScriptPath = `${scriptBase}.en.tts-script.txt`;
-    const zhScriptPath = `${scriptBase}.tts-script.txt`;
+    const [category, slugBase] = baseId.split('/');
+    const ttsBase = join(process.cwd(), 'src/tts', category, slugBase);
+    const enScriptPath = `${ttsBase}.en.tts-script.txt`;
+    const zhScriptPath = `${ttsBase}.tts-script.txt`;
+    const mapPath = `${ttsBase}.bilingual-map.json`;
     const enScript = existsSync(enScriptPath) ? readFileSync(enScriptPath, 'utf-8') : null;
     const zhScript = existsSync(zhScriptPath) ? readFileSync(zhScriptPath, 'utf-8') : null;
+    const alignmentMap = existsSync(mapPath)
+      ? JSON.parse(readFileSync(mapPath, 'utf-8'))
+      : null;
     return {
       params: { slug: normalizeEnglishPostId(post.id) },
-      props: { post, allPosts, enScript, zhScript },
+      props: { post, allPosts, enScript, zhScript, alignmentMap },
     };
   });
 }
 
-const { post, allPosts, enScript, zhScript } = Astro.props;
+const { post, allPosts, enScript, zhScript, alignmentMap } = Astro.props;
 const { Content, headings } = await render(post);
 const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 const t = useTranslations('en');
@@ -141,28 +147,16 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
     )}
 
     <ReadingModeBar client:load hasZh={!!(enScript && zhScript)} />
-    <div class="bilingual-wrapper">
-      <div class="en-col">
-        <div class="prose article-view"><Content /></div>
-        {enScript && (
-          <div class="prose script-view">
-            {enScript.split('\n\n').filter(p => p.trim()).map(para => (
-              <p>{para}</p>
-            ))}
-          </div>
-        )}
-      </div>
-      {zhScript && (
-        <div class="zh-col">
-          <p class="zh-label">中文版</p>
-          <div class="prose">
-            {zhScript.split('\n\n').filter(p => p.trim()).map(para => (
-              <p>{para}</p>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
+    <div class="prose article-view"><Content /></div>
+
+    {enScript && zhScript && (
+      <BilingualView
+        client:load
+        enScript={enScript}
+        zhScript={zhScript}
+        alignmentMap={alignmentMap}
+      />
+    )}
 
     <PostPrevNext
       prev={prevPost ? { id: normalizeEnglishPostId(prevPost.id), title: prevPost.data.title } : undefined}
@@ -504,57 +498,87 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
     cursor: not-allowed;
   }
 
-  /* ── 雙語 wrapper ── */
-  .bilingual-wrapper {
-    display: block;
-  }
-
-  :global(.script-view) {
-    display: none;
-  }
-
-  :global(.zh-col) {
-    display: none;
-  }
-
-  :global(.zh-label) {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--label-tertiary);
-    margin: 0 0 12px;
-    padding-bottom: 8px;
-    border-bottom: 0.5px solid var(--separator);
-  }
+  /* ── BilingualView ── */
+  :global(.bilingual-cols) { display: none; }
 
   @media (min-width: 1140px) {
     :global(.article-grid.bilingual-on) {
       grid-template-columns: 1fr;
     }
-
     :global(.article-grid.bilingual-on .article-toc-sidebar) {
       display: none;
     }
-
-    :global(.article-grid.bilingual-on .bilingual-wrapper) {
+    :global(.article-grid.bilingual-on .article-view) {
+      display: none;
+    }
+    :global(.article-grid.bilingual-on .bilingual-cols) {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 40px;
       align-items: start;
     }
+  }
 
-    :global(.article-grid.bilingual-on .article-view) {
-      display: none;
-    }
+  /* 段落卡片 Podcast 風格 */
+  :global(.bilingual-col-header) {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--label-tertiary);
+    margin: 0 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 0.5px solid var(--separator);
+  }
 
-    :global(.article-grid.bilingual-on .script-view) {
-      display: block;
-    }
+  :global(.para-card) {
+    font-size: 18px;
+    line-height: 1.9;
+    padding: 16px 20px;
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
+    transition: background 0.15s;
+    color: var(--label);
+  }
 
-    :global(.article-grid.bilingual-on .zh-col) {
-      display: block;
-    }
+  :global(.para-card:hover),
+  :global(.para-card.zh-highlight) {
+    background: var(--bg-secondary);
+  }
+
+  /* 詞彙點擊卡片 */
+  :global(.gloss-card) {
+    z-index: 200;
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--separator);
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    width: 300px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  :global(.gloss-card-term) {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--label);
+    margin: 0 0 6px;
+    text-transform: capitalize;
+  }
+
+  :global(.gloss-card-zh) {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0 0 8px;
+  }
+
+  :global(.gloss-card-context) {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--label-secondary);
+    margin: 0;
+    padding-top: 8px;
+    border-top: 0.5px solid var(--separator);
   }
 
   /* ── 精讀模式 tooltip ── */
