@@ -517,6 +517,15 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
       gap: 40px;
       align-items: start;
     }
+    /* Bilingual 模式下將 mini-bar 移到頂部（nav 正下方） */
+    :global(body:has(.article-grid.bilingual-on) .tts-mini-bar) {
+      display: flex !important;
+      bottom: auto;
+      top: 48px;
+      border-top: none;
+      border-bottom: 0.5px solid var(--separator);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
   }
 
   /* 段落卡片 Podcast 風格 */
