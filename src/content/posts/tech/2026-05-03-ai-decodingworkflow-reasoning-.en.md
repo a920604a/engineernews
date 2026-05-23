@@ -9,7 +9,7 @@ description: "From greedy decoding to chain-of-thought, from ReAct to ES-CoT —
 type: explainer
 original_url: "https://www.youtube.com/watch?v=m3i2mk5hs8U"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260522_125307_039640.wav"
+audio_url: "/api/tts/r2/tts/tts_20260522_234345_047106.wav"
 ---
 
 When your LLM application underperforms, the problem usually lives at one of three distinct layers: how the model selects tokens during generation (decoding), how you've structured the task into steps (workflow), or whether the model has enough reasoning capability for the problem at hand (reasoning). These three layers are routinely conflated in discussions, but they solve different problems and are optimized differently.

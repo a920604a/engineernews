@@ -9,7 +9,7 @@ description: "從架構原理到實際使用場景，完整解析 Redis 為什�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=z_NbVtbgBJw"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260522_225609_904917.wav"
+audio_url: "/api/tts/r2/tts/tts_20260522_235520_124143.wav"
 ---
 
 Redis 在 Stack Overflow 開發者調查「最受喜愛的資料庫」排行裡，幾乎常駐前三。這不是因為它功能最多，也不是因為它最便宜。是因為它做它能做的事，做得極好，而且做得可預測。

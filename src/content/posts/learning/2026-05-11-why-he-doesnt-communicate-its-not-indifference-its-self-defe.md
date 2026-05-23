@@ -9,7 +9,7 @@ description: "周慕姿「放心說」節目探討：為什麼有些人在感情
 type: explainer
 original_url: "https://www.youtube.com/watch?v=j0joxsq05_A"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260522_123906_906851.wav"
+audio_url: "/api/tts/r2/tts/tts_20260522_233739_030005.wav"
 ---
 
 你身邊有沒有這樣的人：一旦發生衝突，對方就徹底安靜下來，不表達、不回應，就好像你說的話打到了棉花上？你越想追問，對方越往後退。

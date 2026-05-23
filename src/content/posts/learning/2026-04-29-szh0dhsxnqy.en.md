@@ -9,7 +9,7 @@ description: "From psychologist Chou Mu-tzu's perspective: why trying to force y
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=sZh0DhSXNQY"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260522_042003_628895.mp3"
+audio_url: "/api/tts/r2/tts/tts_20260522_233441_108075.wav"
 ---
 
 When emotions spike, many people tell themselves: "Stay calm." "Stop overthinking." "Take a deep breath — it's not a big deal."

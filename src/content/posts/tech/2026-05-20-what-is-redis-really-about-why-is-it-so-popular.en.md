@@ -9,7 +9,7 @@ description: "A complete explainer on why Redis consistently ranks as one of eng
 type: explainer
 original_url: "https://www.youtube.com/watch?v=z_NbVtbgBJw"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260522_225548_187024.wav"
+audio_url: "/api/tts/r2/tts/tts_20260522_235514_561141.wav"
 ---
 
 Redis consistently appears near the top of Stack Overflow's most-loved databases survey. Not because it has the most features, or because it's cheapest — because it does what it does extremely well, and predictably.

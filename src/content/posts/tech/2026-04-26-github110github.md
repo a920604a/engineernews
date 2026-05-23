@@ -9,7 +9,7 @@ description: "回顧 2023-2024 年 GitHub 增長最快的開源專案，聚焦 O
 type: explainer
 original_url: "https://www.youtube.com/watch?v=iBGVMcXnkWo"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260522_124300_795250.wav"
+audio_url: "/api/tts/r2/tts/tts_20260522_233859_667343.wav"
 ---
 
 GitHub 上有數以億計的 repository，但真正在短時間內衝破十萬星的專案屈指可數。2023 年以來，隨著 LLM 技術普及，GitHub 歷史上增長速度記錄不斷被 AI 相關工具刷新。這篇梳理這波浪潮的代表性專案，以及它們為什麼能引爆開發者社群。

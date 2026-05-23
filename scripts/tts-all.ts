@@ -34,6 +34,20 @@ function newStats(): StageStats {
   return { generated: 0, cached: 0, skipped: 0, failed: 0 };
 }
 
+function progress(current: number, total: number, label: string): void {
+  const width = 30;
+  const pct = total === 0 ? 1 : current / total;
+  const filled = Math.round(width * pct);
+  const bar = '█'.repeat(filled) + '░'.repeat(width - filled);
+  const pctStr = `${Math.round(pct * 100)}%`.padStart(4);
+  const slug = label.length > 40 ? label.slice(0, 37) + '…' : label.padEnd(40);
+  process.stdout.write(`\r  [${bar}] ${pctStr}  ${current}/${total}  ${slug}`);
+}
+
+function progressDone(): void {
+  process.stdout.write('\n');
+}
+
 function getCategory(filePath: string): string {
   const rel = path.relative(POSTS_DIR, filePath);
   return rel.split(path.sep)[0];
@@ -79,11 +93,13 @@ async function stageScripts(pairs: PostPair[]): Promise<{ en: StageStats; zh: St
   const en = newStats();
   const zh = newStats();
 
-  for (const { enPath, zhPath, category, slug } of pairs) {
+  for (let i = 0; i < pairs.length; i++) {
+    const { enPath, zhPath, category, slug } = pairs[i];
+    progress(i + 1, pairs.length, slug);
+
     const enRaw = fs.readFileSync(enPath, 'utf-8');
     const { data: enData } = matter(enRaw);
     if (enData.draft !== false) {
-      console.log(`  ⏭️  草稿跳過: ${slug}`);
       en.skipped++;
       zh.skipped++;
       continue;
@@ -100,14 +116,13 @@ async function stageScripts(pairs: PostPair[]): Promise<{ en: StageStats; zh: St
     const enContent = enRaw.replace(/^---[\s\S]*?---\n*/, '');
     const zhContent = zhRaw.replace(/^---[\s\S]*?---\n*/, '');
 
-    console.log(`\n📄 ${slug}`);
-
     const enCached = fs.existsSync(enScriptPath);
     try {
       generateTTSScript(String(enData.title ?? ''), String(enData.tldr ?? ''), enContent, 'en', enScriptPath);
       enCached ? en.cached++ : en.generated++;
     } catch (e) {
-      console.warn(`  ⚠️  EN 逐字稿失敗: ${e instanceof Error ? e.message : e}`);
+      process.stdout.write('\n');
+      console.warn(`  ⚠️  EN 逐字稿失敗 [${slug}]: ${e instanceof Error ? e.message : e}`);
       en.failed++;
     }
 
@@ -116,10 +131,12 @@ async function stageScripts(pairs: PostPair[]): Promise<{ en: StageStats; zh: St
       generateTTSScript(String(zhData.title ?? enData.title ?? ''), String(zhData.tldr ?? ''), zhContent, 'zh', zhScriptPath);
       zhCached ? zh.cached++ : zh.generated++;
     } catch (e) {
-      console.warn(`  ⚠️  ZH 逐字稿失敗: ${e instanceof Error ? e.message : e}`);
+      process.stdout.write('\n');
+      console.warn(`  ⚠️  ZH 逐字稿失敗 [${slug}]: ${e instanceof Error ? e.message : e}`);
       zh.failed++;
     }
   }
+  progressDone();
 
   return { en, zh };
 }
@@ -133,7 +150,10 @@ async function stageMaps(pairs: PostPair[]): Promise<StageStats> {
 
   const stats = newStats();
 
-  for (const { enPath, category, slug } of pairs) {
+  for (let i = 0; i < pairs.length; i++) {
+    const { enPath, category, slug } = pairs[i];
+    progress(i + 1, pairs.length, slug);
+
     const { data: enData } = matter(fs.readFileSync(enPath, 'utf-8'));
     if (enData.draft !== false) { stats.skipped++; continue; }
 
@@ -143,23 +163,25 @@ async function stageMaps(pairs: PostPair[]): Promise<StageStats> {
     const mapPath = path.join(ttsDir, `${slug}.bilingual-map.json`);
 
     if (!fs.existsSync(enScriptPath) || !fs.existsSync(zhScriptPath)) {
+      process.stdout.write('\n');
       console.warn(`  ⚠️  跳過（逐字稿不存在）: ${slug}`);
       stats.skipped++;
       continue;
     }
 
     const cached = fs.existsSync(mapPath);
-    console.log(`\n🗺️  ${slug}`);
     try {
       const enScript = fs.readFileSync(enScriptPath, 'utf-8');
       const zhScript = fs.readFileSync(zhScriptPath, 'utf-8');
       await generateBilingualMap(enScript, zhScript, mapPath);
       cached ? stats.cached++ : stats.generated++;
     } catch (e) {
-      console.warn(`  ⚠️  對齊映射失敗: ${e instanceof Error ? e.message : e}`);
+      process.stdout.write('\n');
+      console.warn(`  ⚠️  對齊映射失敗 [${slug}]: ${e instanceof Error ? e.message : e}`);
       stats.failed++;
     }
   }
+  progressDone();
 
   return stats;
 }
@@ -174,7 +196,10 @@ async function stageAudio(pairs: PostPair[]): Promise<{ en: StageStats; zh: Stag
   const en = newStats();
   const zh = newStats();
 
-  for (const { enPath, zhPath, category, slug } of pairs) {
+  for (let i = 0; i < pairs.length; i++) {
+    const { enPath, zhPath, category, slug } = pairs[i];
+    progress(i + 1, pairs.length, slug);
+
     const enRaw = fs.readFileSync(enPath, 'utf-8');
     const { data: enData } = matter(enRaw);
     if (enData.draft !== false) { en.skipped++; zh.skipped++; continue; }
@@ -187,18 +212,17 @@ async function stageAudio(pairs: PostPair[]): Promise<{ en: StageStats; zh: Stag
     const zhScriptPath = path.join(ttsDir, `${slug}.tts-script.txt`);
 
     if (!fs.existsSync(enScriptPath) || !fs.existsSync(zhScriptPath)) {
+      process.stdout.write('\n');
       console.warn(`  ⚠️  跳過（逐字稿不存在）: ${slug}`);
       en.skipped++;
       zh.skipped++;
       continue;
     }
 
-    console.log(`\n🎙️  ${slug}`);
     const enScript = fs.readFileSync(enScriptPath, 'utf-8');
     const zhScript = fs.readFileSync(zhScriptPath, 'utf-8');
 
     if (enData.audio_url) {
-      console.log(`  ⏭️  EN 已有音頻，跳過`);
       en.skipped++;
     } else {
       try {
@@ -212,17 +236,16 @@ async function stageAudio(pairs: PostPair[]): Promise<{ en: StageStats; zh: Stag
         if (audioUrl) {
           setAudioUrl(enPath, audioUrl);
           if (isProd) syncD1(audioUrl, `${slug}.en`);
-          console.log(`  ✅ EN: ${audioUrl}`);
           en.generated++;
         }
       } catch (e) {
-        console.warn(`  ⚠️  EN 合成失敗: ${e instanceof Error ? e.message : e}`);
+        process.stdout.write('\n');
+        console.warn(`  ⚠️  EN 合成失敗 [${slug}]: ${e instanceof Error ? e.message : e}`);
         en.failed++;
       }
     }
 
     if (zhData.audio_url) {
-      console.log(`  ⏭️  ZH 已有音頻，跳過`);
       zh.skipped++;
     } else {
       try {
@@ -236,15 +259,16 @@ async function stageAudio(pairs: PostPair[]): Promise<{ en: StageStats; zh: Stag
         if (audioUrl) {
           setAudioUrl(zhPath, audioUrl);
           if (isProd) syncD1(audioUrl, slug);
-          console.log(`  ✅ ZH: ${audioUrl}`);
           zh.generated++;
         }
       } catch (e) {
-        console.warn(`  ⚠️  ZH 合成失敗: ${e instanceof Error ? e.message : e}`);
+        process.stdout.write('\n');
+        console.warn(`  ⚠️  ZH 合成失敗 [${slug}]: ${e instanceof Error ? e.message : e}`);
         zh.failed++;
       }
     }
   }
+  progressDone();
 
   return { en, zh };
 }

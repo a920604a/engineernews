@@ -9,7 +9,7 @@ description: "California jury verdict March 25, 2026: Meta and YouTube held liab
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=3tbB2dffx0s"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260522_225308_566123.wav"
+audio_url: "/api/tts/r2/tts/tts_20260522_235427_759005.wav"
 ---
 
 On March 25, 2026, a California jury delivered a landmark verdict: Meta and YouTube are **legally liable** for a child's social media addiction, with $6 million in damages awarded. This isn't just a courtroom outcome — it's the formal establishment of a principle: algorithmic design can be a tort.

@@ -9,7 +9,7 @@ description: "We talk about 'awakening' constantly, but this short video offers 
 type: "explainer"
 original_url: "https://www.youtube.com/shorts/3OLgIrybVgs"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260522_123405_263521.wav"
+audio_url: "/api/tts/r2/tts/tts_20260522_233539_422906.wav"
 ---
 
 How many times have you told yourself you finally "figured something out," only to find yourself back at square one two weeks later?

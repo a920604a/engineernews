@@ -188,6 +188,12 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
     }
   };
 
+  const handleAudioError = () => {
+    setIsPlaying(false);
+    setAudioUrl('');
+    setTtsError('音檔無法載入，點擊播放鍵重新合成');
+  };
+
   const togglePlay = () => {
     if (!audioUrl) {
       handleSynthesize();
@@ -289,6 +295,7 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
             onLoadedMetadata={handleTimeUpdate}
             onPlay={() => setIsPlaying(true)}
             onPause={() => setIsPlaying(false)}
+            onError={handleAudioError}
           />
         )}
 
@@ -427,6 +434,7 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
           onLoadedMetadata={handleTimeUpdate}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
+          onError={handleAudioError}
         />
       )}
 

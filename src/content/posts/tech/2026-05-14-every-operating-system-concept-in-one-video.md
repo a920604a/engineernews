@@ -9,7 +9,7 @@ description: "跟著 Fireship 影片的脈絡，從韌體（UEFI/BIOS）、開�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=MtxP2pyCvYA"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260522_131213_228209.wav"
+audio_url: "/api/tts/r2/tts/tts_20260522_235320_976353.wav"
 ---
 
 你每天都在用作業系統，但你知道按下電源鍵之後，在你的程式開始執行之前，系統裡究竟發生了什麼嗎？

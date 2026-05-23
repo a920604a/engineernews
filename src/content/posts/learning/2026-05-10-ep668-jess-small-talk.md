@@ -9,7 +9,7 @@ description: "大人的Small Talk EP668，專訪台中市租賃公會副理事�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=VFjtZGXPxQ0"
 draft: false
-audio_url: "/api/tts/r2/tts/tts_20260522_123729_896654.wav"
+audio_url: "/api/tts/r2/tts/tts_20260522_233703_330766.wav"
 ---
 
 「包租代管」這四個字，很多人聽到的第一反應是：不就是二房東嗎？
