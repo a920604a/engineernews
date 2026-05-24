@@ -68,7 +68,7 @@ sequenceDiagram
   Index->>Agent: 樹狀摘要（含各章節 summary）
   Agent->>Index: get_page_content(pages='5-10')
   Index->>Agent: 損益表頁面內容
-  Agent->>User: 毛利率 38%，出自第 7 頁損益表
+  Agent->>User: 回答：毛利率 38%，出自第 7 頁損益表
 ```
 
 ### 效能與定位

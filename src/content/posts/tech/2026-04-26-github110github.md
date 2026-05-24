@@ -60,18 +60,14 @@ OpenAI 的 Code Interpreter 很強，但它是個黑盒子、跑在雲端、有�
 Open Interpreter 的核心架構相對直接：
 
 ```mermaid
-sequenceDiagram
-  participant User as 用戶
-  participant Interpreter as 解譯器
-  participant LLM as LLM
-  participant Runtime as 執行環境
-  User->>Interpreter: 自然語言指令
-  Interpreter->>LLM: 轉換為程式碼生成請求
-  LLM->>Interpreter: 生成程式碼片段
-  Interpreter->>Runtime: 執行程式碼（Python/JS/Shell）
-  Runtime->>Interpreter: 執行結果 + stdout/stderr
-  Interpreter->>LLM: 把結果回饋，繼續對話
-  LLM->>User: 解釋結果或繼續下一步
+graph LR
+  User[用戶] -->|自然語言指令|> Interpreter[解譯器]
+  Interpreter -->|轉換為程式碼生成請求|> LLM[LLM]
+  LLM -->|生成程式碼片段|> Interpreter
+  Interpreter -->|執行程式碼（Python/JS/Shell）|> Runtime[執行環境]
+  Runtime -->|執行結果 + stdout/stderr|> Interpreter
+  Interpreter -->|把結果回饋，繼續對話|> LLM
+  LLM -->|解釋結果或繼續下一步|> User
 ```
 
 這個「生成 → 執行 → 回饋」的循環讓 LLM 能夠迭代地完成複雜任務，而不只是一次性生成程式碼。

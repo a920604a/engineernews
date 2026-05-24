@@ -29,7 +29,7 @@ The operating principle of DeepSeek's new AI is as follows:
 ```mermaid
 sequenceDiagram
     participant User as User
-    participant DeepSeek's new AI as AI
+    participant "DeepSeek's new AI" as AI
     User->>AI: Input text or image
     AI->>User: Process and analyze input data
     AI->>User: Respond with results and suggestions
