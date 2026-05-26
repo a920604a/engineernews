@@ -49,9 +49,9 @@ sequenceDiagram
     Client->>Server: 監控安全性狀態
 
     alt 安全流程完成
-        Note over Client,Server,Database: 安全流程完成
+        note over Client,Server,Database: 安全流程完成
     else
-        Note over Client,Server,Database: 安全流程未完成
+        note over Client,Server,Database: 安全流程未完成
     end
 ```
 

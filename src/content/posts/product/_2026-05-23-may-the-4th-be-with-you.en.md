@@ -38,7 +38,9 @@ sequenceDiagram
     Server->>Browser: Returns webpage content
     Browser->>User: Displays webpage content
     Note over User,Browser: Webpage content includes JavaScript and CSS frameworks
-    Browser->>Browser: Executes JavaScript and CSS frameworks
+    alt Executes JavaScript and CSS frameworks
+        Browser->>Browser: 
+    end
     Browser->>User: Displays dynamic webpage content
 ```
 ## Comparison with other concepts
