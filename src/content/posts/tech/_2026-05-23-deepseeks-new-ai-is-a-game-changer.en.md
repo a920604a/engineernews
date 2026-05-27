@@ -33,15 +33,6 @@ sequenceDiagram
     User->>AI: Input text or image
     AI->>User: Process and analyze input data
     AI->>User: Respond with results and suggestions
-    Note over User,AI: Wait for user's next input
-
-改為：
-sequenceDiagram
-    participant User as User
-    participant "DeepSeek's new AI" as AI
-    User->>AI: Input text or image
-    AI->>User: Process and analyze input data
-    AI->>User: Respond with results and suggestions
     Note right of User,AI: Wait for user's next input
 ```
 

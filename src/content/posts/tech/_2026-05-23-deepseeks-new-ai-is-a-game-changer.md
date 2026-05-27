@@ -29,7 +29,7 @@ DeepSeek 新 AI 的運作原理如下：
 ```mermaid
 sequenceDiagram
     participant User as 人用戶
-    participant AI as DeepSeek 新 AI
+    participant AI as "DeepSeek 新 AI"
     User->>AI: 輸入語句或圖像
     AI->>User: 處理和分析輸入資料
     Note over User,AI: 回復結果和建議

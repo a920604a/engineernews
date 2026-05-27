@@ -39,7 +39,7 @@ sequenceDiagram
     Browser->>User: Displays webpage content
     Note over User,Browser: Webpage content includes JavaScript and CSS frameworks
     alt Executes JavaScript and CSS frameworks
-        Browser->>Browser: 
+        Browser->>Browser: Executes JavaScript and applies CSS
     end
     Browser->>User: Displays dynamic webpage content
 ```
