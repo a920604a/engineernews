@@ -33,7 +33,7 @@ sequenceDiagram
     User->>AI: Input text or image
     AI->>User: Process and analyze input data
     AI->>User: Respond with results and suggestions
-    Note right of User,AI: Wait for user's next input
+    Note right of User: Wait for user's next input
 ```
 
 ## Differences from traditional AI

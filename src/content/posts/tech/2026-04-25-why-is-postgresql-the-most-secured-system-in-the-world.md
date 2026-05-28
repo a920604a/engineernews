@@ -50,7 +50,7 @@ sequenceDiagram
 
     alt 安全流程完成
         note over Client,Server,Database: 安全流程完成
-    else 安全流程未完成
+    else
         note over Client,Server,Database: 安全流程未完成
     end
 ```
