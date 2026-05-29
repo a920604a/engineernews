@@ -41,8 +41,8 @@ sequenceDiagram
     alt Executes JavaScript and CSS frameworks
         Browser->>Browser: Executes JavaScript and applies CSS
     else Does not execute JavaScript and CSS frameworks
+        Browser->>User: Displays static webpage content
     end
-    Browser->>User: Displays dynamic webpage content
 ```
 ## Comparison with other concepts
 Differences and applicable scenarios: Compared to other web effects, "May the 4th Be With You!" is more dynamic and interactive, making it suitable for websites that need to capture users' attention.

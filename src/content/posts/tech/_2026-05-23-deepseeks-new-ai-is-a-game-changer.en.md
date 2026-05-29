@@ -34,6 +34,7 @@ sequenceDiagram
     AI->>User: Process and analyze input data
     AI->>User: Respond with results and suggestions
     Note right of User: Wait for user's next input
+    Note over User,AI: Continue interaction
 ```
 
 ## Differences from traditional AI

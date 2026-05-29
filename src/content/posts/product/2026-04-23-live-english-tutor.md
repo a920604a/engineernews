@@ -58,7 +58,7 @@ graph LR
 ## 流程圖
 
 ```mermaid
-sequenceDiagram
+graph LR
   participant Student as "學生"
   participant Frontend as "前端"
   participant BackendAPI as "後端API"
