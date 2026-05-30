@@ -38,9 +38,9 @@ sequenceDiagram
     Server->>Browser: Returns webpage content
     Browser->>User: Displays webpage content
     Note over User,Browser: Webpage content includes JavaScript and CSS frameworks
-    alt Executes JavaScript and CSS frameworks
+    alt JavaScript and CSS frameworks are executed
         Browser->>Browser: Executes JavaScript and applies CSS
-    else Does not execute JavaScript and CSS frameworks
+    else JavaScript and CSS frameworks are not executed
         Browser->>User: Displays static webpage content
     end
 ```
