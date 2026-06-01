@@ -40,7 +40,7 @@ sequenceDiagram
     Note over User,Browser: Webpage content includes JavaScript and CSS frameworks
     alt JavaScript and CSS frameworks are executed
         Browser->>Browser: Executes JavaScript and applies CSS
-    else
+    else JavaScript and CSS frameworks are not executed
         Browser->>User: Displays static webpage content
     end
 ```

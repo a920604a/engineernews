@@ -46,15 +46,15 @@ graph LR
 
 ```mermaid
 sequenceDiagram
-    participant JavaScript
-    participant Python
-    participant Ruby
-    Note right of JavaScript: 簡潔的語法
-    Note right of Python: 複雜的語法
-    Note right of Ruby: 複雜的語法
-    JavaScript->>Python: 可以在多種平台上執行
-    Python->>JavaScript: 只能在特定平台上執行
-    Ruby->>Python: 只能在特定平台上執行
+    participant JavaScript as JS
+    participant Python as PY
+    participant Ruby as RB
+    Note right of JS: 簡潔的語法
+    Note right of PY: 複雜的語法
+    Note right of RB: 複雜的語法
+    JS->>PY: 可以在多種平台上執行
+    PY->>JS: 只能在特定平台上執行
+    RB->>PY: 只能在特定平台上執行
 ```
 
 ## 小結

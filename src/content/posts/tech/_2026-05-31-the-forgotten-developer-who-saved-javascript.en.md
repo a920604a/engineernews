@@ -45,7 +45,7 @@ graph LR
 Compared to other scripting languages, JavaScript's strengths lie in its concise syntax and powerful functionality. JavaScript's syntax is extremely simple and easy to learn, while also possessing strong functionality to handle complex tasks. Additionally, JavaScript is cross-platform, running on multiple platforms.
 
 ```mermaid
-sequenceDiagram
+graph LR
     participant JavaScript
     participant Python
     participant Ruby
