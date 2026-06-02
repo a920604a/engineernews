@@ -55,6 +55,7 @@ sequenceDiagram
     JS->>PY: 可以在多種平台上執行
     PY->>JS: 只能在特定平台上執行
     RB->>PY: 只能在特定平台上執行
+    Note over JS,PY,RB: 三種語言的比較
 ```
 
 ## 小結
