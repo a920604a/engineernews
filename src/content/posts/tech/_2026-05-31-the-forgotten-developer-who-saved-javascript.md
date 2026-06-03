@@ -45,10 +45,10 @@ graph LR
 與其他腳本語言相比，JavaScript 的優勢在於其簡潔的語法和強大的功能。JavaScript 的語法非常簡單，易於學習，同時也具有強大的功能，能夠處理複雜的任務。另外，JavaScript 還具有跨平台的特點，可以在多種平台上執行。
 
 ```mermaid
-sequenceDiagram
-    participant JavaScript as JS
-    participant Python as PY
-    participant Ruby as RB
+graph LR
+    A[JavaScript] as JS
+    B[Python] as PY
+    C[Ruby] as RB
     Note right of JS: 簡潔的語法
     Note right of PY: 複雜的語法
     Note right of RB: 複雜的語法
