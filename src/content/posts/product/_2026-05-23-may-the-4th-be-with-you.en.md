@@ -43,6 +43,7 @@ sequenceDiagram
     else JavaScript and CSS frameworks are not executed
         Browser->>User: Displays static webpage content
     end
+    end alt
 ```
 ## Comparison with other concepts
 Differences and applicable scenarios: Compared to other web effects, "May the 4th Be With You!" is more dynamic and interactive, making it suitable for websites that need to capture users' attention.

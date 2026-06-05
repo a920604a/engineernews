@@ -27,16 +27,16 @@ Qualcomm's deployment in the fields of intelligent bodies, 6G, and Physical AI w
 Qualcomm's intelligent body technology is based on its advanced processors and wireless communication technology, enabling intelligent interconnection between devices. 6G technology is based on millimeter wave and Terahertz frequency bands, providing higher bandwidth and lower latency. Physical AI technology is based on Qualcomm's AI engine and perception technology, enabling AI applications in the physical world.
 
 ```mermaid
-sequenceDiagram
-    participant Intelligent Body as "Intelligent Body"
-    participant 6G as "6G"
-    participant Physical AI as "Physical AI"
-    participant Qualcomm as "Qualcomm"
+graph LR
+    Intelligent Body["Intelligent Body"]
+    6G["6G"]
+    Physical AI["Physical AI"]
+    Qualcomm["Qualcomm"]
     
-    Qualcomm->>Intelligent Body: Provides processors and wireless communication technology
-    Intelligent Body->>6G: Enables intelligent interconnection
-    6G->>Physical AI: Provides high-bandwidth and low-latency wireless communication
-    Physical AI->>Qualcomm: Applies AI technology to the physical world
+    Qualcomm-->Intelligent Body: Provides processors and wireless communication technology
+    Intelligent Body-->6G: Enables intelligent interconnection
+    6G-->Physical AI: Provides high-bandwidth and low-latency wireless communication
+    Physical AI-->Qualcomm: Applies AI technology to the physical world
 
     Note over Intelligent Body,Physical AI: Achieves the fusion of artificial intelligence and the physical world
 ```

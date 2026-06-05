@@ -41,6 +41,18 @@ sequenceDiagram
     Browser->>Browser: 執行 JavaScript 和 CSS 框架
     Browser->>User: 顯示動態網頁內容
     Note over User,Browser: 網頁內容呈現給用戶
+
+改為：
+sequenceDiagram
+    participant User as 用戶
+    participant Browser as 瀏覽器
+    participant Server as 伺服器
+
+    Note over User,Browser: 用戶訪問網頁
+    User->>Browser: 發送請求
+    Browser->>Server: 請求網頁內容
+    Server->>Browser: 回傳網頁內容
+    Browser->>User
 ```
 ## 跟其他概念的差別
 比較，說清楚適用情境：與其他網頁效果相比，May the 4th Be With You! 的效果更為動態和互動，適合用於需要吸引用戶注意力的網頁。
