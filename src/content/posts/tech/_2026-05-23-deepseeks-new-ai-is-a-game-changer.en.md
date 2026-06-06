@@ -35,7 +35,7 @@ sequenceDiagram
     AI->>User: Respond with results and suggestions
     Note right of User: Wait for user's next input
     Note over User,AI: Continue interaction
-    alt Continue interaction
+    loop Continue interaction
         User->>AI: Input text or image
         AI->>User: Process and analyze input data
         AI->>User: Respond with results and suggestions

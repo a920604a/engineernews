@@ -32,7 +32,7 @@ sequenceDiagram
     participant AI as DeepSeek 新 AI
     User->>AI: 輸入語句或圖像
     AI->>User: 處理和分析輸入資料
-    Note over User,AI: 回復結果和建議
+    Note right of User,AI: 回復結果和建議
 ```
 
 ## 跟傳統 AI 的差別

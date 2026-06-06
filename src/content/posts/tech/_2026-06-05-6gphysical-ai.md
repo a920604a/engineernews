@@ -38,7 +38,7 @@ sequenceDiagram
     6G->>Physical AI: 提供高頻寬和低延遲的無線通信
     Physical AI->>高通: 應用AI技術於物理世界
 
-    Note over 智能體, Physical AI: 實現人工智能與物理世界的融合
+    Note over 智能體,6G,Physical AI,高通: 實現人工智能與物理世界的融合
 ```
 
 ## 跟其他公司的差別
