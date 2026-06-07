@@ -27,18 +27,18 @@ draft: true
 高通的智能體技術是基於其先進的處理器和無線通信技術，能夠實現設備之間的智能互聯互通。6G技術則是基於毫米波和 Terahertz 頻段，能夠提供更高的頻寬和更低的延遲。Physical AI技術則是基於高通的AI引擎和感知技術，能夠實現AI在物理世界中的應用。
 
 ```mermaid
-sequenceDiagram
-    participant 智能體 as "智能體"
-    participant 6G as "6G"
-    participant Physical AI as "Physical AI"
-    participant 高通 as "高通"
+graph LR
+    智能體["智能體"]
+    6G["6G"]
+    PhysicalAI["Physical AI"]
+    高通["高通"]
     
-    高通->>智能體: 提供處理器和無線通信技術
-    智能體->>6G: 實現智能互聯互通
-    6G->>Physical AI: 提供高頻寬和低延遲的無線通信
-    Physical AI->>高通: 應用AI技術於物理世界
+    高通-->智能體: 提供處理器和無線通信技術
+    智能體-->6G: 實現智能互聯互通
+    6G-->PhysicalAI: 提供高頻寬和低延遲的無線通信
+    PhysicalAI-->高通: 應用AI技術於物理世界
 
-    Note over 智能體,6G,Physical AI,高通: 實現人工智能與物理世界的融合
+    Note over 智能體,6G,PhysicalAI,高通: 實現人工智能與物理世界的融合
 ```
 
 ## 跟其他公司的差別

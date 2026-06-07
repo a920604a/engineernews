@@ -39,7 +39,7 @@ sequenceDiagram
         User->>AI: Input text or image
         AI->>User: Process and analyze input data
         AI->>User: Respond with results and suggestions
-    end
+    end loop
 ```
 
 ## Differences from traditional AI
