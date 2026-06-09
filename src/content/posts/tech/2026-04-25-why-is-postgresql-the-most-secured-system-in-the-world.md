@@ -28,9 +28,9 @@ PostgreSQL 的安全性是透過多重機制來實現的，包括：
 
 ```mermaid
 sequenceDiagram
-    participant Client as 使用者
-    participant Server as PostgreSQL 伺服器
-    participant Database as 資料庫
+    participant Client as "使用者"
+    participant Server as "PostgreSQL 伺服器"
+    participant Database as "資料庫"
 
     Note over Client,Server: 身份驗證
     Client->>Server: 提交身份驗證請求
