@@ -65,14 +65,6 @@ sequenceDiagram
   participant Interpreter
   participant LLM
   participant Runtime
-  User->>Interpreter: Natural language instruction
-  Interpreter->>LLM: Code generation request
-  LLM->>Interpreter: Code block
-  Interpreter->>Runtime: Execute (Python / JS / Shell)
-  Runtime->>Interpreter: stdout / stderr / result
-  Interpreter->>LLM: Feed results back, continue dialogue
-  LLM->>User: Explanation or next step
-  Note right of User: User receives explanation or next step
   Note over User,Interpreter,LLM,Runtime: Continues until User stops
   loop Continues until User stops
     User->>Interpreter: Natural language instruction
@@ -82,8 +74,8 @@ sequenceDiagram
     Runtime->>Interpreter: stdout / stderr / result
     Interpreter->>LLM: Feed results back, continue dialogue
     LLM->>User: Explanation or next step
+    Note right of User: User receives explanation or next step
   end
-  Note over User,Interpreter,LLM,Runtime: Continues until User stops
 ```
 
 The generate-execute-feedback loop allows the LLM to iterate toward complex goals rather than producing a single code output and stopping.
