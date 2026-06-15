@@ -9,6 +9,7 @@ description: "A beginner's guide to Git and GitHub covering installation, reposi
 type: how-to
 original_url: "https://www.youtube.com/watch?v=bWUUHBVg-7E"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_140852_952309.mp3"
 ---
 
 Most people's first question about Git is: "Why do I need this?"

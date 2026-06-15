@@ -9,6 +9,7 @@ description: "Calling yourself a long-termist but feeling increasingly lost? Her
 type: explainer
 original_url: "https://www.youtube.com/watch?v=F140TnI5MmE"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_141105_904831.mp3"
 ---
 
 "I'm a long-termist" — the phrase has become almost costless to say. It sounds thoughtful, and it can conveniently justify inaction. But real long-termism is harder to practice than most people assume.

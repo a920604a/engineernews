@@ -9,6 +9,7 @@ description: "深入解析 Google I/O 2026 的核心 AI 戰略轉向：從 Gemin
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=9OQ5vaYbGV0"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_195634_784848.mp3"
 ---
 
 Google I/O 每年都有大量公告，今年也不例外——光是官方整理就超過 100 條新功能。但真正值得深讀的不是功能清單，而是這些功能背後指向的同一個方向：Google 正在把 AI 從應用層移到基礎設施層。

@@ -9,6 +9,7 @@ description: "GitHub open-source weekly roundup #117: five projects worth an eng
 type: listicle
 original_url: "https://www.youtube.com/watch?v=Oruwe_eBbfw"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_201948_948291.mp3"
 ---
 
 Weekly GitHub Trending, filtered for engineers. Issue #117 spans design, AI toolchain, language learning, and AI education—something for frontend designers, AI engineers, and developers who want to understand models at a deeper level.

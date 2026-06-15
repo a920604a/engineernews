@@ -9,6 +9,7 @@ description: "深度解析 OpenAI 的 PostgreSQL 擴展架構：如何用單一�
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=1zVLBRIwCr0"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_201833_553777.mp3"
 ---
 
 當 ChatGPT 用戶數衝破 8 億，你的資料庫架構要怎麼設計？OpenAI 的答案出乎許多人意料：他們沒有分片（sharding），沒有換到 NoSQL，而是繼續跑 PostgreSQL——但做了幾個精準的工程決策讓它撐住了。

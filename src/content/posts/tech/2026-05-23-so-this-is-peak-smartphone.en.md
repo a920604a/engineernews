@@ -9,6 +9,7 @@ description: "Examining the smartphone hardware plateau: why flagship difference
 type: explainer
 original_url: "https://www.youtube.com/watch?v=c347oYQO57A"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_195236_419276.mp3"
 ---
 
 Open any 2026 flagship smartphone review and you'll already know the structure: brighter display, faster chip, one more camera lens, and a reel of AI feature demos. This familiarity is the problem. We may have entered the age of **peak smartphone**.

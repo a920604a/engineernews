@@ -9,6 +9,7 @@ description: "探討如何利用 AI 建立企業的持續改進反饋迴路：�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=X_JsIHUfUjc"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_195033_010092.mp3"
 ---
 
 「用 AI 讓公司更有效率」這句話已經說了好幾年，但真正做到的企業少之又少。差距不在於有沒有導入 ChatGPT 或 Copilot，而在於有沒有建立起 AI 的**反饋迴路**（feedback loop）——一個讓 AI 的輸出持續改善 AI 的輸入的閉環系統。

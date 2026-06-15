@@ -9,6 +9,7 @@ description: "A deep look at MCP (Model Context Protocol): how Anthropic designe
 type: deep-dive
 original_url: "https://www.youtube.com/shorts/VMF4InsZm9I"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_201614_010678.mp3"
 ---
 
 Claude Code can use GitHub, query Postgres, search Slack channels — these aren't Claude's innate capabilities. They're plugged in through MCP (Model Context Protocol).

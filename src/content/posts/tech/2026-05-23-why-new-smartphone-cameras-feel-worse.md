@@ -9,6 +9,7 @@ description: "探討手機相機的 AI 計算攝影爭議：為什麼 2025-2026 
 type: explainer
 original_url: "https://www.youtube.com/watch?v=coX4duwUCpw"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_195341_050446.mp3"
 ---
 
 你有沒有注意到，用新旗艦手機拍的人像，皮膚總是有一種奇怪的蠟質感？或者，明明天黑了還能把夜景拍得亮如白晝，但仔細看星星和樹葉的輪廓，總有一種「電腦繪圖」的不真實感？

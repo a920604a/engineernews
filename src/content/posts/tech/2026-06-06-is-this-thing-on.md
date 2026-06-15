@@ -9,6 +9,7 @@ description: "從舞台音響比喻出發，討論工程師技術溝通的核心
 type: explainer
 original_url: "https://www.youtube.com/watch?v=2Hke7Utt_qQ"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_201443_122100.mp3"
 ---
 
 「Is This Thing On?」是表演者站上舞台時，拿起麥克風敲一下說的話。不是廢話，而是確認：訊號有沒有傳到觀眾那邊？

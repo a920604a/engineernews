@@ -9,6 +9,7 @@ description: "A practical guide to the free tiers of OpenAI Codex CLI, GitHub Co
 type: how-to
 original_url: "https://www.youtube.com/watch?v=FwAQ75QCEoU"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_201000_503496.mp3"
 ---
 
 AI coding agents aren't experimental anymore. OpenAI Codex CLI, Anthropic Claude Code, GitHub Copilot's agent mode — these tools are evolving fast, and many have free tiers or trial credits. The real questions are: is the free tier actually usable? How do you combine tools to make free quotas last longer?

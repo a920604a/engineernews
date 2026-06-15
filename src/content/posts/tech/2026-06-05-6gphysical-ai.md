@@ -9,6 +9,7 @@ description: "從 Snapdragon Elite X 到 6G 通信標準制定，高通如何在
 type: explainer
 original_url: "https://www.youtube.com/watch?v=eAYx6CHstNw"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_201144_251501.mp3"
 ---
 
 在 AI 晶片的討論裡，NVIDIA 和 AMD 搶走了大部分的注意力。但有一家公司在 AI 浪潮中的策略完全不同，而且正越來越值得工程師關注——那就是高通（Qualcomm）。

@@ -9,6 +9,7 @@ description: "Practical guide to debugging CUDA Out of Memory errors in PyTorch:
 type: debug
 original_url: "https://www.youtube.com/shorts/Q5w61PXKuTM"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_195515_586578.mp3"
 ---
 
 `RuntimeError: CUDA out of memory. Tried to allocate 2.00 GiB...`

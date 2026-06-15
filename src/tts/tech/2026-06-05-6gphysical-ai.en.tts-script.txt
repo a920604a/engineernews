@@ -1,0 +1,35 @@
+Everyone's talking about NVIDIA. Every AI chip conversation eventually circles back to H100s, CUDA, and data center GPU clusters. But there's a company running a completely different play — and if you're building software that runs on phones, laptops, cars, or robots, you should be paying close attention. That company is Qualcomm.
+
+Qualcomm isn't trying to out-NVIDIA NVIDIA. They're not chasing the training market. Their entire bet is on the other end of the AI pipeline: inference at the edge. Running AI on the device in your pocket, on your desk, inside your car, or inside the robot that might soon be working on a factory floor next to a human.
+
+And the business logic here is actually really crisp. Think about why you'd want AI running locally instead of in the cloud.
+
+First, latency. A self-driving car cannot afford to shoot sensor data up to a cloud server and wait for a response on every decision. We're talking milliseconds versus hundreds of milliseconds — that gap matters enormously when you're doing 60 miles an hour. Second, privacy. More and more users and enterprises genuinely don't want their data leaving the device. On-device AI makes that promise real, not just a marketing claim. Third, cost. At scale, API call costs add up fast. Running a local model has near-zero marginal cost per inference. And fourth, offline. Planes, tunnels, rural areas — stable connectivity is not guaranteed everywhere AI needs to run.
+
+So that's the "why." Now let's talk about how Qualcomm is actually executing on this.
+
+Their flagship chip for the PC market is the Snapdragon X Elite. It combines CPU, GPU, and something called the Hexagon NPU — that's the Neural Processing Unit — all on a single chip. The NPU delivers 45 trillion operations per second of AI compute. That number became the defining benchmark for "AI PCs" in 2024. Microsoft requires any PC to hit at least 40 TOPS to qualify for the Copilot+ branding. Qualcomm cleared that bar.
+
+In practical terms? Qualcomm claims the Snapdragon X Elite can run a quantized version of Llama 3 70B — a genuinely large language model — at around 30 tokens per second on a Windows laptop. For context, that's a conversational speed. You can actually have a real-time interaction with a 70-billion-parameter model without touching a cloud API.
+
+And they're lowering the developer friction here too. Qualcomm AI Hub lets developers take a model straight from Hugging Face and deploy it to a Snapdragon device without having to manually optimize weights, quantize, or tune for the hardware. That's a meaningful step toward making edge AI accessible rather than a research project.
+
+Now let's talk about 6G — and I know, it sounds like a buzzword, but hear me out, because Qualcomm's angle on this is actually interesting.
+
+6G isn't just 5G with a bigger number. The design goals Qualcomm is pushing in standards work include some genuinely new ideas. One is AI-assisted radio resource management — base stations that use AI to predict where users are moving and proactively allocate bandwidth before the signal degrades, rather than reacting after the fact. Another is environmental sensing: 6G base stations could simultaneously handle communication and build a real-time 3D map of their surroundings using radio signals. That has obvious implications for autonomous vehicles and robotics. And the latency target is under one millisecond end-to-end, which would actually make it viable to do some AI inference remotely and still use the results for real-time local decisions.
+
+6G commercial deployment is expected around 2030. Qualcomm built an enormous patent portfolio during 5G, which gives them serious leverage in shaping the 6G standards. This is a long game they've played before.
+
+Then there's what Qualcomm calls Physical AI — and this might be where things get most interesting for the next decade.
+
+Physical AI means AI that controls machines in the real world. Robots, drones, industrial equipment. The problem with traditional robot systems is that perception and control are usually separated: cameras send images somewhere for processing, results come back, motors respond. That round-trip introduces latency and power consumption that's a serious problem if you want this hardware to be cheap enough for mass production.
+
+Qualcomm's Robotics platform series integrates multi-camera inputs, a computer vision NPU, low-latency CPU cores for real-time motor control, and 5G connectivity — all on a single Snapdragon-based chip. Boston Dynamics is using it. Several Chinese humanoid robot manufacturers are evaluating it. The pitch is: stop stitching together a camera module, a compute board, a communications module, and a control system. Put it all on one chip.
+
+Now, how does this stack up against NVIDIA? Honestly, they're not really direct competitors. NVIDIA's hardware pulls 300 to 700 watts and costs tens of thousands of dollars per chip. Qualcomm's SoC runs at 5 to 20 watts and costs somewhere between 50 and 200 dollars at volume. These are fundamentally different markets. NVIDIA owns the training and cloud inference space with CUDA's near-monopoly lock-in. Qualcomm's real competition at the edge is Apple — the A18 Pro, the M-series chips — and MediaTek. That's where the fight actually is.
+
+So what's the takeaway here?
+
+Three things. First, edge AI is a real deployment target now, not a future promise. If your application needs on-device inference — for privacy, latency, or offline reasons — the Snapdragon NPU is something you can actually benchmark today, not something you're waiting for. Second, Qualcomm's strategy is coherent: they're not chasing NVIDIA's market, they're deepening their existing advantages in low-power chip design and wireless communications and running AI through that lens. 6G and Physical AI aren't distractions — they're extensions of the same logic. And third, the Physical AI space is going to need serious edge compute, and the companies that get their silicon inside the first wave of mass-market robots will have a significant head start. Qualcomm is positioning hard for that.
+
+Worth keeping an eye on.

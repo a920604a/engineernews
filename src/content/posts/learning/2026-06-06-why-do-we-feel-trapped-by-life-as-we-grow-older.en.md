@@ -9,6 +9,7 @@ description: "Using Luo Xiang's perspective on why growing up means feeling incr
 type: explainer
 original_url: "https://www.youtube.com/watch?v=8A2Z6RrOP6k"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_194202_166572.mp3"
 ---
 
 "Why do we feel more trapped by life as we grow older?"

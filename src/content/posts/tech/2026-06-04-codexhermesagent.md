@@ -9,6 +9,7 @@ description: "整理 OpenAI Codex CLI、Hermes、Claude Code 等 AI coding agent
 type: how-to
 original_url: "https://www.youtube.com/watch?v=FwAQ75QCEoU"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_201026_365287.mp3"
 ---
 
 AI coding agent 已經不是實驗性的技術了。OpenAI Codex CLI、Anthropic Claude Code、GitHub Copilot 的 agent 模式，這些工具都在快速演化，而且很多有免費方案或試用額度。問題是：免費的額度夠不夠用？怎麼組合使用才能讓免費額度撐最久？

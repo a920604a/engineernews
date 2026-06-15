@@ -9,6 +9,7 @@ description: "WWDC 2026 的開發者大會綜覽：Siri AI 重建用 Google Gemi
 type: explainer
 original_url: "https://www.youtube.com/watch?v=_gCXmKjDecU"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_202424_219210.mp3"
 ---
 
 WWDC 2026 在 6 月 8 至 12 日舉行。對多數關注 Apple 平台開發的工程師來說，這屆大會的感覺大概是：「對，就是我們預期的那樣。」Siri 重建了，Liquid Glass 補了洞，Intel Mac 正式被宣告終結。沒有什麼意外，但每件事都是真實的改變。

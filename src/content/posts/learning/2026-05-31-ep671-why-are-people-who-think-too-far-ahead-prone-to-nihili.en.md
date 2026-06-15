@@ -9,6 +9,7 @@ description: "Exploring why people who habitually think in large time scales ten
 type: explainer
 original_url: "https://www.youtube.com/watch?v=Ebwp-Kt7Ykg"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_141608_263562.mp3"
 ---
 
 Have you ever had a moment where you thought "everyone dies in a few decades anyway, what's the point of any of this" — and suddenly everything in front of you felt hollow?

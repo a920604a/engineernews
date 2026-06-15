@@ -9,6 +9,7 @@ description: "How to build AI-driven continuous improvement feedback loops in or
 type: explainer
 original_url: "https://www.youtube.com/watch?v=X_JsIHUfUjc"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_195010_170807.mp3"
 ---
 
 "Use AI to make the company more efficient" has been said for years, but companies that actually pull it off are rare. The gap isn't about whether you've deployed ChatGPT or Copilot — it's about whether you've built a **feedback loop** where AI outputs continuously improve AI inputs.

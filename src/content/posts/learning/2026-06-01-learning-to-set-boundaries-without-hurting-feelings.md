@@ -9,6 +9,7 @@ description: "你不是不知道怎麼設立界線，你是還不太相信自己
 type: explainer
 original_url: "https://www.youtube.com/watch?v=niXi8iv9Sgc"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_194042_905175.mp3"
 ---
 
 「我知道應該說不，但我說不出口。」

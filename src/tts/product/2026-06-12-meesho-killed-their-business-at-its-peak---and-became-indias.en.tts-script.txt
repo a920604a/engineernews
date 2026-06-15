@@ -1,0 +1,43 @@
+Here's the podcast script:
+
+---
+
+Imagine you've built a business with tens of millions of monthly orders. It's growing. It's working. And then you voluntarily cut your revenue to zero.
+
+That's exactly what Meesho did in 2022. And it's one of the most counterintuitive product decisions in recent tech history.
+
+Meesho was founded in 2015 by Vidit Aatrey, an IIT Delhi grad who spotted a gap that Flipkart and Amazon had completely missed. Indian e-commerce at the time was built for urban, English-speaking, credit-card-carrying consumers in Bangalore, Mumbai, Delhi. But hundreds of millions of Indians lived in smaller cities and rural areas — and they were already on WhatsApp, thanks to Facebook's free data plans. They just didn't trust faceless websites.
+
+So Meesho built a layer of human trust into the shopping experience. Suppliers listed products on Meesho. Local women — homemakers, neighbors, small shop owners — would browse the catalog, add their own markup, and share product photos to their WhatsApp groups. When someone wanted to buy, they'd tell the reseller, the reseller would place the order on Meesho, and Meesho handled logistics. You weren't buying from an anonymous platform. You were buying from your neighbor who happened to sell things on WhatsApp.
+
+Meesho took a commission — sometimes up to 25% — on every order. By 2021, they had 13 million active resellers and over 20 million monthly orders. The model worked.
+
+But it had a ceiling.
+
+The reseller layer added friction. Consumers couldn't just open an app and buy directly. The pricing was inflated — supplier base price, plus reseller markup, plus Meesho's commission, sometimes meant consumers paid 40 to 50 percent more than if they'd bought straight from the source. And as Flipkart, Amazon, and Reliance's Jio Mart started pushing into tier-2 and tier-3 cities, Meesho's competitive window was narrowing.
+
+If they kept optimizing what they had, they'd end up a successful niche platform. If they wanted to be a major player, they needed a completely different bet.
+
+So in 2022, they dropped seller commission to zero. Permanently.
+
+The logic, once you trace it through, is actually clean. With zero commission, selling on Meesho becomes cheaper than any alternative, so suppliers flood in. More supply means more variety, more competition, lower prices. Lower prices attract more consumers. More consumers means more orders. More orders gives Meesho negotiating leverage with logistics providers, which lowers costs further. The flywheel feeds itself.
+
+But you've killed your revenue. So where does the money come from? Advertising — sponsored listings. Financial services — supply chain loans to sellers. Data services. The same playbook early Amazon ran: lose on unit economics to win on scale, then monetize the scale through adjacent revenue streams.
+
+The thing they gave up was real. Commission averaging 10 to 15 percent across tens of millions of monthly orders is a substantial number. But the bet was that once you're big enough, ads and financing return far more than commissions ever could.
+
+The implementation was genuinely hard. Meesho had to build a consumer shopping experience from scratch — previously, consumers never touched the app. They had to support over 15 Indian regional languages, because their target users in smaller cities might speak Hindi, Telugu, Marathi, or Bengali as their first language. They built deep cash-on-delivery infrastructure, because tier-2 and tier-3 consumers trust cash over cards. And they kept the app brutally lightweight — functional on 2G and 3G networks, on low-end Android phones.
+
+The results are striking. From around 50 million monthly active users before the pivot, Meesho grew to over 190 million. Their order volume market share went from roughly 20 percent to somewhere between 29 and 31 percent of all Indian e-commerce — ahead of both Flipkart and Amazon India by order count. Average order value is lower, because they're serving price-sensitive consumers. But by volume, they're number one.
+
+So what's actually worth taking away from this?
+
+First: killing your mechanism isn't the same as abandoning your advantage. Meesho dropped commission revenue, but they kept what actually mattered — supply chain relationships, logistics infrastructure, and deep knowledge of low-income consumer behavior. The business model changed. The core competency didn't.
+
+Second: zero percent commission is an irreversible commitment. You can't announce it, build a supplier ecosystem on top of it, and then quietly raise it back. Before making that call, Meesho had to know exactly how long their runway lasted and at what scale advertising revenue would fill the gap. This wasn't a leap of faith — it was a calculation with very high stakes.
+
+Third: there's a real moat in being native to a market rather than expanding into it. Flipkart and Amazon can push into smaller cities, but their DNA — their UI, their language defaults, their payment assumptions, their customer service design — was built for urban, middle-class users. Meesho was rural and small-city from day one. That's not a feature you add later. It's embedded in every product decision the team ever made.
+
+The deeper lesson is about what "protecting your success" actually costs. Meesho's old model was working. Defending it would have been the rational short-term move. But the rational short-term move was also a ceiling. Sometimes the only way to reach the next market is to stop optimizing the one you're already winning.
+
+---

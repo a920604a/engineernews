@@ -9,6 +9,7 @@ description: "DeepSeek V4 deep dive: 1.6 trillion parameter MoE architecture, 1M
 type: explainer
 original_url: "https://www.youtube.com/watch?v=LpXhy2iiaQE"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_195144_023317.mp3"
 ---
 
 On April 24, 2026 — almost exactly one year after DeepSeek-R1 shook Silicon Valley — DeepSeek released its V4 series. Bigger model, longer context, more aggressive pricing, and one technically significant detail that most coverage buried: V4 is DeepSeek's first model optimized for **Huawei Ascend chips**.

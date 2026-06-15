@@ -9,6 +9,7 @@ description: "Deep dive into CVE-2026-31431 (CopyFail): how a logic bug in the L
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=lkifbWtxxlk"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_194909_949860.mp3"
 ---
 
 A 732-byte Python script using only the standard library — no root access required, no special tools, no third-party packages — can obtain root on your Ubuntu, Debian, RHEL, Arch, or SUSE system. This isn't theoretical. This is CVE-2026-31431, codenamed "CopyFail," publicly disclosed in April 2026.

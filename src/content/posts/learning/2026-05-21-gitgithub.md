@@ -9,6 +9,7 @@ description: "一篇給初學者的 Git + GitHub 入門指南，從安裝、建�
 type: how-to
 original_url: "https://www.youtube.com/watch?v=bWUUHBVg-7E"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_140958_400927.mp3"
 ---
 
 第一次接觸 Git 的人，通常會有同一個問題：「我為什麼需要這個？」

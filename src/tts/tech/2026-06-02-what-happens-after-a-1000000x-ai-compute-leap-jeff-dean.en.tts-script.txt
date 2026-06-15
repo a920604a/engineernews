@@ -1,0 +1,35 @@
+A million times more powerful. That's the claim Jeff Dean made about AI computing over the past decade — and before you dismiss that as Silicon Valley hyperbole, it's worth understanding where that number actually comes from. Because it's real, and it changes what comes next.
+
+Jeff Dean co-founded Google Brain and now leads research at Google DeepMind. He's not an outsider commenting on AI progress — he helped build the systems he's describing. So when he breaks down that million-fold figure, it's worth paying close attention.
+
+Here's the thing about Moore's Law that most people miss: it only explains about a hundred of that million. Transistor counts doubling every two years gave us roughly a hundred-fold improvement. The other factor of ten thousand came from somewhere else entirely.
+
+The first big source was hardware specialization. Regular CPUs are terrible at the kind of math that neural networks live and die by — matrix multiplication, done billions of times per second. GPUs helped enormously because their thousands of parallel cores could handle this in ways CPUs never could, giving you anywhere from ten to a hundred times the throughput for deep learning. But GPUs were still designed for graphics. Google's TPUs, starting around 2016, went further — purpose-built for exactly the matrix operations neural networks need, with dramatically better energy efficiency than GPUs. That's one track.
+
+The second track is distributed training. Training a modern large language model doesn't happen on one machine. It might run across tens of thousands of accelerators simultaneously. That sounds straightforward until you realize the engineering complexity it involves: how do you split a model across thousands of chips? How do you keep all those chips in sync when they're computing gradients? What happens when one node fails midway through a multi-week training run? Google's Pathways system and their compiler stack called XLA are direct answers to those questions. This is unglamorous systems engineering that doesn't make headlines, but it's a substantial multiplier on effective compute.
+
+The third track is architecture efficiency. The Transformer architecture — the T in GPT — is fundamentally more parallelizable than the recurrent networks that came before it. Beyond that, techniques like Flash Attention changed how the attention mechanism actually accesses memory, making it possible to train on much longer sequences at the same cost. Moving from 32-bit floating point to 16-bit formats during training lets you fit more into the same memory. Each of these feels incremental, but stacked together across ten years, they compound aggressively.
+
+So: specialized hardware, distributed systems, and smarter architectures. Three independent tracks, all multiplying against each other. That's where the million-fold came from.
+
+Now — what do you do with that much compute? Dean's answer isn't "make chatbots faster." He points to scientific problems that were previously just intractable.
+
+The most famous example is AlphaFold2, which essentially solved protein structure prediction. But Dean frames that as the beginning of a harder problem, not the end of one. Predicting the static shape of a protein is step one. Understanding how it folds dynamically, how it interacts with small molecules, how you design new proteins from scratch — those problems need even more compute than AlphaFold itself. Same story with climate modeling: AI systems like GraphCast can now produce higher-resolution weather predictions faster than traditional numerical methods, and in some benchmarks they're more accurate. Genomics, drug discovery, electronic health records — the pattern repeats. Large models on massive datasets, where the compute budget directly determines how accurate you can get.
+
+The next question Dean raises is about the shape of compute use going forward. The current paradigm is: train a huge model, then use a fixed amount of compute at inference for every single query. Hard question or easy question, you get the same compute budget. That's about to change.
+
+One direction is Mixture of Experts architectures — where the model has many specialized sub-networks, but only activates a small fraction of them for any given input. Total parameter count stays large, but actual compute per query stays manageable. You get knowledge capacity that scales without proportional cost increases.
+
+The other direction is spending more time thinking at inference — letting the model run more reasoning steps on a hard problem instead of outputting an answer in a single pass. This is what's behind models like OpenAI's o1 or Google's Gemini Thinking. Easy question gets a quick answer; hard question gets more deliberation. That's a more intuitive allocation of resources.
+
+There's a practical implication for anyone building AI applications today. The compute scale that frontier labs are running right now won't be accessible to most developers for another three to five years. Which means the things that seem too expensive to run today — more reasoning steps, larger models, longer contexts — will get dramatically cheaper. What you build now can get better automatically as that curve plays out.
+
+On the flip side, compute scarcity is a real constraint for most people, and that makes the opposite direction valuable too. Getting better results from less compute — quantization, distillation, fine-tuning smaller models on specific tasks — remains engineering-relevant for the foreseeable future, regardless of what the frontier does.
+
+So here are the three things worth carrying out of this:
+
+First, the million-fold AI compute gain is real and multi-sourced — hardware, distributed systems, and architecture efficiency all contributed, and their compounding is what made it possible to train the models we have today.
+
+Second, the next frontier isn't just "more compute" — it's smarter allocation, both in model architecture through Mixture of Experts and in inference time through extended reasoning.
+
+And third, the scientific applications Dean is most excited about — protein design, climate modeling, genomics — aren't science fiction. They're engineering problems being actively worked on by people who built the infrastructure that made them possible. Jeff Dean is one of them. When he describes where this is heading, he's describing things he's already in the middle of building.

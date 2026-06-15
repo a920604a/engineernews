@@ -9,6 +9,7 @@ description: "從 CASP 競賽到諾貝爾獎，AlphaFold 如何用深度學習�
 type: explainer
 original_url: "https://www.youtube.com/shorts/MOviZKtFeHM"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_200607_339623.mp3"
 ---
 
 2024 年，諾貝爾化學獎頒給了 David Baker、Demis Hassabis 和 John Jumper，表彰他們在蛋白質結構預測和設計上的突破性貢獻。其中 Hassabis 和 Jumper 代表的正是 DeepMind 的 AlphaFold 團隊。這個結果，在 AI 研究圈裡幾乎沒有人覺得意外。

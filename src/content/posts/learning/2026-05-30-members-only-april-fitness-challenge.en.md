@@ -9,6 +9,7 @@ description: "Using the April fitness challenge as a lens to explore how to desi
 type: how-to
 original_url: "https://www.youtube.com/watch?v=-TQWD0S5uLA"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_141445_419908.mp3"
 ---
 
 At the start of each month, there's a familiar impulse: "This month I'm going to get serious about exercise." By month's end, the count is usually somewhere in the low single digits.

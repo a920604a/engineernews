@@ -9,6 +9,7 @@ description: "Ring Appstore API 實作案例：如何訂閱攝影機事件、處
 type: case-study
 original_url: "https://www.youtube.com/watch?v=5kHpeVvO7cY"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_201736_262215.mp3"
 ---
 
 「Driveway Derby」是一個很具體的家庭場景：你住在一個死巷尾，鄰居的孩子喜歡在你的車道上騎自行車或玩耍。你不是要監控人，你只是想在有車輛或特定移動模式進入你的車道時收到通知——而且能區分「自己家的車回來了」和「有陌生車輛進入」。

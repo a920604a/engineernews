@@ -9,6 +9,7 @@ description: "SpaceX IPO 深度解析：$1.75 兆估值的財務基礎、Starlin
 type: explainer
 original_url: "https://www.youtube.com/watch?v=HqsTB0avrh8"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_200056_616612.mp3"
 ---
 
 SpaceX 不只是一家火箭公司了。這句話說了好幾年，但直到 2026 年的 IPO S-1 申請文件公開，數字才讓這個轉型清晰可見。

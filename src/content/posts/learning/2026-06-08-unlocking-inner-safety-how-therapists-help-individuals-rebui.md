@@ -9,6 +9,7 @@ description: "從依附理論出發，理解內在安全感是什麼、為什麼
 type: explainer
 original_url: "https://www.youtube.com/watch?v=fRjSmxaxMKw"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_194311_675107.mp3"
 ---
 
 有一種感覺，很難用語言準確描述：你明明知道自己沒有做錯什麼，卻總是在等著被責怪；你跟一個人相處得很好，但心底永遠有一個聲音說「這不會持久的」；你想要親近別人，卻又怕靠近之後被傷害，所以乾脆保持距離。

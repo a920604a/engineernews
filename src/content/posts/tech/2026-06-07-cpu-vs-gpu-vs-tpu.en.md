@@ -9,6 +9,7 @@ description: "From architectural principles to real costs, a clear explanation o
 type: explainer
 original_url: "https://www.youtube.com/watch?v=MUWAbpg1xLo"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_201530_075310.mp3"
 ---
 
 Hardware selection was simple before the AI application explosion: CPU for most work, GPU if you need graphics processing. Now it's significantly more complex — you also need to know when to use a TPU, and when running on a GPU is actually slower than CPU (and why).

@@ -9,6 +9,7 @@ description: "How Douglas Crockford changed JavaScript's fate through JSON, JSLi
 type: explainer
 original_url: "https://www.youtube.com/watch?v=JfPWbttemYE"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_200444_748047.mp3"
 ---
 
 Everyone knows Brendan Eich created JavaScript in 10 days in 1995. But there's a less-told story: in the decade after JavaScript was born, serious developers largely considered it a toy.

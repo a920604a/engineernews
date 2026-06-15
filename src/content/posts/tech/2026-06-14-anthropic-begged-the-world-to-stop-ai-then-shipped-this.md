@@ -9,6 +9,7 @@ description: "Fable 5 從發布到被政府強制下線只有四天。Anthropic 
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=1PBRhm5ZnjU"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_202742_218840.mp3"
 ---
 
 「我們呼籲大家暫停。」——Anthropic，2026 年 6 月 4 日

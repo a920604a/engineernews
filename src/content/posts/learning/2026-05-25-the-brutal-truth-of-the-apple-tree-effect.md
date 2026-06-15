@@ -9,6 +9,7 @@ description: "從心理學角度解析為什麼追求最佳選項的人反而容
 type: explainer
 original_url: "https://www.youtube.com/watch?v=djaTLCuD1A4"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_141309_585954.mp3"
 ---
 
 有一種人特別容易在選擇時卡住：他們不是不知道自己要什麼，而是太清楚自己想要「最好的」，結果反而動不了。

@@ -9,6 +9,7 @@ description: "10 個真正解決特定痛點的開源專案，有的讓你的 RE
 type: listicle
 original_url: "https://www.youtube.com/watch?v=qPuzWFvRajk"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_200930_235704.mp3"
 ---
 
 你的 GitHub stars 裡大概有一堆「以後要用」卻從沒打開過的 repo。這些不是那種——它們各自解決一個很具體的痛點，而且很多是你裝上去之後三天內就會用到的工具。

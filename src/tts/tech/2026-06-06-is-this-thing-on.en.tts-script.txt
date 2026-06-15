@@ -1,0 +1,31 @@
+There's this moment every performer knows — you walk out on stage, tap the microphone, and say "Is this thing on?" It's not nervous energy. It's verification. Did the signal actually reach the audience?
+
+Engineers almost never ask this question when they're doing technical communication. And that's the root of most engineering communication failures — not that you don't know enough, but that you never confirm whether what you said actually landed.
+
+Here's the thing about knowledge asymmetry. When you explain a technical problem, you have the full picture in your head: why this design, what tradeoffs you considered, what the background assumptions are. The person you're talking to usually has none of that. And because you know it so well, you don't even realize you're skipping steps.
+
+This shows up in a few predictable ways. You explain one concept and immediately jump to the next, but the other person is still processing the first. You use words like "eventual consistency" or "idempotent" like they're everyday vocabulary — because for you, they are. You ask "Any questions?" at the end of a long explanation, which is basically useless, because most people either don't know what they don't understand, or they're not going to admit confusion in a group setting.
+
+So let's talk about what actually works.
+
+In written documentation, the instinct to write "as you know" or "obviously" is a red flag. Stop every time you're about to type that. Ask yourself: who is this "obviously" for? Because for someone else, it might not be obvious at all. A practical trick — after writing a section, hand it to an engineer who's smart but doesn't work in that specific subsystem. Ask them: where did you have to stop and reread? Where did you have to look something up? Those spots are exactly where you need more clarity.
+
+Code review feedback is another place this breaks down. The least valuable thing you can write on a PR is "this is wrong" or "this will have performance issues." That tells the author your conclusion, not your reasoning. Compare that to explaining that a specific query will do a full table scan once the table grows past a certain size, because the WHERE clause doesn't use any indexed column — and here's what a covering index would look like. The second version lets the person actually understand the problem. They can make the right call themselves next time, in a different situation, without needing you.
+
+For live presentations, build in an "Is This Thing On?" check every five to ten minutes. Not "any questions?" — that's too open. Ask something specific. "About the CAP theorem I just covered — anyone want to dig into what partition tolerance actually means in practice?" Or test an analogy: "Does thinking of event sourcing like a bank ledger — where you record every transaction rather than just the current balance — does that click?" Or better yet, ask someone what they'd do first if they had to implement it. That tells you immediately whether the concept landed.
+
+Async communication is the hardest case, because there's no immediate feedback loop. You send a Slack message or post a PR description, someone drops a thumbs-up emoji, and you have no idea if they actually understood or just acknowledged. The fix here is to design the signal itself better. PR descriptions should explain *why* this change exists, not just what changed. For important decisions, actively invite pushback — "Did I describe the tradeoffs clearly? Is there a scenario you think I missed?" And when things are genuinely complex, leave the door open: "If this isn't landing in text, happy to do a fifteen-minute call."
+
+Here's what makes this different from the usual "communicate better" advice. Most of that advice is one-directional — explain more clearly, use analogies, draw diagrams. All useful. But "Is This Thing On?" is about bidirectional confirmation. It's not enough to transmit clearly. You need to verify receipt.
+
+Think about how we build engineering systems. We design acknowledgments, retries, dead letter queues — all to ensure messages are actually processed, not just sent. In human communication, we usually have none of that infrastructure. We assume the signal gets through.
+
+So here are the three things to take away from this.
+
+First, knowledge asymmetry is invisible to the person who has the knowledge. You can't feel what you don't know you're skipping. Build in deliberate checkpoints.
+
+Second, good communication isn't just clear transmission — it's confirmed receipt. After any significant technical explanation, spend thirty seconds actually verifying the signal landed. A specific question, an analogy check, an invitation to push back.
+
+Third, the return on communication skills for engineers is often higher than another technical skill. An architect who can get five engineers to genuinely understand a design decision creates far more value than one who fully understands the design alone.
+
+Speaking and being understood are not the same thing. The gap between them is where most engineering communication quietly fails.

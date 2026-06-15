@@ -9,6 +9,7 @@ description: "Ring Appstore API case study: subscribing to camera events, proces
 type: case-study
 original_url: "https://www.youtube.com/watch?v=5kHpeVvO7cY"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_201712_628563.mp3"
 ---
 
 "Driveway Derby" is a specific home scenario: you live at the end of a cul-de-sac, and neighborhood kids like to play in your driveway. You're not trying to surveil people — you just want to get notified when a vehicle or specific movement pattern enters your driveway, and you want to distinguish "my family's car returning" from "unknown vehicle entering."

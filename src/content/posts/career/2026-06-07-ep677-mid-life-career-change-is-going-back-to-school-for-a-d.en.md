@@ -9,6 +9,7 @@ description: "Adult's Small Talk EP677 examines whether going back to school sti
 type: explainer
 original_url: "https://www.youtube.com/watch?v=8eatmpr43r8"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_140813_725128.mp3"
 ---
 
 "I want to change careers, but I'm in my thirties. Do I need to go back and get a degree to have a shot at this?"

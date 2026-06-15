@@ -1,0 +1,53 @@
+Here's the podcast script:
+
+---
+
+If you've ever done a system design interview, you've probably seen some version of this problem: build a platform to sell books online. It sounds simple — almost too simple. But here's the thing: books are sneaky. They look like any other e-commerce product until you start digging, and then you realize the requirements are genuinely different in ways that matter architecturally.
+
+So let's walk through the three big decisions that make or break a book platform design.
+
+**Decision one: search.**
+
+Think about how people search for books versus, say, blenders. With a blender, you type "blender" and filter by price. With books, you might search by title, author, ISBN — or you might type something like "that red-covered book about World War II." That last one is basically a vibe search. And a standard database "contains" query falls apart immediately when you try to handle it.
+
+The right call here is to run PostgreSQL as your source of truth, but pair it with Elasticsearch as your dedicated search layer. When a new book gets added, you write it to both. Elasticsearch handles the fuzzy matching, full-text search, and relevance ranking. When a user searches, you hit Elasticsearch first, get back a list of book IDs, then fetch the actual details from PostgreSQL or a cache.
+
+The trade-off you're accepting: there's a lag. A book you just added might take anywhere from a few seconds to a minute before it shows up in search results. For a book platform, that's completely fine. If you were building a stock trading system, that would be catastrophic. Know your domain.
+
+**Decision two: inventory.**
+
+This is where physical books and ebooks diverge completely. Physical books have finite stock — if you oversell, you have an angry customer and a logistics nightmare. Ebooks technically have infinite inventory, but they come with licensing constraints — like limits on how many people can borrow a book simultaneously from a library platform.
+
+For physical books, you want pessimistic locking at the database level. The idea is: when someone tries to buy a book, you lock that row, check that stock is greater than zero, decrement it, and create the order — all inside a single transaction. Nothing else can touch that row until you're done. It's not glamorous, but it's correct. Correctness is what matters here.
+
+The obvious concern is: what happens when you have high concurrency? A hundred people trying to buy the last copy at the same time? You add Redis as a pre-deduction layer. Before hitting the database at all, you decrement a counter in Redis. If the counter hits zero, you reject the request early — the database never even sees it. But now you have to keep Redis and your database in sync, which is its own can of worms. The point is: know when to add complexity and why.
+
+**Decision three: order state machine.**
+
+Orders have a lifecycle, and if you don't model it explicitly, you end up with spaghetti logic scattered across your codebase. The clean solution is a finite state machine.
+
+An order starts as created, moves to payment pending, then paid, then processing, then shipped, then delivered. There are also off-ramps to cancelled — both from payment pending if the payment fails, and from processing if something goes wrong before it ships.
+
+Two rules that matter enormously here. First: every state transition must be idempotent. That means if the same event hits your system twice — say, a payment webhook fires twice — the second one should do nothing harmful. No double charges, no duplicate shipments. Second: refunds are their own separate state machine. Don't bolt refund logic onto the order states. Refunds have their own lifecycle — requested, approved, processing, completed — and mixing the two will make your code incomprehensible within six months.
+
+**Now, the meta-question: microservices or monolith?**
+
+Here's where a lot of engineers reach for the resume-driven answer. Microservices sound modern and scalable, so the temptation is to propose them automatically. But let's run the actual numbers.
+
+A book platform with a million daily active users, assuming five searches per day, ten page views, and a tenth of an order per user per day — your search load is around 58 requests per second. Your order write volume is about one per second. At that scale, a single PostgreSQL instance with read replicas handles everything comfortably. You don't need to distribute anything.
+
+Amazon itself started as a monolith. They only moved to a service-oriented architecture after they'd hit genuine scaling limits that justified the operational complexity. Premature microservices don't make you Netflix — they make you a five-person team drowning in distributed system debugging while your competitors are shipping features.
+
+The pragmatic path: start with a well-organized monolith where your search, inventory, and order logic are cleanly separated as modules. When a specific module has a scaling problem that can't be solved within the monolith, carve it out. That's the real progression.
+
+---
+
+Three things to take away from this.
+
+One: search architecture matters more than most people expect for a book platform. Elasticsearch plus PostgreSQL dual-write is the right answer, and the eventual consistency trade-off is acceptable.
+
+Two: inventory correctness is non-negotiable. Use database-level pessimistic locking for physical books, layer Redis on top only when you have evidence you need it, and be deliberate about keeping those two in sync.
+
+Three: in a system design interview — or in real life — the most valuable thing you can demonstrate is clear trade-off reasoning. "I chose X over Y because at this scale, X has lower maintenance overhead and Y's performance benefit doesn't justify the added complexity" is infinitely more convincing than listing every technology you've ever heard of.
+
+Design for the scale you actually have, not the scale you hope to have someday.

@@ -9,6 +9,7 @@ description: "Why flagship smartphone cameras in 2025-2026 feel increasingly art
 type: explainer
 original_url: "https://www.youtube.com/watch?v=coX4duwUCpw"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_195322_861183.mp3"
 ---
 
 Have you noticed that portraits taken with new flagship phones have an uncanny waxy quality to skin? Or that night mode shots look bright as day, but zoom in and the stars and leaves have a "CGI" unreality to them?

@@ -9,6 +9,7 @@ description: "如果你總是把別人的感受放在自己前面，為別人著
 type: explainer
 original_url: "https://www.youtube.com/watch?v=JScYElSmiQc"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_223752_607072.mp3"
 ---
 
 有沒有這種情況：明明你沒做錯什麼，但你就是覺得對不起別人。別人沉默你就開始檢討自己，別人不開心你就想辦法補救，就算事情根本不是你造成的。

@@ -1,0 +1,35 @@
+Here's the podcast script:
+
+---
+
+If you've ever called an LLM API and thought "okay, but how do I make this actually *do* something useful across multiple steps" — that's exactly the gap LangGraph fills. And today we're going to build something concrete: a video production AI Agent that takes a topic, does research, writes a script outline, expands each section, and generates storyboard descriptions. Fully automated. No human in the loop.
+
+But before we touch any code, let's get the mental model right.
+
+A regular LLM call is stateless. You fire a prompt, you get a response, it's done. An Agent is fundamentally different — it needs to *remember* what happened in previous steps, make decisions based on those results, and recover when things go wrong. That's a lot of scaffolding to build from scratch. LangGraph handles it by letting you define your workflow as a directed graph — nodes are tasks, edges are the paths between them, and everything flows through a shared state object.
+
+So let's talk about that state. In LangGraph, the State is the single most important design decision you make. For our video production Agent, that state holds: the original topic, the research notes, the outline, the expanded script sections, the storyboard descriptions, any error messages, and a retry counter. Every node in the graph receives this state, does its work, and returns an updated version. Nothing is hidden — the state is fully traceable at every step.
+
+Now here's how the workflow actually flows. You start with a topic. The Agent runs a research step to pull together key points and supporting facts. Then — and this is where LangGraph gets interesting — it asks: was that research actually good enough? If the notes are too thin and we haven't retried too many times, it loops back and tries again. Once the research passes the bar, it moves to outlining, then expands each outline section into full script copy, then generates storyboard descriptions for each section. The whole thing terminates with a complete production package.
+
+Each of those steps is a *node function* — just a Python function that takes the state in and returns an updated state out. The research node calls an LLM with a system prompt like "you're a professional video content researcher" and asks it to produce five key points on the topic. The outline node takes those notes and asks a different persona — a script planner — to structure a five-minute video. Same pattern, different prompt, clean separation.
+
+The magic is in the *conditional edges*. After the research node runs, instead of blindly moving to the next step, LangGraph calls a routing function. That function checks: is the research note longer than some minimum threshold? If not, and we haven't exceeded our retry limit, route back to research. Otherwise, proceed to outline. You define this as a dictionary — "retry" maps back to the research node, "continue" maps forward to outline. That's it. No complex if-else chains scattered across your codebase.
+
+Error handling follows the exact same pattern. You wrap your node logic in a try-except, store any error in the state's error field, and then your conditional edge decides whether to retry or bail out gracefully. The state carries the full context of what went wrong, so you can inspect it after the fact.
+
+One question that comes up a lot: why not just use LangChain's AgentExecutor? The honest answer is — AgentExecutor is great for tool-calling Agents where the LLM is deciding *which* tool to call next. But if your workflow has a defined sequence of steps, LangGraph gives you something AgentExecutor doesn't: full visibility into exactly which step the Agent is on and what the inputs and outputs were at each step. That observability is huge for debugging.
+
+And if you *do* want external tools — say, live web search — LangChain's tool decorator makes those easy to define, and you can call them directly inside your node functions or wrap them as dedicated graph nodes.
+
+So here are the three things to walk away with.
+
+First: **State design is your most important architectural decision.** Get the State structure right before you write a single node. It should capture everything any node might need to read or write.
+
+Second: **Nodes are just functions.** There's no magic — each node takes state in, calls an LLM or a tool, and returns updated state. Keep them focused and isolated.
+
+Third: **Conditional edges are how Agents get smart.** They're what turns a linear script into something that can retry, branch, and recover — without you having to wire that logic everywhere manually.
+
+LangGraph's real value is that it makes these workflows *declarative*. You describe what should happen, and the graph handles the orchestration. That's the abstraction that lets you build something genuinely useful without drowning in infrastructure.
+
+---

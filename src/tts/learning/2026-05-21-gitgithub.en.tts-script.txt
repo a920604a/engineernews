@@ -1,0 +1,43 @@
+Here's the name you've definitely given a file before: `final.docx`. Then `final_v2.docx`. Then `final_FINAL_actually_done.docx`. That right there is the problem Git solves.
+
+Git is a version control system. Every time you save a snapshot — called a commit — it records exactly what changed, when, and with a message explaining why. You can rewind to any point in history, see the full story of your project, and collaborate with other people without anyone accidentally nuking someone else's work. GitHub is just the cloud home for those repositories — think of Git as the engine, GitHub as the garage.
+
+And here's the good news: ninety percent of what you'll ever do with Git comes down to three commands. Add, commit, push. Once those click, you're dangerous in the best possible way.
+
+---
+
+Before anything else, Git operates across three distinct areas, and this trips up a lot of beginners. Picture it like this: your working directory is just your normal folder on your computer — where you open files, make edits, drink coffee, break things. When you're happy with a change, you move it to the staging area using `git add`. Think of staging as packing a box — you're deciding what goes into this particular shipment. Then `git commit` seals the box and ships it permanently into the repository, which is the complete historical record of your project. Working directory, staging area, repository. Those three layers explain almost every Git command you'll encounter.
+
+---
+
+Starting fresh: you go to GitHub, hit the plus button, name your repository, and create it. Then on your own machine, you make a folder, navigate into it, run `git init` to turn it into a Git repository, and then link it to your GitHub repo using `git remote add origin` followed by your repository's URL. That last step is basically saying — "hey Git, when I talk about 'origin,' I mean this GitHub address."
+
+Your first commit is that three-step dance: you create a file, run `git add` on it to move it into staging, then `git commit` with a message describing what you did. The first time you push, you include a flag that sets GitHub's main branch as your default destination — after that, just `git push` and you're done.
+
+---
+
+Branches are where Git gets genuinely powerful. Think of a branch as a parallel universe for your code. The main branch is your stable, production-ready universe. You spin off a new branch to try something — a new feature, a risky refactor, an experiment — and your main branch has absolutely no idea any of it is happening. If the experiment works, you merge it back. If it blows up, you delete the branch and main never knew anything went wrong.
+
+In practice: you create a new branch with a descriptive name — say, `feature/add-login` — make your changes there, commit them, then switch back to main and merge. After merging, you delete the branch because it's served its purpose. Clean and contained.
+
+---
+
+One thing you'll eventually run into: merge conflicts. This happens when two branches both touched the same line of the same file, and Git genuinely can't guess which version you want. Git will mark the conflict right inside the file itself — you'll see a block showing the version from main on one side and the version from your feature branch on the other, separated by a divider. Your job is to open that file, decide what the final version should look like, delete the conflict markers, then add and commit as normal. It sounds scary the first time, but it's really just Git asking you to make a judgment call it couldn't make for you.
+
+---
+
+Three commands worth having in your muscle memory for day-to-day work: `git status` shows you what's changed and what's staged. `git log --oneline` gives you a compact view of your commit history — one line per commit, great for orientation. And `git show` followed by a commit's ID lets you inspect exactly what that commit changed.
+
+A few common stumbling blocks: if you get a permission error when pushing, it's almost always authentication. GitHub moved away from passwords — you need a Personal Access Token generated from your account settings, and you use that as your password when Git asks. If you made a typo in your commit message and haven't pushed yet, `git commit --amend` lets you fix the last message. If you've already pushed, leave it alone — rewriting history that other people have already pulled causes real problems. And if you want Git to ignore certain files — like `node_modules`, environment files with secrets, editor temp files — create a `.gitignore` file in your project root and list the patterns you want excluded. GitHub provides ready-made templates for every language.
+
+---
+
+So here's what to take away from all of this.
+
+First: Git's three areas — working directory, staging, repository — are the mental model everything else builds on. Understand those and commands stop feeling arbitrary.
+
+Second: branches are not advanced Git. They're the everyday workflow. Make them cheap, make them often, delete them when done.
+
+Third: the core loop is just three steps. Add what you want to save, commit it with a clear message, push it to GitHub. That loop, repeated consistently, gives you a complete and navigable history of everything you've ever built.
+
+Start small. One file, one commit, one push. The habit is more valuable than knowing every flag.

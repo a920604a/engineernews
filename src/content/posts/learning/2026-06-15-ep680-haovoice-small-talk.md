@@ -9,6 +9,7 @@ description: "郝旭烈在《大人的 Small Talk》分享他對閱讀的看法�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=EGPEnipo3vM"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_194709_273634.mp3"
 ---
 
 書架上有幾本買了很久但從來沒翻完的書，這讓你覺得不舒服嗎？

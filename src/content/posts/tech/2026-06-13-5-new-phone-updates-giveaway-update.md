@@ -9,6 +9,7 @@ description: "2026 年中的 Android 手機軟體更新現況：Pixel 的長期�
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=49-rK7SAfQk"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_202538_602987.mp3"
 ---
 
 「買了手機，兩年後沒更新了。」這個抱怨在 Android 生態存在超過十年，但 2025–2026 年有一些真實的轉變。幾個主要廠商開始認真對待長期軟體支援，而不只是把它當作行銷文案。

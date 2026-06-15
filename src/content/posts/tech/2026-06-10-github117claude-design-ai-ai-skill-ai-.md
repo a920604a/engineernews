@@ -9,6 +9,7 @@ description: "GitHub 開源專案週報第 117 期：五個值得工程師關注
 type: listicle
 original_url: "https://www.youtube.com/watch?v=Oruwe_eBbfw"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_202029_384114.mp3"
 ---
 
 每週 GitHub Trending 跑一遍，挑五個工程師會想知道的專案。第 117 期的主題分佈在設計、AI 工具鏈、英語學習和 AI 教育，涵蓋前端設計師、AI 工程師和想深入理解模型的開發者。

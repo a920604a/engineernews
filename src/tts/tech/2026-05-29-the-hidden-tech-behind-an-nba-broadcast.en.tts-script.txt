@@ -1,0 +1,29 @@
+Every time you watch an NBA game and see that little overlay in the corner — player speed, shot arc, defensive radius — you're looking at the output of one of the most sophisticated real-time data systems in live sports. And most people have no idea what it takes to make that happen.
+
+The backbone of it all is something called Sony Hawk-Eye. Twenty-nine high-speed optical cameras, installed in every single NBA arena, covering the entire court from every conceivable angle. Every 25 times per second, this system is triangulating the 3D position of every player, every referee, and the basketball — down to centimeter-level precision. That's not post-game analysis. That's happening while the ball is in the air.
+
+You've probably seen Hawk-Eye before without knowing it. Those 3D ball trajectory reconstructions at Wimbledon — "was it in or out?" — same company, same core technology. But basketball is a fundamentally harder problem. Tennis tracks one ball. Hawk-Eye in the NBA is simultaneously tracking ten players moving in every direction, plus the ball, while players are bumping into each other, occluding each other, changing direction mid-stride. The system has to maintain a continuous identity on each player even when they're piled on top of each other going for a rebound.
+
+Now here's where it gets architecturally interesting. All that raw tracking data doesn't go to one place — it fans out into three completely separate pipelines, each with different requirements and different tolerances for error.
+
+The first is the broadcast graphics pipeline. This is the one you see on TV. Raw position data hits a graphics engine that renders those overlays in real time and mixes them directly into the broadcast signal. The constraint here is latency — those graphics have to keep pace with what's happening on the court, or they look wrong. Speed is the priority.
+
+The second pipeline is officiating assistance. When something happens that triggers a review — a ball touching a sideline, a foot on the three-point arc — a separate subsystem activates and rapidly reconstructs the event to give the referee a system recommendation before they make the final call. This pipeline has different priorities than broadcast. It can afford to take an extra half second if that's what it takes to get the reconstruction right. Accuracy matters more than speed here.
+
+The third pipeline goes to team analytics. Full raw tracking data, persisted to a data warehouse, where analysts do deep post-game work. No real-time requirement at all — but complete data fidelity is non-negotiable.
+
+Three pipelines, three different engineering contracts running off the same source data. That's clean systems design.
+
+On the officiating side — NBA Commissioner Adam Silver has publicly confirmed they're moving toward AI-assisted calls using this tracking data as the foundation. And the analogy he'd probably reach for is the NFL's first-down line: it looks simple on TV, but there's a real computer vision system underneath it that's become completely normalized. Nobody argues with the yellow line anymore.
+
+The key distinction is assistive versus autonomous. Right now the conversation is about AI providing data to human referees — not replacing their judgment. Out-of-bounds determinations are a good fit for automation: they're technical, binary, and high-controversy. Whether a player committed a flagrant foul or whether contact on a pull-up jumper was clean — those involve intent, context, judgment. That's a much harder automation problem, and nobody's seriously talking about automating those yet.
+
+Before 2013, NBA statisticians were entering data by hand at courtside. Manual entry, second-level latency, and absolutely no way to capture anything like player distance traveled or shot arc. The first optical tracking system, called SportVU, changed that in 2013. Hawk-Eye is the generation after that — more cameras, better accuracy, much tighter latency.
+
+So what should you actually take away from all this?
+
+First, the real-time graphics you see on NBA broadcasts aren't cosmetic — they're the visible surface of a serious engineering system running at centimeter precision, 25 times per second, for every game across 30 arenas simultaneously.
+
+Second, the same data source is serving three completely different downstream consumers with different latency and accuracy tradeoffs. That architectural separation is what makes it work — if officiating and broadcast were competing for the same processing resources with the same constraints, one of them would suffer.
+
+And third, the AI officiating question isn't really about whether AI is accurate enough. Hawk-Eye's tracking is already accurate enough for certain call types. The real question is about which decisions are appropriate to automate — and that's as much a cultural and legal conversation as a technical one. The line between "assistive" and "autonomous" is where the interesting debates are going to happen over the next few seasons.

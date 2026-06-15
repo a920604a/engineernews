@@ -1,0 +1,33 @@
+There's a moment every aspiring streamer knows well. OBS is installed, the stream key is configured, the scenes are all set up — and you're just... sitting there. Finding new reasons to wait. The mic isn't quite right. The background is too messy. You haven't planned the content. What if nobody shows up?
+
+I spent months in that loop. And the thing I only understood after actually going live is this: preparation, past a certain point, is just procrastination with better excuses.
+
+Here's what finally got me to click the button. I reframed the whole thing. Instead of treating it as a performance for strangers, I called it a public rehearsal. I sent the link to a handful of friends, told them I was running an experiment, and went live. That one mental shift cut most of the anxiety — because rehearsals are supposed to be rough. That's the point.
+
+Platform choice is another thing that keeps people stuck. YouTube Live is the natural home if you already have a channel — subscribers get notified automatically, it integrates cleanly with everything else you're already doing. Twitch has a stronger real-time culture but also more competition. For most people, the honest advice is: pick whichever platform you already use and stop treating it as a major decision. You can always change later. Reduce the cost of the choice, and move.
+
+Now, on the technical side — a few things are genuinely worth getting right before you hit go.
+
+In OBS, the most important concept to understand is the difference between a scene and a source. A scene is the full picture your viewers see. Sources are the individual pieces that make it up — your camera, your screen capture, any text overlays. Before going live, build at least three scenes: a talking-head layout, a screen-share layout, and a static "be right back" card. Switching scenes in a hurry is much cleaner than fumbling with individual sources mid-stream.
+
+Audio is where most people fail, and most people aren't paying attention to it. Before going live, verify that your microphone actually has signal in your audio mixer — not just any signal, but *your mic specifically*. In my first stream, I was silent for the first ten minutes. I had seen a waveform moving and assumed everything was fine. It was the system audio channel. Not my microphone. Ten minutes.
+
+Also match your streaming quality to what your connection can actually sustain. A high bitrate looks great in theory. Choppy video at a high bitrate is worse than stable video at a lower one.
+
+But here's the thing none of that prepares you for: what it actually *feels* like to be live.
+
+Time changes. A three-second pause in normal conversation becomes an abyss. You start thinking about whether the silence is weird, so you try to fill every gap, so you speed up, so your mind goes blank. Meanwhile, chat is happening — and even with just a few people, reading messages, acknowledging them, responding, and holding your original train of thought at the same time is genuinely hard. I watched my own recording back and kept noticing my eyes drifting toward the chat panel. The whole thing looked fragmented, because it was.
+
+Then there's latency. Depending on platform and settings, your viewers might be watching you five to thirty seconds behind real-time. Their responses are equally delayed. The first time you experience that gap, it's easy to read "no one has responded yet" as "no one is interested" — and start spiraling. It's not that. It's just physics.
+
+Watch your recording afterward. It's painful. It's also the most useful thing you can do. You'll see things you couldn't notice in the moment — where you were stalling, where your energy dropped, where you forgot to tell people what the stream was even about. Every first-time streamer hits the same wall: forgetting to unmute, going live on the wrong scene, no end card, just cutting out abruptly. None of that is a personal failing. It's all fixable. It happens because your first stream throws too many simultaneous variables at you to handle gracefully all at once.
+
+So here are the things worth holding onto.
+
+First: technical problems will happen. They're survivable. Audiences are more forgiving of hiccups than you expect — what they actually care about is whether you're genuine and whether you have something worth saying.
+
+Second: your first stream is supposed to be rough. Not because you're not capable, but because live streaming is a skill that can only be calibrated by doing it. Each stream makes you a little clearer on your rhythm, a little better at reading the room.
+
+Third — and this is the one that matters most — the first stream is the data. You can't know what to prepare for until you've been live at least once. Everything you obsessed over beforehand will turn out to be the wrong thing. Everything you didn't think about will be the actual challenge. The only way to get that calibration is to go.
+
+Nobody's first stream is smooth. Go live. Then come back and figure out what to fix.

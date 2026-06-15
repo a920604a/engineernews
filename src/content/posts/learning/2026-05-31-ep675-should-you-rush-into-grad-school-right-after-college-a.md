@@ -9,6 +9,7 @@ description: "大學畢業要不要馬上讀研究所？聊聊這個決定背後
 type: explainer
 original_url: "https://www.youtube.com/watch?v=eYpO1zsQZlg"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_141830_477135.mp3"
 ---
 
 大學快畢業的時候，「要不要讀研究所」幾乎是每個人都繞不開的問題。而且神奇的是，它通常不是一個你仔細思考過的問題，而是一個你「被問到了才開始想」的問題。

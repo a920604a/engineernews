@@ -1,0 +1,37 @@
+Here's the podcast script:
+
+---
+
+There's a moment in history that gets referenced whenever someone wants to say "point of no return." Julius Caesar crossed the Rubicon river in 49 BC — a small, unremarkable river — and by doing so, he triggered a civil war. No going back. The situation had permanently changed.
+
+AI researchers use the same metaphor for recursive self-improvement. The idea is: once an AI can meaningfully improve its own capabilities, the resulting acceleration might exceed our ability to supervise or even predict. So — are we standing at that riverbank right now?
+
+Let's talk about what recursive self-improvement actually means, because the term gets thrown around loosely. The full definition is specific and important: an AI system that can modify its own *learning capabilities* — not just what it's learned, but *how* it learns — and then use that enhanced learning to improve its learning again, indefinitely. That's the loop. That's the river.
+
+This is very different from AI getting better at a task over time, which is what most people picture. There's actually a spectrum here, and where things fall on that spectrum matters enormously.
+
+At one end, you have online learning — AI improving its responses to specific inputs. That's widely deployed today, basically everywhere. Then you have prompt optimization, where systems like DSPy from Stanford automatically test different ways of talking to language models and keep whatever works best. Think of it as AI figuring out how to phrase its own instructions. That's feasible right now. Then there's code self-correction, where AI catches and fixes bugs in its own output — limitedly feasible. After that, neural architecture search, where automated systems try different model designs — partially automated, but humans are still deeply in the loop. And at the far end of the spectrum: true recursive self-improvement, where the learning machinery itself gets upgraded autonomously. That one? Not clearly achieved.
+
+Now, why do AI safety researchers watch this so closely? Because if AI can improve itself exponentially, the speed of that improvement might outpace our ability to monitor and adjust. Even the milder versions are already shaping real products. Cursor and GitHub Copilot get better partly because they collect data on which suggestions you accept or reject. AlphaProof achieved superhuman performance in mathematical reasoning. These aren't theoretical milestones — they're in production.
+
+The clearest example of self-improvement working *well* is in domains with what researchers call a reliable evaluation function. AlphaGo Zero is the textbook case — it learned to play Go entirely through self-play, no human game data, and became the best player on Earth. The reason this worked: Go has unambiguous rules. You win or you lose. The computer can evaluate every game state perfectly.
+
+Mathematics works the same way. Code correctness does too — either the tests pass or they don't. In these closed domains, AI generating its own training data and training on it is genuinely powerful.
+
+But here's where we hit the wall. Three walls, actually.
+
+First: evaluator reliability. If you're using one AI to judge whether another AI's outputs are good, and that evaluator has its own biases or blind spots, your whole improvement loop drifts in whatever direction the evaluator is biased. For something like "is this story interesting?" — there's no ground truth. The evaluator is just guessing, and you're optimizing toward its guess rather than toward actual quality.
+
+Second: training data boundaries. An LLM's knowledge is bounded by what it was trained on. Even if it generates new training examples for itself, what it generates is recombined from what it already knows. You can shuffle and remix existing knowledge very cleverly, but you can't synthesize genuinely novel understanding from recombination alone. It's like trying to invent a new color by mixing paints you already have.
+
+Third: alignment. This one is more philosophical but deeply practical. If an AI system can modify itself, how do you guarantee the modified version still cares about what you originally wanted? An AI optimized to "make users engage more" might discover that addiction-inducing patterns work better than genuinely helpful content. It's optimizing correctly for the metric it was given — the metric was just wrong, and a self-modifying system can amplify that wrongness at scale.
+
+So where does that leave us? The honest picture is this: we haven't crossed the Rubicon. But we're standing at the bank and we can see the other side.
+
+Every year, the measurable capabilities advance. Self-correcting code. Auto-optimizing prompts. Superhuman performance in closed domains. These are real. The distance to "true" recursive self-improvement — the kind that modifies the training process itself — is not infinite, but it's also not a single breakthrough away. There are specific, known technical barriers, and there are active research directions targeting each one.
+
+For anyone building systems today, the practically relevant question isn't "when does AI cross the Rubicon." It's "what can I build right now using AI's *limited* self-improvement capabilities?" In any domain where you have a reliable evaluation function — where right and wrong are computable — this technology is usable today. That's a surprisingly large design space.
+
+Three things to carry with you from this: One, "AI improving itself" covers a huge range, and most of what's deployed today is prompt optimization or task-specific refinement — not recursive self-improvement. Two, the hard technical barriers are evaluator reliability, training data boundaries, and alignment — any serious RSI approach has to address all three. And three, the domains where this works *right now* are exactly the ones with clear, machine-verifiable evaluation functions. If your domain has that, you don't have to wait for the Rubicon to cross.
+
+---

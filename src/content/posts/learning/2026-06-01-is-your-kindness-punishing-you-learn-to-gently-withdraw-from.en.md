@@ -9,6 +9,7 @@ description: "If you habitually put others' feelings ahead of your own, forgetti
 type: explainer
 original_url: "https://www.youtube.com/watch?v=JScYElSmiQc"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_193950_968747.mp3"
 ---
 
 Does this sound familiar: you haven't done anything wrong, but you still feel like you owe someone an apology. Someone goes quiet and you immediately start reviewing what you might have done. Someone is unhappy and you rush to fix it, even when you didn't cause it.

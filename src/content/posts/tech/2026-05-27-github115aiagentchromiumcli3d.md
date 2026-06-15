@@ -9,6 +9,7 @@ description: "GitHub 一週熱點第 115 期：五個正在引發開發者社群
 type: listicle
 original_url: "https://www.youtube.com/watch?v=KbZHF8s3CQA"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_195826_214147.mp3"
 ---
 
 每週 GitHub 的 trending 頁面都有驚喜。這週的熱點特別密集：五個專案分別代表了 AI 代理人、隱私瀏覽、CLI 自動化、和 3D 重建四個不同的技術方向，而且都有實質性的程式碼可以立刻試用。

@@ -9,6 +9,7 @@ description: "技術 YouTuber 分享的完整影片製作工作流程：選題�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=d6V-nGaNbhw"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_202851_845832.mp3"
 ---
 
 如果你有想過「這種每週解釋技術主題的 YouTube 影片，背後到底怎麼做的」，這類幕後影片給了一個難得的具體答案。技術 YouTuber 的工作流程和軟體工程師的工作流程其實有很多相似之處：選題像是 backlog 管理，腳本像是設計文件，剪輯像是 code review。只是交付物是影片而不是程式碼。

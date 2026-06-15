@@ -9,6 +9,7 @@ description: "Using a jacket purchase to explore the real nature of overthinking
 type: explainer
 original_url: "https://www.youtube.com/watch?v=ZPBS6qKu28c"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_141200_437676.mp3"
 ---
 
 At 29, I spent nearly three months going back and forth over whether to buy a jacket.

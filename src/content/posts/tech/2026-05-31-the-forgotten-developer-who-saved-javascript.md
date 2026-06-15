@@ -9,6 +9,7 @@ description: "Douglas Crockford 如何透過 JSON 規範、JSLint 和《JavaScri
 type: explainer
 original_url: "https://www.youtube.com/watch?v=JfPWbttemYE"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_200504_126658.mp3"
 ---
 
 Brendan Eich 在 1995 年 10 天內創造了 JavaScript，這個故事大家都知道。但有一個更少被提及的故事：在 JavaScript 誕生後的最初十年，它基本上被嚴肅的開發者視為一個玩具。

@@ -9,6 +9,7 @@ description: "Deep analysis of OpenAI's PostgreSQL scaling architecture: how a s
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=1zVLBRIwCr0"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_201811_827010.mp3"
 ---
 
 When ChatGPT hit 800 million users, how do you design your database architecture? OpenAI's answer surprised many: no sharding, no switch to NoSQL, just PostgreSQL — but with a few precise engineering decisions that made it hold.

@@ -1,0 +1,35 @@
+SpaceX filed its S-1 in May 2026, and for the first time we have actual numbers behind what has become the largest IPO in stock market history. One hundred and thirty-five dollars a share, Nasdaq ticker SPCX, targeting a seventy-five billion dollar raise at a one-point-seven-five trillion dollar valuation. Let that sink in — trillion, with a T.
+
+But here's the thing that makes this story genuinely interesting: SpaceX isn't really an aerospace company anymore. It's a subscription internet business that happens to own rockets.
+
+Let's break down what's actually in this filing.
+
+SpaceX operates three businesses. You've got the launch division — Falcon 9, Falcon Heavy, Starship. Then Starlink, the satellite internet constellation. And Starshield, which is secure satellite communications for the US government and military. Now you might assume rockets are the heart of this company. The numbers say otherwise.
+
+Starlink accounts for fifty-eight percent of total revenue. Ten-point-three million subscribers as of late 2025, paying somewhere around a hundred to a hundred and twenty dollars a month. That's over twelve billion dollars in annualized recurring revenue just from people paying for internet from space. And critically — it's the *only* profitable division. The connectivity business posted one-point-nineteen billion dollars in net profit in 2024. The rocket launch business? Still running at a loss. Starship development costs even more. The entire SpaceX operation is essentially funded by subscription fees from ten million households and businesses around the world who'd rather have satellite internet than deal with their local cable provider.
+
+So how do you justify one-point-seven-five trillion dollars? Let's think through it.
+
+If you value Starlink like a high-margin SaaS business — and with that kind of recurring revenue and vertical integration, you arguably should — you land somewhere between a hundred-twenty and a hundred-eighty billion for Starlink alone. Then you stack on top of that Falcon 9's stranglehold on the global launch market, which is north of sixty percent of all orbital launches worldwide. Add Starship's long-term potential for deep space and eventually Mars, plus Starshield's government contract moat. Aggressive valuation? Yes. Completely groundless? Not really.
+
+Now, the engineering story here is genuinely impressive. Falcon 9's first-stage booster lands itself and flies again — one booster has flown over twenty times. Traditional rockets were single-use, costing five to ten thousand dollars per kilogram to orbit. Falcon 9 gets that down to around twenty-seven hundred dollars per kilogram. That cost reduction is what made it economically possible to put seven thousand satellites into low Earth orbit in the first place. Starship pushes this further — the goal is under a hundred dollars per kilogram, which would be an order of magnitude cheaper than what Falcon 9 does today. If they get there, it changes the math on everything from lunar bases to Martian colonies.
+
+And Starlink's competitive moat isn't just that they have seven thousand satellites up there. It's that SpaceX manufactures the satellites, launches the satellites, and operates the constellation — all in-house. Amazon's Project Kuiper has to pay someone else to launch. OneWeb had to get acquired to survive. Nobody else can replicate that vertical integration, and that matters a lot when you're trying to build a constellation of this scale.
+
+That said, the S-1 is honest about the risks. There are three worth paying attention to.
+
+First: Elon Musk. The filing explicitly calls out that his personal brand and decision-making are central to the company — and explicitly acknowledges he's simultaneously running Tesla, xAI, and X. That's not a footnote. That's a material risk factor they had to put in writing.
+
+Second: competition is real. Amazon's Kuiper is coming. The EU has IRIS². China has government-backed constellation programs. None of them have Starlink's head start or integration advantage, but they're not standing still.
+
+Third: Starship is still in testing. It's SpaceX's next-generation core system, and the commercial timeline remains uncertain. Post-IPO, that's the next big milestone investors will be watching.
+
+So here's where this leaves us. Three things to take away.
+
+One — SpaceX is structurally a satellite internet company. The rockets are extraordinary, but they're the cost center. Starlink is the profit engine. Any analysis that leads with rockets is missing the point.
+
+Two — the valuation is aggressive but not absurd. At one-point-seven-five trillion, it sits in the same neighborhood as Apple and Nvidia. SpaceX's profitability doesn't yet match that tier, but the growth trajectory and the structural moat make the comparison at least defensible.
+
+Three — the Musk factor is real and priced in. Investors buying into this IPO are explicitly buying into his continued involvement across multiple companies simultaneously. That's either a feature or a risk depending on your perspective, but it's not something you can ignore.
+
+The S-1 turned a compelling story into a spreadsheet. And the spreadsheet, it turns out, is mostly about satellite internet subscriptions.

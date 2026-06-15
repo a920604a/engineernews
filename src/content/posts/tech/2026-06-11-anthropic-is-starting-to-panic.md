@@ -9,6 +9,7 @@ description: "從 IPO 申請到政府強制下線，Anthropic 在 2026 年 6 月
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=0pgCBV8CTZY"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_202308_593871.mp3"
 ---
 
 如果你在 AI 圈工作，2026 年 6 月的第二週你大概沒睡好。Anthropic 在短短十天內完成了一組幾乎不可能同時成立的操作：呼籲全球暫停前沿 AI 開發、提交 IPO 申請、推出史上最強模型，然後眼睜睜看著那個模型被美國政府強制下線。

@@ -9,6 +9,7 @@ description: "面對戰爭、經濟制裁、貨幣劇烈貶值等極端情境，
 type: explainer
 original_url: "https://www.youtube.com/watch?v=LKCUHthXKYs"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_141753_250941.mp3"
 ---
 
 幾年前，如果有人告訴你「應該考慮貨幣崩潰的情境」，你可能覺得這是末日預言者在誇大。但過去幾年，土耳其里拉的快速貶值、烏克蘭在戰爭初期的資本管制，讓越來越多人意識到：這些事情並不只發生在「其他國家」。

@@ -9,6 +9,7 @@ description: "從架構原理到實際成本，清楚說明 CPU、GPU、TPU 的�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=MUWAbpg1xLo"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_201548_375646.mp3"
 ---
 
 選硬體的問題在 AI 應用爆炸之前其實很簡單：大多數工作用 CPU，需要圖形處理就加 GPU。但現在這個問題複雜了很多——你還需要知道什麼時候用 TPU，什麼時候在 GPU 上跑反而比 CPU 慢（以及為什麼）。

@@ -1,0 +1,35 @@
+Here's the podcast script:
+
+---
+
+Everyone's been saying "use AI to make the company more efficient" for years now. And most companies have done *something* — deployed Copilot, set up a ChatGPT workspace, maybe built an internal chatbot. But here's the uncomfortable truth: most of those companies aren't actually getting smarter. They're just moving faster on the same treadmill.
+
+The companies that are genuinely pulling ahead? They've built something different. They've built a **feedback loop**.
+
+Here's what I mean. Think about Netflix's recommendation engine, or Amazon's warehouse routing, or Google's ad auction. None of those systems started out smarter than their competitors. They just *improved faster*. Because they were designed from day one to collect data during operation, feed it back into the model, and automatically adjust the next decision. The loop compounds. And compounding is where the real advantage lives.
+
+So what does a self-improving loop actually look like? It has four pieces.
+
+First, you need a **data flywheel** — and this is where most companies already stumble. It's not enough to have dashboard KPIs. If you want to teach an AI system what ad copy drives conversions, you need the copy *itself*, the audience characteristics, when it ran, what else was competing for attention at the same moment. Outcomes without context are nearly useless for AI to learn from. Most companies have plenty of outcomes and almost no context.
+
+Second, you need an **inference layer** — some kind of model that takes that rich data and produces not insights, but *decisions*. There's an important distinction here. "This audience segment converts better" is an insight. "Increase the budget for this segment by fifteen percent tomorrow" is a decision the system can act on. The inference layer has to output something executable, not just something interesting.
+
+Third — and this is where systems debt becomes very real — you need **automated execution**. The decision has to actually run without a human in the middle. That means your business systems need to expose API interfaces. Ad budget allocation, pricing rules, inventory triggers, support routing — if these live inside legacy systems with no programmatic access, you simply can't close the loop. No automation, no compounding.
+
+And fourth, you need **evaluation and feedback**. Results get recorded immediately and flow back into the data flywheel. The tricky part here is time horizon. Some decisions you can evaluate the next morning. Others — like whether a customer becomes loyal — might take a year to know. Good evaluation design means deciding upfront: which of these outcomes can be scored automatically, and which ones still need a human call?
+
+Now, here's what this is *not*. A lot of companies will deploy ten different AI tools, each one doing something useful in isolation — AI writes the copy, AI summarizes the report, AI generates the slide deck. But if none of those tools' outputs are feeding into another tool's inputs, you don't have a loop. You have a collection of fancy endpoints. That's AI efficiency tooling. Genuinely useful, but it doesn't compound.
+
+The other failure mode I see constantly: letting AI paper over bad data. If your sales data only records the wins and not the losses, your AI model learns a skewed version of reality and gives confidently wrong recommendations. The self-improving loop amplifies whatever's in your data — it doesn't magically correct for bias.
+
+And then there's the organizational dimension, which people consistently underestimate. If your sales team is measured on monthly quota attainment, but the AI system is optimizing for customer lifetime value, those two things will conflict at decision time. When humans can route around AI recommendations and still hit their numbers, they will. Self-improving loops require incentive alignment, not just technical infrastructure.
+
+Compare this to traditional A/B testing and you start to see the scale of the difference. Classic A/B: design an experiment manually, wait weeks for statistical significance, have a human choose the winner, deploy manually. The whole cycle takes months. A self-improving loop: the system continuously proposes hypotheses, automatically allocates traffic to test them, adopts winners the moment they hit a confidence threshold, and the results immediately seed the next round. Cycle time drops from months to hours. And instead of testing one or two variables at a time, you can evaluate dozens of combinations simultaneously.
+
+So what's the real blocker? Honestly, it's almost never "the AI isn't strong enough." It's usually one of two things: you don't have sufficient quality data for the AI to actually learn from, or your org structure prevents closed loops from forming in the first place. Those are organizational problems, not technology problems.
+
+The practical starting point is simpler than you might think. Find one business process — just one — where the inputs and outputs are clear and well-defined. Make sure that process's data is comprehensively recorded, with context, not just outcomes. Build the smallest possible version of the inference, execution, and evaluation cycle. Get that small loop running reliably. Then expand.
+
+Three things to walk away with. One: the compounding advantage isn't about having better AI — it's about having a faster feedback loop than your competitors. Two: data context is the prerequisite everything else depends on; without it, no amount of model sophistication saves you. And three: technology is the easy part. Organizational incentives and data discipline are what actually determine whether the loop closes or stays broken.
+
+---

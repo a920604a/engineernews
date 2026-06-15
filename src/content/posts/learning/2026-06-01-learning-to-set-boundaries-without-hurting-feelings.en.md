@@ -9,6 +9,7 @@ description: "You probably know how to set boundaries in theory. The harder part
 type: explainer
 original_url: "https://www.youtube.com/watch?v=niXi8iv9Sgc"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_194029_533351.mp3"
 ---
 
 "I know I should say no. But I can't get the words out."

@@ -1,0 +1,35 @@
+"I love hard questions." Four words. Demis Hassabis has said this in a dozen interviews, and every time it lands like a throwaway line. But it's not. It's actually the most precise description of a research strategy that's produced AlphaGo, AlphaFold, and now AI that can solve olympiad-level mathematics.
+
+So what does he actually mean?
+
+Here's the calculation underneath that sentence: the highest-leverage problems aren't the easiest ones, and they're not even the absolute hardest ones. They're the ones where solving them *unlocks* a large amount of subsequent progress. That's the key word — unlocks. One solution opens a hundred doors.
+
+Take protein folding. Nobody cracked it for fifty years. DeepMind spent years on AlphaFold before the breakthrough at CASP14 in 2020. But once that problem fell, hundreds of drug development projects worldwide shortened their timelines by years. The return on that single investment is still compounding today.
+
+Or Go. Before AlphaGo beat Lee Sedol in 2016, most experts said AI couldn't crack that game within a decade. The techniques that solved it — deep reinforcement learning combined with self-play — got transferred directly into AlphaFold's training methodology. One problem solved, tools that worked everywhere.
+
+This is why Hassabis calls it a return-on-investment calculation, not heroism.
+
+And here's the uncomfortable flip side: easy questions are traps. If you can solve them, so can everyone else. Your marginal contribution approaches zero. The research institution incentive system pushes people toward "moderately difficult problems with results in a year" because that's what gets papers published and citations accumulated. DeepMind has been fighting that gravity for over a decade — AlphaGo took years from concept to publication. That kind of patience requires knowing exactly *why* you chose the problem.
+
+So how do you identify a hard question actually worth attacking? Hassabis has been pretty explicit about this.
+
+First, evaluate leverage. After solving this, how many other problems become easier? If the answer is "mostly just this one problem," it's probably not the right target. A high-leverage solution is usually a methodological breakthrough — something that changes *how* you attack a whole class of problems, not just an isolated result.
+
+Second, make sure there's an objective evaluation function. DeepMind gravitates toward problems with clear, quantifiable outcomes. Chess has win and loss. Protein folding has structural accuracy scores. Math proofs are simply right or wrong. That objectivity is what lets AI systems learn — you can't train on a problem you can't score.
+
+Third — and this one's subtle — check whether the problem is hard because of its intrinsic complexity, or because everyone's been using the wrong tools. Sometimes a problem that's been stuck for decades isn't fundamentally intractable. It's just waiting for the right approach. AlphaGo wasn't feasible in 2013 because the compute wasn't there. Two years later, the compute arrived, and DeepMind — having already chosen the problem and understood its structure — was more ready than anyone who'd been working on easier adjacent questions.
+
+This is where research logic diverges from engineering logic. Engineering says: decompose the problem, find the nearest feasible path, ship. That's exactly right for building things. But for *choosing* what to build toward, the logic runs in reverse. You pick the highest-leverage target first, then figure out feasibility. Because a temporarily infeasible problem often becomes solvable when the tools catch up. And if you've already chosen it, you're ready.
+
+So when Hassabis says "I love hard questions," the full translation is: I invest time in problems that, once solved, will generate cascading impact — not problems that produce quick results with limited downstream reach.
+
+There's a version of this that applies well beyond research. In your own work, the question worth asking is: what's the core bottleneck where solving it would unblock a large number of other things? Not what's the next task I can close, but what's the constraint that, if removed, would change the shape of everything downstream.
+
+Three things to carry out of this:
+
+One — leverage is the variable that matters most in problem selection. Not difficulty, not speed to solution.
+
+Two — objective evaluation functions aren't just useful for AI training. They're useful for knowing whether you've actually solved the thing you set out to solve.
+
+Three — "temporarily infeasible" is a category, not a verdict. The right problem chosen early beats the easy problem chosen late.

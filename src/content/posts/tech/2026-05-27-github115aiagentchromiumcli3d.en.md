@@ -9,6 +9,7 @@ description: "GitHub trending highlights #115: five projects generating develope
 type: listicle
 original_url: "https://www.youtube.com/watch?v=KbZHF8s3CQA"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_195757_944365.mp3"
 ---
 
 GitHub's trending page delivers surprises every week. This week's batch is particularly dense across different technical directions — all with actual code you can try right now.

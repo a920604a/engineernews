@@ -9,6 +9,7 @@ description: "一個工程師第一次嘗試直播的真實紀錄：從決定要
 type: how-to
 original_url: "https://www.youtube.com/watch?v=p_RLNndfCVU"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_194409_085120.mp3"
 ---
 
 我不記得是什麼讓我最終按下「開始直播」那個按鈕。

@@ -9,6 +9,7 @@ description: "中年轉職要回學校念書嗎？大人的Small Talk EP677 聊�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=8eatmpr43r8"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_151706_505658.mp3"
 ---
 
 「我想換跑道，但我已經三十幾歲了，是不是要回去讀個學位才有機會？」

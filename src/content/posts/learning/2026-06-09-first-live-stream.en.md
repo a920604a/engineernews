@@ -9,6 +9,7 @@ description: "An honest account of going live for the first time: the pre-stream
 type: how-to
 original_url: "https://www.youtube.com/watch?v=p_RLNndfCVU"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_194348_011940.mp3"
 ---
 
 I don't remember what finally made me hit the "Start Streaming" button.

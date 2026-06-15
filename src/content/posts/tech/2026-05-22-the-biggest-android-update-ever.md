@@ -9,6 +9,7 @@ description: "深度解析 2026 年 Android 重大更新：AI 驅動的個人化
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=eFeDpUVEy48"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_195120_671542.mp3"
 ---
 
 Google 在 2026 年 I/O 大會上宣布的 Android 更新，被外界稱為「Android 有史以來最大規模的系統更新」。這個稱號不是誇飾——這次更新的範圍從桌面小工具、地圖導航、跨裝置分享，一路延伸到 AI 詐騙防護，幾乎觸及了每個日常使用場景。

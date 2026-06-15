@@ -1,0 +1,23 @@
+AI coding agents are no longer experimental toys. OpenAI's Codex CLI, GitHub Copilot, Claude Code — these tools are moving fast, and a surprising number of them have free tiers that are actually usable. The question isn't whether you can use them for free. The question is how to be smart about it so you don't burn through your quota in two days.
+
+Let's talk about what's actually out there and how to stretch it.
+
+First, OpenAI's Codex CLI. This is a terminal-based agent — you point it at your codebase, it reads files, runs commands, and makes changes. The CLI itself is open-source, so that part's free. What costs money is the API behind it. New OpenAI accounts get about five dollars in trial credits, which sounds small but goes further if you configure it to use lighter models like gpt-4o-mini instead of the full GPT-4o. The difference in cost is dramatic, and for a lot of everyday refactoring tasks, the lighter model is plenty.
+
+GitHub Copilot has a free tier too — two thousand autocomplete suggestions and fifty chat requests per month. For solo developers doing focused work, that's actually a reasonable budget. The catch is that Copilot's agent mode, the more powerful workspace-level stuff, requires a paid plan.
+
+Now, if you want truly unlimited and truly free, you're looking at local models. The setup is: install Ollama, pull down something like DeepSeek Coder, and connect it to an extension like Continue.dev in VS Code. Continue is open-source, Ollama is open-source, the model is open-source — you pay nothing ongoing. The honest tradeoff is quality. Local models are noticeably behind GPT-4o, and you need real hardware — at least eight gigabytes of GPU memory for a seven-billion-parameter model, sixteen for the bigger ones. CPU-only mode works, but slowly.
+
+So how do you actually make all of this last?
+
+The core strategy is routing tasks by complexity. Not every problem needs your strongest, most expensive tool. Think of it in tiers. For simple autocomplete and small suggestions, GitHub Copilot's free tier handles daily use comfortably. For medium complexity — writing tests, refactoring a function — something like gpt-4o-mini is cheap and capable enough. For genuinely hard problems, deep debugging or architectural decisions, that's when you want a strong model, either burning credits deliberately or using the claude.ai web interface for one-off questions. And for bulk simple tasks with no quota concerns, local Ollama models are your friend.
+
+One thing that almost no one does but makes a real difference: reduce context. AI coding agents by default want to read your entire codebase, but most tasks only need two or three files. If you explicitly tell the agent which files are relevant, you can cut your token consumption dramatically. The difference between "fix this bug" and "fix this bug, here are the two files involved" isn't just semantic — it changes how much you're spending per request.
+
+For completely one-off questions — "what does this TypeScript error mean," "help me think through this architecture" — the free claude.ai web interface is often the right call. You're not burning API credits for conversational back-and-forth.
+
+A practical zero-cost daily workflow looks like this: Copilot free tier handles inline autocomplete in your editor. The claude.ai web interface handles quick questions. gpt-4o-mini through Codex CLI handles medium tasks where you want something more agentic. Local Ollama covers anything repetitive or bulk. And you save your actual API credits for the moments that genuinely need a frontier model.
+
+A couple of practical notes. Don't create multiple accounts to reset credits — that violates terms of service and you'll eventually get caught. Better to switch to local models when you're out and wait for the monthly reset. Also worth knowing: DeepSeek's API is significantly cheaper than OpenAI's, and DeepSeek-V3's coding quality is close to GPT-4o. If you're going to pay for anything, that's worth comparing before defaulting to OpenAI.
+
+Three things to take away from this. One: the billing unit matters — understand whether a tool charges by request count, tokens, or time, because that changes which tasks you should route to it. Two: complexity routing is the real skill here — using the weakest tool that can handle a task is how free tiers last months instead of days. Three: local models are a genuine fallback, not just a toy — they have real quality limits, but for the right tasks they're fast, free, and unlimited.

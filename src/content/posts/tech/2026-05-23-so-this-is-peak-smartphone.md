@@ -9,6 +9,7 @@ description: "探討智慧型手機硬體創新停滯的現象：為什麼每年
 type: explainer
 original_url: "https://www.youtube.com/watch?v=c347oYQO57A"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_195254_229621.mp3"
 ---
 
 打開今年的旗艦手機發布會，你大概已經知道會看到什麼：更亮的螢幕、更快的晶片、相機多了一顆鏡頭，以及一堆關於 AI 的宣傳影片。這種「熟悉感」本身，就是問題所在。

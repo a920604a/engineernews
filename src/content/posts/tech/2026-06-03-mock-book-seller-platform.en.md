@@ -9,6 +9,7 @@ description: "System design mock series: from requirements clarification to capa
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=tkikiGfum58"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_200752_839332.mp3"
 ---
 
 A book sales platform is a classic system design interview problem. It looks similar to a general e-commerce platform, but has specific complexity: book search requirements are far richer than typical products (title, author, ISBN, genre, full-text), inventory management involves mixing physical books and ebooks, and digital goods need licensing and DRM handling.

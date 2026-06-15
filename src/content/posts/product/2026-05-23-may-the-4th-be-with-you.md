@@ -9,6 +9,7 @@ description: "5月4日的星際大戰日，從一句諧音梗起家，成長為�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=2_4ZA5QffCg"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_194748_044389.mp3"
 ---
 
 「May the 4th be with you.」

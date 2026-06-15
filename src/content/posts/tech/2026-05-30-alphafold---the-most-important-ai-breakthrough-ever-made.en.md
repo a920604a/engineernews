@@ -9,6 +9,7 @@ description: "A deep look at AlphaFold's technical principles, its impact on bio
 type: explainer
 original_url: "https://www.youtube.com/shorts/VQ2bV58QbH0"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_200207_231488.mp3"
 ---
 
 In December 2020, a problem that biology had waited 50 years to solve was cracked.

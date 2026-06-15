@@ -1,0 +1,33 @@
+Ten days. Anthropic managed to file for an IPO, co-sign a paper calling for a global AI pause, launch their most powerful model ever, and then watch the US government force it offline — all in ten days. If you work in AI, the second week of June 2026 probably broke your brain a little.
+
+Let's walk through it chronologically, because the sequence is the whole story.
+
+June first: Anthropic quietly files a confidential S-1 with the SEC. The numbers are staggering — forty-seven billion dollars in annualized revenue, up from ten billion the year before. That's nearly five times growth in a single year. And they're targeting a valuation north of a trillion dollars. For context, OpenAI filed their own S-1 one week later, so suddenly the race to Wall Street is very much in the open.
+
+Then, three days after filing for the IPO — June fourth — Anthropic employees and co-founder Jack Clark publish a paper called *When AI Builds Itself*. And this paper is not subtle. It says Claude is writing over eighty percent of the commits in Anthropic's own codebase. Engineers are shipping eight times more code per quarter compared to just a year or two ago. The time horizon for tasks an AI can handle autonomously has been doubling every four months — from four-minute tasks with earlier models up to twelve-hour autonomous engineering runs with the current ones. And Clark's estimate: sixty percent probability of recursive self-improvement by 2028. The conclusion? A coordinated, conditional global pause on frontier AI training.
+
+The same week they were in active IPO preparation.
+
+Five days after the pause call, June ninth — Fable 5 launches. Anthropic's most capable public model. SWE-bench Verified score of eighty-eight-point-six percent, optimized for enterprise and science workloads. They also quietly launched Mythos 5 on restricted access at the same time.
+
+And then June twelfth happens.
+
+At 5:21 PM Eastern time, a US export control directive hits Anthropic. Reason: a known jailbreak had been found that bypasses Fable 5's safety controls, and the government classified it as a national security risk. Global shutdown, effective immediately. That includes foreign nationals physically inside the US losing access. Prorated refunds offered.
+
+Days since Fable 5 had launched: four.
+
+Anthropic's response was that the jailbreak was, quote, "relatively simple," and that it worked on GPT-5.5 too — essentially suggesting the shutdown was a misunderstanding. Whether that framing holds up remains to be seen.
+
+So what do we actually make of all this?
+
+The credibility tension is real and it's not going away. When your pause paper drops on Tuesday and your new flagship model launches on Sunday, the "safety-first" message gets complicated fast. Anthropic can genuinely believe both things simultaneously — that AI development is dangerous, and that they need to keep shipping to survive as a company. Both of those things can be true at the same time. But them both being true doesn't make the contradiction disappear, and the optics are brutal.
+
+The regulatory piece is also worth thinking about carefully. The government shutdown order arrived four days after launch, triggered by a reported jailbreak — reactive, not proactive. And here's the problem: if task horizons are genuinely doubling every four months, reactive governance structurally cannot keep pace. By the time a regulator understands what a model can do, the next generation is already in training.
+
+And the pause paper itself has a gap. It proposes trigger conditions for a global pause, but doesn't say who decides when those conditions are met, or how the mechanism actually works. Without that, it's a moral statement dressed up as a policy proposal. Moral statements are important. They're just not the same thing.
+
+The number I keep coming back to is that eight-times engineer productivity figure from Anthropic's own internal data. That's not a benchmark in a lab — that's real output from real engineers in a real company. If that number is accurate, you can be confident other AI labs are seeing similar dynamics and just not publishing them. The task horizon metric — sustained autonomous action over hours, with error recovery and tool use and adaptation — is a different kind of capability than scoring well on a test. That's the thing worth watching as these models evolve.
+
+Three things to take away from all this: first, the gap between what AI companies say about safety and what they ship is becoming structurally visible, not just rhetorically awkward — and markets and regulators are both paying attention now. Second, the government's ability to intervene is real, and faster than most people expected, but it's still reactive; the question of what proactive AI governance even looks like remains genuinely open. Third, Anthropic is now a public-market story, which means every safety statement they make will be read through a shareholder lens — that's a new pressure that didn't exist six months ago.
+
+The next few months are going to be very interesting. Watch when Fable 5 comes back online, watch whether the IPO valuation holds given the government friction, and watch whether anyone — Anthropic, governments, anyone — turns the conditional pause idea into something with actual teeth.

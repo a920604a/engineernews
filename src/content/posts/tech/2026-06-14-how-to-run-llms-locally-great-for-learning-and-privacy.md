@@ -9,6 +9,7 @@ description: "完整的本機 LLM 入門指南：Ollama 安裝、模型選擇（
 type: how-to
 original_url: "https://www.youtube.com/watch?v=U8lGbSaCCYI"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_202940_200734.mp3"
 ---
 
 為什麼要在本機跑 LLM？主要有三個理由：**隱私**（敏感資料不出去）、**學習**（直接摸模型的行為，不隔著 API 抽象層）、**成本**（硬體 upfront，後續零 token 費用）。

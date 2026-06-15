@@ -9,6 +9,7 @@ description: "用一件外套的購買決定，聊聊過度思考的本質：它
 type: explainer
 original_url: "https://www.youtube.com/watch?v=ZPBS6qKu28c"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_141219_043885.mp3"
 ---
 
 29 歲那年，我花了將近三個月的時間，反覆考慮要不要買一件外套。

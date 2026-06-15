@@ -9,6 +9,7 @@ description: "借羅翔的觀點聊聊：為什麼越長大越容易感覺被生
 type: explainer
 original_url: "https://www.youtube.com/watch?v=8A2Z6RrOP6k"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_194218_587152.mp3"
 ---
 
 「為什麼越長大，越容易被生活困住？」

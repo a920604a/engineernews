@@ -9,6 +9,7 @@ description: "Meesho 的產品轉型案例：從 WhatsApp 社群轉售起家，�
 type: case-study
 original_url: "https://www.youtube.com/watch?v=49L8lVe_PVo"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_194843_055884.mp3"
 ---
 
 2022 年，Meesho 是印度最大的社群電商平台。他們的商業模式很清楚：個人賣家（主要是女性）透過 WhatsApp 轉售商品，Meesho 抽佣金。這個模式帶來了數千萬月訂單和瘋狂的成長曲線。

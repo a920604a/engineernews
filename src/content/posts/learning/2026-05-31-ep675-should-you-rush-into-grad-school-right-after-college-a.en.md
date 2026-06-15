@@ -9,6 +9,7 @@ description: "Should you go straight to grad school after college? Let's talk ab
 type: explainer
 original_url: "https://www.youtube.com/watch?v=eYpO1zsQZlg"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_141814_870774.mp3"
 ---
 
 Near the end of college, "should I go to grad school?" becomes nearly unavoidable. And interestingly, it's usually not a question you've thought through carefully — it's one you start thinking about because someone asked.

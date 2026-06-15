@@ -9,6 +9,7 @@ description: "Starting from attachment theory: what inner safety is, why self-he
 type: explainer
 original_url: "https://www.youtube.com/watch?v=fRjSmxaxMKw"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_194249_780276.mp3"
 ---
 
 There's a feeling that's hard to put into words: you know you haven't done anything wrong, yet you're always braced for blame. You get along well with someone, but a quiet voice inside keeps saying "this won't last." You want closeness, but you're afraid of getting hurt once you get there — so you keep your distance.

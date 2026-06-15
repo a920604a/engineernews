@@ -1,0 +1,33 @@
+Eight hundred million users. Let that number sink in for a second. That's roughly one in ten people on Earth opening ChatGPT — asking questions, loading chat history, scrolling through old conversations. And the database holding all of that? A single PostgreSQL instance. No sharding. No NoSQL pivot. Just Postgres, scaled very, very carefully.
+
+OpenAI published the details in early 2026, and it's one of the most refreshingly honest database write-ups you'll read. They're not bragging. They're walking you through the problems, the solutions, and — crucially — the things they deliberately chose *not* to do.
+
+So let's start with the big one: why no sharding?
+
+Sharding is when you horizontally split your data across multiple database nodes. It's almost a reflex for engineers at this scale — "we're huge, we need to shard." But OpenAI looked at ChatGPT's actual traffic pattern and realized something important. ChatGPT is a *read-heavy, write-light* system. Users are mostly loading conversation history and reading interface state. Writes are relatively concentrated — they happen on specific paths, not everywhere. And for that kind of workload, you don't need to split your data. You need to scale your *read path*.
+
+Sharding also carries enormous engineering cost. We're talking about modifying hundreds of application endpoints, rebuilding cross-node transaction logic, rerouting queries across shards. OpenAI's honest estimate was months to years of work. Meanwhile, the read scaling problem had a much lighter solution sitting right in front of them.
+
+That solution: about fifty read replicas, distributed across multiple geographic regions. Here's how it works. You have one primary database that handles all writes and strongly-consistent reads. Then you have roughly fifty replica databases that receive a continuous copy of the primary's changes and serve read queries. The application layer routes traffic based on what you need — if you can tolerate data that's a few milliseconds stale, hit a nearby replica. If you absolutely need the freshest data, hit the primary. For ChatGPT, the vast majority of queries are fine with replicas.
+
+But there's a catch. PostgreSQL creates one operating system process per database connection, and establishing each connection costs about fifty milliseconds. At millions of queries per second, that overhead stacks up fast. The connection itself becomes the bottleneck.
+
+Enter PgBouncer — a connection pooler that sits between your application and your database. OpenAI deployed an independent PgBouncer cluster in front of every single read replica. Here's what that looks like in practice: instead of your application pods each opening their own direct connections to Postgres — which would be slow and expensive — they all connect to PgBouncer, which maintains a small, warm pool of actual database connections. When a query comes in, it grabs an available connection from the pool, runs the query, and immediately releases it back. The application doesn't even know the difference.
+
+The mode they used is called transaction pooling — the connection returns to the pool the moment a transaction completes, not when the client disconnects. And the result is striking: connection overhead drops from fifty milliseconds down to five. A ten-times improvement, just from pooling.
+
+Now, fifty replicas creates another problem. In standard Postgres replication, the primary has to stream its write-ahead log — the record of every change — to every replica simultaneously. Fifty replica connections is real pressure on the primary's network and CPU. OpenAI is addressing this with what's called cascading replication, which they're building with the Azure PostgreSQL team. The idea is simple: instead of the primary talking to all fifty replicas directly, it talks to a few intermediate replicas, and those intermediates fan out to the rest. The primary's replication pressure stays flat even as you scale to a hundred or a hundred and fifty replicas. It's like adding a distribution layer to your replication tree.
+
+And then there's write pressure, which read replicas simply can't help with. OpenAI's answer here is surgical: identify the subsystems that generate the most writes — things like usage metrics, session state, logs — and migrate them to storage systems specifically built for high write throughput. Let Postgres focus on the business data that actually needs relational queries and strong consistency. They also enforce strict rate limits on batch updates and backfills, so no background job can suddenly hammer the primary with a massive write spike.
+
+Here's the thing about all of this that I find genuinely instructive. Every decision OpenAI made followed the same logic: understand your workload first, then apply the minimum engineering effort to solve the actual bottleneck. Connection pooling is a well-understood tool — deploy it everywhere. Read replicas are simple to reason about — add more. Sharding is available but expensive — leave it on the shelf until you truly need it.
+
+So the three takeaways I want you to walk away with:
+
+First, workload characterization before architecture decisions. Read-heavy and write-light is a fundamentally different problem than write-heavy. Solve the problem you actually have.
+
+Second, connection pooling is almost always worth it. The jump from fifty milliseconds to five milliseconds per connection isn't a footnote — at scale, it's the difference between a system that works and one that doesn't.
+
+And third, defer expensive decisions until they're truly necessary. Sharding is still on OpenAI's shelf. They'll pull it down when read replicas genuinely can't hold — not before. The engineering discipline to say "not yet" is underrated.
+
+For most systems, the answer isn't to replace PostgreSQL. It's to make PostgreSQL work really, really well. OpenAI just showed us what that looks like at 800 million users.

@@ -1,0 +1,31 @@
+In 2024, the Nobel Prize in Chemistry went to three scientists for something that almost nobody in the AI research world found surprising: cracking the protein folding problem. David Baker, Demis Hassabis, and John Jumper — Hassabis and Jumper representing DeepMind's AlphaFold team — took home the prize for a breakthrough that fundamentally changed structural biology overnight.
+
+So what exactly did they solve, and why did it take over fifty years?
+
+Here's the setup. Proteins are chains of amino acids — think of them like long strings of beads, where each bead is one of twenty possible types. The sequence of those beads determines everything: what shape the protein folds into, and therefore what job it does in the body. The problem is that between a flat sequence and a final three-dimensional shape, there are an astronomically large number of ways those amino acids could theoretically fold. This is called Levinthal's paradox — if a protein tried every possible configuration randomly, it would take longer than the age of the universe to find the right one. And yet proteins fold correctly in milliseconds.
+
+For half a century, biologists had to figure out protein structures the hard way: X-ray crystallography, cryo-electron microscopy. These are extraordinary techniques, but they're also brutally slow and expensive. A single protein could take years and millions of dollars to resolve. Computational methods tried to shortcut this, but they were never accurate enough to trust. Before AlphaFold2, the best algorithms scored around 60 to 70 on a standard benchmark where 100 means perfect. AlphaFold2 showed up at the 2020 CASP14 competition — essentially the Olympics of protein structure prediction — and scored above 90. It nearly matched experimental accuracy. Every other team was left in the dust.
+
+Now, how does it actually work? AlphaFold2 isn't just "feed a sequence into a neural network and hope." Its architecture is purpose-built for this problem.
+
+The first clever move is using evolution as a data source. Proteins across different species that are evolutionarily related tend to mutate together — if one amino acid changes, a nearby one often changes too, because they're in physical contact and need to stay compatible. AlphaFold2 takes sequences from hundreds of related proteins across different organisms, aligns them, and feeds that alignment matrix into the model. From that pattern of co-mutations, the model can infer which parts of the chain are actually close to each other in 3D space — before it even starts predicting the structure.
+
+That aligned sequence data goes into what DeepMind calls the Evoformer — a deep Transformer architecture that runs 48 layers deep. It maintains two representations simultaneously: one for the sequence itself, and one for every possible pair of amino acid residues. These two representations inform each other in alternating passes. The sequence attention updates the distance estimates between pairs; the pair distances sharpen the sequence attention. Back and forth, 48 times. By the end, the model has a rich geometric picture of how the protein is organized.
+
+Then a final module takes that geometric information and directly outputs three-dimensional atomic coordinates — the actual positions of every atom. The whole pipeline is end-to-end trainable against real experimental structures.
+
+The practical impact has been enormous. Drug discovery starts with understanding your target — usually a protein. Confirming a protein's structure used to mean waiting months for experimental results. Now researchers get high-confidence predictions in minutes. That compresses early-stage discovery timelines dramatically.
+
+DeepMind also partnered with EMBL-EBI to do something remarkable: they ran AlphaFold on over 200 million proteins covering nearly every known organism and published all of it for free. The structural biology knowledge base that humanity had built up over decades was effectively multiplied by orders of magnitude in a single release.
+
+And the field didn't stop at prediction. The next generation of tools — RFdiffusion, ProteinMPNN — reverses the problem entirely: instead of asking "what shape does this sequence fold into?", they ask "what sequence would fold into this shape I want?" That's David Baker's core contribution. AI in molecular biology has gone from observer to designer.
+
+To put the methods in perspective: experimental techniques like X-ray crystallography still give you the most precise atomic-level data, but they take months to years per protein. AlphaFold covers nearly all single-chain proteins in minutes to hours, with confidence scores that tell you how much to trust each prediction. It's not replacing the lab — it's changing what the lab spends its time on. Researchers can now quickly screen hundreds of candidates and reserve expensive experiments for the most promising ones.
+
+Three things to take away from this.
+
+First, AlphaFold is proof that deep learning can make genuine scientific breakthroughs on deeply structured problems — not just perception tasks like image recognition or speech. The 50-year protein folding problem fell to a well-designed architecture trained on the right data.
+
+Second, the decision to release 200 million structure predictions for free was arguably as important as the model itself. Open access transformed this from a DeepMind achievement into a global infrastructure.
+
+Third, prediction was just the beginning. The real frontier now is design — building proteins that don't exist in nature to do jobs we specify. AlphaFold3 is already pushing into drug-molecule binding prediction. Watch that space closely.

@@ -9,6 +9,7 @@ description: "A structured walkthrough of how to approach the 'Design Uber' syst
 type: case-study
 original_url: "https://www.youtube.com/watch?v=MNfU1tFLiOk"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_141339_490786.mp3"
 ---
 
 "Design Uber."

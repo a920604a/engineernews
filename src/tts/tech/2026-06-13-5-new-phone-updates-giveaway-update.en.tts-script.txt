@@ -1,0 +1,29 @@
+"Bought a phone, stopped getting updates two years later." If you've been in the Android world for any stretch of time, you've lived this. It's been the ecosystem's dirty little secret for over a decade — and honestly, it's why a lot of people jumped ship to iPhone. But here's the thing: 2025 and 2026 look genuinely different. Not marketing-copy different. Actually different.
+
+Let's talk about what's changed and why it matters.
+
+Google fired the biggest shot first. Starting with the Pixel 8, they committed to seven years of OS updates and security patches. Seven years. That means someone who buys a Pixel 9 today is theoretically covered until 2031. How is this even possible? Two things: Google builds their own Tensor chip, so they're not waiting on Qualcomm or MediaTek to hand them low-level hardware support. And Android's Project Mainline lets Google push updates to core system components directly through the Play Store — no full software update required from the manufacturer. That's a big structural advantage.
+
+Samsung, historically one of the *slowest* Android OEMs to push updates — we're talking six to eight months behind Google on major releases — has made a real move. The Galaxy S25 received its Android 16 update within three months of Google shipping it. That's a meaningful improvement. And Samsung matched the seven-year commitment starting with the S24 series.
+
+OnePlus has had a rougher road. Around 2021 and 2022, after their OPPO merger, OxygenOS basically became ColorOS with a different name. Core fans were furious, and rightfully so. But the OnePlus 12 and 13 series represent a conscious effort to re-differentiate. OxygenOS is lighter again, updates ship faster, and they're promising four years of Android version updates plus five years of security patches. Not seven years, but a real turnaround from where they were.
+
+Two others worth mentioning: Nothing Phone punches above its weight in update speed for its price tier — their software skin is light, which means less integration work when a new Android version drops. And Motorola Edge has one of the longer commitments in its price range, which matters a lot when you're not spending flagship money.
+
+Now, the business case here is actually pretty compelling. A seven-hundred-dollar Pixel lasting seven years works out to a hundred dollars a year. A four-hundred-dollar mid-range phone with two years of support? That's two hundred dollars a year. Long-term support fundamentally changes the value math, and consumers are starting to figure this out.
+
+For developers, though, longer support cycles create a real tension. If users can keep five-year-old devices and still get security patches, you end up needing to support a much wider range of Android versions simultaneously. The pressure to bump your minimum SDK drops — but so does the percentage of your users who have access to the newest APIs. It's a trade-off, not a pure win.
+
+One thing developers should watch closely: Project Mainline means system behavior can change under your app even when users haven't received a traditional OS update. Things like permission handling can shift because Google updated a system component via the Play Store. Don't assume stable system behavior just because your users are on the same Android version they were last month.
+
+And the biggest delay driver in the Android update chain — for anyone curious why OEMs have historically been so slow — is the chipmaker's Board Support Package. After an OEM gets the Android source code, they need low-level hardware support from whoever made the chip. That process can add months. Google sidesteps it entirely with Tensor. Everyone else is at Qualcomm or MediaTek's timeline.
+
+So here's where we land. Three things to take away.
+
+First, the seven-year commitment is real, but read the fine print. "Seven years" often means fewer years of new Android versions and more years of security patches only. Verify exactly what you're getting for a specific device before you buy.
+
+Second, update speed is mostly a function of how deeply an OEM customized Android. Lighter skins ship faster. If update cadence matters to you, it's a direct signal to look at how close to stock the software is.
+
+Third — and this is the genuinely interesting one — whether these commitments actually hold up in years five and six is still an open question. We'll know in a few years whether "seven years" was real or just a headline. The Tensor chip question, specifically, is whether the hardware can still perform well enough to justify running the latest Android in 2031. That answer doesn't exist yet.
+
+The Android update story is better than it's ever been. Whether it's good enough depends on how the next few years actually play out.

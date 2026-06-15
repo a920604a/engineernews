@@ -9,6 +9,7 @@ description: "Why is Chinese called the world's most 'solitary' writing system? 
 type: explainer
 original_url: "https://www.youtube.com/watch?v=ajGdy5JeHIY"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_194546_088935.mp3"
 ---
 
 Most of the world's major writing systems belong to one family. Greek letters became Latin, Latin spread across Europe, Arabic letters are the core of Semitic languages, Brahmic scripts are the parent of most South and Southeast Asian writing. Different shapes, same underlying logic: letters represent sounds; sounds combine into words.

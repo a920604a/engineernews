@@ -9,6 +9,7 @@ description: "深入了解 MCP Model Context Protocol：Anthropic 如何設計�
 type: deep-dive
 original_url: "https://www.youtube.com/shorts/VMF4InsZm9I"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_201636_673710.mp3"
 ---
 
 Claude Code 會使用 GitHub、能查詢 Postgres、能搜尋 Slack 頻道——這些不是 Claude 本身的能力，而是透過 MCP（Model Context Protocol）外掛進來的。

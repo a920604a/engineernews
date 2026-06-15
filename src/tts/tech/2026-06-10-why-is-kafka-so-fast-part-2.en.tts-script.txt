@@ -1,0 +1,29 @@
+Last time we talked about why a single Kafka node is so fast — sequential I/O, page cache, zero-copy transfers. That's all one machine doing heroic work. But Kafka's real superpower isn't single-node performance. It's what happens when you add more machines. Throughput scales almost linearly. And the reason that works comes down to one idea: the partition.
+
+Here's the core design principle — every partition in Kafka is completely independent. Reads and writes to different partitions don't interfere with each other at all. They can run in parallel, on different machines, simultaneously. That's the unlock.
+
+Think about how a topic is laid out. Say you have an "orders" topic split into three partitions. Partition zero lives on broker one. Partition one lives on broker two. Partition two lives on broker three. Each broker is the leader for one partition and holds replicas of others. The load spreads evenly across the cluster. Add a fourth broker and Kafka rebalances automatically.
+
+Compare that to older versions of RabbitMQ — a single queue, no matter how many consumers you attached, had a single-threaded dispatch bottleneck. Kafka doesn't have that ceiling. You want more parallelism? Add more partitions.
+
+Now, more partitions isn't automatically better. There's a real tradeoff. On the upside: more partitions means more consumers can work in parallel, and smaller individual partitions mean faster leader elections if something goes wrong. On the downside: every partition means more file handles, more OS threads, more file management pressure on each broker. A practical rule of thumb — keep it under a hundred partitions per broker. More isn't always more.
+
+So how does consumption actually scale? Through Consumer Groups. When multiple consumers join the same group, Kafka assigns each consumer its own slice of partitions. Three partitions, three consumers — each one handles exactly one partition, and theoretically your throughput triples. If you add a fourth consumer to that group, it just sits idle. The number of partitions is your hard ceiling on parallelism within a group.
+
+But here's where it gets interesting for distributed systems. Multiple *different* consumer groups can all read the same topic completely independently, each tracking their own position in the log. That means one stream of events can fan out to an order service, an analytics pipeline, a fraud detection system — all consuming at their own pace, none of them blocking the others. That's Kafka's event broadcasting capability, and it's genuinely powerful for building loosely coupled systems.
+
+Now let's talk about replication, because durability always costs something. Every partition has one leader and some number of followers. Producers only talk to the leader. The leader writes the message, and followers pull and replicate asynchronously.
+
+The tuning knob here is the `acks` setting. At one extreme, you tell Kafka "don't bother confirming" — lowest latency, but if a broker crashes before replication happens, that message is gone. In the middle, you wait for the leader to confirm — medium latency, medium risk. At the other extreme, `acks=all`, you wait for all in-sync replicas to confirm. Highest latency, but losing a single broker won't lose data.
+
+In production, most teams run `acks=all` combined with a minimum of two in-sync replicas. That's your safety net. The tradeoff is explicit: every write waits for follower confirmation.
+
+Which brings us to ISR — the In-Sync Replica set. Kafka tracks which replicas are actually keeping up with the leader using a time window. Fall behind that window, and you're dropped from the ISR. When a leader fails, Kafka's controller only promotes a replica from the ISR list. That guarantee is what makes ISR valuable — a new leader from the ISR will always have all the committed messages.
+
+There's one edge case worth knowing: if the ISR shrinks down to just the leader, but your configuration requires at least two in-sync replicas for writes to succeed — those writes will start failing. Kafka will refuse to accept data rather than quietly lower its consistency guarantees. That's a deliberate design choice, and it's the right one.
+
+Compared to the alternatives — RabbitMQ shines when you need complex routing, filtering, or task queues where exactly one worker handles each job. Pulsar is interesting for multi-tenant or cloud-native setups. Kafka is built for high-throughput event streams, log and metrics pipelines at scale, event sourcing patterns, and anywhere you need multiple downstream services replaying history from any point in time.
+
+If you're running a task queue where each job gets done by exactly one worker, Kafka is overkill — SQS or RabbitMQ is a better fit. If your traffic is low and latency is critical, Kafka's overhead will hurt you more than help you.
+
+So here's where we land. First: partitions are the unit of performance — independent, parallelizable, and the ceiling for consumer concurrency. Second: Consumer Groups let you scale consumption horizontally, but only up to the partition count, while multiple groups let you fan out the same stream to independent services. Third: replication gives you durability, ISR keeps the guarantees honest, and `acks=all` with minimum in-sync replicas is the standard production tradeoff — you pay in latency, you gain in reliability.

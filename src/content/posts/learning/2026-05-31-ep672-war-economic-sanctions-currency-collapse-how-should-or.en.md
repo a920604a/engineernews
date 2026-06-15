@@ -9,6 +9,7 @@ description: "When faced with scenarios like war, economic sanctions, or currenc
 type: explainer
 original_url: "https://www.youtube.com/watch?v=LKCUHthXKYs"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_141716_181718.mp3"
 ---
 
 A few years ago, if someone told you to plan for currency collapse scenarios, you might have dismissed it as doomsaying. But Turkey's rapid lira devaluation and Ukraine's capital controls in the early days of the war have made it harder to say "that only happens in other countries."

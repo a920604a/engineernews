@@ -9,6 +9,7 @@ description: "SpaceX IPO deep analysis: the financial foundation of a $1.75T val
 type: explainer
 original_url: "https://www.youtube.com/watch?v=HqsTB0avrh8"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_200037_487215.mp3"
 ---
 
 SpaceX isn't just a rocket company anymore. This has been said for years, but the SpaceX S-1 filing made it concrete with numbers for the first time.

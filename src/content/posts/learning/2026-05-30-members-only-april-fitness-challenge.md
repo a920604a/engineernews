@@ -9,6 +9,7 @@ description: "從四月健身挑戰的設計邏輯出發，聊聊怎麼讓健身
 type: how-to
 original_url: "https://www.youtube.com/watch?v=-TQWD0S5uLA"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_141538_593053.mp3"
 ---
 
 每到月初，你可能都有過這個衝動：「這個月要好好運動！」然後到了月底，記憶中能想起的健身日數大概是兩位數減一個十。

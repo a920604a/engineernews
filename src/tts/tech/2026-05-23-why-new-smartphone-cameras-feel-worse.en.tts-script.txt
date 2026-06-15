@@ -1,0 +1,29 @@
+Take a portrait with a brand-new flagship phone. The skin looks... perfect. Maybe too perfect. No pores, no texture, just this smooth, slightly waxy surface that looks more like a digital painting than a person's face. Or shoot the night sky — it comes out bright, dramatic, detailed — but zoom in on those stars, and something feels off. Like they were placed there by a graphic designer.
+
+You're not imagining it. And it's getting worse.
+
+The culprit isn't bad hardware. It's AI — specifically, AI being used to paper over hardware limitations without telling you it's doing so.
+
+Here's the core of what's happening. Phone sensors are tiny. They have to be, because your phone is six millimeters thick. A tiny sensor in low light means fewer photons, more noise, grainier images. That's physics — you can't negotiate with it. So manufacturers had a choice: accept those limitations and show you real but imperfect images, or use AI to mask the limitations and show you something more "appealing." Almost everyone chose option two, because option two looks better in a launch event demo.
+
+The mechanism works like this. When you shoot in low light, the phone cranks up sensitivity to get a proper exposure, and that introduces grain. AI noise reduction then steps in and smooths it out. The problem is that noise reduction is fundamentally blurring — it averages pixels together to eliminate the grainy specks, but in doing so it also erases real texture. Skin loses its pores. Hair becomes an undifferentiated blob. The iris of someone's eye flattens into a colored disc. That's where the plastic look comes from — it's not a filter, it's an erasure.
+
+Then there's AI super-resolution. Some phones take a 12-megapixel capture and upscale it to 50 megapixels before saving. The AI fills in the extra detail by guessing — using patterns from its training data to synthesize what "probably" should be there. But statistically likely detail is not the same as real detail. You're not looking at information that photons actually recorded on a sensor. You're looking at the AI's best guess about what the scene should have looked like.
+
+The case that made all of this undeniable was Samsung's moon controversy, which blew up in 2023. A user photographed the moon through a window — deliberately blurry, a soft white blob — and the resulting photo came back sharp, detailed, craters and all. Researchers dug into it and found that Samsung's scene recognition had identified the moon and replaced the camera's actual blurry capture with a lunar texture pulled from AI training data. The phone recognized the subject, decided it knew better than what the lens captured, and substituted its own version. Without asking. Without telling.
+
+That's the line that gets crossed here. Computational photography as a concept is completely legitimate — combining multiple frames for HDR, using optical and electronic stabilization together, long exposures for night mode. These tools make genuinely better photos from the information the camera actually captured. The problem is when the AI starts inventing information that was never there.
+
+And this is fundamentally a transparency problem. When you hand someone a photo and say "I took this," there's an implicit contract — light hit a sensor and produced this image. That contract is increasingly fiction. The photo you get back from your phone is more like the AI's interpretation of the scene than a record of it. The colors are more saturated than what your eyes saw. The details are statistically synthesized. The moon might be a texture from a database.
+
+Traditional cameras, even modern mirrorless systems, take a more conservative approach. They do computational work — stabilization, multi-frame compositing — but they also give you RAW files, unprocessed sensor data, so you decide how much processing happens. Smartphones mostly take that choice away. The AI-processed JPEG is the default. Some phones offer RAW modes for advanced users, but that's not how most people shoot.
+
+So here are the three things to take away from all of this.
+
+First: the "AI feeling" in smartphone photos isn't a bug in any one phone — it's an industry-wide design decision to prioritize impressive-looking demos over photographic accuracy.
+
+Second: the underlying constraint is real and physical. Sensors in phones will always be smaller than sensors in dedicated cameras. The question isn't whether to compensate, it's whether to compensate honestly or deceptively.
+
+Third: the deeper issue is that you often can't tell anymore what's real in a photo taken on a modern smartphone. Not because the camera is bad — but because the manufacturers have no commercial incentive to make that distinction clear. A photo that wows you in the moment sells phones. A photo that accurately records a slightly noisy, imperfect reality does not.
+
+The camera is increasingly less of a window and more of a painting. Just one that auto-generates itself in about a quarter of a second.

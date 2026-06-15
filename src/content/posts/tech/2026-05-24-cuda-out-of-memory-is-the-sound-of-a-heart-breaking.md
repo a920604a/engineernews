@@ -9,6 +9,7 @@ description: "深入解析 CUDA Out of Memory 的常見原因與修復方法：�
 type: debug
 original_url: "https://www.youtube.com/shorts/Q5w61PXKuTM"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_195544_452341.mp3"
 ---
 
 `RuntimeError: CUDA out of memory. Tried to allocate 2.00 GiB...`

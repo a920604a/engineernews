@@ -9,6 +9,7 @@ description: "Demis Hassabis 的研究哲學：為什麼選困難但有槓桿的
 type: explainer
 original_url: "https://www.youtube.com/shorts/kIvvzCR5NjA"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_200316_241367.mp3"
 ---
 
 「我喜歡硬題（hard questions）。」

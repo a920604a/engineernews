@@ -9,6 +9,7 @@ description: "Google AI 研究主任 Jeff Dean 解析 AI 計算能力百萬倍�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=yz6I23VRbdg"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_200701_472319.mp3"
 ---
 
 Jeff Dean 是 Google Brain 的共同創辦人，現在以 Google DeepMind 研究主任的身分持續推進 AI 前沿研究。他最近在一場公開演講中，重新審視了一個聽起來像行銷說詞但其實有嚴謹技術含義的問題：AI 計算能力過去十年真的提升了一百萬倍，這對未來意味著什麼？

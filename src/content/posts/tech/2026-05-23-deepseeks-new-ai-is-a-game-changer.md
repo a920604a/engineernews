@@ -9,6 +9,7 @@ description: "DeepSeek V4 深度解析：1.6 兆參數 MoE 架構、百萬 token
 type: explainer
 original_url: "https://www.youtube.com/watch?v=LpXhy2iiaQE"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_195204_041560.mp3"
 ---
 
 2026 年 4 月 24 日，DeepSeek 正式發布 V4 系列——距離他們以 DeepSeek-R1 震驚矽谷剛好過了一年。這次他們帶來了更大的模型、更長的上下文、更激進的定價，以及一個對整個中美 AI 競賽都有深遠意義的技術細節：V4 是 DeepSeek 首款針對**華為 Ascend 晶片**最佳化的模型。

@@ -9,6 +9,7 @@ description: "拆解 NBA 直播背後的技術：Hawk-Eye 3D 追蹤攝影機如�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=mk_wdHePbtQ"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_200139_029588.mp3"
 ---
 
 你看 NBA 直播時，螢幕右上角那個即時顯示球員速度、投籃角度和球員追蹤資料的圖形介面，背後是一套在每場比賽都得跑通的龐大技術堆疊。從攝影機訊號到你的螢幕，整個系統的延遲必須壓在廣播延遲的容忍範圍內，同時還要符合裁判決策的時間要求。

@@ -1,0 +1,27 @@
+"Design Uber." Two words that make even experienced engineers freeze in a system design interview. The problem feels enormous — there's a passenger app, a driver app, payments, maps, surge pricing — where do you even begin?
+
+Here's the thing: that feeling of being overwhelmed is actually the first thing you're being tested on. Can you take a vague, planet-sized problem and carve it into something you can actually reason about?
+
+So let's walk through how to actually approach this.
+
+**First move: ruthlessly narrow the scope.** Uber is a full product ecosystem, and if you try to design all of it, you'll design none of it well. In an interview, the smartest thing you can do is draw a box around the core flow: passenger requests a ride, driver accepts, match is made. That's it. Payments? Skip it for now. Ride history? Ratings? We'll circle back if there's time. And mapping? Assume Google Maps is handling that — you don't need to build a navigation engine from scratch. The interviewer is watching whether you proactively define that boundary, or whether you wait for them to rescue you.
+
+**Second: identify the real technical challenge.** Strip away the product complexity and Uber becomes, at its core, a location matching problem. Where is the passenger? Where are the nearby drivers? And how do you match the best driver as fast as possible? That's three concrete sub-problems, and they're where the interesting engineering lives.
+
+Take real-time location updates. Drivers are pinging their position every few seconds. At scale — say, a million active drivers — that's around a quarter million writes per second. That's a brutal write load, and a traditional relational database like Postgres would buckle under it.
+
+Then there's the nearby driver query. When a passenger requests a ride, you need to instantly find all available drivers within, say, five kilometers. Standard database range queries are slow here — they're not built for geospatial lookups. You need something purpose-built for "find me everything within N kilometers of this point."
+
+And finally, matching logic. Once you have a list of nearby drivers, how do you pick? Closest by distance? Shortest estimated arrival time? Highest rating? That decision isn't just a product call — it shapes the architecture underneath it.
+
+**Now, the data model.** Rather than read you a schema, here's what you actually need to track: for each driver, you need their ID, their current coordinates, whether they're available or busy, and when that position was last updated. For each ride request, you need the passenger's ID, their pickup coordinates, the status of the request — pending, matched, completed — and eventually the driver ID once a match is made.
+
+The APIs are clean: one endpoint for a passenger to request a ride, one for a driver to push their location update — and this one fires constantly, so it has to be fast — and one endpoint for checking the status of a match, either via polling or a persistent WebSocket connection.
+
+**Here's where the trade-offs get interesting.** That quarter-million-writes-per-second problem? The standard answer is Redis. It's an in-memory store, so reads and writes are microsecond-fast. And Redis has a built-in geographic commands feature — it uses a structure called a geohash under the hood, which lets you ask "give me all drivers within five kilometers of these coordinates" extremely efficiently. You write location updates to Redis, and asynchronously sync to something persistent in the background.
+
+The other architectural move worth flagging is service separation. Location updates, matching logic, and ride status should each live in their own service. That way, a traffic spike in location updates — say, during a city-wide event — doesn't drag down the matching system or break ride status checks. You isolate the blast radius.
+
+So what's the "Design Uber" question really testing? It's not whether you've memorized a stack. It's whether you can use engineering reasoning to decompose a massive, ambiguous problem into bounded sub-problems, propose solutions, and articulate the trade-offs honestly. The interviewer doesn't want to hear you recite "use Kafka and Redis and Kubernetes." They want to see you think.
+
+Three things to take away from this. One: scope first, always — define what you're designing before you design it. Two: find the hardest sub-problem early, because that's where the real architecture decisions live — in this case, it's the geospatial, high-frequency write problem. And three: trade-offs are the answer. In system design, there's no single correct solution, only solutions that are reasonable given the current constraints. Show that you understand the constraints, and you've already won half the interview.

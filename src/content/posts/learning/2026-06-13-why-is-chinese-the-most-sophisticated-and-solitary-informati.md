@@ -9,6 +9,7 @@ description: "為什麼說中文是「最孤獨的資訊媒介」？從表意文
 type: explainer
 original_url: "https://www.youtube.com/watch?v=ajGdy5JeHIY"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_194615_137221.mp3"
 ---
 
 世界上大多數書寫系統都在同一個家族裡。希臘字母演化成拉丁字母，拉丁字母傳遍歐洲，阿拉伯字母是閃語系的核心，梵文字母是南亞和東南亞大多數文字的祖先。這些文字系統雖然形狀不同，但底層邏輯一樣：字母代表語音，語音組合成詞。

@@ -1,0 +1,39 @@
+Your AI agent is live. Features are shipping. Users are happy. And then the bill arrives. Hundreds of dollars. For a single day. From what you thought was a "simple" workflow.
+
+This is the trap that catches so many AI engineers right now. API pricing has come down — that part's true — but agent token usage doesn't scale linearly. It scales multiplicatively. Every tool call sends another LLM request. Every request carries the full conversation history. Run that loop enough times and you're burning money fast.
+
+So let's talk about where the money actually goes, and how to stop the leak without sacrificing what your agent can do.
+
+There are three root causes behind most billing spikes. First: you're using a more powerful model than the task actually needs. Second: your tool call loop has no ceiling, so when something goes wrong, the agent just keeps spinning. Third: you're passing the entire conversation history on every single round, and that context keeps growing.
+
+Let's start with model selection, because this is where most of the money gets wasted.
+
+The instinct is to reach for the strongest model available — Claude Opus, GPT-5, whatever's at the top of the benchmark leaderboard — and use it for everything. The problem is that "strong" also means expensive, and most of what your agent does doesn't require that kind of horsepower.
+
+Think about what your agent actually does, task by task. Pulling a dollar amount off a receipt? Deciding which team should handle a support ticket? That's pattern matching. It's fast, it's structured, and a smaller model handles it just fine. On the other hand, decomposing a multi-step plan, writing a non-trivial algorithm, or recovering gracefully from a tool failure — those genuinely require stronger reasoning.
+
+The practical move is to build a model tier. You define which model handles which class of task: a lightweight model for classification and extraction, a mid-tier model for summarization and code generation, and your heavy model reserved only for complex planning or anything that requires real multi-step reasoning.
+
+The cost difference is not subtle. As of mid-2026, you're looking at roughly eight cents per million tokens for Haiku, three dollars for Sonnet, and fifteen dollars for Opus. Same task sent to the wrong model can cost you two hundred times more than it needs to. Two hundred times.
+
+Now, the iteration problem. An agent without a loop ceiling is a liability. When it hits an unexpected error — a tool returns something malformed, an API is slow, a step produces an ambiguous result — it doesn't stop. It tries again. And again. Each iteration is a full LLM call, plus the cost of replaying the entire conversation context.
+
+The fix is simple: set a maximum iteration count. Ten is a reasonable starting point for most agent tasks. If the agent hasn't finished in ten tool call cycles, you log a warning and stop gracefully. This isn't limiting your agent's capability — legitimate tasks rarely need more than ten tool calls. What you're limiting is the runaway case, the infinite loop that eats your budget at 3am while you're asleep.
+
+Context trimming is the third lever, and it's often the most overlooked. Every round, you're probably sending the model the full message history from the very beginning of the session. Early in a task that's fine. By round seven or eight, you're paying to re-read context that's mostly irrelevant to what the model needs to do right now.
+
+Two approaches work well here. The first is a sliding window: only pass the last several turns of conversation, plus your system prompt. The agent almost always only needs recent context to make its next decision. The second is compressing tool results. When a web search returns five paragraphs per result, you probably only need the title and a one-sentence snippet. When a database query returns a full user object, the agent likely only needs two or three fields. Strip the rest before it goes into the context.
+
+And if your agent fetches the same data repeatedly across different tasks — user profiles, configuration values, anything that doesn't change mid-session — cache it. Don't pay for the same lookup twice.
+
+One question worth addressing directly: will downgrading to cheaper models hurt accuracy and cause more retries, ultimately costing more? Sometimes yes. For tasks with real reasoning complexity — multi-step planning, error recovery, code that has to be correct — forcing a cheap model can actually increase your total cost through failure loops. The key word is *test*. Measure accuracy per task type before you commit to a tier assignment. Don't assume, measure.
+
+So here are the three things to take away from this.
+
+One: classify before you allocate. Map your agent's tasks by actual complexity, then assign models to match. Most tasks are simpler than you think, and the cost difference is enormous.
+
+Two: put a ceiling on your loops. Maximum ten iterations, log when you hit the limit, and treat that log as a signal that something in your task flow needs attention.
+
+Three: be aggressive about trimming context. Sliding windows, compressed tool results, caching repeated calls. Every token you don't send is money you don't spend.
+
+Your agent doesn't need to be cheaper to be better. It just needs to be precise about what it uses and when.

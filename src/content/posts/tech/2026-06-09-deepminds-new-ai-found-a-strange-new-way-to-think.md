@@ -9,6 +9,7 @@ description: "AlphaProof 如何用神經符號方法在 IMO 達到銀牌水準�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=Dkqzqw8rxXI"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_201922_257731.mp3"
 ---
 
 大多數人對 AI 解數學題的印象是：語言模型做不好多步推導、會在中間跳步、算出錯誤答案卻信心滿滿。2024 年 7 月，DeepMind 宣布 AlphaProof 在當年度的國際數學奧林匹克（IMO）預試題中解出了 6 題裡的 4 題，包括一道只有 5 名人類選手解開的最難題。這不是語言模型的進步，而是一個架構層面的突破。

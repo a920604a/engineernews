@@ -9,6 +9,7 @@ description: "CVE-2026-31431 CopyFail 漏洞解析：一個 732 bytes 的 Python
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=lkifbWtxxlk"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_194934_897340.mp3"
 ---
 
 一個不需要 root、不需要特殊工具、只用 Python 標準函式庫就能寫出的 732 bytes 腳本，可以在你的 Ubuntu、Debian、RHEL、Arch、SUSE 上取得 root 權限。這不是誇大，這是 2026 年 4 月正式披露的 CVE-2026-31431，代號「CopyFail」。

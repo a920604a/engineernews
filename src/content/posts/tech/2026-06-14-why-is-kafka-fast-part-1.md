@@ -9,6 +9,7 @@ description: "深入解析 Kafka 效能的底層原理：循序 I/O 為何比隨
 type: explainer
 original_url: "https://www.youtube.com/shorts/wvLdBJEl-wc"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_203046_307980.mp3"
 ---
 
 Kafka 是一個「刻意設計成把資料寫到磁碟」的系統，卻是業界最快的訊息佇列之一。初次接觸這個事實的人通常覺得矛盾——磁碟不是比記憶體慢好幾個數量級嗎？

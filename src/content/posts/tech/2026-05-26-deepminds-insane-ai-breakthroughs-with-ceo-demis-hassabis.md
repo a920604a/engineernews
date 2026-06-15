@@ -9,6 +9,7 @@ description: "深入了解 DeepMind CEO Demis Hassabis 的研究哲學與戰略�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=huAwz_BR8WM"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_195734_678197.mp3"
 ---
 
 DeepMind 2014 年被 Google 以 5 億英鎊收購時，很多人覺得這是一家「做遊戲 AI 的公司」。十年後，它的研究成果拿到了諾貝爾化學獎。

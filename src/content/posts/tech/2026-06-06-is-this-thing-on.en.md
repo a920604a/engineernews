@@ -9,6 +9,7 @@ description: "Starting from a stage audio metaphor, examining the core problem i
 type: explainer
 original_url: "https://www.youtube.com/watch?v=2Hke7Utt_qQ"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_201419_416774.mp3"
 ---
 
 "Is This Thing On?" is what a performer says when stepping onto a stage, tapping the microphone. It's not filler — it's verification: did the signal reach the audience?

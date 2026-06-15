@@ -1,0 +1,17 @@
+Here's the remote work problem nobody's fully cracked yet: the daily standup.
+
+Text updates in Slack work, sure — "yesterday I did this, today I'm doing that" — but they feel hollow. You lose all the nuance, the tone, the sense that there's an actual human on the other end. On the flip side, jumping on Zoom for a five-minute check-in has its own tax. The scheduling, the waiting for people to join, the awkward "okay I think we're all here" — it's a lot of overhead for what should be a quick pulse check.
+
+There's a tool called Sup that's trying to thread this needle. The idea is simple: async video standups. Instead of everyone showing up live, you record a one-to-two minute clip — what you did yesterday, what you're tackling today, anything blocking you — and your teammates watch it whenever it works for them. No shared calendar slot required.
+
+And here's the bet Sup is making: seeing someone's face and hearing their voice carries way more information than reading their words. When someone says "I'm a bit stuck today," you can actually hear whether that means "minor annoyance" or "I've been spinning on this for six hours and I need help." Text can't do that. It's genuinely higher bandwidth communication, just decoupled from time.
+
+The workflow is pretty lightweight. Sup pings you through Slack or email at a set time. You record your clip, it uploads, and your team watches it on their own schedule. Everything gets saved, so if you need to go back and check what someone said three days ago, it's there.
+
+Now, who does this actually work well for? Cross-timezone teams are the obvious win. If you've got people spread across continents, forcing a synchronous meeting window means someone's always getting the bad end of the deal — either very early or very late. Async standup sidesteps that entirely. It also makes sense for small teams where people have that personal connection already — you're not in the same office, but you still see each other's faces every morning. And honestly, if your daily standup has become a ritual of reading bullets off a screen with nobody really listening? Async video might just give everyone that time back and produce better information in the process.
+
+That said, video does come with a slightly higher threshold than typing a message. Some people aren't comfortable on camera. Some need a few takes to feel natural. And the async nature has a real downside: if someone hits a serious blocker mid-morning, they're not going to surface that until you happen to watch their video — which might not be until tomorrow.
+
+So Sup isn't some paradigm-shifting breakthrough. But it's targeting a real tradeoff that most remote teams make poorly: you either go cold and efficient with text, or you go human and expensive with live meetings. Async short video is a reasonable middle path that doesn't force you to pick one extreme.
+
+Three things worth taking away from this. First, information density in communication isn't just about words — tone and expression carry real signal, and async video preserves that. Second, the right fit matters: cross-timezone teams and small tight-knit groups get the most out of this; if your team is co-located or highly synchronous by nature, the overhead probably isn't worth it. And third, async doesn't mean disconnected. The whole premise here is that you can maintain a human feeling in distributed work without paying the coordination cost of a live meeting. Whether Sup specifically delivers on that is something you'd only know by trying it with your own team.

@@ -9,6 +9,7 @@ description: "Taiwanese financial author and podcast host Hao Xu-Lie shares his 
 type: explainer
 original_url: "https://www.youtube.com/watch?v=EGPEnipo3vM"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_194639_221202.mp3"
 ---
 
 You have books on the shelf you bought months ago and never finished. That bothers you a little.

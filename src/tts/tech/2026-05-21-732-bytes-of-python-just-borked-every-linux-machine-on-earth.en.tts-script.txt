@@ -1,0 +1,35 @@
+Seven hundred and thirty-two bytes. That's smaller than most text messages. And that's all it takes — a tiny Python script using nothing but Python's built-in standard library — to get root on virtually every Linux machine shipped in the last nine years. No special tools, no third-party packages, no compiler needed. Just Python, which is already installed on your system.
+
+This is CVE-2026-31431, and the researchers who found it called it CopyFail. Publicly disclosed in April 2026, and yes, it's real.
+
+So what actually happened here? The vulnerability lives inside a Linux kernel component called **authencesn** — that's a cryptographic template that handles authenticated encryption. Deep kernel plumbing. And it has a logic bug that lets an unprivileged user — someone with no special permissions at all — perform a precise, controlled four-byte write into the **page cache**.
+
+Now, the page cache is how the Linux kernel handles file reads. When you open a file, the kernel doesn't keep reading from disk every time. It loads the contents into memory — the page cache — and serves all reads from there. It's a performance optimization, and it's fundamental to how Linux works.
+
+Here's where it gets nasty. When the authencesn bug triggers, the kernel writes those four corrupted bytes into the cached version of the file — but it never marks the page as "dirty." In kernel terms, dirty means "this needs to be written back to disk." Because the page never gets flagged dirty, the on-disk file stays completely untouched. Every checksum passes. Every integrity tool that hashes the file on disk gives you a clean bill of health.
+
+But the page cache? That's what every process on the system is actually reading from.
+
+So here's the attack in plain terms: you target a setuid binary — something like the `passwd` command, which runs as root. You corrupt its in-memory representation using this bug. The next time anyone runs that binary, the system executes your modified version from memory and spawns a root shell. Meanwhile, the file on disk is pristine. SELinux doesn't flag it. AppArmor doesn't flag it. Your integrity monitoring software doesn't flag it. Nothing in the logs looks suspicious.
+
+The CVSS score is 7.8 out of 10, which the rating system labels "High." And technically, the score reflects that you need to already be on the machine to exploit this — it's a local privilege escalation, not a remote exploit. But that framing undersells the real-world danger.
+
+Think about Kubernetes. The page cache is a kernel resource. It's shared across all processes and all containers running on the same physical node. If an attacker gets code execution inside even a single pod — maybe through a web application vulnerability — they can use CopyFail to corrupt memory that's visible to every other workload on that node. From one compromised container, you can escalate to the Kubernetes node itself, and from there, everything co-hosted on that machine is in play. Multi-tenant clusters running CI/CD pipelines or serverless workloads are especially exposed.
+
+And the tooling situation makes this worse. Traditional integrity monitoring — tools like AIDE or Tripwire — work by hashing files on disk and comparing against a known baseline. CopyFail never touches the disk. It's invisible to that entire category of defense. Researchers are calling this a "traceless escalation" technique, and that's not hyperbole.
+
+The exploit itself only requires Python 3.10 or later — specifically for a system call called `os.splice` — and uses only three standard library modules: `os`, `socket`, and `zlib`. No compilation step. No package manager. Python 3.10 ships with Ubuntu 22.04, Debian 12, RHEL 9, and every other major distribution released in the last few years. The barrier to running this is essentially zero.
+
+The good news: the fix was merged into the mainline Linux kernel on April 1st, 2026, correcting how authencesn cleans up pages when a cryptographic operation fails partway through. Distributions have been rolling out patched kernels through normal update channels since then.
+
+Patching is straightforward. Run your standard system upgrade — `apt upgrade` on Ubuntu and Debian, `dnf update kernel` on RHEL and Fedora, `pacman -Syu linux` on Arch — and then reboot. The reboot is critical. You need to actually load the new kernel for the fix to take effect.
+
+So three things to take away from this.
+
+First: **patch immediately and reboot**. If you're running any Linux system without the April 2026 kernel fix, you're vulnerable. This especially means Kubernetes nodes in multi-tenant clusters — that's where the blast radius is largest.
+
+Second: **your disk-based integrity tools are blind to this class of attack**. CopyFail exposes a fundamental gap in the security tooling most organizations rely on. Expect a new generation of runtime page cache monitoring to emerge in response — and start thinking about whether your detection strategy covers in-memory tampering, not just on-disk changes.
+
+Third: **authencesn probably isn't alone**. The root cause here is a flawed assumption that got baked into one kernel component doing in-place cryptographic operations. That assumption likely exists in other places too. Treat this as the first of a category, not a one-off.
+
+Seven hundred and thirty-two bytes to root. Update your kernel.

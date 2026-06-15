@@ -9,6 +9,7 @@ description: "聊聊為什麼習慣用長時間尺度思考的人容易滑向虛
 type: explainer
 original_url: "https://www.youtube.com/watch?v=Ebwp-Kt7Ykg"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_141626_784982.mp3"
 ---
 
 你有沒有這樣的時刻：想著「反正幾十年後大家都死了，這件事有什麼意義」，然後突然覺得眼前的一切都變得很虛。

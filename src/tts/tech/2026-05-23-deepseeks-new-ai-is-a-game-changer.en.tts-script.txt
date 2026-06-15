@@ -1,0 +1,27 @@
+Almost exactly one year after DeepSeek-R1 sent shockwaves through Silicon Valley, DeepSeek is back — and they've gone bigger. Way bigger. On April 24th, 2026, they dropped V4, and the headline number is 1.6 trillion parameters. But the number that actually matters most? Buried in the technical footnotes, barely mentioned in most coverage.
+
+Let's start with the basics. V4 comes in two flavors: V4 Flash, which is lightweight and fast, and V4 Pro, which is the flagship. Pro is currently the largest open-weight mixture-of-experts model that exists — 1.6 trillion total parameters, a million token context window, and a variant called V4-Pro-Max that DeepSeek claims outperforms GPT-5.2 and Gemini 3.0 Pro on reasoning benchmarks.
+
+Now, mixture-of-experts is worth understanding here, because it's central to why this is technically impressive. The idea is: you have a massive model, but during any given inference pass, only a small subset of specialized sub-networks actually activate. V4 has 1.6 trillion parameters total, but only 49 billion are live at any moment. That's what keeps the compute costs reasonable despite the enormous scale. It's like having a staff of thousands but only calling in the specialists relevant to each specific task.
+
+The million token context window is genuinely useful for real work. That's large enough to fit an entire substantial codebase into a single prompt — which opens up cross-file code understanding in ways that were impractical before.
+
+On pricing: V4 Flash comes in at 14 cents per million input tokens, 28 cents per million output. That undercuts GPT-5.4 Nano, Gemini 3.1 Flash, and Claude Haiku 4.5. This is DeepSeek's consistent playbook — aggressive API pricing to pressure OpenAI and Google commercially, while the open-source release lets companies self-host entirely, which removes the API dependency altogether. For any organization that can't send data to a third-party API — finance, healthcare, legal — that self-hostability is worth more than any benchmark number.
+
+Now, about those benchmarks: V4-Pro-Max's performance claims currently come primarily from DeepSeek's own evaluations. Independent third-party results are still in progress. Worth noting though — when DeepSeek-R1 made similar claims a year ago, the community largely validated them. So these numbers deserve serious attention, while we wait for confirmation.
+
+Here's the part most people missed, and it's the most geopolitically significant thing in this entire release: V4 is DeepSeek's first model formally optimized for Huawei Ascend chips.
+
+US export controls have cut Chinese AI companies off from Nvidia's best hardware — the A100s, H100s, H200s. So China's AI labs have had to build around that constraint. If V4's real-world performance on Ascend chips actually matches the claimed benchmarks, this is a meaningful inflection point. It means China's leading AI companies can train and deploy frontier models without any dependency on American chip exports. That's not a footnote. That's a structural shift.
+
+Technically, V4 builds on V3's architecture with a few key improvements. It has a new approach to handling long sequences that avoids the memory explosion problem transformers typically hit with very long contexts. It was trained with reinforced chain-of-thought supervision, which is showing up as meaningful gains on math and complex reasoning. And it has specific training for tool use and multi-step task planning — which makes it a strong candidate as the backbone for agent systems.
+
+Compare that to GPT-5.2 and Gemini 3.0 Pro: neither is open source, neither is self-hostable, neither supports Ascend chips, and neither has disclosed their parameter counts or context windows publicly.
+
+So here's where this lands. Three things are worth holding onto from this release.
+
+First: the open-source frontier is real. The assumption that closed models like GPT and Gemini always lead is genuinely under pressure. V4 challenges it directly.
+
+Second: the pricing compression continues. V4 Flash makes the economics of switching away from closed-source APIs increasingly difficult to ignore. If you're paying for a mid-tier closed API today, the question worth asking is whether V4 Flash already covers your use case at a fraction of the cost.
+
+And third — the Huawei Ascend optimization is the sleeper story here. Whatever you think about the benchmark numbers, the fact that a 1.6 trillion parameter frontier model has been optimized to run on non-Nvidia hardware is a technical and geopolitical signal that deserves more attention than it's getting.

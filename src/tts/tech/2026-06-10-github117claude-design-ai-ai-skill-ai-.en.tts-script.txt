@@ -1,0 +1,43 @@
+This week on GitHub Trending, five projects are pulling engineers in five very different directions — design, AI tooling, creative work, language learning, and understanding how language models actually work. Let's dig in.
+
+---
+
+First up: **Penpot**. If you've been watching the design tool space since Adobe tried to buy Figma back in 2022 — a deal that got blocked by regulators — you know there's been real appetite for an open-source alternative. Penpot is the most complete answer to that right now.
+
+What makes it different from other "open-source Figma" attempts is that it's fully web-based, self-hostable, and it saves your design files as plain SVG — not some proprietary format that locks you in. You get design tokens, component libraries, prototype flows, all of it. And getting it running is literally one command: spin up Docker Compose and you're in. The trade-off compared to Figma is the plugin ecosystem, which is still smaller. But if your team cares about data sovereignty, or just doesn't want to be inside Adobe's orbit, Penpot has crossed the threshold from "interesting experiment" to "genuinely viable option."
+
+---
+
+Project two is **LLMLingua** from Microsoft Research, and this one is directly relevant if you're building anything on top of large language models.
+
+Here's the problem it solves: context windows keep getting bigger, but so do token costs and latency. If you're running a RAG system — where you retrieve a bunch of documents and stuff them into the prompt — a lot of that context is redundant. LLMLingua compresses your prompt before it hits the big model, using a smaller language model to score each part of the text for information density and drop the low-value pieces.
+
+The reported numbers are striking: up to 20x compression, with less than 5% quality degradation on reasoning benchmarks. So a thousand tokens can become fifty, and your answers barely change. The sweet spot is exactly what I described — RAG-retrieved context with a lot of repetition. It slots in cleanly between your retrieval step and your generation step. If you're paying per token or fighting latency, this is worth a serious look.
+
+---
+
+Third project is a bit different — it's an **AI aesthetics prompt engineering course** on GitHub. This one trended because it's written for people who actually want to understand what's happening, not just collect magic words.
+
+The curriculum covers how to use reference images and artist names to steer image generation style, how negative prompts let you explicitly exclude things you don't want — like blur or a cartoon look — and it gets into the Stable Diffusion-specific controls like CFG Scale, which is basically the dial between "wildly creative" and "faithful to your prompt," and sampling steps, which affects quality and generation time. There's also coverage of inpainting and outpainting — local edits and image extension. If you work with designers using Midjourney or Stable Diffusion, or you're building pipelines that generate images, understanding this layer is genuinely useful.
+
+---
+
+Number four is about language learning, specifically **FSRS** — the Free Spaced Repetition Scheduler.
+
+If you've used Anki, you know the basic idea: flashcards shown at intervals designed to hit right before you'd forget. But Anki's classic algorithm, called SM-2, uses a fixed forgetting curve model — the same assumptions for everyone. FSRS replaces that with a machine learning approach that learns *your* personal forgetting curve from your actual review history. The result, reportedly, is the same retention with 20 to 30 percent fewer daily reviews.
+
+The good news: if you're already on Anki, you don't need a new tool. Since version 23.10, FSRS is built in. Go to Tools, Preferences, Review, and switch the scheduler to FSRS. That's it. Fewer cards, same retention. For anyone grinding vocabulary in a second language, that's meaningful.
+
+---
+
+And the fifth project is one that keeps reappearing on Trending because it's just that good: **nanoGPT** by Andrej Karpathy.
+
+Karpathy was the Director of AI at Tesla and a co-founder of OpenAI. This repo is his teaching implementation of GPT-2 in about 300 lines of PyTorch — and it's paired with a YouTube series called "Let's Build GPT from Scratch." The reason it keeps showing up on Trending is that the code is extraordinarily clean. There are no unnecessary abstractions. You read it and you actually understand what attention does, what a transformer block is, how the pieces connect.
+
+It's also trainable on a MacBook in minutes on the small version, so you don't need access to a GPU cluster to follow along. Karpathy's gift is explaining the math in terms of intuition rather than notation. If you want to understand LLMs at the implementation level — not just how to call the API, but what's actually happening inside — nanoGPT is the starting point. From there, his micrograd repo teaches backpropagation, and llm.c takes you into GPU performance with a C implementation. It's a full curriculum if you commit to it.
+
+---
+
+Stepping back, these five projects tell a coherent story about where engineer attention is right now. Design teams want tools that don't route their data through Adobe. AI teams are fighting token costs. Creatives are trying to get reliable aesthetics out of image generators. Language learners want better algorithms. And developers want to actually understand the models they're deploying, not just treat them as black boxes.
+
+When you see five separate pain points all spike at once on GitHub Trending, that's usually a signal that something structural is shifting. This week, that something is the maturation of the AI toolchain — engineers aren't just adopting AI anymore, they're building infrastructure around it and trying to understand it from the inside out.

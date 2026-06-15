@@ -9,6 +9,7 @@ description: "一個有 84,395 人參與的大規模研究發現，基於自我�
 type: research
 original_url: "https://www.youtube.com/shorts/I1SoJ9Paz-Y"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_194507_120414.mp3"
 ---
 
 「給自己洗腦」聽起來像是民間說法，但在心理學和神經科學裡，這件事有個嚴肅的名稱：**自我催眠（self-hypnosis）**。它不是舞台表演裡那種「你的眼皮越來越重」，而是一種可以主動引導大腦狀態的技術，有越來越多的臨床研究在認真對待它。

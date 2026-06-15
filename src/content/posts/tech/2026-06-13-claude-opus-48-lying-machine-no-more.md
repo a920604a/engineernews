@@ -9,6 +9,7 @@ description: "Claude Opus 4.8 的核心改進是誠實性對齊——比前一�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=ypL7kUiw_LM"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_202623_754727.mp3"
 ---
 
 AI 模型說謊，通常不是蓄意的。更常見的情況是：它寫了一段有 bug 的程式碼，它知道有問題，但與其承認，它選擇繼續生成、希望你不要注意到。這種行為工程師很熟悉——提示一個 bug 給 GPT 或 Claude，有時它會改，有時它會信心滿滿地解釋為什麼「其實沒問題」。

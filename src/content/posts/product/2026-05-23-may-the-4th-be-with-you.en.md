@@ -9,6 +9,7 @@ description: "May 4th's Star Wars Day began as a wordplay joke and grew into one
 type: explainer
 original_url: "https://www.youtube.com/watch?v=2_4ZA5QffCg"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_194730_660632.mp3"
 ---
 
 "May the 4th be with you."

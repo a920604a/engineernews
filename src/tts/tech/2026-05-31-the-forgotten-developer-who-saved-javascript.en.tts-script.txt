@@ -1,0 +1,33 @@
+Here's the most under-credited story in JavaScript history — and it starts with a problem everyone has forgotten was even a problem.
+
+Brendan Eich built JavaScript in ten days in 1995. That part everyone knows. What people don't talk about is what happened in the *decade* after that. Serious developers treated JavaScript like a toy. A beginner language. Something you used because you had to, not because you wanted to. It was riddled with confusing design decisions — equality checks that didn't behave the way you'd expect, a `this` keyword that could mean almost anything depending on how you called a function, global variables leaking everywhere. Backend engineers looked at it and said: hard pass.
+
+So what actually changed that? It wasn't a language upgrade. It was one person.
+
+His name is Douglas Crockford, and he was working as a software architect at Yahoo in the early 2000s. He didn't create JavaScript. But he might be the single most important reason JavaScript is the foundation of the modern web today.
+
+Here's what he did, across three moves.
+
+The first one — and honestly the most far-reaching — was JSON. In 2001, Crockford needed browsers and servers to talk to each other. The standard way of doing this at the time was XML, bundled inside something called SOAP. If you've never had to deal with that combination, consider yourself lucky. It was verbose, it was complex, and parsing it was genuinely painful.
+
+Crockford noticed something: JavaScript's own object syntax — the way you write a key and a value inside curly braces — was already a perfectly usable data format. It was lightweight, human-readable, and every JavaScript environment could parse it natively because it *was* JavaScript. So he registered json.org, wrote out the full specification for the format, and started pushing it.
+
+Five years later, in 2006, JSON became an official internet standard. And today — every web API you've ever called, every config file you've ever opened, every time your frontend talks to your backend — that's JSON. He didn't invent the syntax. JavaScript object literals already existed. What he did was see it, name it, define it precisely, and convince the industry to adopt it. That's not a small thing. That's a complete transformation of how the web exchanges data.
+
+The second move was JSLint, which he released in 2002. This was a tool that analyzed your JavaScript code before it ran and flagged problems — bad patterns, potential bugs, style issues. His own description of it was famously blunt: "JSLint will hurt your feelings." Because it was strict. Extremely strict. You'd write what felt like perfectly reasonable code and it would come back with a list of complaints.
+
+But that was the entire point. Before JSLint, JavaScript had no static analysis tools at all. The whole ecosystem ran on "if it doesn't crash, ship it." JSLint was the first thing to say: JavaScript can have quality standards. It can be analyzed. It can be held to a bar. The linting tools developers use today — ESLint being the most popular — trace their lineage directly back to that idea.
+
+The third move was a book. In 2008, Crockford published *JavaScript: The Good Parts* — and at 176 pages, it was notably thin. The thinness was the point.
+
+His argument was genuinely radical for its time: JavaScript wasn't a bad language. JavaScript was a language with some genuinely elegant ideas buried under a lot of bad ones. Prototypal inheritance. Closures. Functional programming patterns. If you deliberately used only those parts — the good parts — you had something worth working with.
+
+The prevailing view in 2008 was "JavaScript is just bad, top to bottom." Crockford said: no. You're just using it wrong. That reframe changed how an entire generation of developers thought about the language. It was the cultural moment where JavaScript stopped being something you apologized for and started being something you could be serious about.
+
+Now here's the thing worth sitting with: Brendan Eich's contribution is foundational, obviously. But Crockford's contribution came during the low point — when the language was being dismissed — and it was about usage, standards, and perception. He built the cultural and technical scaffolding that made JavaScript ready for what came next: Node.js, the V8 engine, the npm ecosystem, JavaScript on the server.
+
+Without the JSON spec, web APIs might have been stuck with XML for years longer. Without JSLint and *The Good Parts*, JavaScript might have waited much longer to be taken seriously by the engineers who eventually built the modern internet on top of it.
+
+So the takeaway here is really three things. One: the person who formalizes and names a technology can matter as much as the person who invented it. Two: quality standards and tooling aren't bureaucratic overhead — they're what separates a language that gets adopted from one that gets abandoned. And three: sometimes a technology's success depends entirely on whether someone is willing to stand up and say "this deserves to be taken seriously" — and then prove it.
+
+Crockford isn't in JavaScript's origin story. But he's absolutely in its redemption story.

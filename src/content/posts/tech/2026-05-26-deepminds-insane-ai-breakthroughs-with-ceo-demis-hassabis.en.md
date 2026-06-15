@@ -9,6 +9,7 @@ description: "Deep dive into DeepMind CEO Demis Hassabis's research philosophy a
 type: explainer
 original_url: "https://www.youtube.com/watch?v=huAwz_BR8WM"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_195705_227961.mp3"
 ---
 
 When Google acquired DeepMind in 2014 for £500 million, many thought they'd bought "a company that makes game-playing AI." Ten years later, its research earned a Nobel Prize in Chemistry. This wasn't luck. It was a coherent strategy.

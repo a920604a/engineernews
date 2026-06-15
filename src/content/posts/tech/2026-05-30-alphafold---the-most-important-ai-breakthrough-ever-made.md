@@ -9,6 +9,7 @@ description: "深入理解 AlphaFold 的技術原理、對生物學的影響、�
 type: explainer
 original_url: "https://www.youtube.com/shorts/VQ2bV58QbH0"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_200226_105792.mp3"
 ---
 
 2020 年 12 月，生物學界等了 50 年的問題被解開了。

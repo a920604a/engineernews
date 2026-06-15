@@ -1,0 +1,29 @@
+Here's the podcast script:
+
+---
+
+Running a large language model on your own machine used to feel like a project — something you'd spend a weekend on, wrestling with drivers and Python environments. That's not the case anymore. And today I want to walk you through exactly why, and how fast you can go from zero to a working local AI setup.
+
+So let's start with the "why bother" question. There are three reasons people run models locally, and they're all legitimate. First is privacy — if you're working with sensitive data, code, or anything you wouldn't want sent to a third-party server, local inference keeps everything on your machine. Full stop. Second is learning — when you interact with a model directly, without an API abstraction layer in between, you start to understand how these things actually behave. It's the difference between driving a car and having someone else drive you. Third is cost — the hardware is an upfront investment, but once you have it, inference is free. No per-token billing, no rate limits.
+
+The tooling that makes this practical right now is called Ollama. It's a local LLM runtime, and it's by far the easiest way to get started.
+
+Before we talk about the setup, let me give you a quick hardware reality check. With 8 gigabytes of RAM, you can comfortably run smaller three-billion-parameter models — think Llama 3.2 in its compact form, or Google's Gemma 2. Smooth, responsive. At 16 gigabytes, you unlock the seven-to-eight billion parameter tier, which is where things get genuinely useful — Mistral 7B, Llama 3.2 8B. Step up to 32 gigs and you can run 14-billion-parameter models like Qwen 2.5. And if you're sitting on 64 gigs or more, you're in 30 to 70 billion territory.
+
+What about GPU? Ollama auto-detects NVIDIA CUDA, Apple Metal on Mac, and AMD ROCm. If you have a GPU, you get somewhere between 10 and 50 times faster inference. Without one, CPU inference still works — it's just slower. Not broken, just slower.
+
+Now, installation. On macOS or Linux, it's a single terminal command: you pipe a shell script from the Ollama website directly into your shell, and it handles everything. On macOS you can also just do a Homebrew install. Windows has a native installer. After that, verify it worked by checking the version — one command, done.
+
+Pulling and running your first model is equally simple. You run a pull command with the model name, it downloads like a package, and then you run it. For testing, the three-billion-parameter Llama is about two gigabytes and runs well on modest hardware. The eight-billion version is around five gigabytes and noticeably better quality. If you need strong multilingual or Chinese-language support, Qwen 2.5 at seven billion is the one to reach for.
+
+Once a model is downloaded, you can chat with it interactively right in your terminal. You type a question, it responds, and you can keep the conversation going. Type a quit command when you're done. It feels surprisingly natural.
+
+But the more interesting thing is the REST API. Ollama runs a local server on port 11434, and here's the key detail: it's OpenAI-compatible. That means if you have Python code already using the OpenAI SDK, you can point it at your local Ollama server by changing exactly one line — the base URL. Everything else stays the same. The API key field still expects something, but Ollama doesn't actually validate it, so any string works. This compatibility is a big deal because it means Ollama isn't asking you to learn a new interface. You already know the interface.
+
+Let me describe what a complete local RAG pipeline looks like — RAG being retrieval-augmented generation, where you feed the model relevant context before it answers. Here's the flow in plain language: you have a small knowledge base, maybe a handful of documents. You convert each document into a numerical representation called an embedding — Ollama has a lightweight model called nomic-embed-text, just 300 megabytes, specifically for this. When a question comes in, you embed the question the same way, then mathematically compare it to all your document embeddings to find the closest match. You take that best-matching document, combine it with the question into a prompt, and send it to your local language model for a final answer. The whole thing runs offline. No API calls, no cloud, no data leaving your machine.
+
+A few things that trip people up. If your model is running slowly, check whether your GPU is actually being used — Ollama has a command that shows you this. On Apple Silicon, Metal acceleration should be on automatically. On NVIDIA, you need the CUDA drivers installed or Ollama won't find the GPU. If your output quality is poor or garbled, especially for non-English text, you might be hitting the limits of a heavily quantized model — quantization compresses the model to save space, but at a precision cost. For Chinese text specifically, the Qwen 2.5 series handles it better than most. And if you want to run Ollama as a shared server for multiple people, it can handle concurrent requests, but keep in mind that GPU memory is shared, so running several large models at once can exhaust it.
+
+So here's what I want you to walk away with. One: the barrier to running a local LLM is now genuinely low — install, pull, run, done in under ten minutes. Two: the OpenAI-compatible API means you don't have to choose between local and cloud; it's a configuration change, not a rewrite. And three: local RAG is real and practical — you can build a fully private, offline knowledge retrieval system with just Ollama and a few dozen lines of code. The hardware requirements are more accessible than most people assume.
+
+Try it with the three-billion-parameter model first. Get a feel for it, then step up.

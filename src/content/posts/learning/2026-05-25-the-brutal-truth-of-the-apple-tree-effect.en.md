@@ -9,6 +9,7 @@ description: "A psychology-based breakdown of why people who want the best optio
 type: explainer
 original_url: "https://www.youtube.com/watch?v=djaTLCuD1A4"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_141250_558763.mp3"
 ---
 
 There's a particular kind of person who gets stuck when making decisions — not because they don't know what they want, but because they want the *best* option, and that clarity immobilizes them.

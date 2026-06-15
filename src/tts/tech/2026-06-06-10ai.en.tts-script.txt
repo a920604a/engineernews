@@ -1,0 +1,37 @@
+Every major productivity tool comes with the same promise: this changes how humans work. And every time, it's technically true — but usually in a shallow way. Calculators freed us from arithmetic. Spreadsheets freed us from manual bookkeeping. Automation scripts freed us from repetitive clicking. Each wave, people moved their time somewhere else.
+
+But what AI is doing feels categorically different. It's not automating a task. It's outsourcing steps in the *thinking process itself*. And that distinction is worth sitting with for a minute.
+
+Here's the core shift: things you used to need to *know*, things you'd spend time *searching for*, things you'd *draft from scratch* — those can now be handed off. That frees up cognitive bandwidth. But it also creates new demands that most people aren't explicitly training for.
+
+Let's unpack what's actually changing.
+
+First: external memory. Humans have always offloaded memory to tools — books, notes, search engines. AI takes this further because it doesn't just store information, it understands context and retrieves what's relevant to your specific problem. For engineers, this means you don't need to hold every API signature in your head. Sounds like a pure win. But here's the trap — if you stop building deep understanding because AI fills the gap, you can easily become someone who uses AI outputs without the judgment to evaluate them. The information is flowing through you, not building up *in* you.
+
+Second shift: the move from "how to do it" to "what to do." A huge chunk of engineering time used to go into *execution* — how do I write this function, how do I structure this email, how do I organize this data. AI handles most of that now. So your value increasingly concentrates in three things: defining the problem clearly, judging whether the output is actually good, and choosing among viable paths forward — which requires judgment, not just execution.
+
+This asymmetry matters. If you're someone who's been strong at execution but hasn't developed that judgment muscle, you feel the squeeze. If you're someone who's always been strong at thinking through problems and evaluating solutions, AI just gave you enormous leverage.
+
+Third: the speed-quality trap. AI lets you get to "good enough" very fast. That's genuinely useful in a lot of situations. But here's the cognitive danger — quick answers make you less willing to think slowly. In software engineering you see this clearly: AI-generated code can pass basic tests and still have subtle issues with edge cases or performance at scale. If you ship the first thing that compiles, your judgment is quietly atrophying every time you do it.
+
+So what do you actually do about this?
+
+First, practice problem definition intentionally. The real skill in prompting AI isn't magic phrasing — it's converting vague intuitions into precise problem statements. The output quality gives you instant feedback on how clearly you thought about the problem. That's a useful training loop. And it's a skill that transfers everywhere, not just to AI work.
+
+Second, deliberately keep some "slow thinking" in your routine. Daniel Kahneman's framework distinguishes fast intuitive thinking from slow deliberate thinking. AI supercharges the fast system — you get roughly-right answers very quickly. But the slow work — analyzing trade-offs, understanding underlying mechanisms, foreseeing unintended consequences — that still requires deliberate human effort. Concretely: occasionally write something from scratch without AI. When you read AI-generated code, understand why each piece is there. When AI proposes a design, be able to articulate in your own words why you agree or disagree.
+
+Third, build genuine conceptual connections. AI is good at finding information fast. But connecting information into a coherent mental model — understanding *why* things relate — that's still cognitive work AI doesn't do well on your behalf. Whether it's Obsidian, Notion, or just a writing habit, the act of building a personal knowledge structure is investing in something AI can augment but can't replace.
+
+Now, what does this mean for engineers over the next few years?
+
+The skills losing marginal value are the ones you'd expect: writing boilerplate CRUD code, memorizing API details, formatting and configuration work. The skills gaining value: system design, requirements clarification, reviewing and critically evaluating code, explaining technical decisions to non-technical colleagues, and understanding business context deeply enough to make good trade-offs.
+
+This isn't the "AI will replace engineers" framing — that's too blunt. It's more precise than that. The productivity gap between engineers who use AI well and those who don't is going to widen. And productivity gaps eventually show up in market value.
+
+So here's where I'd leave you with three things to carry forward.
+
+One: AI changes what you need to think about, not whether you need to think. The cognitive burden of execution is shifting out; the cognitive burden of judgment and direction is shifting up.
+
+Two: the biggest risk isn't AI replacing you — it's AI gradually eroding the judgment capabilities you don't actively maintain. Use it as a tool, but keep the muscle trained.
+
+Three: the two capabilities most worth investing in over the next five years are "clearly defining problems" and "critically evaluating answers." Neither of those will be automated away. And in a world where AI tools are everywhere, those capabilities will get relatively *rarer* — which means they'll matter more, not less.

@@ -9,6 +9,7 @@ description: "長期主義是個好概念，但也很容易被濫用或誤解。
 type: explainer
 original_url: "https://www.youtube.com/watch?v=F140TnI5MmE"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_141131_748789.mp3"
 ---
 
 「我是長期主義者。」

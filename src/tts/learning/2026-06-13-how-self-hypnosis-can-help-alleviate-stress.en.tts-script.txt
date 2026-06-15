@@ -1,0 +1,33 @@
+Here's the podcast script:
+
+---
+
+Self-hypnosis sounds like pseudoscience. Like something a guy in a cape does at a county fair. But what if I told you there's now a study with over eighty-four thousand participants showing it reduces stress with effect sizes that beat most mindfulness interventions? Let me walk you through what the research actually says.
+
+The study was published in *npj Digital Medicine* — that's a peer-reviewed Nature journal, not a wellness blog. Researchers tracked users of a self-hypnosis app called Reveri, developed by David Spiegel, a hypnosis researcher at Stanford. The headline number: Cohen's d of 0.71 to 0.78. If that doesn't mean anything to you, here's the translation — behavioral interventions like meditation apps typically land around 0.3 to 0.5. Anything above 0.5 is considered medium-to-large. So 0.71 to 0.78 is genuinely high for this category of research.
+
+And the sample size matters here. This isn't a lab study with forty college students. These are eighty-four thousand real-world users tracking their own stress before and after sessions.
+
+Now — should you be skeptical? Yes, partly. The study was funded by the app company, users self-selected by downloading a self-hypnosis app in the first place, and stress was self-reported. So discount it somewhat. But even after you apply a skeptic's haircut, the scale and effect sizes are hard to completely dismiss.
+
+So what's actually happening in your brain when you do this?
+
+The hypnotic state appears to influence three brain networks at the same time. First is the Default Mode Network — that's the part that runs when you're not doing anything specific, when you're daydreaming or mentally replaying that awkward conversation from three years ago. People under chronic stress tend to get stuck in Default Mode loops, negative self-referential spirals. Hypnosis can shift those patterns.
+
+Second is the Central Executive Network, which handles focused, goal-directed thinking. In hypnosis, this stays active — your attention is directed toward a specific mental scene rather than just wandering.
+
+Third is the Salience Network, which acts like a dispatcher. It decides what deserves your attention and routes processing between the other two networks. Hypnosis seems to lower the urgency threshold — stress triggers start feeling less like five-alarm fires.
+
+What makes hypnosis distinct from regular relaxation is that it's engaging all three simultaneously, and deliberately. Just zoning out primarily quiets the executive network. Hypnosis reorganizes how the three networks collaborate.
+
+Now, compare this to the usual toolkit for stress. Mindfulness is well-evidenced but has a high dropout rate — it requires sustained practice to build the habit, and for someone under deadline pressure it's hard to prioritize. Exercise works but it's slow for acute relief. Therapy has strong evidence but costs time and money. Self-hypnosis fits into a different niche: it uses a guided internal script, so you're not learning to meditate from scratch, and the mechanism is closer to CBT — you're actively reshaping how you relate to your own mental state.
+
+Here's the practical version, no app required. Find somewhere quiet. Close your eyes, take a few slow breaths. Then mentally build a scene where you feel safe — and be specific. What does the light look like? What's the temperature? What sounds are there? Hold that scene for five to ten minutes. When your attention drifts, bring it back. Before you open your eyes, tell yourself you're returning to the day feeling calm and clear.
+
+The key difference from mindfulness: mindfulness asks you to observe present experience without judgment. Self-hypnosis asks you to actively construct an alternative internal environment. For people whose minds tend to wander — which is most people under stress — the latter can actually be easier to execute, because you have something concrete to direct attention toward.
+
+One caveat worth knowing: hypnotizability varies. Roughly ten to fifteen percent of people are highly responsive, most people fall in the middle, and ten to fifteen percent are low responders. If it doesn't click for you, that's a real neurological variable, not a personal failing.
+
+Three things to take from this. One — the evidence here is more serious than the word "hypnosis" implies. Eighty-four thousand users, effect sizes above what mindfulness apps typically show. Two — the mechanism isn't mystical. It's about simultaneously modulating three specific brain networks in a way that ordinary relaxation doesn't. Three — you don't need an app or a therapist to try this. Five to ten minutes, a quiet space, a specific mental scene. That's the whole protocol.
+
+---

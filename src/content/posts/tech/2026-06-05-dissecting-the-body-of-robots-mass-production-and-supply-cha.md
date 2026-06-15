@@ -9,6 +9,7 @@ description: "深入拆解人形機器人的硬體架構：執行器選型（電
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=DZIhQeFEdXI"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_201249_839609.mp3"
 ---
 
 波士頓動力的 Atlas 後空翻影片在 2017 年驚艷了全世界。但很少人知道的是，做出那個後空翻用的是液壓執行器，功耗極高、維護複雜、幾乎不可能大規模量產。七年後，人形機器人開始真正走向量產，但瓶頸從「能不能動」變成了完全不同的一組問題。

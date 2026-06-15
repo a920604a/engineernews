@@ -1,0 +1,45 @@
+There's a gap between using AI and using AI well — and most engineers are stuck on the wrong side of it.
+
+Here's what the wrong side looks like: you open a chat tab, paste a question, scan the output, maybe copy some code, move on. That's *using* AI. But using it well looks more like collaborating with a knowledgeable colleague who needs explicit direction — you provide context, you verify output, you stay in the loop. Five concrete upgrades will get you there.
+
+**First: context quality determines output quality.**
+
+LLMs predict based on what you gave them. Vague input gives you vague output — every time. So when you write something like "write a login function," you're basically handing someone a blank sticky note and asking them to build you a house.
+
+Compare that to telling the model: "I'm on Next.js 14 with Supabase. The client's already set up at a specific path. I need a login form, a server action for the logic, and error display. I don't need OAuth or email verification — those are handled separately." Now the model has your stack, your existing structure, your scope, and what to leave out. The output fits your codebase instead of generating a generic template you'd spend an hour adapting anyway.
+
+One more trick here: role-setting. Open with something like "You are a Rust backend engineer reviewing this code — focus on ownership issues and unnecessary clones." It consistently sharpens the output. The model adjusts its lens before it starts reading.
+
+**Second: multi-turn beats single-turn for anything complex.**
+
+A lot of people treat AI like a vending machine — put in one big prompt, get out one complete answer. For complex tasks, that almost never works well. When a model generates a large chunk all at once, it loses focus. Errors compound. You end up with something that looks plausible but is quietly wrong in three places.
+
+Instead, think in rounds. First, ask it to explain its approach before writing a single line. Second, execute one concrete step. Third, review, spot the problems, ask for corrections. Then repeat. Think of it as pair programming with someone who's very capable but needs explicit direction — not a spec machine you throw requirements at and walk away from.
+
+**Third: know when AI will be wrong.**
+
+This is the biggest gap between misuse and effective use, and it comes down to understanding what AI is actually doing.
+
+High-risk territory: factual recall. If you ask what version a library is at, or what the exact parameter name is for some API — the model has a training cutoff, and it will confidently give you outdated information. Arithmetic is also risky in a subtle way. The model isn't calculating; it's predicting what the answer to this *type* of question usually looks like. That's not the same thing. And anything about recent events? If it happened after the model's knowledge cutoff, it's guessing.
+
+Relatively reliable territory: reasoning and analysis. Ask it to explain what a piece of code does, or compare two architectural approaches — it's good at that. Generation tasks like refactoring are generally solid. Questions within a well-established framework, like how server actions work in Next.js, are usually trustworthy, though you should still verify against current docs.
+
+The rule of thumb: any specific fact the model states — a URL, a version number, a function name, a benchmark figure — verify it against the primary source before you act on it. Treat AI like a brilliant colleague who sometimes misremembers details. You'd double-check them too.
+
+**Fourth: integrate AI into your workflow, not just your chat tab.**
+
+The chat interface is the tip of the iceberg. Real leverage is in the pipeline.
+
+A few patterns engineers actually use: pipe your staged git diff into a model and ask it to review for security issues and obvious bugs before you commit. Feed your API route file to a model and ask it to generate OpenAPI documentation. In tools like Claude Code or Cursor, mark a function and ask for unit tests including edge cases — review them, then drop them into your test suite.
+
+On the tooling side: Claude Code handles complex multi-step tasks and large codebase understanding well, but needs substantial context each session. Cursor is faster for autocomplete and small edits, though it tends to drift on anything complex. GitHub Copilot is strong for inline suggestions and IDE integration, but it's not built for large refactors that require judgment. Knowing which tool fits which job matters more than picking one and using it for everything.
+
+**Fifth — and this is the most important one — only delegate what you can verify.**
+
+The anti-pattern is letting AI write a module you don't understand and merging it directly. The problem isn't that AI-generated code is necessarily bad. Sometimes it's excellent. The problem is that *you have no way to evaluate whether it's correct*, and that dramatically increases the probability of bugs reaching production.
+
+Using AI well means reading and understanding every line before it ships. It means AI does the analysis, you make the final call. It means if AI writes something factual, you can check the claims. AI works best as an accelerator for capable people — not a bypass around a capability requirement. The leverage comes from going faster at things you already understand, not from outsourcing things you can't evaluate.
+
+So to bring it together: the difference between using AI and using AI well isn't about which tool you pick or how long your prompts are. It's three things. One — give it real context, because vague in means vague out. Two — iterate rather than prompt-and-pray; complex tasks need multi-turn correction, not one perfect spec. And three — stay in the loop on verification; the moment you can't evaluate the output, you've lost the leverage.
+
+AI is a force multiplier. But it multiplies your capability, not a replacement for it.

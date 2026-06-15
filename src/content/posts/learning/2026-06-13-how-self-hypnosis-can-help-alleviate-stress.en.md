@@ -9,6 +9,7 @@ description: "A real study with 84,395 users found meaningful stress reduction f
 type: research
 original_url: "https://www.youtube.com/shorts/I1SoJ9Paz-Y"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_194434_321509.mp3"
 ---
 
 "Brainwashing yourself" sounds like pseudoscience. In psychology and neuroscience, it has a serious name: **self-hypnosis**. Not the stage show "your eyelids are getting heavy" variety—a technique for deliberately guiding brain state, which is accumulating meaningful clinical evidence.

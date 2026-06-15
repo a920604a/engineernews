@@ -9,6 +9,7 @@ description: "系統設計 Mock 系列：從需求澄清到容量估算，完整
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=tkikiGfum58"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260615_200816_565057.mp3"
 ---
 
 書籍銷售平台是系統設計面試的經典題目。它看起來和一般電商相似，但有幾個獨特的複雜度：書籍的搜尋需求遠比一般商品複雜（書名、作者、ISBN、類型、全文搜尋），庫存管理涉及實體書和電子書的混合，以及數位商品的授權和 DRM 問題。
