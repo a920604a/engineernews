@@ -78,6 +78,11 @@ function calcReadingTime(post: (typeof posts)[0]): number {
         </div>
       )}
 
+      <div class="control-group" id="audio-filter-group">
+        <span class="control-label">Filter</span>
+        <button class="audio-btn" id="audio-btn">🎧 Has Audio</button>
+      </div>
+
       <div class="control-group" id="sort-controls">
         <span class="control-label">Sort</span>
         <button class="sort-btn active" data-sort="date">Date ↓</button>
@@ -115,6 +120,7 @@ function calcReadingTime(post: (typeof posts)[0]): number {
           data-tags={post.data.tags?.[0] ?? ''}
           data-slug={post.id}
           data-views="0"
+          data-audio={post.data.audio_url ? '1' : '0'}
           class="post-item"
         >
           <PostCard
@@ -201,7 +207,7 @@ function calcReadingTime(post: (typeof posts)[0]): number {
     color: var(--label-tertiary);
     min-width: 32px;
   }
-  .type-btn, .sort-btn {
+  .type-btn, .sort-btn, .audio-btn {
     padding: 5px 14px;
     border-radius: 999px;
     border: 0.5px solid var(--separator);
@@ -212,7 +218,8 @@ function calcReadingTime(post: (typeof posts)[0]): number {
     cursor: pointer;
     transition: all 0.15s;
   }
-  .type-btn:hover, .type-btn.active {
+  .type-btn:hover, .type-btn.active,
+  .audio-btn:hover, .audio-btn.active {
     background: var(--cat-color);
     border-color: var(--cat-color);
     color: #fff;
@@ -248,14 +255,23 @@ function calcReadingTime(post: (typeof posts)[0]): number {
   let activeSort = 'date';
   let activeSortDir: SortDir = 'desc';
   let viewsLoaded = false;
+  let activeType = 'all';
+  let audioOnly = false;
+
+  function applyFilters() {
+    document.querySelectorAll<HTMLElement>('.post-item').forEach((item) => {
+      const typeMatch = activeType === 'all' || item.dataset.type === activeType;
+      const audioMatch = !audioOnly || item.dataset.audio === '1';
+      item.style.display = (typeMatch && audioMatch) ? '' : 'none';
+    });
+  }
 
   function filterPosts(type: string) {
-    document.querySelectorAll<HTMLElement>('.post-item').forEach((item) => {
-      item.style.display = (type === 'all' || item.dataset.type === type) ? '' : 'none';
-    });
+    activeType = type;
     document.querySelectorAll<HTMLElement>('.type-btn').forEach((btn) => {
       btn.classList.toggle('active', btn.dataset.type === type);
     });
+    applyFilters();
   }
 
   function sortPosts(key: string) {
@@ -322,6 +338,15 @@ function calcReadingTime(post: (typeof posts)[0]): number {
       }
     });
   });
+
+  const audioBtn = document.getElementById('audio-btn');
+  if (audioBtn) {
+    audioBtn.addEventListener('click', () => {
+      audioOnly = !audioOnly;
+      audioBtn.classList.toggle('active', audioOnly);
+      applyFilters();
+    });
+  }
 
   const params = new URLSearchParams(window.location.search);
   const t = params.get('type');

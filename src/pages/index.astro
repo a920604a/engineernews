@@ -98,36 +98,24 @@ const topics = [
           </section>
         )}
 
+        {(secondaryPinned.length > 0 || feedPosts.length > 0) && (
+          <div class="home-filter-row" id="home-filter-row">
+            <span class="home-filter-label">篩選</span>
+            <button class="hf-btn" id="hf-audio">🎧 有音頻</button>
+            <button class="hf-btn hf-reaction" data-emoji="❤️">❤️</button>
+            <button class="hf-btn hf-reaction" data-emoji="👍">👍</button>
+            <button class="hf-btn hf-reaction" data-emoji="💡">💡</button>
+            <button class="hf-btn hf-reaction" data-emoji="🔥">🔥</button>
+            <button class="hf-btn" id="hf-bookmark">🔖 書籤</button>
+          </div>
+        )}
+
         {secondaryPinned.length > 0 && (
           <section>
             <p class="feed-divider">置頂文章</p>
             <div class="feed">
             {secondaryPinned.map((post) => (
-              <PostCard
-                id={post.id}
-                title={post.data.title}
-                date={post.data.date}
-                category={post.data.category}
-                tags={post.data.tags}
-                description={post.data.description}
-                tldr={post.data.tldr}
-                type={post.data.type}
-                pinned={true}
-                readingTime={post.data.readingTime}
-                github={post.data.github}
-                url={post.data.url}
-                lang="zh-TW"
-              />
-            ))}
-          </div>
-          </section>
-        )}
-
-        {feedPosts.length > 0 && (
-          <section>
-            <p class="feed-divider">最新文章</p>
-            <div class="feed">
-              {feedPosts.map((post) => (
+              <div class="home-post-item" data-slug={post.id} data-audio={post.data.audio_url ? '1' : '0'}>
                 <PostCard
                   id={post.id}
                   title={post.data.title}
@@ -137,12 +125,42 @@ const topics = [
                   description={post.data.description}
                   tldr={post.data.tldr}
                   type={post.data.type}
-                  pinned={false}
+                  pinned={true}
                   readingTime={post.data.readingTime}
                   github={post.data.github}
                   url={post.data.url}
                   lang="zh-TW"
                 />
+              </div>
+            ))}
+          </div>
+          </section>
+        )}
+
+        <div id="home-filter-empty">沒有符合條件的文章</div>
+
+        {feedPosts.length > 0 && (
+          <section>
+            <p class="feed-divider">最新文章</p>
+            <div class="feed" id="home-feed">
+              {feedPosts.map((post) => (
+                <div class="home-post-item" data-slug={post.id} data-audio={post.data.audio_url ? '1' : '0'}>
+                  <PostCard
+                    id={post.id}
+                    title={post.data.title}
+                    date={post.data.date}
+                    category={post.data.category}
+                    tags={post.data.tags}
+                    description={post.data.description}
+                    tldr={post.data.tldr}
+                    type={post.data.type}
+                    pinned={false}
+                    readingTime={post.data.readingTime}
+                    github={post.data.github}
+                    url={post.data.url}
+                    lang="zh-TW"
+                  />
+                </div>
               ))}
             </div>
           </section>
@@ -289,4 +307,139 @@ const topics = [
     flex-direction: column;
     gap: 8px;
   }
+  .home-filter-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 10px 0 4px;
+    border-top: 0.5px solid var(--separator);
+  }
+  .home-filter-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--label-tertiary);
+    white-space: nowrap;
+  }
+  .hf-btn {
+    padding: 4px 12px;
+    border-radius: 999px;
+    border: 0.5px solid var(--separator);
+    background: transparent;
+    color: var(--label-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .hf-btn:hover, .hf-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .home-post-item.hidden {
+    display: none;
+  }
+  #home-filter-empty {
+    text-align: center;
+    padding: 48px 0;
+    color: var(--label-tertiary);
+    font-size: 14px;
+    display: none;
+  }
 </style>
+
+<script>
+  let audioOnly = false;
+  let activeEmoji: string | null = null; // null = no reaction/bookmark filter
+  let interactionLoaded = false;
+  let bookmarks = new Set<string>();
+  let reactedSlugs: Record<string, string> = {}; // slug -> emoji
+
+  async function ensureInteractionsLoaded() {
+    if (interactionLoaded) return;
+    const visitorId = localStorage.getItem('visitor_id') ?? '';
+    if (!visitorId) { interactionLoaded = true; return; }
+    try {
+      const res = await fetch('/api/my-interactions', {
+        headers: { 'X-Visitor-ID': visitorId },
+      });
+      const data = await res.json() as { bookmarks: string[]; reactions: { slug: string; emoji: string }[] };
+      bookmarks = new Set(data.bookmarks ?? []);
+      for (const r of data.reactions ?? []) reactedSlugs[r.slug] = r.emoji;
+    } catch {}
+    interactionLoaded = true;
+  }
+
+  function applyFilters() {
+    let visibleCount = 0;
+    document.querySelectorAll<HTMLElement>('.home-post-item').forEach((item) => {
+      const slug = item.dataset.slug ?? '';
+      const audioMatch = !audioOnly || item.dataset.audio === '1';
+      let reactionMatch = true;
+      if (activeEmoji !== null) {
+        if (activeEmoji === '🔖') {
+          reactionMatch = bookmarks.has(slug);
+        } else {
+          reactionMatch = reactedSlugs[slug] === activeEmoji;
+        }
+      }
+      const visible = audioMatch && reactionMatch;
+      item.classList.toggle('hidden', !visible);
+      if (visible) visibleCount++;
+    });
+    const emptyEl = document.getElementById('home-filter-empty');
+    if (emptyEl) emptyEl.style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+
+  // Audio toggle
+  document.getElementById('hf-audio')?.addEventListener('click', (e) => {
+    audioOnly = !audioOnly;
+    (e.currentTarget as HTMLElement).classList.toggle('active', audioOnly);
+    applyFilters();
+  });
+
+  // Reaction filters
+  document.querySelectorAll<HTMLElement>('.hf-reaction').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const emoji = btn.dataset.emoji!;
+      const isActive = activeEmoji === emoji;
+      document.querySelectorAll<HTMLElement>('.hf-reaction, #hf-bookmark').forEach(b => b.classList.remove('active'));
+      if (isActive) {
+        activeEmoji = null;
+      } else {
+        activeEmoji = emoji;
+        btn.classList.add('active');
+        if (!interactionLoaded) {
+          btn.textContent = '載入中…';
+          await ensureInteractionsLoaded();
+          btn.textContent = emoji;
+        }
+      }
+      applyFilters();
+    });
+  });
+
+  // Bookmark filter
+  document.getElementById('hf-bookmark')?.addEventListener('click', async (e) => {
+    const btn = e.currentTarget as HTMLElement;
+    const isActive = activeEmoji === '🔖';
+    document.querySelectorAll<HTMLElement>('.hf-reaction, #hf-bookmark').forEach(b => b.classList.remove('active'));
+    if (isActive) {
+      activeEmoji = null;
+    } else {
+      activeEmoji = '🔖';
+      btn.classList.add('active');
+      if (!interactionLoaded) {
+        const orig = btn.textContent;
+        btn.textContent = '載入中…';
+        await ensureInteractionsLoaded();
+        btn.textContent = orig;
+      }
+    }
+    applyFilters();
+  });
+</script>
