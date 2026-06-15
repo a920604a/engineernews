@@ -141,8 +141,6 @@ trainer.evaluate()
 ## 技術結構圖
 
 ```mermaid
-以下是 Mermaid 圖表：
-
 flowchart LR
     title Run LLMs Locally
     subgraph Environment
@@ -170,13 +168,7 @@ flowchart LR
 
     style Computer fill:#f9f,stroke:#333,stroke-width:2px
     style Python fill:#f9f,stroke:#333,stroke-width:2px
-    style Transformers fill:#f9f,stroke:#333,stroke-width:2px
-    style PyTorch fill:#f9f,stroke:#333,stroke-width:2px
-    style 安裝套件 fill:#ccf,stroke:#333,stroke-width:2px
-    style 下載模型 fill:#ccf,stroke:#333,stroke-width:2px
-    style 準備資料 fill:#ccf,stroke:#333,stroke-width:2px
-    style 運行模型 fill:#ccf,stroke:#333,stroke-width:2px
-    style 測試模型 fill:#ccf,stroke:#333,stroke-width:2px
+    style Transformers fill:#f9f,
 ```
 
 ## 參考資料

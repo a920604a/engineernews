@@ -69,6 +69,7 @@ sequenceDiagram
   Agent->>Index: get_page_content(pages='5-10')
   Index->>Agent: 損益表頁面內容
   Agent->>User: 回答：毛利率 38%，出自第 7 頁損益表
+  Note over User,Agent: get_document_structure() only
 ```
 
 ### 效能與定位
