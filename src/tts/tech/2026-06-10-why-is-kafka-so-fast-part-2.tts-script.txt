@@ -1,0 +1,51 @@
+上一集聊的是 Kafka 在單一節點上為什麼這麼快：循序 I/O、Page Cache、Zero-Copy，這三個設計讓一台機器就能跑出驚人的吞吐量。但如果只是單機快，那還不足以解釋 Kafka 為什麼能撐住大公司的核心資料管道。今天要講的是 Kafka 水平擴展的核心機制——partition、Consumer Group，還有 replication。
+
+先從 partition 開始。
+
+Kafka 的每個 topic 都可以切成多個 partition，每個 partition 是一條獨立的 append-only log，分散在不同的 broker 上。重點是「獨立」兩個字——不同 partition 的讀寫完全不互相干擾，可以同時在不同機器上平行處理。
+
+舉個例子，假設你有一個叫做 orders 的 topic，切成三個 partition，分散在三台 broker 上。每個 partition 有自己的 leader 和 replica。三台機器同時在跑，負載均勻分散。想加容量？加第四台 broker，rebalance 之後負載自動重新分配，就這麼直接。
+
+這和 RabbitMQ 的設計哲學很不一樣。RabbitMQ 在 3.8 版以前，一個 queue 基本上是單執行緒的，不管你掛多少個 consumer 在上面，dispatch 訊息的只有一個執行緒。Kafka 沒有這個限制——你要多少並行度，就建多少 partition。
+
+但 partition 不是越多越好。多一點固然可以讓更多 consumer 並行消費、效能上限更高，但代價也是真實的：每個 partition 在 broker 上都有獨立的 log segment，partition 太多會讓 file handle 和 OS thread 的壓力大幅增加。實務上有一個粗略的起點：每個 broker 不超過一百個 partition，不要盲目堆上去。
+
+---
+
+接著說 Consumer Group，這是 Kafka 最精髓的設計之一。
+
+一個 Consumer Group 裡的多個 consumer，會自動分配去消費不同的 partition。三個 partition、三個 consumer，每人負責一個，吞吐量理論上是一個 consumer 的三倍。如果只有一個 consumer，它就要自己扛全部三個 partition。如果 consumer 超過 partition 數量，多出來的 consumer 就只能閒置——因為沒有 partition 可以分給它。所以 partition 的數量其實就是並行度的上限。
+
+更有意思的是，多個不同的 Consumer Group 可以各自獨立消費同一個 topic，各自維護自己的讀取位置。這就是 Kafka 被拿來做事件廣播的核心能力：同一份資料，多個下游服務同時消費，互不影響，各自按照自己的速度來。
+
+---
+
+然後是 replication，也就是可靠性的部分。
+
+每個 partition 有一個 leader，還有若干個 follower。Producer 只跟 leader 溝通，leader 寫入之後，follower 會非同步地去 fetch 並複製。
+
+你可以調整一個叫做 `acks` 的參數來控制寫入確認的行為。設成零，是不等任何確認，最快，但 broker 一掛就可能丟資料。設成一，等 leader 確認，中等延遲、中等風險。設成 all，要等所有「跟上進度的 follower」都確認，延遲最高，但可靠性最強。
+
+這邊要引入一個概念叫 ISR，也就是 In-Sync Replicas，「跟上 leader 的 follower 集合」。Kafka 用一個時間窗口來定義「跟上」，在這段時間內沒有來 fetch 的 follower，就會被踢出 ISR。
+
+生產環境常見的設定是 `acks=all` 搭配「至少兩個 replica in-sync」，這樣任何一台 broker 宕機都不會丟資料。代價是每次寫入都得等 follower 確認，latency 增加。這是 Kafka 效能調校裡最核心的取捨點。
+
+當 leader 宕機，Kafka 會從 ISR 裡面選一個 follower 當新 leader。為什麼只從 ISR 選？因為 ISR 裡的 follower 保證有全部 committed 的訊息，選它當 leader 就不會丟資料。如果 ISR 只剩 leader 自己，而你又設定要求兩個 in-sync replica，producer 用 `acks=all` 寫入就會失敗。這是一個刻意的設計：寧可拒絕寫入，也不降低一致性保證。
+
+---
+
+Kafka 適合什麼場景？日誌和監控數據的 ingestion、事件溯源、多個下游服務要消費同一份事件流、還有需要 replay 歷史訊息的場景——Kafka 可以讓 consumer 從任意位置重新讀。
+
+不適合的場景也很清楚：如果你需要每個任務只被一個 worker 處理，RabbitMQ 或 SQS 更合適。如果你需要複雜的訊息路由或過濾，RabbitMQ 的 exchange 設計靈活很多。如果你的流量其實很小、每秒只有幾十筆，Kafka 的 overhead 反而是浪費。
+
+---
+
+今天聊的三個核心帶走：
+
+第一，partition 是 Kafka 水平擴展的基本單位，每個 partition 獨立讀寫，加機器就能線性擴展——但 partition 不是越多越好，有管理成本。
+
+第二，Consumer Group 讓多個 consumer 並行消費不同 partition，同時多個 group 可以各自獨立消費同一份資料，這是 Kafka 做事件廣播的核心。
+
+第三，replication 透過 ISR 機制保障可靠性，`acks` 設定讓你自己決定要在 latency 和資料安全之間怎麼取捨。
+
+Kafka 的架構設計有一種美感——少數幾個簡單的假設，疊出了極高的擴展性。如果你沒看過第一部分，建議回去補一下，把單節點效能和水平擴展合在一起看，Kafka 為什麼這麼普遍就很清楚了。

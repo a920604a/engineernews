@@ -1,0 +1,31 @@
+Hard-to-maintain code is almost never about complicated logic. It's about coupling — one class knowing too much about another, so changing anything ripples through the whole system. Dependency Injection is the single most practical technique for breaking that chain. And once you really understand it, you'll see it everywhere.
+
+Let's start with the problem. Imagine an OrderService class that, inside its own body, creates a ConsoleLogger. It just conjures one up. Seems harmless, right? But now you have two hidden problems. First, you can't test OrderService in isolation — every test run actually fires real log calls, possibly to real systems. Second, if you ever want to switch to a cloud logging service, you have to crack open OrderService's internals to change it. A class that seems simple is secretly dragging in all its dependencies behind the scenes.
+
+The fix is beautifully straightforward: don't let a class create what it needs. Pass it in from the outside.
+
+Here's how that plays out in practice, step by step.
+
+First, instead of binding to a specific logger class, you define an interface — think of it as a contract. The interface just says: anything that can log a message and log an error counts as a Logger. That's it. You're not committing to any particular implementation yet.
+
+Then you create your implementations. ConsoleLogger satisfies the contract by writing to the terminal. And here's the clever part — you also create a SilentLogger that satisfies the same contract by doing absolutely nothing. No output, no side effects, just an empty shell. That sounds useless, but in tests it's exactly what you want.
+
+Now, instead of OrderService creating its own logger, its constructor just accepts one. You hand it in. In production, you pass a real ConsoleLogger. In tests, you pass the SilentLogger, and suddenly your test suite is clean, fast, and isolated. OrderService doesn't know or care which logger it got — it only knows the thing it received satisfies the Logger contract.
+
+That's the core of Dependency Injection. Everything else is just variations on that idea.
+
+When your application grows, though, manually wiring everything together gets tedious. Imagine service A needs B, which needs C, which needs D — you'd have to construct them in the right order every time. This is where a DI container comes in. A container is essentially a registry: you tell it "here's how to build a Logger" and "here's how to build an OrderService — use the Logger you already know about." Then you just ask the container for what you need, and it figures out the chain.
+
+In the TypeScript ecosystem, two libraries dominate this space. tsyringe, from Microsoft, is lightweight and uses decorators — great for smaller projects where you want minimal overhead. InversifyJS is more full-featured and better suited to large, complex applications. If you're already in NestJS, the framework's built-in DI handles all of this for you. But — and this matters — understanding how to wire things manually first makes the framework behavior obvious instead of magical.
+
+One question that always comes up: isn't this just more code for the same result? And honestly, sometimes yes. If a class has exactly one implementation that will never change, creating an interface for it is ceremony without payoff. DI is a tool, not a doctrine. Use it where you actually benefit from swappability — logging, database access, external APIs, authentication — and skip it where a concrete class is fine.
+
+There's also a connection worth naming: React Context is dependency injection. When a component receives auth state or theme settings from a context provider rather than through props, that's the same pattern — dependencies flowing in from outside rather than being created internally.
+
+Three things to take away from all of this.
+
+One: tight coupling is the real enemy of maintainable code, and DI is the primary weapon against it. Classes that create their own dependencies are classes that resist change.
+
+Two: the interface is the key. Once you express a dependency as a contract rather than a concrete type, you unlock the ability to swap implementations freely — for testing, for different environments, for future requirements you haven't thought of yet.
+
+Three: start manual before reaching for a framework. Wire things by hand in a small project first. When you feel the pain of long dependency chains, you'll know exactly what a DI container is solving — and you'll pick the right one for the job.

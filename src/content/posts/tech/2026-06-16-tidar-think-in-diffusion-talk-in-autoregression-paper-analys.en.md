@@ -9,6 +9,7 @@ description: "A deep-dive into TiDAR (arXiv 2511.08923): a hybrid language model
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=taCVT5vDAk0"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260616_060656_667276.mp3"
 ---
 
 Language model inference has a long-running tension: diffusion language models can generate in parallel and are fast, but trail autoregressive (AR) models on quality; AR models produce high-quality output but are fundamentally bottlenecked by token-by-token generation. TiDAR (arXiv 2511.08923, November 2025) asks the obvious-but-hard question: **can you get both in the same forward pass?**

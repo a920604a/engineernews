@@ -9,6 +9,7 @@ description: "深度分析 TiDAR（arXiv 2511.08923）：一個在單次 forward
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=taCVT5vDAk0"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260616_060719_338259.mp3"
 ---
 
 語言模型推論有個長期的拉鋸戰：擴散模型（Diffusion LM）可以平行生成、速度快，但品質不如自回歸（Autoregressive，AR）模型；AR 模型品質好，但 token-by-token 生成天生有吞吐量上限。TiDAR 這篇論文（arXiv 2511.08923，2025 年 11 月）提出了一個直覺卻不簡單的問題：**能不能在同一次 forward pass 裡，同時享受兩者的優點？**

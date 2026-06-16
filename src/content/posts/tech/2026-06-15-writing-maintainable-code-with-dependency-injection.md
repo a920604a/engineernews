@@ -9,6 +9,7 @@ description: "深入解析依賴注入的設計哲學、實作手法與常見誤
 type: how-to
 original_url: "https://www.youtube.com/shorts/Z072vUn5xMg"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260616_060624_275187.mp3"
 ---
 
 程式碼很難維護，通常不是因為邏輯複雜，而是因為各個模組之間耦合太緊，改一個地方就要追整條鏈。依賴注入（Dependency Injection，DI）是解開這條鏈的關鍵手法。

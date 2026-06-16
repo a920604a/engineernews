@@ -9,6 +9,7 @@ description: "Kafka 效能深潛第二篇：partition 如何讓 Kafka 水平擴�
 type: deep-dive
 original_url: "https://www.youtube.com/shorts/la8tzEyg-hY"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260616_060538_702569.mp3"
 ---
 
 [第一部分](./2026-06-14-why-is-kafka-fast-part-1.md)講的是 Kafka 單一節點的效能：循序 I/O、Page Cache、Zero-Copy。這些設計讓一台機器就能處理極高的吞吐量。

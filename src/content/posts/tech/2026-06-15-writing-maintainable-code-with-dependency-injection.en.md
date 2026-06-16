@@ -9,6 +9,7 @@ description: "A practical guide to dependency injection in TypeScript: from cons
 type: how-to
 original_url: "https://www.youtube.com/shorts/Z072vUn5xMg"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260616_060606_756001.mp3"
 ---
 
 Hard-to-maintain code is rarely about logic complexity. It's usually about tight coupling — changing one thing requires you to trace a chain of dependencies and touch things that shouldn't need to change. Dependency Injection (DI) is the primary tool for breaking that chain.
