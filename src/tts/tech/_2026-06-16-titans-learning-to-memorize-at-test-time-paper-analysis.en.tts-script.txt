@@ -1,0 +1,35 @@
+Here's the key tension that's been haunting sequence models for years: Transformers are powerful, but their memory costs scale quadratically with sequence length — meaning the longer your input, the more brutally expensive they get. State Space Models like Mamba solved the efficiency problem, but at a price: they compress everything into a fixed-size hidden state that simply can't hold more than a certain amount of context. You gain speed, you lose depth.
+
+Google DeepMind's Titans paper attacks this tradeoff directly, and the core idea is almost provocatively simple: what if the model kept learning *while it was running*?
+
+Let me unpack that.
+
+In standard deep learning, all knowledge gets baked into weights during training. Once you're at inference time — when the model is actually talking to you — those weights are frozen. The model isn't integrating new information in any deep sense. It's pattern-matching against what it already knows. For short contexts, that's fine. But for tasks that require remembering what was said fifty thousand tokens ago — think long documents, multi-turn conversations, cross-chapter reasoning — you're relying entirely on the window of tokens that fit in active attention. Anything outside that window is effectively gone.
+
+Titans proposes a Neural Long-Term Memory module, and here's where it gets interesting. This memory isn't a key-value cache or a database lookup. It's a small neural network — a tiny multilayer perceptron — whose *parameters are the memory medium itself*. Writing to memory means running a gradient update on that network. Reading from memory means running a forward pass through it.
+
+So every token that comes through during inference triggers a little learning step. The memory module sees the incoming information, measures its own prediction error, and updates itself accordingly. This is gradient descent happening live, during inference, not during training.
+
+Now you might ask: doesn't updating on every single token get noisy? Why would you want to memorize everything equally? This is where the surprise signal comes in. Titans measures surprise as the magnitude of the gradient — essentially, how wrong the memory was about a given token. High surprise means this is novel, unexpected, important. Low surprise means the memory already knew this, so there's no need to overwrite. The result is that memory updates are naturally weighted toward rare, anomalous, or genuinely new information. Predictable, repetitive content flows through without leaving a strong trace. That's an elegant and intuitive property.
+
+The other challenge is forgetting. Without any constraint, the memory would accumulate interference over time — old information corrupting new. Titans handles this with exponential decay: at each step, the memory parameters are gently nudged toward zero before the new update is applied. The forgetting rate becomes a tunable knob that balances recency against persistence. There's also a momentum term, borrowed from standard gradient optimization, that smooths out updates so a single outlier token doesn't cause wild swings in the memory state.
+
+The paper then proposes three ways to integrate this Long-Term Memory module with a standard Transformer backbone, and they give them names based on how the memory connects.
+
+In the first variant, Memory as Context, the output of the LTM gets prepended to the input tokens before attention happens. Memory literally shows up as extra tokens the model can attend to. Intuitive, but it increases the effective sequence length for attention.
+
+In the second variant, Memory as Gate, the LTM output is used to modulate — to gate — the attention output. Memory controls how much of the attention result flows through. This is more flexible and ends up performing best across most benchmarks.
+
+In the third variant, Memory as Layer, the LTM sits as an independent layer interleaved between attention layers. Modular and easiest to scale.
+
+All three variants maintain near-linear complexity with sequence length, which puts them firmly in the same efficiency class as Mamba — but with the added ability to update during inference that Mamba entirely lacks.
+
+How does this compare to the alternatives in practice? Against plain Transformers, Titans-MAG beats GPT-4 Turbo on several long-document subtasks, despite GPT-4 Turbo having a 128k context window. On the Needle-in-a-Haystack test — finding a specific fact buried in a hundred-thousand-token document — Titans significantly outperforms Mamba. And on associative recall tasks, Titans maintains near-perfect accuracy at lengths where SSMs start degrading sharply.
+
+That said, it's not without tradeoffs worth taking seriously. Running a backward pass through the LTM module for every token adds real inference cost. In production, the latency hit depends on how large the memory network is and what hardware you're running on, but it's not free. The size of the LTM also directly caps memory capacity — different tasks likely need different sizes, which is another hyperparameter to tune. And the forgetting rate is sensitive to task type, with no adaptive schedule yet proposed. Get it wrong and you either forget too fast or let the memory calcify. Training stability is also messier than pure Transformers because the backbone and the updating memory interact in ways that make loss curves noisier.
+
+So where does Titans land in the bigger picture?
+
+There's a broader research trend right now around test-time compute — the idea that giving models more time to think during inference, rather than just during training, can dramatically improve their capabilities. Systems like OpenAI's reasoning models fall into this camp. Titans is tackling a different dimension of the same insight: not reasoning depth, but memory. A model that can both reason longer *and* remember more coherently is the natural next step, and Titans points toward what that architecture might look like.
+
+Three things to take away. First, memory as a gradient-updated neural network is a genuine architectural primitive, not just a clever hack — it scales gracefully and integrates cleanly with existing Transformer components. Second, the surprise-driven write signal is doing a lot of important work; selective memorization based on novelty is what separates this from naive online learning. And third, inference-time learning and inference-time reasoning are almost certainly complementary — we're likely in the early innings of building models that stay adaptive long after training ends.
