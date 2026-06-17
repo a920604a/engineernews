@@ -5,18 +5,56 @@ interface Props {
   lang: 'zh-TW' | 'en';
 }
 
+const BTN_SIZE = 52;
 const POPUP_W = 360;
 const POPUP_H = 520;
+const POPUP_GAP = 12;
+
+function useDraggable(size: { w: number; h: number }) {
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+  const offsetRef = useRef<{ dx: number; dy: number } | null>(null);
+  const didDragRef = useRef(false);
+  const elRef = useRef<HTMLElement>(null);
+
+  const clamp = (x: number, y: number) => ({
+    x: Math.max(0, Math.min(x, window.innerWidth - size.w)),
+    y: Math.max(0, Math.min(y, window.innerHeight - size.h)),
+  });
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    e.preventDefault();
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    offsetRef.current = { dx: e.clientX - rect.left, dy: e.clientY - rect.top };
+    didDragRef.current = false;
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  }, []);
+
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    if (!offsetRef.current) return;
+    const { dx, dy } = offsetRef.current;
+    const newX = e.clientX - dx;
+    const newY = e.clientY - dy;
+    const prev = pos ?? { x: 0, y: 0 };
+    if (!didDragRef.current && Math.hypot(newX - prev.x, newY - prev.y) > 5) {
+      didDragRef.current = true;
+    }
+    if (didDragRef.current) setPos(clamp(newX, newY));
+  }, [pos]);
+
+  const onPointerUp = useCallback((e: React.PointerEvent) => {
+    offsetRef.current = null;
+    (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+  }, []);
+
+  return { pos, setPos, didDragRef, elRef, onPointerDown, onPointerMove, onPointerUp };
+}
 
 export default function ChatFloating({ lang }: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  // null = use default bottom-right anchor; set once user starts dragging
-  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
-  const dragOffset = useRef<{ dx: number; dy: number } | null>(null);
-  const popupRef = useRef<HTMLDivElement>(null);
-
   const close = useCallback(() => setIsOpen(false), []);
-  const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
+
+  const btn = useDraggable({ w: BTN_SIZE, h: BTN_SIZE });
+  const popup = useDraggable({ w: POPUP_W, h: POPUP_H });
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -26,32 +64,33 @@ export default function ChatFloating({ lang }: Props) {
     return () => window.removeEventListener('keydown', handler);
   }, [isOpen, close]);
 
-  const clamp = (x: number, y: number) => ({
-    x: Math.max(0, Math.min(x, window.innerWidth - POPUP_W)),
-    y: Math.max(0, Math.min(y, window.innerHeight - POPUP_H)),
-  });
-
-  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const rect = popupRef.current!.getBoundingClientRect();
-    dragOffset.current = { dx: e.clientX - rect.left, dy: e.clientY - rect.top };
-    (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
+  const handleBtnPointerUp = (e: React.PointerEvent<HTMLButtonElement>) => {
+    btn.onPointerUp(e);
+    // Toggle only on click (not drag)
+    if (!btn.didDragRef.current) setIsOpen((prev) => !prev);
   };
 
-  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!dragOffset.current) return;
-    const { dx, dy } = dragOffset.current;
-    setPos(clamp(e.clientX - dx, e.clientY - dy));
+  // Popup opens near the button unless user has dragged popup independently
+  const getPopupPos = (): React.CSSProperties => {
+    if (popup.pos) {
+      return { position: 'fixed', left: popup.pos.x, top: popup.pos.y };
+    }
+    if (btn.pos) {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const openAbove = btn.pos.y + BTN_SIZE + POPUP_GAP + POPUP_H > vh;
+      const top = openAbove
+        ? btn.pos.y - POPUP_H - POPUP_GAP
+        : btn.pos.y + BTN_SIZE + POPUP_GAP;
+      const left = Math.max(0, Math.min(btn.pos.x + BTN_SIZE - POPUP_W, vw - POPUP_W));
+      return { position: 'fixed', top, left };
+    }
+    return { position: 'fixed', bottom: '100px', right: '32px' };
   };
 
-  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    dragOffset.current = null;
-    (e.currentTarget as HTMLDivElement).releasePointerCapture(e.pointerId);
-  };
-
-  const popupStyle: React.CSSProperties = pos
-    ? { position: 'fixed', left: pos.x, top: pos.y, width: POPUP_W, height: POPUP_H }
-    : { position: 'fixed', bottom: '100px', right: '32px', width: POPUP_W, height: POPUP_H };
+  const btnStyle: React.CSSProperties = btn.pos
+    ? { position: 'fixed', left: btn.pos.x, top: btn.pos.y }
+    : { position: 'fixed', bottom: '32px', right: '32px' };
 
   return (
     <>
@@ -68,10 +107,10 @@ export default function ChatFloating({ lang }: Props) {
 
       {/* Popup */}
       <div
-        ref={popupRef}
-        className="chat-popup"
         style={{
-          ...popupStyle,
+          ...getPopupPos(),
+          width: POPUP_W,
+          height: POPUP_H,
           zIndex: 9999,
           borderRadius: '16px',
           border: '0.5px solid var(--separator)',
@@ -80,19 +119,17 @@ export default function ChatFloating({ lang }: Props) {
           opacity: isOpen ? 1 : 0,
           pointerEvents: isOpen ? 'auto' : 'none',
           transform: isOpen ? 'translateY(0) scale(1)' : 'translateY(16px) scale(0.97)',
-          transition: dragOffset.current
-            ? 'none'
-            : 'opacity 0.2s ease, transform 0.2s ease',
+          transition: 'opacity 0.2s ease, transform 0.2s ease',
           transformOrigin: 'bottom right',
           display: 'flex',
           flexDirection: 'column',
         }}
       >
-        {/* Drag handle */}
+        {/* Popup drag handle */}
         <div
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
+          onPointerDown={popup.onPointerDown}
+          onPointerMove={popup.onPointerMove}
+          onPointerUp={popup.onPointerUp}
           style={{
             height: '28px',
             flexShrink: 0,
@@ -118,31 +155,31 @@ export default function ChatFloating({ lang }: Props) {
         </div>
       </div>
 
-      {/* Floating button — always fixed bottom-right */}
+      {/* Draggable floating button */}
       <button
-        onClick={toggle}
+        onPointerDown={btn.onPointerDown}
+        onPointerMove={btn.onPointerMove}
+        onPointerUp={handleBtnPointerUp}
         aria-label={isOpen ? 'Close chat' : 'Open chat'}
         aria-expanded={isOpen}
         style={{
-          position: 'fixed',
-          bottom: '32px',
-          right: '32px',
+          ...btnStyle,
           zIndex: 9999,
-          width: '52px',
-          height: '52px',
+          width: BTN_SIZE,
+          height: BTN_SIZE,
           borderRadius: '50%',
           background: 'var(--accent)',
           border: 'none',
-          cursor: 'pointer',
+          cursor: 'grab',
           color: '#fff',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           boxShadow: '0 4px 20px rgba(0,0,0,0.35)',
-          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+          transition: 'box-shadow 0.2s ease',
+          touchAction: 'none',
+          userSelect: 'none',
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.08)')}
-        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
       >
         {isOpen ? (
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
