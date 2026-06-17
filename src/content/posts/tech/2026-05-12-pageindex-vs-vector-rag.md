@@ -70,6 +70,7 @@ sequenceDiagram
   Index->>Agent: 損益表頁面內容
   Agent->>User: 回答：毛利率 38%，出自第 7 頁損益表
   Note right of User: get_document_structure() only
+  Note over User,Agent,Index: LLM Agent 回答問題
 ```
 
 ### 效能與定位
