@@ -1,11 +1,6 @@
-const KEY = 'visitor_id';
+const OWNER_ID = 'owner-yuan3509';
 
 export function getVisitorId(): string {
   if (typeof window === 'undefined') return '';
-  let id = localStorage.getItem(KEY);
-  if (!id) {
-    id = crypto.randomUUID();
-    localStorage.setItem(KEY, id);
-  }
-  return id;
+  return OWNER_ID;
 }
