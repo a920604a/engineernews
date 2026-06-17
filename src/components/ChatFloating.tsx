@@ -1,12 +1,19 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import ChatWidget from './ChatWidget';
 
 interface Props {
   lang: 'zh-TW' | 'en';
 }
 
+const POPUP_W = 360;
+const POPUP_H = 520;
+
 export default function ChatFloating({ lang }: Props) {
   const [isOpen, setIsOpen] = useState(false);
+  // null = use default bottom-right anchor; set once user starts dragging
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+  const dragOffset = useRef<{ dx: number; dy: number } | null>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
 
   const close = useCallback(() => setIsOpen(false), []);
   const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
@@ -18,6 +25,33 @@ export default function ChatFloating({ lang }: Props) {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [isOpen, close]);
+
+  const clamp = (x: number, y: number) => ({
+    x: Math.max(0, Math.min(x, window.innerWidth - POPUP_W)),
+    y: Math.max(0, Math.min(y, window.innerHeight - POPUP_H)),
+  });
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const rect = popupRef.current!.getBoundingClientRect();
+    dragOffset.current = { dx: e.clientX - rect.left, dy: e.clientY - rect.top };
+    (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragOffset.current) return;
+    const { dx, dy } = dragOffset.current;
+    setPos(clamp(e.clientX - dx, e.clientY - dy));
+  };
+
+  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    dragOffset.current = null;
+    (e.currentTarget as HTMLDivElement).releasePointerCapture(e.pointerId);
+  };
+
+  const popupStyle: React.CSSProperties = pos
+    ? { position: 'fixed', left: pos.x, top: pos.y, width: POPUP_W, height: POPUP_H }
+    : { position: 'fixed', bottom: '100px', right: '32px', width: POPUP_W, height: POPUP_H };
 
   return (
     <>
@@ -34,13 +68,10 @@ export default function ChatFloating({ lang }: Props) {
 
       {/* Popup */}
       <div
+        ref={popupRef}
         className="chat-popup"
         style={{
-          position: 'fixed',
-          bottom: '100px',
-          right: '32px',
-          width: '360px',
-          height: '520px',
+          ...popupStyle,
           zIndex: 9999,
           borderRadius: '16px',
           border: '0.5px solid var(--separator)',
@@ -49,14 +80,45 @@ export default function ChatFloating({ lang }: Props) {
           opacity: isOpen ? 1 : 0,
           pointerEvents: isOpen ? 'auto' : 'none',
           transform: isOpen ? 'translateY(0) scale(1)' : 'translateY(16px) scale(0.97)',
-          transition: 'opacity 0.2s ease, transform 0.2s ease',
+          transition: dragOffset.current
+            ? 'none'
+            : 'opacity 0.2s ease, transform 0.2s ease',
           transformOrigin: 'bottom right',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
-        {isOpen && <ChatWidget lang={lang} onClose={close} />}
+        {/* Drag handle */}
+        <div
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          style={{
+            height: '28px',
+            flexShrink: 0,
+            cursor: 'grab',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'var(--bg-secondary, rgba(0,0,0,0.04))',
+            borderBottom: '0.5px solid var(--separator)',
+            touchAction: 'none',
+            userSelect: 'none',
+          }}
+        >
+          <div style={{
+            width: '36px', height: '4px',
+            borderRadius: '2px',
+            background: 'var(--text-tertiary, #bbb)',
+          }} />
+        </div>
+
+        <div style={{ flex: 1, overflow: 'hidden' }}>
+          {isOpen && <ChatWidget lang={lang} onClose={close} />}
+        </div>
       </div>
 
-      {/* Floating button */}
+      {/* Floating button — always fixed bottom-right */}
       <button
         onClick={toggle}
         aria-label={isOpen ? 'Close chat' : 'Open chat'}
