@@ -1,0 +1,39 @@
+Video production has always been a wall for most people. You need editing skills, source footage, a decent microphone, and then hours of stitching everything together just to get a three-minute explainer out the door. But that wall is coming down fast — and AI agents are the reason why.
+
+Here's the core idea: instead of one AI model doing everything, you chain specialized tools together. An LLM writes the script. A text-to-speech service turns that script into a voiceover. A video generation API creates the visuals. And an automation platform coordinates all of it. You give the system a topic, and you get back a fully narrated video. No code. Just API keys and workflow configuration.
+
+Let's walk through how this actually works.
+
+Think of the pipeline as a relay race. The first leg is your LLM — Claude, GPT-4o, take your pick — and its job is to take a topic and output a structured script. Not just prose, but organized segments: what gets narrated, and what visuals should accompany each segment. That structure matters a lot, because every tool downstream depends on it.
+
+The second leg is text-to-speech. ElevenLabs is the gold standard here — it sounds the most natural and handles multiple languages well. Azure Speech is a solid enterprise alternative. If you're just prototyping and don't want to spend anything, Microsoft's Edge TTS is free and surprisingly decent.
+
+Third leg: video generation. Runway Gen-3 produces high-quality clips from text descriptions. Pika is simpler and works great for explainer-style content. If you want an AI presenter — an actual human face on screen — HeyGen is purpose-built for that. And if you want to keep everything self-hosted and free, Stable Video Diffusion is open-source.
+
+The fourth leg is assembly. FFmpeg merges your audio and video clips into a final MP4. It's been around for decades, it handles everything, and it's free.
+
+Now, what ties all of this together? n8n — an open-source automation platform that lets you build this entire pipeline visually, without writing a single line of code. Make and Zapier are alternatives if you prefer cloud-based options, but n8n is worth learning because you can self-host it, which keeps your workflow data off third-party servers.
+
+The full pipeline in n8n is about eight nodes. A webhook trigger accepts your topic — could be a Slack message, a form submission, even a scheduled cron job. That fires a call to your LLM, which returns a structured JSON script. A parse node breaks that into individual segments. Then for each segment, you call ElevenLabs to generate the audio, call Runway to generate the video clip, and once everything's done, FFmpeg merges it all together. The final node saves the output to Google Drive, S3, wherever you want it.
+
+Once you set this up, triggering it produces a complete video in roughly five to fifteen minutes. That's it.
+
+Now, the most important piece of the whole system isn't actually any of those APIs — it's the prompt you use to get the script. You need to tell the LLM to output JSON with a specific shape: a title, and then an array of segments, each with a narration field and a visual description field. Why JSON? Because every downstream step needs to parse and act on that output reliably. Prose breaks pipelines. Structured data doesn't.
+
+One practical tip on the visual descriptions: write them in English, even if the narration is in another language. Runway, Pika, and similar tools are trained primarily on English prompts and respond better to them.
+
+Let me put this in perspective with traditional production. Writing a script manually takes thirty to sixty minutes. With an LLM, thirty seconds. Studio voiceover recording — or outsourcing it — can take days. TTS is instant. Sourcing footage from stock libraries, shooting it yourself, editing it all together? That's easily half a day to several days of work. This pipeline does the equivalent in five to fifteen minutes.
+
+That said, it's not magic for every use case. This approach shines when you need volume — product demos, tutorials, news summaries, multilingual versions of the same content where you just swap the TTS language and re-run. It's also great for quickly validating a video concept before committing real production budget to it.
+
+Where it doesn't work: anything that needs genuine human presence. Interviews, personal brand videos, anything where the authenticity of a real person matters — AI can't replicate that. High-precision visual requirements are also a limitation; AI video generation can still be inconsistent across segments, so if you need every frame to look like it came from the same shoot, you'll fight that. And for rights-sensitive commercial advertising, the licensing landscape around AI-generated assets is still murky enough that you want legal counsel before shipping.
+
+A few other honest limitations to keep in mind. Runway and similar services charge per second of generated video — those costs accumulate fast for longer content. Each segment takes one to three minutes to generate, so a full pipeline run is realistically ten to twenty minutes, not instant. If visual style consistency across segments matters to you, use a style anchor phrase in every visual prompt to keep the look coherent. And the TTS quality gap between free and paid tiers is real — free tiers can sound robotic; ElevenLabs' paid plans are noticeably better.
+
+So here's what to take away from all of this.
+
+First: "AI agent" in this context just means coordinated specialized tools. No single model does everything. The power comes from chaining them — LLM for reasoning and script structure, TTS for voice, video generation for visuals, FFmpeg for assembly.
+
+Second: the prompt is the architecture. A well-structured JSON prompt that produces clean, parseable output is what makes the rest of the pipeline reliable. Get that wrong and everything downstream breaks.
+
+Third: this is genuinely useful for high-volume, repetitive video content — not for replacing human-driven storytelling. Know the difference, and you'll deploy it where it actually delivers.
