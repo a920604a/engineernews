@@ -10,11 +10,24 @@ const POPUP_W = 360;
 const POPUP_H = 520;
 const POPUP_GAP = 12;
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' ? window.innerWidth < 640 : false
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)');
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    setIsMobile(mq.matches);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+  return isMobile;
+}
+
 function useDraggable(size: { w: number; h: number }) {
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
   const offsetRef = useRef<{ dx: number; dy: number } | null>(null);
   const didDragRef = useRef(false);
-  const elRef = useRef<HTMLElement>(null);
 
   const clamp = (x: number, y: number) => ({
     x: Math.max(0, Math.min(x, window.innerWidth - size.w)),
@@ -46,11 +59,12 @@ function useDraggable(size: { w: number; h: number }) {
     (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
   }, []);
 
-  return { pos, setPos, didDragRef, elRef, onPointerDown, onPointerMove, onPointerUp };
+  return { pos, didDragRef, onPointerDown, onPointerMove, onPointerUp };
 }
 
 export default function ChatFloating({ lang }: Props) {
   const [isOpen, setIsOpen] = useState(false);
+  const isMobile = useIsMobile();
   const close = useCallback(() => setIsOpen(false), []);
 
   const btn = useDraggable({ w: BTN_SIZE, h: BTN_SIZE });
@@ -64,14 +78,18 @@ export default function ChatFloating({ lang }: Props) {
     return () => window.removeEventListener('keydown', handler);
   }, [isOpen, close]);
 
+  // Close sheet when switching to desktop to avoid stale layout
+  useEffect(() => {
+    if (!isMobile && isOpen) close();
+  }, [isMobile]);
+
   const handleBtnPointerUp = (e: React.PointerEvent<HTMLButtonElement>) => {
     btn.onPointerUp(e);
-    // Toggle only on click (not drag)
     if (!btn.didDragRef.current) setIsOpen((prev) => !prev);
   };
 
-  // Popup opens near the button unless user has dragged popup independently
-  const getPopupPos = (): React.CSSProperties => {
+  // Desktop: popup position relative to button
+  const getDesktopPopupPos = (): React.CSSProperties => {
     if (popup.pos) {
       return { position: 'fixed', left: popup.pos.x, top: popup.pos.y };
     }
@@ -90,7 +108,13 @@ export default function ChatFloating({ lang }: Props) {
 
   const btnStyle: React.CSSProperties = btn.pos
     ? { position: 'fixed', left: btn.pos.x, top: btn.pos.y }
-    : { position: 'fixed', bottom: '32px', right: '32px' };
+    : {
+        position: 'fixed',
+        bottom: isMobile
+          ? 'calc(32px + env(safe-area-inset-bottom, 0px))'
+          : '32px',
+        right: '32px',
+      };
 
   return (
     <>
@@ -100,62 +124,112 @@ export default function ChatFloating({ lang }: Props) {
           onClick={close}
           style={{
             position: 'fixed', inset: 0, zIndex: 9998,
-            background: 'rgba(0,0,0,0.25)',
+            background: 'rgba(0,0,0,0.4)',
           }}
         />
       )}
 
-      {/* Popup */}
-      <div
-        style={{
-          ...getPopupPos(),
-          width: POPUP_W,
-          height: POPUP_H,
-          zIndex: 9999,
-          borderRadius: '16px',
-          border: '0.5px solid var(--separator)',
-          boxShadow: 'var(--shadow-md)',
-          overflow: 'hidden',
-          opacity: isOpen ? 1 : 0,
-          pointerEvents: isOpen ? 'auto' : 'none',
-          transform: isOpen ? 'translateY(0) scale(1)' : 'translateY(16px) scale(0.97)',
-          transition: 'opacity 0.2s ease, transform 0.2s ease',
-          transformOrigin: 'bottom right',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        {/* Popup drag handle */}
+      {isMobile ? (
+        /* ── Mobile: Bottom Sheet ── */
         <div
-          onPointerDown={popup.onPointerDown}
-          onPointerMove={popup.onPointerMove}
-          onPointerUp={popup.onPointerUp}
           style={{
-            height: '28px',
-            flexShrink: 0,
-            cursor: 'grab',
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: '85dvh',
+            zIndex: 9999,
+            borderRadius: '20px 20px 0 0',
+            border: '0.5px solid var(--separator)',
+            boxShadow: '0 -4px 32px rgba(0,0,0,0.2)',
+            background: 'var(--bg-primary, #fff)',
+            overflow: 'hidden',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'var(--bg-secondary, rgba(0,0,0,0.04))',
-            borderBottom: '0.5px solid var(--separator)',
-            touchAction: 'none',
-            userSelect: 'none',
+            flexDirection: 'column',
+            opacity: isOpen ? 1 : 0,
+            pointerEvents: isOpen ? 'auto' : 'none',
+            transform: isOpen ? 'translateY(0)' : 'translateY(100%)',
+            transition: 'opacity 0.25s ease, transform 0.3s cubic-bezier(0.32,0.72,0,1)',
+            // Avoid content being hidden behind Home Indicator
+            paddingBottom: 'env(safe-area-inset-bottom, 0px)',
           }}
         >
-          <div style={{
-            width: '36px', height: '4px',
-            borderRadius: '2px',
-            background: 'var(--text-tertiary, #bbb)',
-          }} />
-        </div>
+          {/* Sheet handle — tap to close */}
+          <div
+            onClick={close}
+            style={{
+              height: '36px',
+              flexShrink: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+            }}
+          >
+            <div style={{
+              width: '40px', height: '4px',
+              borderRadius: '2px',
+              background: 'var(--text-tertiary, #ccc)',
+            }} />
+          </div>
 
-        <div style={{ flex: 1, overflow: 'hidden' }}>
-          {isOpen && <ChatWidget lang={lang} onClose={close} />}
+          <div style={{ flex: 1, overflow: 'hidden' }}>
+            {isOpen && <ChatWidget lang={lang} onClose={close} />}
+          </div>
         </div>
-      </div>
+      ) : (
+        /* ── Desktop: Draggable Floating Popup ── */
+        <div
+          style={{
+            ...getDesktopPopupPos(),
+            width: POPUP_W,
+            height: POPUP_H,
+            zIndex: 9999,
+            borderRadius: '16px',
+            border: '0.5px solid var(--separator)',
+            boxShadow: 'var(--shadow-md)',
+            overflow: 'hidden',
+            opacity: isOpen ? 1 : 0,
+            pointerEvents: isOpen ? 'auto' : 'none',
+            transform: isOpen ? 'translateY(0) scale(1)' : 'translateY(16px) scale(0.97)',
+            transition: 'opacity 0.2s ease, transform 0.2s ease',
+            transformOrigin: 'bottom right',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          {/* Desktop drag handle */}
+          <div
+            onPointerDown={popup.onPointerDown}
+            onPointerMove={popup.onPointerMove}
+            onPointerUp={popup.onPointerUp}
+            style={{
+              height: '28px',
+              flexShrink: 0,
+              cursor: 'grab',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'var(--bg-secondary, rgba(0,0,0,0.04))',
+              borderBottom: '0.5px solid var(--separator)',
+              touchAction: 'none',
+              userSelect: 'none',
+            }}
+          >
+            <div style={{
+              width: '36px', height: '4px',
+              borderRadius: '2px',
+              background: 'var(--text-tertiary, #bbb)',
+            }} />
+          </div>
 
-      {/* Draggable floating button */}
+          <div style={{ flex: 1, overflow: 'hidden' }}>
+            {isOpen && <ChatWidget lang={lang} onClose={close} />}
+          </div>
+        </div>
+      )}
+
+      {/* Draggable floating button — both mobile & desktop */}
       <button
         onPointerDown={btn.onPointerDown}
         onPointerMove={btn.onPointerMove}
