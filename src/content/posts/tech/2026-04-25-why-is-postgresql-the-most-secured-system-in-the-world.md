@@ -52,7 +52,7 @@ sequenceDiagram
         note right: 安全流程完成
     else 安全流程未完成
         note right: 安全流程未完成
-    end
+    end alt
 ```
 
 ## 跟 MySQL 的差別

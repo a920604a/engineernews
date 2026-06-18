@@ -60,7 +60,7 @@ OpenAI's Code Interpreter is powerful, but it is a black box running on someone 
 ## How Open Interpreter Works
 
 ```mermaid
-sequenceDiagram
+graph LR
   participant User
   participant Interpreter
   participant LLM
