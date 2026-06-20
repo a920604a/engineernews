@@ -9,6 +9,7 @@ description: "A practical look at Python's functools.reduce: what it actually do
 type: explainer
 original_url: "https://www.youtube.com/shorts/1Ytv1b7CN1E"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260620_083357_247983.mp3"
 ---
 
 `reduce()` occupies an unusual position in Python: it exists, people use it, but Python's creator Guido van Rossum publicly said he almost never uses it — and banished it from builtins to `functools` in Python 3. That history is worth understanding before you reach for it.

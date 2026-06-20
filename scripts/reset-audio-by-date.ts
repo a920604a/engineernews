@@ -39,13 +39,17 @@ function clearAudioUrlFromFrontmatter(filePath: string): void {
 }
 
 function deleteFromR2(r2Key: string): void {
-  const remoteFlag = isProd ? '--remote' : '--local';
   console.log(`  🗑️  刪除 R2: ${r2Key}`);
   try {
-    execSync(
-      `wrangler r2 object delete ${R2_BUCKET_NAME}/${r2Key} ${remoteFlag}`,
-      { stdio: 'inherit' }
-    );
+    if (isProd) {
+      const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+      const apiToken = process.env.CLOUDFLARE_API_TOKEN;
+      if (!accountId || !apiToken) throw new Error('缺少 CLOUDFLARE_ACCOUNT_ID 或 CLOUDFLARE_API_TOKEN');
+      const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/r2/buckets/${R2_BUCKET_NAME}/objects/${r2Key}`;
+      execSync(`curl -sf -X DELETE "${url}" -H "Authorization: Bearer ${apiToken}"`, { stdio: 'inherit' });
+    } else {
+      console.log(`  ⚠️  local 模式跳過 R2 刪除 (wrangler 需要 Node.js v20+)`);
+    }
   } catch {
     console.warn(`  ⚠️  R2 刪除失敗（可能已不存在）: ${r2Key}`);
   }
@@ -53,8 +57,14 @@ function deleteFromR2(r2Key: string): void {
 
 function clearD1AudioUrl(slug: string): void {
   console.log(`  📝 清除 D1 audio_url: ${slug}`);
+  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+  const apiToken = process.env.CLOUDFLARE_API_TOKEN;
+  if (!accountId || !apiToken) throw new Error('缺少 CLOUDFLARE_ACCOUNT_ID 或 CLOUDFLARE_API_TOKEN');
+  const dbId = '0bec497e-9de7-4069-bc90-7d0da0f72e9a';
+  const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/d1/database/${dbId}/query`;
+  const body = JSON.stringify({ sql: `UPDATE posts SET audio_url=NULL WHERE slug=?`, params: [slug] });
   execSync(
-    `wrangler d1 execute engineer-news-db --command "UPDATE posts SET audio_url=NULL WHERE slug='${slug}'" --remote`,
+    `curl -sf -X POST "${url}" -H "Authorization: Bearer ${apiToken}" -H "Content-Type: application/json" -d '${body.replace(/'/g, "'\\''")}'`,
     { stdio: 'inherit' }
   );
 }

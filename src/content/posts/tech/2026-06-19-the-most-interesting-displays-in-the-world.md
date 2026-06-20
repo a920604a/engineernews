@@ -9,6 +9,7 @@ description: "2025-2026 年最值得關注的顯示技術：E Ink 彩色戶外�
 type: listicle
 original_url: "https://www.youtube.com/watch?v=WOzcFkld6_g"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260620_083419_947903.mp3"
 ---
 
 顯示器這個領域有個怪現象：消費者市場的 OLED 電視和智慧手機螢幕每年都在改進，但真正有趣的東西往往出現在完全不同的地方——汽車車身、零售展示、AR 眼鏡的光波導、甚至是你手腕上可以拉伸的螢幕。

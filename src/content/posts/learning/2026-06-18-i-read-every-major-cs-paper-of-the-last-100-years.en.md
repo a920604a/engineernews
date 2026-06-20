@@ -9,6 +9,7 @@ description: "10 papers across 100 years of CS history: Turing, Shannon, Percept
 type: case-study
 original_url: "https://www.youtube.com/watch?v=ML3q7Ok4hJg"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260620_083233_168950.mp3"
 ---
 
 Fireship's "I read every major CS paper of the last 100 years" picks 10 papers and traces how the foundational ideas of computer science connect across a century. It's not academic — it's a practitioner's shortcut to understanding where the tools you use every day actually came from.

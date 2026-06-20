@@ -9,6 +9,7 @@ description: "深入解析 Python functools.reduce：它真正的用途、與 fo
 type: explainer
 original_url: "https://www.youtube.com/shorts/1Ytv1b7CN1E"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260620_083402_120522.mp3"
 ---
 
 `reduce()` 是 Python 裡一個有趣的函數——它存在、有人在用，但 Python 之父 Guido van Rossum 卻曾公開說他「幾乎不用它」，並且在 Python 3 把它從內建函數移到了 `functools` 模組。這個故事本身就值得思考一下。

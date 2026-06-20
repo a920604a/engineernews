@@ -9,6 +9,7 @@ description: "多個 AI Agent 組成系統時，讓它們用自然語言溝通�
 type: explainer
 original_url: "https://www.youtube.com/watch?v=dUmT0OIGoqE"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260620_083453_722868.mp3"
 ---
 
 當你把多個 AI Agent 組在一起，讓它們協作完成任務，一個直覺的做法是讓它們用自然語言互相溝通——畢竟這是它們最擅長的東西。但研究顯示，這可能不是最有效率的設計。

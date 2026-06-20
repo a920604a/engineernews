@@ -9,6 +9,7 @@ description: "10 篇跨越 100 年的 CS 經典論文回顧：圖靈、Shannon�
 type: case-study
 original_url: "https://www.youtube.com/watch?v=ML3q7Ok4hJg"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260620_083238_224542.mp3"
 ---
 
 有時候你會想，現在這些讓大家趨之若鶩的 AI 技術，到底是怎麼來的？不是那種「先有深度學習，然後有 ChatGPT」這種版本，而是真正從頭說起的那種。

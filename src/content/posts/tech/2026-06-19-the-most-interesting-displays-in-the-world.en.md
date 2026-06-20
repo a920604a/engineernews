@@ -9,6 +9,7 @@ description: "2025-2026 display technologies worth knowing: color E Ink for outd
 type: listicle
 original_url: "https://www.youtube.com/watch?v=WOzcFkld6_g"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260620_083415_024201.mp3"
 ---
 
 Display technology has a strange characteristic: the most interesting developments rarely appear in the consumer market first. E Ink ends up on car exteriors. Looking Glass builds holograms that float in air without glasses. Researchers are pulling displays that stretch like skin out of labs.

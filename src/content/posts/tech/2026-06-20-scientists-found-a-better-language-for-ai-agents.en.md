@@ -9,6 +9,7 @@ description: "When multiple AI agents collaborate, natural language communicatio
 type: explainer
 original_url: "https://www.youtube.com/watch?v=dUmT0OIGoqE"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260620_083449_728699.mp3"
 ---
 
 When you build a multi-agent AI system, the intuitive approach is to have agents communicate in natural language — it's what they're trained for. Research suggests this might be a mistake, or at least a suboptimal default.

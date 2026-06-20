@@ -274,10 +274,14 @@ async function stageAudio(pairs: PostPair[]): Promise<{ en: StageStats; zh: Stag
 }
 
 function syncD1(audioUrl: string, slug: string): void {
-  const escapedUrl = audioUrl.replace(/'/g, "''");
-  const escapedSlug = slug.replace(/'/g, "''");
+  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+  const apiToken = process.env.CLOUDFLARE_API_TOKEN;
+  if (!accountId || !apiToken) throw new Error('缺少 CLOUDFLARE_ACCOUNT_ID 或 CLOUDFLARE_API_TOKEN');
+  const dbId = '0bec497e-9de7-4069-bc90-7d0da0f72e9a';
+  const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/d1/database/${dbId}/query`;
+  const body = JSON.stringify({ sql: `UPDATE posts SET audio_url=? WHERE slug=?`, params: [audioUrl, slug] });
   execSync(
-    `wrangler d1 execute engineer-news-db --command "UPDATE posts SET audio_url='${escapedUrl}' WHERE slug='${escapedSlug}'" --remote`,
+    `curl -sf -X POST "${url}" -H "Authorization: Bearer ${apiToken}" -H "Content-Type: application/json" -d '${body.replace(/'/g, "'\\''")}'`,
     { stdio: 'inherit' }
   );
 }
