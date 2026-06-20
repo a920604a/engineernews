@@ -626,14 +626,22 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
 <script define:vars={{ slug: post.id }}>
   (async () => {
     try {
-      const res = await fetch('/api/views', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug }),
-      });
+      const key = `viewed:${slug}`;
+      const alreadyCounted = localStorage.getItem(key);
+      let res;
+      if (alreadyCounted) {
+        res = await fetch(`/api/views?slug=${encodeURIComponent(slug)}`);
+      } else {
+        res = await fetch('/api/views', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug }),
+        });
+        localStorage.setItem(key, '1');
+      }
       const { count } = await res.json();
       const el = document.getElementById('view-count');
-      if (el && count) el.textContent = `${count.toLocaleString()} views`;
+      if (el && typeof count === 'number') el.textContent = `${count.toLocaleString()} views`;
     } catch {
       // silent fail
     }

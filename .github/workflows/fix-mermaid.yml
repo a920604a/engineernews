@@ -1,8 +1,8 @@
 name: Fix Mermaid Syntax
 
 on:
-  schedule:
-    - cron: '0 1 * * *'    # 每天 01:00 UTC 執行
+  # schedule:
+  #   - cron: '0 1 * * *'    # 每天 01:00 UTC 執行
   workflow_dispatch:       # 允許手動觸發
 
 jobs:
