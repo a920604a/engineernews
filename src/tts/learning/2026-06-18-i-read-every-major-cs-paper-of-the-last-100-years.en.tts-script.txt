@@ -1,0 +1,31 @@
+Here's a hundred years of computer science, distilled into ten papers. And if you understand these ten, you understand the skeleton of everything we build today.
+
+Let's start in 1936. Alan Turing publishes a paper called "On Computable Numbers" — and before a single physical computer exists, he defines what computation even means. He draws a hard line: here's what can be computed, here's what can't. Every computer you've ever touched is an implementation of that theoretical model. The hardware came later. The idea came first.
+
+Twelve years later, Claude Shannon does something similar for information. In 1948, he publishes "A Mathematical Theory of Communication" and invents the bit — the binary unit of information. He defines entropy not as physics, but as a measure of uncertainty in a message. Every file you compress, every video you stream, every wireless signal bouncing off your phone — all of it is built on Shannon's math. Again: the idea arrived decades before the applications caught up.
+
+Then in 1958, Frank Rosenblatt introduces the perceptron. This is the first algorithm that actually learns from examples, modeled loosely on how a neuron fires. It kicked off the first wave of AI excitement. People genuinely thought thinking machines were right around the corner.
+
+And then came the crash. In 1969, Marvin Minsky and Seymour Papert published a book called "Perceptrons" that mathematically proved the perceptron couldn't solve certain nonlinear problems — the classic example being XOR, a simple logical operation. That proof nearly killed neural network research for a decade. Which is fascinating, because being precisely, rigorously *wrong* turned out to be one of the most useful things the field ever did. It forced researchers to think harder, to go deeper — literally. Multi-layer networks. And that thinking eventually leads somewhere.
+
+In 1978, Leslie Lamport takes a different direction entirely — distributed systems. His paper "Time, Clocks, and the Ordering of Events" solves a deceptively hard problem: in a system where there's no shared clock, how do you know what happened before what? His answer is logical clocks — a way of tracking causality without needing synchronized time. Every distributed database you use today, every system that has to coordinate across machines, is running on Lamport's idea.
+
+Back to neural networks. 1986. Rumelhart, Hinton, and Williams publish the backpropagation paper — "Learning Representations by Back-propagating Errors." This is the algorithm that makes multi-layer networks trainable. You feed the network data, it makes a prediction, you measure how wrong it was, and you propagate that error backwards through every layer to adjust the weights. Resurrection of a field. Geoffrey Hinton, by the way, won the 2024 Nobel Prize in Physics for this work — decades after publishing it.
+
+1998 brings something completely different in flavor but structurally similar in impact. Brin and Page publish their paper on a large-scale web search engine, and the core insight is PageRank: treat the web as a graph, and a link from one page to another is a vote. The more votes a page gets, especially from pages that themselves have lots of votes, the more authoritative it is. That's Google. The whole thing, in one idea.
+
+Then comes 2012, and this is where things accelerate sharply. Krizhevsky, Sutskever, and Hinton — Hinton again — publish the AlexNet paper. They enter an image recognition competition called ImageNet, and they don't just win. They cut the error rate from 26% down to 15% using a deep convolutional network trained on GPUs. That gap was so large it looked like a measurement error. It wasn't. This is the moment deep learning stops being a research curiosity and becomes an industry.
+
+2017: "Attention Is All You Need." Vaswani and colleagues introduce the Transformer architecture. The key move is dropping recurrent networks — the sequential processing approach that had dominated — and replacing it with self-attention, a mechanism that lets the model relate any part of a sequence to any other part simultaneously. Transformers are now the backbone of essentially every large model being built today.
+
+And then 2020, GPT-3. Brown and colleagues at OpenAI show that a large enough language model, trained on enough text, can perform new tasks from just a few examples in the prompt — no fine-tuning required. This isn't a new architecture. It's not a new training technique. It's scale, plus Transformers, plus the realization that prompting works. The breakthrough was recognizing that the combination worked at that size.
+
+So what do you take from all of this?
+
+First: the math almost always arrives before the hardware. Turing defined computation before computers existed. Shannon defined information theory before the internet existed. The ideas sat there, fully formed, waiting for infrastructure to catch up. When you hear people say an idea is "ahead of its time," that's usually what they mean.
+
+Second: setbacks drive the field forward. Minsky's demolition of the perceptron wasn't a dead end — it was a forcing function. The harshest critique of an idea sometimes produces the best version of that idea, one generation later.
+
+Third: the biggest recent breakthroughs haven't been new concepts. GPT-3 combined existing pieces — Transformers, large datasets, scaling — and discovered that the combination unlocked something qualitatively different. That's a pattern worth watching. The next leap probably won't come from an entirely new idea. It'll come from someone recognizing that the right combination of existing ideas, at the right scale, does something no one expected.
+
+You don't need to read all ten original papers. But knowing their shape gives you a filter. The next time something is announced as a paradigm shift, you can ask: is this a genuinely new idea, or is it waiting for hardware to catch up? Is this a recombination that changes what's possible? Or is it incremental? Those are better questions than "is this hype?" And now you have the historical frame to ask them.

@@ -1,0 +1,23 @@
+Here's something that tells you a lot about Python as a language: there's a built-in function that Python's own creator openly admitted he almost never uses — and eventually moved out of the standard builtins entirely. That function is `reduce`, and the story of why it got demoted is actually the most useful thing you can learn about it.
+
+So what does `reduce` do? At its core, it takes a function and a list, and keeps applying that function to pairs of values until the whole list collapses down to a single result. Think of it like a rolling calculation — you start with the first two items, get a result, then feed that result into the next item, and so on until there's nothing left. Add a starting value and you also get protection against the edge case of an empty list.
+
+Now here's where it gets interesting. `reduce` comes from the functional programming world, where this kind of folding operation is totally natural. But Python is not a functional programming language — it just borrows ideas from one. And that mismatch creates real problems.
+
+Guido van Rossum, Python's creator, actually wrote about this. His exact words were that apart from simple cases involving addition or multiplication, he has to stop and think before he can understand what a `reduce` call is doing. That's a language designer admitting their own API is hard to read. And that admission is why, in Python 3, `reduce` got moved out of builtins and into the `functools` module — you have to explicitly import it now, which is Python's way of saying "use this deliberately, not casually."
+
+The readability problem is real. When someone uses `reduce` to sum a list of numbers, experienced Python developers will immediately think: just use `sum()`. For finding the max or min, use the built-in `max` or `min`. For multiplying a sequence of numbers together, Python has `math.prod`. These built-ins exist precisely because those patterns are common enough to deserve their own names.
+
+There's also a performance myth worth busting. People sometimes reach for `reduce` thinking it's more efficient than a for loop. It's not — in CPython it actually tends to be slightly slower because every step involves a function call with its own overhead. The choice between `reduce` and a loop is about style, not speed.
+
+So when does `reduce` actually earn its place? There are a few legitimate cases.
+
+One is navigating deeply nested data structures — imagine you have a dictionary inside a dictionary inside another dictionary, and you have a list of keys you need to follow in sequence. `reduce` can elegantly thread through that chain without you writing out every step manually.
+
+Another is merging a list of dictionaries together — collapsing multiple dicts into one by progressively combining them pairs at a time.
+
+But the strongest case for `reduce` is function composition. This is where it genuinely shines. If you want to build a pipeline — say, a function that first doubles a number, then adds one — and you want to do that dynamically for any sequence of functions, `reduce` is the natural tool. You're essentially folding a list of functions into a single combined function. That's a pattern that has no cleaner built-in alternative.
+
+The practical rule is simple: if you look at a `reduce` call and need more than a few seconds to figure out what it's doing, rewrite it. Either as a for loop, or replace it with whatever built-in covers your case. Python's core philosophy is that there should be one obvious way to do something — and for most common accumulations, that obvious way is already in the standard library.
+
+Three things to take away from this. First, `reduce` is about expressive style, not performance — don't reach for it hoping it'll make your code faster. Second, most things people use `reduce` for have a cleaner built-in alternative: `sum`, `max`, `min`, `math.prod`. Third, the one place `reduce` genuinely belongs is function composition and dynamic pipeline building — that's where it has no equally readable competitor. Know those three things, and you'll use `reduce` exactly as often as you should.

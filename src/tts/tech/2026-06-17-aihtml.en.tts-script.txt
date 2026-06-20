@@ -1,0 +1,29 @@
+Here's the audio script:
+
+---
+
+Video creation is often blocked by tooling — not by ideas, not by skills, but by software. After Effects has a learning curve that takes months to climb. Premiere wants you to think in timelines. Template apps make everything look like everyone else's content. But if what you're making is technical — animated diagrams, code walkthroughs, dynamic typography — there's a path most people haven't considered: have AI write the animation for you as a web page, then just record your screen.
+
+No video editing knowledge required. If you can open a file in a browser, you can do this.
+
+Here's the core idea. Your browser has a built-in 2D drawing system called HTML Canvas. It can render smooth animations, frame by frame, at whatever resolution your screen supports. On a high-resolution display, that means excellent quality — comparable to what you'd get from dedicated software. Screen recording captures the output as video. The whole pipeline is: AI writes the code, you open it in Chrome or Firefox, you hit record.
+
+The tooling you need is minimal. An AI tool like Claude or ChatGPT. A text editor — anything that can save a file ending in dot-html. A browser. And a screen recorder — QuickTime on Mac, the Xbox Game Bar on Windows, or OBS if you want the most capable free option across all platforms.
+
+No package managers, no frameworks, no build steps. One file.
+
+The key to making this work is the prompt you give the AI. Vague prompts produce vague code. Instead of saying "make me a sorting animation," you describe exactly what you want: the canvas dimensions, the number of elements, the colors for different states, the timing between steps, what happens at the end. The more specific you are, the closer the output is to what you actually want to record.
+
+When the AI gives you the HTML, save it, open it in your browser, and see what it does. If something's broken, the browser console will tell you what the error is. Copy that error message, paste it back to the AI, and say "this appeared, please fix it." That feedback loop — run, see error, ask AI to fix — handles most problems in a couple rounds.
+
+Tweaking the result is usually straightforward even without deep coding knowledge. Animation speed, colors, canvas size — these are typically a few obvious values in the file. You don't need to understand the whole program to change the delay from 100 milliseconds to 50, or swap blue for green.
+
+When you're happy with what you see, set your browser to the right window size, start recording, play the animation, stop recording. That's your video.
+
+For most technical explainers, the raw recording is enough. If you need voiceover, captions, or cuts between scenes, DaVinci Resolve has a free tier that handles all of that cleanly.
+
+Now, if you want to go further — if you need frame-accurate control, longer compositions, or the ability to code multiple scenes together — there are two tools worth knowing about. Remotion lets you write videos in React, with real timelines defined in code and proper MP4 export. Motion Canvas is TypeScript-first, designed specifically for the kind of motion graphics you'd see in math and CS education videos. Both require a Node.js environment to run, which raises the entry cost, but they give you significantly more power when you need it.
+
+So the three things to take away from this. First: the browser is a surprisingly capable animation engine, and screen recording turns that into video without any dedicated software. Second: the quality of your AI prompt directly determines the quality of the output — be specific about dimensions, colors, timing, and end state. Third: when code breaks, the browser console is your debugging partner, and AI is your fixer — that loop is faster than it sounds.
+
+The tools have never been more accessible. The gap between having an idea for a technical animation and having it on screen is now an afternoon, not a course.

@@ -1,0 +1,27 @@
+June 8, 2026. Tim Cook walks onto the WWDC stage one last time as Apple's CEO. Everyone in that room knew it — on September 1st, he hands the keys to John Ternus and moves into an Executive Chairman role. Apple didn't make it a big ceremony, but the weight was there.
+
+And honestly, the announcements matched the moment. This wasn't a "one more thing" keynote. It was Apple showing where they're planting their flag on AI — and the biggest flag of all is one that would've seemed unthinkable a few years ago.
+
+Siri is now powered by Google Gemini.
+
+Let that sink in. Apple, the company that spent years telling you your data never leaves your device, has embedded a Google model at the core of its voice assistant. The new Siri understands multi-turn conversations — you can actually follow up, change direction, ask clarifying questions — and crucially, it pulls context from across your apps. Ask it about your afternoon meeting, and it reads your Calendar, your Mail thread, your Messages history, and gives you an actual answer. It also ships as its own standalone app now, while still being woven into the system everywhere.
+
+Craig Federighi's line on privacy was carefully chosen: "Data is only used to execute your request." Apple's argument isn't that they built a better model than Google. Their argument is that the privacy architecture around the model is the product. That's a significant strategic admission.
+
+Beyond Siri, Apple Intelligence got more practical this generation. There's a feature called Spatial Reframing that lets you adjust a photo's composition and perspective after you've already taken it. There's Extend, which uses AI to expand a photo's background beyond its original edges — like the opposite of cropping. Smart reply suggestions now reference both your Mail and your Messages together, so the suggestion actually fits the full conversation. And you can describe what you want a Shortcut to do in plain language, rather than manually wiring it together.
+
+On the OS side, iOS 27 is rolling out with unusually broad compatibility — all the way back to iPhone 11, which is a wider net than Apple typically casts. Spotlight got rebuilt, Photos and Mail search are AI-integrated, and system-wide dictation now handles punctuation automatically. macOS moves from the Sequoia family to a new name: Golden Gate.
+
+One thing buried in the iOS 27 beta that nobody officially mentioned: code references to a foldable iPhone. No announcement, but developers are already poking around in there.
+
+Now, John Ternus — the incoming CEO — wasn't on stage at all. That's interesting. It could mean Apple wanted Cook to have a clean farewell moment. Or it could mean Ternus's strategic direction isn't fully formed yet for public consumption. The fact that Cook made the Gemini decision — partnering with a longtime rival at the model layer — is probably the most consequential AI call of his tenure. Whether Ternus doubles down on that relationship, renegotiates it, or quietly builds Apple's own model capability underneath it, that's the most important question in Apple's next chapter.
+
+The deeper technical tension here is one Apple hasn't fully resolved. Mobile hardware limits how large a model you can run locally. But user expectations for AI are rising fast. Apple's answer is a hybrid approach — some things run on-device, more sensitive or complex requests go to their Private Cloud Compute infrastructure, and now some of that routes through Gemini. Privacy is both their marketing shield and their engineering constraint.
+
+So here's what to take away from WWDC26.
+
+First, Apple has made a strategic choice not to compete at the foundation model layer. They're betting that deep system integration plus privacy architecture is a more durable advantage than building the best LLM — and they've put Google's model inside Siri to prove they're serious about capability regardless of where it comes from.
+
+Second, cross-app context in Siri is the feature that actually matters most. Reading across Mail, Calendar, and Messages coherently is technically hard — it requires careful permission boundaries and precise data scoping. If Apple pulls it off reliably, that's genuinely useful. If it's inconsistent, the Gemini integration will feel like a headline that underdelivers.
+
+Third, watch WWDC27. That'll be Ternus's first keynote as CEO, and it'll tell us whether the AI strategy you saw this week was Cook's finale or the foundation for something bigger.

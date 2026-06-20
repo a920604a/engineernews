@@ -1,0 +1,31 @@
+Think about how long it actually takes to produce a three-minute explainer video. You need a script, a voiceover, footage or visuals, and then you sit in an editor stitching it all together for hours. Maybe half a day. Maybe longer. AI agents are starting to collapse that entire process down to about fifteen minutes — and you don't need to write a single line of code to do it.
+
+Here's the idea: instead of one AI model doing everything, you chain together several specialized tools. An LLM writes the script. A text-to-speech engine narrates it. A video generation API creates the visuals. And an automation platform called n8n acts as the conductor — routing data between each step, keeping everything in order. You give it a topic at one end, and a narrated video comes out the other.
+
+Let's walk through what that actually looks like.
+
+The pipeline starts with a trigger — a Slack message, a web form submission, whatever you want. That fires a webhook in n8n, which sends your topic to Claude or GPT-4o and asks it to write a structured script. The key word there is *structured*. You're not asking for a freeform essay — you're asking for JSON, specifically a list of segments where each segment has two fields: the narration text that will be spoken, and a visual description that tells the video AI what to generate. That separation is what makes the whole pipeline work. One output, two downstream paths.
+
+From there, n8n splits into parallel work. Each narration chunk goes to ElevenLabs or Azure Speech, which converts it to audio. Each visual description goes to something like Runway or Pika, which generates a short video clip. When everything's done, FFmpeg — a battle-tested open-source tool — merges the audio and video together into a final MP4. That's your video.
+
+Now let me talk about tool choices, because this is where you make real tradeoffs.
+
+For text-to-speech, ElevenLabs is the gold standard for naturalness — it supports multiple languages and has a free tier. Azure AI Speech is the enterprise choice, especially if you're working in non-English languages. And if you're just developing and testing, Edge TTS runs locally and costs nothing.
+
+For video generation, Runway Gen-3 gives you the highest quality clips. Pika is simpler and works well for explainer-style content. HeyGen is in its own category — it puts an AI avatar presenter on screen, so if you need a human face, that's your option. And Stable Video Diffusion is fully open-source if you want to self-host.
+
+For orchestration, n8n is the recommended path here specifically because it's open-source and self-hostable. That matters when you're piping content through a workflow platform and don't want your data sitting on someone else's cloud. Make and Zapier are both solid alternatives with lower learning curves, though Zapier gets expensive fast.
+
+The most important part of the whole system is actually the prompt you send to the LLM. The script generation step controls everything downstream, so it needs to produce reliable, parseable output. The pattern is: ask for a two-minute script broken into four segments, require JSON output with explicit narration and visual prompt fields per segment, and — this is worth calling out — always write the visual prompts in English. Runway, Pika, and their peers were trained heavily on English descriptions. Even if your narration is in another language, English visual prompts will get you better results.
+
+Compare this to the traditional workflow: writing a script by hand takes thirty to sixty minutes. Recording or outsourcing voiceover is a separate effort. Finding stock footage or scheduling a shoot is another step. And then manual editing ties it all together. Total time: half a day to several days. With the agent pipeline, you're looking at five to fifteen minutes, most of which is just waiting for the video generation API to finish.
+
+That said, this approach isn't universally applicable — and it's worth being honest about where it breaks down.
+
+API costs are real. Runway and similar services charge by the second of generated video, and those costs add up quickly for long content. Generation time isn't instant either — each video segment takes one to three minutes to render, so a full pipeline run is closer to twenty minutes than five. Visual consistency across segments is another issue: because each clip is generated independently, they can look stylistically different. You can mitigate this by including a style anchor phrase in every visual prompt to lock in the aesthetic. And on TTS quality — free tiers sound noticeably more robotic. ElevenLabs paid plans are a meaningful upgrade if the audio quality matters to your audience.
+
+Where this works really well: high-volume repetitive content like product demos, tutorials, or daily news summaries. Multilingual versions, because you just swap the TTS language and re-run. Content marketing pipelines where you're producing at scale. And rapid concept validation — spin up a rough video to test an idea before investing in real production.
+
+Where it doesn't work: content that needs genuine human connection, like interviews or personal brand videos. Anything requiring visual precision, since AI video generation still has consistency problems. And rights-sensitive commercial advertising, where the legal status of AI-generated assets is still unsettled.
+
+Three things to take away from this. First, the architecture pattern — LLM for script, TTS for voice, video API for visuals, FFmpeg for assembly, n8n as the glue — is reusable across a lot of content types. Once you build it once, the marginal cost of producing the next video drops to nearly zero. Second, the prompt structure is load-bearing. Requiring structured JSON output from the LLM is what makes the rest of the pipeline reliable. Skip that and you're doing brittle string parsing. Third, this is a fit-for-purpose tool. It excels at volume and speed. It doesn't replace production quality when that's what the content actually needs.

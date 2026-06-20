@@ -1,0 +1,35 @@
+Here's the natural language between AI agents — and why researchers think we should ditch it.
+
+When you're building a multi-agent AI system, the obvious move is to have your agents talk to each other in plain English. They were trained on language, they're good at language, so why not? Turns out, that instinct might be getting in your way.
+
+A pattern keeps showing up in multi-agent research: when you give agents the freedom to choose how they communicate, they start drifting away from natural language on their own. They develop something shorter, denser, more compressed — a kind of task-optimized shorthand that researchers call "emergent language." And it performs better.
+
+So what's actually wrong with natural language between agents?
+
+Think about what natural language is designed for. It's designed for humans — and humans are ambiguous creatures. "It's done" could mean it's done perfectly, or it's done but there were problems. Agents need to disambiguate that, which requires more tokens, more context, more processing. And natural language is inherently redundant. You could convey the same information in far fewer symbols if you weren't constrained by human grammar and vocabulary.
+
+Now multiply that inefficiency across dozens of agents, running for hours, passing state back and forth. The token overhead compounds fast — and tokens aren't free. They cost money and they cost latency.
+
+The other problem is format instability. When you ask an agent to output structured information in natural language, you're going to get inconsistency. One run it formats a list with bullet points, next run it writes prose. You end up needing extra parsing just to extract the actual signal.
+
+Here's where it gets interesting. Meta AI Research and a 2025 paper from Frontiers in Sustainability both observed that in training environments where agents have open communication channels, they spontaneously develop compressed symbol systems. Not human sentences — something closer to an optimized instruction set.
+
+The analogy that clicks for me: think about how senior engineers talk to each other. "PR merged, CI green, deployed to staging." To anyone outside the team, that's opaque. But to the people who need that information, it's way faster and more precise than natural language. Emergent agent language is the AI equivalent of that — the team's internal shorthand, except the team invented it themselves during training.
+
+These emergent languages are shorter for the same semantic content, they're specialized for the specific task at hand, and agents within the same system understand each other perfectly. The catch is that external observers — meaning us, the humans — don't understand any of it.
+
+And that's the real tradeoff you have to sit with.
+
+When something goes wrong and you go to debug, you can't read the agent communication logs. The emergent language is a black box. For a lot of use cases, that's a manageable tradeoff. But in high-stakes domains — financial systems, medical applications, critical infrastructure — losing that interpretability is a serious problem. Researchers are working on translation layers that let you query what agents actually meant when needed, but those add complexity back into the system.
+
+So what should you actually do with this as an engineer building agent systems today?
+
+You probably don't need to implement emergent language protocols right now. But there are three things this research is pointing at that are worth taking seriously.
+
+First: inter-agent communication format is worth designing deliberately. Structured schemas, explicitly typed outputs, defined state representations — these are more reliable than just letting agents freeform text at each other. You get the compression benefits without the full black-box problem.
+
+Second: interpretability and efficiency are in tension, and you need to make a conscious choice about where each piece of your system sits on that spectrum. Not every agent communication needs to be human-readable. But the ones that need auditing definitely do.
+
+Third — and this is the longer arc — agent communication protocols may become a real design domain in their own right. The way HTTP became the protocol of the web, the way gRPC became the protocol of microservices, multi-agent systems may develop their own specialized protocols. That space is wide open right now.
+
+The bottom line: natural language between agents is legible but expensive and imprecise. Compressed emergent language is efficient and precise but opaque. The research is clear that agents, left to their own devices, choose efficiency. The question for system designers is whether you're making that choice consciously — or just defaulting to natural language because it's the path of least resistance.
