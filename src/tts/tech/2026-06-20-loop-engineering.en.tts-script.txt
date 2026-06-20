@@ -1,0 +1,69 @@
+Boris Cherny runs hundreds of agents during the day and thousands overnight. Not because he's prompting harder — he says he's stopped manually prompting Claude at all. He designs systems that do the prompting for him. That shift has a name now: Loop Engineering.
+
+And in the span of one week in June 2026, three people independently said essentially the same thing. Cherny described it on a podcast. Peter Steinberger tweeted it. And Addy Osmani, engineering lead at Google Chrome, gave it the cleanest definition: Loop Engineering is replacing yourself as the person who prompts the agent. You design the system that does it instead.
+
+That's the whole idea. But let's unpack why it matters.
+
+---
+
+Over the past few years, the core skill in AI development has jumped one abstraction level per year. In 2023, it was prompt engineering — write a precise prompt, get a good output. In 2024, it was agent orchestration — coordinate multiple agents across complex tasks. In 2025, it was harness engineering — configure the agent's environment, set up your CLAUDE.md files, wire up hooks. And now in 2026, it's Loop Engineering — design a self-running feedback loop so agents work without you watching.
+
+Each layer doesn't replace the one below. It pushes it down into infrastructure. You still write prompts. Prompts are just a component of the loop now, not the job itself.
+
+The practical difference between a prompt and a loop is this: a prompt is a one-shot trigger. A loop is a continuously self-driving system. Prompts consume your attention. Loops consume token budget. Attention is scarce. Tokens can be bought.
+
+---
+
+So what does a loop actually look like?
+
+Think of it as a cycle: discover work, dispatch it to an agent, let the agent execute, observe the output, verify whether it's correct, record the state, decide what to do next — and repeat. That's it. That's the loop. The question is what makes one loop robust and another a disaster.
+
+Osmani breaks a complete loop into five building blocks, plus a memory layer. And he notes that Claude Code and OpenAI Codex now ship with all five — the shape is the same across products.
+
+First, scheduled automations. This is the loop's entry point — cron jobs, GitHub Actions webhooks, or tool-native scheduling. Real examples from inside OpenAI: daily issue triage, CI failure summaries, commit briefings, weekly bug searches. The loop needs something to wake it up.
+
+Second, git worktrees. Each agent works in its own isolated branch of the repo, sharing git history without conflicting with other agents. This is what lets you run multiple agents in parallel — one fixing a bug, one writing tests, one refactoring — while you sleep.
+
+Third, skills. This is project knowledge encoded in your CLAUDE.md or AGENTS.md files. Osmani's framing is sharp here: "An agent starts every session cold and will fill any hole in your intent with a confident guess." A skill is intent written down. Without it, every agent session starts with guessing, and the guesses compound.
+
+Fourth, plugins and connectors via MCP — the Model Context Protocol. This is how agents reach GitHub, Slack, databases, monitoring systems. It defines the boundary of what an agent can sense and act on.
+
+Fifth — and this is the most critical — sub-agents with a maker-checker split. The executor and the verifier are separate agents. The one that did the work cannot be trusted to evaluate whether it's done. Osmani is direct about why: "The loop runs while you are not watching, so a verifier you actually trust is the only reason you can walk away." Claude Code's slash-goal command implements exactly this — a separate model judges completion, not the agent that produced the output.
+
+And finally, durable memory. Agents are amnesiac; the filesystem isn't. Files like progress.txt and your PRD carry state across sessions. This is what lets a loop remember where it left off when it wakes up tomorrow.
+
+---
+
+Now here's where the analysis gets genuinely useful.
+
+Blake Crosley cuts to the real constraint: verification cost, not loop construction, decides what you can automate. And when you look at every loop Cherny has described — fixing CI failures, auto-rebasing, clustering user feedback — they all share one property: machine-checkable success conditions.
+
+The logic is clean. If verification is automatable — test suite passes, lint is clean, type check clears — the loop can run indefinitely. If verification requires human judgment — does this UI look good, is this architecture decision right — the loop degrades into a pile of things you still have to review.
+
+So before you build a loop, run this filter. Is the task repeatable, or is it a one-off exploration? Is "done" machine-checkable, or does it require your eyes? Can the token budget absorb retries and dead ends? Does the agent have all the tools it needs without requiring a human to operate external systems? Miss any one of these and the loop costs more than it saves.
+
+---
+
+There are real failure modes worth naming.
+
+Token cost is real. Loops re-read context, retry, explore multiple paths. Usage can vary wildly.
+
+Comprehension debt is subtler. Tech debt you at least know you owe. Comprehension debt — the gap between what exists in your codebase and what you actually understand — you don't know what you don't know. A loop running while you're not paying attention widens that gap fast.
+
+And cognitive surrender is the trap Osmani names explicitly. When the loop runs itself, it's tempting to stop having an opinion and just take whatever it gives back. A loop accelerates work you already understand. It's poison for work you're trying to avoid understanding.
+
+---
+
+If you want to start today, three moves:
+
+Write your conventions into CLAUDE.md or AGENTS.md. The "we don't do it this way because of what happened last time" knowledge — written down, that's a skill. Without it, agents guess.
+
+Run your first loop with a clear verification condition. Start small. Babysit one PR. Run lint hourly. The loop size doesn't matter. What matters is that "done" is machine-checkable. "CI passes" beats "looks good."
+
+Always use a separate agent to verify. Never let the agent that did the work decide if it's finished. This single rule prevents early exit and forces you to define completion criteria before the loop starts.
+
+---
+
+Osmani's closing line is worth keeping: "Build the loop. But build it like someone who intends to stay the engineer, not just the person who presses go."
+
+The loop does the typing. The thinking is still yours.
