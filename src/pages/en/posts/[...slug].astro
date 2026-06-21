@@ -624,9 +624,9 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
   }
 </style>
 
-<script define:vars={{ slug: post.id }}>
+<script define:vars={{ slug: post.id, readingTime }}>
   (async () => {
-    const MIN_SECONDS = 10;
+    const MIN_SECONDS = Math.min(90, Math.max(20, Math.round(readingTime * 60 * 0.3)));
     let scrolledToEnd = false;
     let timeElapsed = false;
     let counted = false;
