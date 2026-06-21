@@ -7,6 +7,23 @@ import {
   ResponsiveContainer, Legend,
 } from 'recharts';
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function slugToUrl(slug: string): string {
+  if (slug.endsWith('.en')) return `/en/posts/${slug.slice(0, -3)}`;
+  return `/posts/${slug}`;
+}
+
+function twTime(utcStr: string): string {
+  return new Date(utcStr.replace(' ', 'T') + 'Z')
+    .toLocaleTimeString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false });
+}
+
+function twDate(utcStr: string): string {
+  return new Date(utcStr.replace(' ', 'T') + 'Z')
+    .toLocaleDateString('zh-TW', { timeZone: 'Asia/Taipei', year: 'numeric', month: '2-digit', day: '2-digit' });
+}
+
 // ── Types ────────────────────────────────────────────────────────────────────
 
 type SF<T> = { data: T; error: null } | { data: null; error: string };
@@ -677,7 +694,9 @@ function PageViewsDetail({ token }: { token: string }) {
       {err && <Err msg={err} />}
       {rows && rows.map(r => (
         <div key={r.slug} style={{ ...s.row, gap: '10px', flexWrap: 'wrap' }}>
-          <span style={{ ...s.mono, flex: 1, fontSize: '12px', color: 'var(--label-secondary)', wordBreak: 'break-all' }}>{r.slug}</span>
+          <a href={slugToUrl(r.slug)} target="_blank" rel="noopener noreferrer" style={{ ...s.mono, flex: 1, fontSize: '12px', color: '#0a84ff', wordBreak: 'break-all', textDecoration: 'none' }}>
+            {r.slug}
+          </a>
           <div style={{ width: '120px', height: '5px', borderRadius: '3px', background: 'var(--separator)', overflow: 'hidden' }}>
             <div style={{ height: '100%', width: `${(r.count / max) * 100}%`, background: '#5e5ce6', borderRadius: '3px' }} />
           </div>
@@ -830,26 +849,39 @@ function LogsPanel({ token }: { token: string }) {
           {rows.length === 0 && (
             <p style={{ color: 'var(--label-secondary)', textAlign: 'center', padding: '32px 0' }}>No logs</p>
           )}
-          {rows.map(r => (
-            <div key={r.id}>
-              <div
-                style={{ display: 'grid', gridTemplateColumns: '70px 48px 160px 1fr', gap: '0 8px', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', alignItems: 'baseline', cursor: r.data ? 'pointer' : 'default' }}
-                onClick={() => r.data && setExpanded(expanded === r.id ? null : r.id)}
-              >
-                <span style={{ color: 'var(--label-secondary)' }}>{r.created_at.slice(11, 19)}</span>
-                <span style={{ color: LOG_COLORS[r.level], fontWeight: 700 }}>{r.level}</span>
-                <span style={{ color: 'var(--label-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.source}</span>
-                <span style={{ color: r.level === 'error' ? '#ff453a' : r.level === 'warn' ? '#ffd60a' : 'inherit', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {r.message}
-                  {r.data && <span style={{ color: '#0a84ff', marginLeft: '6px', fontSize: '10px' }}>▶</span>}
-                </span>
+          {Object.entries(
+            rows.reduce<Record<string, typeof rows>>((acc, r) => {
+              const d = twDate(r.created_at);
+              (acc[d] ??= []).push(r);
+              return acc;
+            }, {})
+          ).map(([date, group]) => (
+            <Fragment key={date}>
+              <div style={{ padding: '6px 0 4px', color: 'var(--label-secondary)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.05em', borderBottom: '1px solid rgba(255,255,255,0.08)', marginTop: '8px' }}>
+                {date}
               </div>
-              {expanded === r.id && r.data && (
-                <pre style={{ margin: '0 0 4px', padding: '8px 12px', background: 'rgba(0,0,0,0.3)', borderRadius: '6px', fontSize: '11px', overflowX: 'auto', color: 'var(--label-secondary)', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
-                  {(() => { try { return JSON.stringify(JSON.parse(r.data), null, 2); } catch { return r.data; } })()}
-                </pre>
-              )}
-            </div>
+              {group.map(r => (
+                <div key={r.id}>
+                  <div
+                    style={{ display: 'grid', gridTemplateColumns: '70px 48px 160px 1fr', gap: '0 8px', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', alignItems: 'baseline', cursor: r.data ? 'pointer' : 'default' }}
+                    onClick={() => r.data && setExpanded(expanded === r.id ? null : r.id)}
+                  >
+                    <span style={{ color: 'var(--label-secondary)' }}>{twTime(r.created_at)}</span>
+                    <span style={{ color: LOG_COLORS[r.level], fontWeight: 700 }}>{r.level}</span>
+                    <span style={{ color: 'var(--label-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.source}</span>
+                    <span style={{ color: r.level === 'error' ? '#ff453a' : r.level === 'warn' ? '#ffd60a' : 'inherit', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {r.message}
+                      {r.data && <span style={{ color: '#0a84ff', marginLeft: '6px', fontSize: '10px' }}>▶</span>}
+                    </span>
+                  </div>
+                  {expanded === r.id && r.data && (
+                    <pre style={{ margin: '0 0 4px', padding: '8px 12px', background: 'rgba(0,0,0,0.3)', borderRadius: '6px', fontSize: '11px', overflowX: 'auto', color: 'var(--label-secondary)', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+                      {(() => { try { return JSON.stringify(JSON.parse(r.data), null, 2); } catch { return r.data; } })()}
+                    </pre>
+                  )}
+                </div>
+              ))}
+            </Fragment>
           ))}
           {total > LOG_PAGE_SIZE && (
             <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '8px', paddingTop: '12px', fontFamily: 'var(--font-sans, sans-serif)' }}>

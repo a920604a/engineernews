@@ -81,7 +81,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
          FROM doc_chunks d
          JOIN posts p ON p.id = d.source_id
          GROUP BY d.source_id
-         ORDER BY chunk_count DESC`
+         ORDER BY last_updated DESC`
       ).all<{ source_id: string; title: string; category: string; lang: string; chunk_count: number; last_updated: string }>();
       return rows.results;
     });
