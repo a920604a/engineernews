@@ -171,7 +171,16 @@ const topics = [
 
 <style>
   .home-hero {
-    padding: 56px 0 28px;
+    position: relative;
+    margin: 20px 0 44px;
+    padding: clamp(36px, 5vw, 56px) clamp(24px, 4vw, 48px);
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--separator);
+    overflow: hidden;
+    background:
+      radial-gradient(130% 150% at 0% 0%, color-mix(in srgb, var(--heading-accent) 14%, transparent), transparent 55%),
+      radial-gradient(130% 150% at 100% 100%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 52%),
+      var(--bg-secondary);
   }
   .eyebrow,
   .section-kicker {
@@ -180,13 +189,14 @@ const topics = [
     font-weight: 800;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    margin: 0 0 10px;
+    margin: 0 0 14px;
   }
   .home-hero h1 {
     max-width: 760px;
-    margin: 0 0 16px;
-    font-size: clamp(32px, 7vw, 56px);
-    line-height: 1.05;
+    margin: 0 0 18px;
+    font-size: clamp(32px, 7vw, 58px);
+    line-height: 1.04;
+    letter-spacing: -0.02em;
   }
   .hero-copy {
     max-width: 620px;
@@ -199,7 +209,7 @@ const topics = [
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
-    margin-top: 24px;
+    margin-top: 28px;
   }
   .hero-link {
     display: inline-flex;
