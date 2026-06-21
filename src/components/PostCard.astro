@@ -61,9 +61,9 @@ const typeLabel = type ? (isEn ? (typeLabels[type]?.en ?? type) : (typeLabels[ty
     <div class="card-badges">
       {pinned && <span class="badge badge-pinned">置頂</span>}
       <a href={catHref} class="badge badge-cat badge-category" data-category={category}>{category}</a>
-      {typeLabel && <span class="badge badge-type" data-type={type}>{typeLabel}</span>}
     </div>
     <div class="card-meta">
+      {typeLabel && <span class="card-type">{typeLabel}</span>}
       {date && <time class="card-date">{dateStr}</time>}
       {readingTime && <span class="card-rt">{readingTime} {isEn ? 'min' : '分鐘'}</span>}
     </div>
@@ -103,9 +103,8 @@ const typeLabel = type ? (isEn ? (typeLabels[type]?.en ?? type) : (typeLabels[ty
   .card {
     background: var(--bg-secondary);
     border: 0.5px solid var(--separator);
-    border-left: 3px solid color-mix(in srgb, var(--cat-color) 68%, var(--separator));
     border-radius: var(--radius-lg);
-    padding: 22px 24px;
+    padding: 24px 26px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -115,8 +114,7 @@ const typeLabel = type ? (isEn ? (typeLabels[type]?.en ?? type) : (typeLabels[ty
   .card:hover {
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
-    border-color: color-mix(in srgb, var(--cat-color) 28%, var(--separator));
-    border-left-color: var(--cat-color);
+    border-color: color-mix(in srgb, var(--cat-color) 22%, var(--separator));
   }
   .card--pinned {
     border-color: #ff3b30;
@@ -127,20 +125,19 @@ const typeLabel = type ? (isEn ? (typeLabels[type]?.en ?? type) : (typeLabels[ty
   }
 
   .card--featured {
-    padding: 28px 32px;
+    padding: 30px 34px;
     border-width: 1px;
-    border-color: color-mix(in srgb, var(--cat-color) 22%, var(--separator));
-    border-left-width: 4px;
+    border-color: color-mix(in srgb, var(--cat-color) 18%, var(--separator));
   }
   .card--featured.card--pinned {
     border-color: #ff3b30;
     border-width: 1.5px;
   }
   .card--featured .card-title {
-    font-size: 24px;
+    font-size: 29px;
     font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.25;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
   }
   .card--featured .card-excerpt {
     font-size: 15px;
@@ -169,6 +166,14 @@ const typeLabel = type ? (isEn ? (typeLabels[type]?.en ?? type) : (typeLabels[ty
     gap: 6px;
     flex-shrink: 0;
   }
+
+  .card-type {
+    font-size: 12px;
+    color: var(--label-secondary);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .card-type::after { content: '·'; margin-left: 6px; color: var(--label-tertiary); font-weight: 400; }
 
   .card-date {
     font-size: 12px;
@@ -210,31 +215,13 @@ const typeLabel = type ? (isEn ? (typeLabels[type]?.en ?? type) : (typeLabels[ty
     border: 0.5px solid color-mix(in srgb, var(--cat-color) 30%, transparent);
   }
 
-  /* type badge — default */
-  .badge-type {
-    background: color-mix(in srgb, var(--color-green, #30d158) 10%, transparent);
-    color: var(--color-green, #30d158);
-    border: 0.5px solid color-mix(in srgb, var(--color-green, #30d158) 25%, transparent);
-  }
-
-  /* type-specific overrides */
-  .badge-type[data-type="debug"]       { background:color-mix(in srgb,#ff5f57 10%,transparent); color:#ff5f57; border-color:color-mix(in srgb,#ff5f57 25%,transparent); }
-  .badge-type[data-type="how-to"]      { background:color-mix(in srgb,var(--color-green) 10%,transparent); color:var(--color-green); border-color:color-mix(in srgb,var(--color-green) 25%,transparent); }
-  .badge-type[data-type="listicle"]    { background:color-mix(in srgb,#ff9f0a 10%,transparent); color:#ff9f0a; border-color:color-mix(in srgb,#ff9f0a 25%,transparent); }
-  .badge-type[data-type="explainer"]   { background:color-mix(in srgb,var(--accent) 10%,transparent); color:var(--accent); border-color:color-mix(in srgb,var(--accent) 25%,transparent); }
-  .badge-type[data-type="case-study"]  { background:color-mix(in srgb,#bf5af2 10%,transparent); color:#bf5af2; border-color:color-mix(in srgb,#bf5af2 25%,transparent); }
-  .badge-type[data-type="comparison"]  { background:color-mix(in srgb,#64d2ff 10%,transparent); color:#64d2ff; border-color:color-mix(in srgb,#64d2ff 25%,transparent); }
-  .badge-type[data-type="research"]    { background:color-mix(in srgb,#ffd60a 10%,transparent); color:#b8960a; border-color:color-mix(in srgb,#ffd60a 25%,transparent); }
-  .badge-type[data-type="newsjacking"] { background:color-mix(in srgb,#ff6b81 10%,transparent); color:#ff6b81; border-color:color-mix(in srgb,#ff6b81 25%,transparent); }
-  .badge-type[data-type="deep-dive"]   { background:color-mix(in srgb,var(--accent) 15%,transparent); color:var(--accent); border-color:color-mix(in srgb,var(--accent) 30%,transparent); }
-
   /* Title */
   .card-title {
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: -0.015em;
-    line-height: 1.35;
-    margin: 0;
+    font-size: 23px;
+    font-weight: 800;
+    letter-spacing: -0.022em;
+    line-height: 1.28;
+    margin: 2px 0;
   }
   .card-title a {
     color: var(--label);
