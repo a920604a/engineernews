@@ -148,6 +148,7 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
 
     <ReadingModeBar client:load hasZh={!!(enScript && zhScript)} />
     <div class="prose article-view"><Content /></div>
+    <div id="article-end-sentinel"></div>
 
     {enScript && zhScript && (
       <BilingualView
@@ -625,18 +626,55 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
 
 <script define:vars={{ slug: post.id }}>
   (async () => {
-    try {
-      const res = await fetch('/api/views', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug }),
-      });
-      const { count } = await res.json();
+    const MIN_SECONDS = 10;
+    let scrolledToEnd = false;
+    let timeElapsed = false;
+    let counted = false;
+
+    function updateDisplay(count) {
       const el = document.getElementById('view-count');
       if (el && typeof count === 'number') el.textContent = `${count.toLocaleString()} views`;
-    } catch {
-      // silent fail
     }
+
+    async function tryCount() {
+      if (counted || !scrolledToEnd || !timeElapsed) return;
+      counted = true;
+      try {
+        const res = await fetch('/api/views', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug }),
+        });
+        const { count } = await res.json();
+        updateDisplay(count);
+      } catch {}
+    }
+
+    // Show current count on load
+    try {
+      const res = await fetch(`/api/views?slug=${encodeURIComponent(slug)}`);
+      const { count } = await res.json();
+      updateDisplay(count);
+    } catch {}
+
+    // Condition 1: scroll to bottom
+    const sentinel = document.getElementById('article-end-sentinel');
+    if (sentinel) {
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          scrolledToEnd = true;
+          observer.disconnect();
+          tryCount();
+        }
+      }, { threshold: 0.5 });
+      observer.observe(sentinel);
+    }
+
+    // Condition 2: 10 seconds on page
+    setTimeout(() => {
+      timeElapsed = true;
+      tryCount();
+    }, MIN_SECONDS * 1000);
   })();
 </script>
 

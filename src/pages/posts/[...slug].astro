@@ -135,6 +135,7 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
 
     <!-- Content -->
     <div class="prose"><Content /></div>
+    <div id="article-end-sentinel"></div>
 
     <!-- Prev/Next Nav -->
     <PostPrevNext 
@@ -450,18 +451,55 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
 
 <script define:vars={{ slug: post.id }}>
   (async () => {
-    try {
-      const res = await fetch('/api/views', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug }),
-      });
-      const { count } = await res.json();
+    const MIN_SECONDS = 10;
+    let scrolledToEnd = false;
+    let timeElapsed = false;
+    let counted = false;
+
+    function updateDisplay(count) {
       const el = document.getElementById('view-count');
       if (el && typeof count === 'number') el.textContent = `${count.toLocaleString()} 次閱讀`;
-    } catch {
-      // D1 不可用時靜默失敗，不影響頁面
     }
+
+    async function tryCount() {
+      if (counted || !scrolledToEnd || !timeElapsed) return;
+      counted = true;
+      try {
+        const res = await fetch('/api/views', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug }),
+        });
+        const { count } = await res.json();
+        updateDisplay(count);
+      } catch {}
+    }
+
+    // 頁面載入時先顯示目前計數
+    try {
+      const res = await fetch(`/api/views?slug=${encodeURIComponent(slug)}`);
+      const { count } = await res.json();
+      updateDisplay(count);
+    } catch {}
+
+    // 條件一：捲到文章底部
+    const sentinel = document.getElementById('article-end-sentinel');
+    if (sentinel) {
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          scrolledToEnd = true;
+          observer.disconnect();
+          tryCount();
+        }
+      }, { threshold: 0.5 });
+      observer.observe(sentinel);
+    }
+
+    // 條件二：停留 10 秒
+    setTimeout(() => {
+      timeElapsed = true;
+      tryCount();
+    }, MIN_SECONDS * 1000);
   })();
 </script>
 
