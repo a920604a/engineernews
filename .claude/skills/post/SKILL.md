@@ -106,3 +106,17 @@ description: Convert a conversation, notes, experience, or GitHub project into a
            src/content/posts/<category>/YYYY-MM-DD-<slug>.en.md
    git commit -m "post(<category>): <title summary>"
    ```
+
+9. **產生語音（TTS，預設必做）**：
+   - 用 Makefile 既有目標,**只需指定中文版檔案**——`tts-all.ts` 會自動一併處理同名的 `.en.md`(一次跑出中英兩個音檔):
+     ```bash
+     make tts-post FILE=src/content/posts/<category>/YYYY-MM-DD-<slug>.md
+     ```
+   - 這個目標跑完整 pipeline：合成語音 → 上傳 R2 → 回寫兩份 frontmatter 的 `audio_url` → sync 遠端 D1 + Vectorize（用 `--prod`，會寫生產環境）
+   - **Node 版本雷點**：`tts-post` 內部會呼叫 `wrangler`，需要 Node ≥ 20。Makefile 第一行寫死的 `v20.20.2` 路徑可能已不存在而 fall back 到 v18 導致 `wrangler d1 execute` 失敗。若最後一步 sync 報「Wrangler requires at least Node.js v20」，改用 homebrew 的新版 node 重跑 sync：
+     ```bash
+     export PATH="/opt/homebrew/bin:$PATH"; set -a; . ./.env; set +a
+     npx tsx scripts/sync-to-d1.ts --prod --file=src/content/posts/<category>/YYYY-MM-DD-<slug>.md
+     ```
+   - 跑完確認兩份 frontmatter 都已被回寫 `audio_url`；若有改動,記得再 commit 一次
+   - 例外:使用者明確說「先不要語音」時可跳過

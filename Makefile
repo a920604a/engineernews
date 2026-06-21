@@ -114,6 +114,20 @@ reset-audio:
 	@[ "$(DATE)" ] || (echo "❌ 請指定 DATE，例如：make reset-audio DATE=2026-04-29" && exit 1)
 	npx tsx scripts/reset-audio-by-date.ts --date=$(DATE) --prod
 
+# ── 刪除文章 ──────────────────────────────────────────────────────────────────
+
+# 預覽刪除一篇文章（dry-run，不會變動任何資料）：本地 md + D1 + Vectorize + R2
+# 用法：make delete-post-dry FILE=src/content/posts/tech/2026-06-22-slug.md
+delete-post-dry:
+	@[ "$(FILE)" ] || (echo "❌ 請指定 FILE，例如：make delete-post-dry FILE=src/content/posts/tech/xxx.md" && exit 1)
+	npx tsx scripts/delete-post.ts --file=$(FILE) --prod
+
+# 實際刪除一篇文章（不可逆！）：本地 md（含 .en.md）+ 遠端 D1 + Vectorize + R2
+# 用法：make delete-post FILE=src/content/posts/tech/2026-06-22-slug.md
+delete-post:
+	@[ "$(FILE)" ] || (echo "❌ 請指定 FILE，例如：make delete-post FILE=src/content/posts/tech/xxx.md" && exit 1)
+	npx tsx scripts/delete-post.ts --file=$(FILE) --prod --yes
+
 # ── 遠端 GitHub Actions 觸發 ─────────────────────────────────────────────────
 
 # 透過 GitHub CLI 觸發遠端爬蟲 workflow（需先 gh auth login）
@@ -130,4 +144,5 @@ remote-deploy:
 	sync sync-prod \
 	rebuild \
 	crawl ingest remote-crawl remote-deploy \
-	fix-mermaid tts-all tts-all-prod tts-post reset-audio
+	fix-mermaid tts-all tts-all-prod tts-post reset-audio \
+	delete-post-dry delete-post

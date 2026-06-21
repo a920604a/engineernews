@@ -14,7 +14,8 @@
     "crawl:prod": "tsx scripts/crawl.ts --prod",
     "fix-mermaid": "tsx scripts/fix-mermaid.ts",
     "rewrite": "tsx scripts/rewrite-posts.ts",
-    "rewrite:write": "tsx scripts/rewrite-posts.ts --write"
+    "rewrite:write": "tsx scripts/rewrite-posts.ts --write",
+    "delete-post": "tsx scripts/delete-post.ts"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.13",
