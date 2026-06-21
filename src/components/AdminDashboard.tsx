@@ -429,6 +429,7 @@ function VectorizeDetail({ vec, token }: { vec: VecData; token: string }) {
               <span style={s.pill(catColor(c.category))}>{c.category}</span>
               <span style={s.pill('#48484a')}>{c.lang}</span>
               <span style={{ fontSize: '13px', flex: 1 }}>{c.title}</span>
+              <span style={{ ...s.mono, color: 'var(--label-secondary)', fontSize: '11px' }}>{twDate(c.last_updated)} {twTime(c.last_updated)}</span>
               <span style={{ ...s.mono, color: 'var(--label-secondary)' }}>{c.chunk_count} chunks</span>
             </div>
           ))}
