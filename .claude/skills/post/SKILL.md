@@ -86,10 +86,23 @@ description: Convert a conversation, notes, experience, or GitHub project into a
    - 如果文章引用工具、框架、官方文件、論文、版本資訊、數據比較或外部說法，文末必須補 `## 參考資料`
    - `tech` / `learning` / `product` 類，以及帶有 `ai` / `policy` / `education` / `marketing` tag 的文章，預設要附參考資料
 
-6. **請使用者 review**：展示草稿，詢問是否修改
+6. **產生英文版（預設必做，雙語成對）**：
+   - 本站是雙語站，每篇文章預設要有 zh-TW 與 English 兩份,成對存在
+   - 英文版檔名：`YYYY-MM-DD-<slug>.en.md`(slug 與中文版相同),放在同一個 category 目錄
+   - frontmatter 規則:
+     - `lang: "en"`
+     - `title` / `tldr` / `description` 翻成英文(自然英文,不要逐字直譯)
+     - `date` / `category` / `tags` / `type` / `github` / `url` 與中文版一致
+     - 英文版 frontmatter 的值習慣加雙引號(對齊既有 `.en.md` 檔)
+   - 正文翻成自然、道地的英文;Mermaid 圖中的中文標籤也要一併翻成英文
+   - 參考資料連結維持不變
+   - 例外:使用者明確說「只要中文」或文章屬於極短的 `life` / `creative` 隨筆時,可跳過並告知
 
-7. **確認後執行**：
+7. **請使用者 review**：展示中英兩份草稿，詢問是否修改
+
+8. **確認後執行**：
    ```bash
-   git add src/content/posts/<category>/YYYY-MM-DD-<slug>.md
+   git add src/content/posts/<category>/YYYY-MM-DD-<slug>.md \
+           src/content/posts/<category>/YYYY-MM-DD-<slug>.en.md
    git commit -m "post(<category>): <title summary>"
    ```
