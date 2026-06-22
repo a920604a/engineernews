@@ -447,6 +447,77 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
     color: var(--accent);
     transform: translateX(2px);
   }
+
+  /* ── 術語標注（中文內文中的英文專業術語）── */
+  .prose :global(.gloss) {
+    border-bottom: 1px dashed var(--accent);
+    cursor: help;
+    position: relative;
+    display: inline;
+  }
+
+  .prose :global(.gloss::after) {
+    content: attr(data-def);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--separator);
+    border-radius: var(--radius-sm);
+    padding: 4px 8px;
+    font-size: 12px;
+    color: var(--label);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  /* 觸控裝置沒有 hover，靠點擊卡片，不顯示 CSS tooltip 以免殘留 */
+  @media (hover: hover) {
+    .prose :global(.gloss:hover::after) {
+      opacity: 1;
+    }
+  }
+
+  /* 詞彙點擊卡片 */
+  :global(.gloss-card) {
+    position: fixed;
+    z-index: 200;
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--separator);
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    width: 300px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  :global(.gloss-card-term) {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--label);
+    margin: 0 0 6px;
+    text-transform: capitalize;
+  }
+
+  :global(.gloss-card-zh) {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0 0 8px;
+  }
+
+  :global(.gloss-card-context) {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--label-secondary);
+    margin: 0;
+    padding-top: 8px;
+    border-top: 0.5px solid var(--separator);
+  }
 </style>
 
 <script define:vars={{ slug: post.id, readingTime }}>
@@ -504,3 +575,64 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
 </script>
 
 <ScrollToTop />
+
+<!-- 術語標注：掃描中文內文，標出英文專業術語並提供中文解釋 -->
+<script>
+  import { applyGlossary } from '../../lib/applyGlossary';
+  import { glossary } from '../../data/glossary';
+
+  const prose = document.querySelector<HTMLElement>('.prose');
+  if (prose) {
+    applyGlossary(prose);
+
+    let card: HTMLDivElement | null = null;
+
+    function closeCard() {
+      card?.remove();
+      card = null;
+    }
+
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const gloss = target.closest<HTMLElement>('.gloss');
+
+      if (!gloss) {
+        if (!target.closest('.gloss-card')) closeCard();
+        return;
+      }
+
+      e.stopPropagation();
+      const term = gloss.dataset.term ?? gloss.textContent?.toLowerCase() ?? '';
+      const entry = glossary[term];
+      if (!entry) return;
+
+      closeCard();
+      const rect = gloss.getBoundingClientRect();
+      card = document.createElement('div');
+      card.className = 'gloss-card';
+      card.style.left = `${Math.min(rect.left, window.innerWidth - 320)}px`;
+      card.style.top = `${Math.min(rect.bottom + 8, window.innerHeight - 160)}px`;
+
+      const termEl = document.createElement('p');
+      termEl.className = 'gloss-card-term';
+      termEl.textContent = term;
+      const zhEl = document.createElement('p');
+      zhEl.className = 'gloss-card-zh';
+      zhEl.textContent = entry.zh;
+      card.append(termEl, zhEl);
+
+      if (entry.context) {
+        const ctxEl = document.createElement('p');
+        ctxEl.className = 'gloss-card-context';
+        ctxEl.textContent = entry.context;
+        card.appendChild(ctxEl);
+      }
+
+      document.body.appendChild(card);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeCard();
+    });
+  }
+</script>

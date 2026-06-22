@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { glossary } from '../data/glossary';
+import { applyGlossary } from '../lib/applyGlossary';
 
 interface BilingualPair {
   en: number | number[];
@@ -20,71 +21,6 @@ interface ActiveCard {
   term: string;
   x: number;
   y: number;
-}
-
-function applyGlossary(container: HTMLElement): void {
-  const keys = Object.keys(glossary).sort((a, b) => b.length - a.length);
-  const escapedKeys = keys.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-  const regex = new RegExp(`\\b(${escapedKeys.join('|')})\\b`, 'gi');
-  const markedTerms = new Set<string>();
-
-  const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, {
-    acceptNode(node) {
-      const parent = node.parentElement;
-      if (!parent) return NodeFilter.FILTER_REJECT;
-      if (parent.closest('code, pre, a, h1, h2, h3, h4, h5, h6, .gloss')) {
-        return NodeFilter.FILTER_REJECT;
-      }
-      return NodeFilter.FILTER_ACCEPT;
-    },
-  });
-
-  const nodes: Text[] = [];
-  let node: Text | null;
-  while ((node = walker.nextNode() as Text | null)) nodes.push(node);
-
-  for (const textNode of nodes) {
-    const text = textNode.textContent ?? '';
-    regex.lastIndex = 0;
-    if (!regex.test(text)) continue;
-    regex.lastIndex = 0;
-
-    const fragment = document.createDocumentFragment();
-    let lastIndex = 0;
-    let match: RegExpExecArray | null;
-
-    while ((match = regex.exec(text)) !== null) {
-      const term = match[0].toLowerCase();
-      const entry = glossary[term];
-      if (!entry) continue;
-
-      if (match.index > lastIndex) {
-        fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
-      }
-
-      if (!markedTerms.has(term)) {
-        markedTerms.add(term);
-        const span = document.createElement('span');
-        span.className = 'gloss';
-        span.dataset.def = entry.zh;
-        span.dataset.term = term;
-        span.textContent = match[0];
-        fragment.appendChild(span);
-      } else {
-        fragment.appendChild(document.createTextNode(match[0]));
-      }
-
-      lastIndex = match.index + match[0].length;
-    }
-
-    if (lastIndex < text.length) {
-      fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
-    }
-
-    if (fragment.childNodes.length > 0) {
-      textNode.parentNode?.replaceChild(fragment, textNode);
-    }
-  }
 }
 
 export function BilingualView({ enScript, zhScript, alignmentMap }: Props) {
