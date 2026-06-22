@@ -291,7 +291,11 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
             ref={audioRef}
             src={audioUrl}
             onTimeUpdate={handleTimeUpdate}
-            onEnded={() => setIsPlaying(false)}
+            onEnded={() => {
+            setIsPlaying(false);
+            // 聽完整個 mp3 視為完成一次閱讀，通知頁面計數 script
+            window.dispatchEvent(new CustomEvent('tts:ended'));
+          }}
             onLoadedMetadata={handleTimeUpdate}
             onPlay={() => setIsPlaying(true)}
             onPause={() => setIsPlaying(false)}
@@ -430,7 +434,11 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
           ref={audioRef}
           src={audioUrl}
           onTimeUpdate={handleTimeUpdate}
-          onEnded={() => setIsPlaying(false)}
+          onEnded={() => {
+            setIsPlaying(false);
+            // 聽完整個 mp3 視為完成一次閱讀，通知頁面計數 script
+            window.dispatchEvent(new CustomEvent('tts:ended'));
+          }}
           onLoadedMetadata={handleTimeUpdate}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}

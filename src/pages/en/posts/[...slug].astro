@@ -629,6 +629,7 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
     const MIN_SECONDS = Math.min(90, Math.max(20, Math.round(readingTime * 60 * 0.3)));
     let scrolledToEnd = false;
     let timeElapsed = false;
+    let audioCompleted = false;
     let counted = false;
 
     function updateDisplay(count) {
@@ -637,7 +638,11 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
     }
 
     async function tryCount() {
-      if (counted || !scrolledToEnd || !timeElapsed) return;
+      if (counted) return;
+      // A read counts as complete when EITHER:
+      //   1. scrolled to the end + stayed long enough, OR
+      //   2. listened to the full audio narration mp3
+      if (!audioCompleted && (!scrolledToEnd || !timeElapsed)) return;
       counted = true;
       try {
         const res = await fetch('/api/views', {
@@ -675,6 +680,12 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
       timeElapsed = true;
       tryCount();
     }, MIN_SECONDS * 1000);
+
+    // Condition 3 (independent, sufficient): finished the full audio narration
+    window.addEventListener('tts:ended', () => {
+      audioCompleted = true;
+      tryCount();
+    });
   })();
 </script>
 

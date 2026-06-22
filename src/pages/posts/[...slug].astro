@@ -525,6 +525,7 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
     const MIN_SECONDS = Math.min(90, Math.max(20, Math.round(readingTime * 60 * 0.3)));
     let scrolledToEnd = false;
     let timeElapsed = false;
+    let audioCompleted = false;
     let counted = false;
 
     function updateDisplay(count) {
@@ -533,7 +534,11 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
     }
 
     async function tryCount() {
-      if (counted || !scrolledToEnd || !timeElapsed) return;
+      if (counted) return;
+      // 完成一次閱讀的條件（擇一即可）：
+      //   1. 捲到文末 + 停留足夠時間
+      //   2. 聽完整個語音導讀 mp3
+      if (!audioCompleted && (!scrolledToEnd || !timeElapsed)) return;
       counted = true;
       try {
         const res = await fetch('/api/views', {
@@ -571,6 +576,12 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
       timeElapsed = true;
       tryCount();
     }, MIN_SECONDS * 1000);
+
+    // 條件三（獨立充分條件）：聽完整個語音導讀 mp3
+    window.addEventListener('tts:ended', () => {
+      audioCompleted = true;
+      tryCount();
+    });
   })();
 </script>
 
