@@ -98,16 +98,27 @@ description: Convert a conversation, notes, experience, or GitHub project into a
    - 參考資料連結維持不變
    - 例外:使用者明確說「只要中文」或文章屬於極短的 `life` / `creative` 隨筆時,可跳過並告知
 
-7. **請使用者 review**：展示中英兩份草稿，詢問是否修改
+7. **偵測 glossary 術語候選（預設必做）**：
+   本站雙語對照檢視會對「英文欄」自動標記術語、hover 顯示解釋（資料源 `src/data/glossary.ts`，比對英文小寫詞，見 `src/components/BilingualView.tsx` 的 `applyGlossary`）。寫完英文版後，從中挑出值得收錄的新術語：
+   - **來源**：只掃 `.en.md` 內文（跳過 frontmatter、code/pre、連結 `[]()`、標題 `#`——對齊 `applyGlossary` 的排除規則，否則加了也不會被標記）
+   - **選詞標準（嚴格）**：只收「不解釋一般工程師會看不懂」的硬核專業術語；**排除**常見詞（api、json、cache、server 這類）、產品/品牌/公司名、過長片語。**每篇上限 5–8 個，寧缺勿濫，沒有合適的就不加**
+   - **去重**：先讀 `src/data/glossary.ts`，比對既有 key（不分大小寫），已存在的不要重複提
+   - **必須真的出現在英文版內文**，否則 hover 永遠不會觸發
+   - 每個候選產出三欄：`key`（文章中出現的英文詞，存小寫）、`zh`（繁中翻譯）、`context`（一句繁中情境說明，對齊既有寫法，約 20–40 字）
+   - 整理成表格，**留到下一步 review 一起給使用者勾選，先不要寫檔**
 
-8. **確認後執行**：
+8. **請使用者 review**：展示中英兩份草稿，以及上一步的 glossary 術語候選表，詢問是否修改、哪些術語要收錄
+
+9. **確認後執行**：
+   - 將使用者勾選的術語寫入 `src/data/glossary.ts`：插入到語意最接近的分類註解區塊下（系統設計 / API / 儲存快取 / 安全 / 開發流程 / 容器雲端 / AI ML / 職場英文），對齊既有 `"term": { zh: "…", context: "…" },` 格式；使用者全不選則略過此檔
    ```bash
    git add src/content/posts/<category>/YYYY-MM-DD-<slug>.md \
-           src/content/posts/<category>/YYYY-MM-DD-<slug>.en.md
+           src/content/posts/<category>/YYYY-MM-DD-<slug>.en.md \
+           src/data/glossary.ts
    git commit -m "post(<category>): <title summary>"
    ```
 
-9. **產生語音（TTS，預設必做）**：
+10. **產生語音（TTS，預設必做）**：
    - 用 Makefile 既有目標,**只需指定中文版檔案**——`tts-all.ts` 會自動一併處理同名的 `.en.md`(一次跑出中英兩個音檔):
      ```bash
      make tts-post FILE=src/content/posts/<category>/YYYY-MM-DD-<slug>.md

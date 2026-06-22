@@ -109,6 +109,13 @@ export const glossary: Record<string, GlossEntry> = {
   "fine-tune": { zh: "微調", context: "同 fine-tuning，在預訓練模型上繼續訓練適應特定任務。" },
   "rag": { zh: "檢索增強生成", context: "將外部知識庫檢索結果注入 prompt，提升準確性。" },
   "llm": { zh: "大型語言模型", context: "使用巨量文字訓練的生成式 AI 模型，如 GPT、Claude。" },
+  "positional encoding": { zh: "位置編碼", context: "為 Transformer 注入 token 順序資訊的機制，因自注意力本身不具順序概念。" },
+  "self-attention": { zh: "自注意力", context: "讓序列中每個 token 關注所有其他 token 的機制，是 Transformer 的核心。" },
+  "rope": { zh: "旋轉位置編碼", context: "用旋轉矩陣把位置資訊乘進 Q/K，免參數又天然編碼相對距離，現代 LLM 主流。" },
+  "permutation-invariant": { zh: "排列不變性", context: "打亂輸入順序輸出不變的特性；自注意力本身即具此性質，故需位置編碼補足。" },
+  "backpropagation": { zh: "反向傳播", context: "依損失對參數求梯度並逐層回傳以更新權重，神經網路訓練的核心演算法。" },
+  "logit": { zh: "logit", context: "模型經 softmax 前的原始分數；注意力中即未正規化的相關性數值。" },
+  "causal masking": { zh: "因果遮罩", context: "限制每個 token 只能關注自己與之前的位置，確保生成時不偷看未來資訊。" },
   // 職場英文
   "stakeholder": { zh: "利害關係人", context: "對專案有影響力或關切的人，如 PM、客戶、高層。" },
   "alignment": { zh: "共識對齊", context: "確保團隊成員對目標、方向有一致理解。" },
