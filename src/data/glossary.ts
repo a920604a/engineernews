@@ -162,6 +162,7 @@ export const glossary: Record<string, GlossEntry> = {
   "rlhf": { zh: "人類回饋強化學習", context: "用人類偏好訓練獎勵模型再微調 LLM，使輸出更符合期待。" },
   "mixture of experts": { zh: "混合專家", context: "每次只啟用部分專家子網路的架構，擴大參數量又控制運算成本。" },
   "moe": { zh: "混合專家", context: "同 mixture of experts，稀疏啟用專家以兼顧規模與效率。" },
+  "mixture-of-agents": { zh: "混合代理", context: "把同一個 prompt 丟給多個模型再整合結果的架構，效果常勝過任何單一模型。" },
   "kv cache": { zh: "KV 快取", context: "推論時快取已算過的 Key/Value，避免重算、加速長序列生成。" },
   "multi-head attention": { zh: "多頭注意力", context: "並行多組注意力從不同子空間捕捉關係，Transformer 標準元件。" },
   "multi-head latent attention": { zh: "多頭潛在注意力", context: "DeepSeek 提出的注意力變體，壓縮 KV 以大幅降低快取記憶體。" },
