@@ -1,0 +1,210 @@
+---
+export const prerender = true;
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const profile = {
+  name: '陳昱安 Yu-An Chen',
+  alias: 'Tim',
+  title: 'Backend & AI / Data Engineer',
+  location: 'Taipei, Taiwan',
+  bio: '具備後端系統開發與 MLOps 實務經驗，熟悉雲端基礎設施部署（GCP、Docker、Ansible）與資料管線設計（Airflow、Prefect、PySpark）。擅長整合 AI 演算法至生產環境，涵蓋 RAG 系統、模型監控與自動化訓練流程。',
+  email: 'a920604a@gmail.com',
+};
+
+const focus = ['Full Stack（React / FastAPI / DB）', 'Data Engineering（ETL · Airflow · Prefect）', 'Cloud & DevOps（GCP · Docker · CI/CD）', 'MLOps（訓練 · 實驗追蹤 · 即時推論）'];
+
+const timeline = [
+  { company: 'Oomii Inc.', role: 'Senior Software Engineer', years: '2024/05 – Now', desc: '主導即時 AI 語音助理平台的 GCP 雲端架構設計與落地，建置 VPC 隔離網路、Prometheus/Grafana 監控與內部 GitLab CI/CD；並用 Unity/C# 開發 PCVR 分子模擬工具。' },
+  { company: 'Oomii Inc.', role: 'Software Engineer', years: '2022/05 – 2024/05', desc: '以 Unity/C# 開發復健平台與遠端會議系統原型，用 Ansible 實現跨環境自動化部署，並與 UI/UX 將 Figma 設計轉為功能性應用。' },
+  { company: 'Asus Inc. — AICS', role: 'System Engineer', years: '2021/11 – 2022/02', desc: '維護與優化 ETL 流程，用 Airflow 管理數百萬筆記錄的同步與轉換，確保資料準確性與一致性。' },
+  { company: '安智聯科技', role: 'Algorithm Development Engineer', years: '2020/04 – 2021/03', desc: '整合物件偵測與影像分類演算法打造智能檢測平台，建立 Flask 後端、整合 MySQL/Redis，並以 Docker Compose 容器化部署。' },
+  { company: 'FOXCONN', role: 'Software Engineer Intern', years: '2018/07 – 2018/10', desc: '用 TensorFlow/Keras 開發深度學習檢測模型，參與影像資料預處理與訓練，顯著提升檢測準確率。' },
+];
+
+const projects = [
+  { name: 'GitHub Data Analytics Pipeline', desc: '用 GCP、Airflow、BigQuery 自動處理 GitHub Watch events，透過 Streamlit dashboard 即時呈現開源趨勢與開發者參與度。', stack: ['GCP', 'Airflow', 'BigQuery', 'Python', 'Streamlit', 'Terraform'], repo: 'https://github.com/a920604a/gitHub-data-analytics' },
+  { name: 'Stock Price Prediction with MLOps', desc: '完整 MLOps pipeline：自動化 ETL、模型訓練、實驗追蹤、即時推論、監控與 CI/CD，跑在 Dockerized 基礎設施上。', stack: ['Prefect', 'MLflow', 'FastAPI', 'Prometheus', 'Grafana', 'PostgreSQL', 'ClickHouse', 'Docker', 'GitHub Actions'], repo: 'https://github.com/a920604a/stock-mlops' },
+  { name: 'Arxiv Knowledge Assistant', desc: 'arXiv 論文檢索平台：每日 ingestion、向量檢索、LLM RAG、雙語問答與視覺化 dashboard，全程容器化並以 Prometheus/Grafana 監控。', stack: ['FastAPI', 'Prefect', 'Qdrant', 'PostgreSQL', 'MinIO', 'React', 'Docker', 'Grafana'], repo: 'https://github.com/a920604a/llm-assistant' },
+  { name: 'Clothing Recommendation Platform', desc: '整合 web scraping、ETL、Redis 快取、FastAPI 後端與 React 前端，依地區風格、色票與性別推薦穿搭。', stack: ['FastAPI', 'React', 'Redis', 'ETL', 'Python'], repo: 'https://github.com/a920604a/clothes-outfit' },
+];
+
+const skills = [
+  { group: 'Backend', items: ['FastAPI', 'Flask', 'Node.js', 'Python', 'C#'] },
+  { group: 'Data Engineering', items: ['Airflow', 'Prefect', 'PySpark', 'ETL', 'BigQuery', 'ClickHouse'] },
+  { group: 'Cloud & DevOps', items: ['GCP', 'Docker', 'Ansible', 'Terraform', 'CI/CD'] },
+  { group: 'MLOps / AI', items: ['MLflow', 'RAG', 'Qdrant', 'Prometheus', 'Grafana'] },
+  { group: 'Frontend / XR', items: ['React', 'Unity', 'C# (PCVR)'] },
+];
+
+const certifications = [
+  { year: '2026 · On-Going', items: [
+    { name: 'AWS Certified Cloud Practitioner', issuer: 'AWS', url: 'https://www.credly.com/badges/4bd28769-3d06-4018-8dde-0b518ffda54c' },
+    { name: 'Associate Data Practitioner', issuer: 'Google Cloud', url: 'https://www.credly.com/badges/08492f62-1208-4503-8c8d-6cc4fb777ac1/public_url' },
+    { name: 'Google AI Professional Certificate', issuer: 'Coursera', url: 'https://coursera.org/share/b261efca04356eeb73cd012cfb32b313' },
+  ]},
+  { year: '2025', items: [
+    { name: 'MLOps Zoomcamp', issuer: 'DataTalks Club', url: 'https://certificate.datatalks.club/mlops-zoomcamp/2025/c684daa9201c498808181466c6f1094a2d7ec611.pdf' },
+    { name: 'Data Engineering Zoomcamp', issuer: 'DataTalks Club', url: 'https://certificate.datatalks.club/dezoomcamp/2025/c684daa9201c498808181466c6f1094a2d7ec611.pdf' },
+    { name: 'LLM Zoomcamp', issuer: 'DataTalks Club', url: 'https://certificate.datatalks.club/llm-zoomcamp/2025/c684daa9201c498808181466c6f1094a2d7ec611.pdf' },
+  ]},
+  { year: '2023', items: [
+    { name: 'GANs Specialization', issuer: 'Coursera', url: 'https://www.coursera.org/account/accomplishments/specialization/certificate/EENG4FP5STMQ' },
+    { name: 'Google Data Analytics', issuer: 'Coursera', url: 'https://www.coursera.org/account/accomplishments/specialization/certificate/L88CWB23RWTB' },
+    { name: 'Data Science Fundamentals with Python and SQL', issuer: 'Coursera', url: 'https://www.coursera.org/account/accomplishments/specialization/certificate/MWXPM3WSLGY5' },
+    { name: 'Accelerated CS Fundamentals', issuer: 'Coursera', url: 'https://www.coursera.org/account/accomplishments/specialization/certificate/F69TUC5CAXH9' },
+  ]},
+  { year: '2022', items: [
+    { name: 'Deep Learning Specialization', issuer: 'Coursera', url: 'https://www.coursera.org/account/accomplishments/specialization/certificate/FK92ESQX37SX' },
+    { name: 'Python for Everybody', issuer: 'Coursera', url: 'https://www.coursera.org/account/accomplishments/specialization/certificate/T5V6SLCN3KRY' },
+  ]},
+];
+
+const contacts = [
+  { label: 'GitHub', url: 'https://github.com/a920604a' },
+  { label: 'LinkedIn', url: 'https://www.linkedin.com/in/chen-yuan-2b4b7212b/' },
+  { label: 'Instagram', url: 'https://www.instagram.com/yuan3509/' },
+  { label: '履歷 CakeResume', url: 'https://www.cakeresume.com/s--u3LSKmee4rN_6b6EolDWyQ--/a920604a' },
+  { label: 'Email', url: 'mailto:a920604a@gmail.com' },
+];
+---
+<BaseLayout title="關於" description={profile.bio}>
+  <header class="about-head">
+    <p class="kicker">{profile.title} · {profile.location}</p>
+    <h1>{profile.name}</h1>
+    <p class="bio">{profile.bio}</p>
+    <div class="focus">
+      {focus.map(f => <span class="chip">{f}</span>)}
+    </div>
+  </header>
+
+  <section>
+    <h2>經歷</h2>
+    <ol class="timeline">
+      {timeline.map(job => (
+        <li>
+          <div class="t-row">
+            <span class="t-role">{job.role}</span>
+            <span class="t-years">{job.years}</span>
+          </div>
+          <p class="t-company">{job.company}</p>
+          <p class="t-desc">{job.desc}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section>
+    <h2>精選作品</h2>
+    <div class="proj-grid">
+      {projects.map(p => (
+        <a class="proj-card" href={p.repo} target="_blank" rel="noopener">
+          <h3>{p.name}</h3>
+          <p>{p.desc}</p>
+          <div class="stack">{p.stack.map(s => <span class="tag">{s}</span>)}</div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2>技能</h2>
+    <div class="skills">
+      {skills.map(s => (
+        <div class="skill-row">
+          <span class="skill-group">{s.group}</span>
+          <div class="skill-items">{s.items.map(i => <span class="tag">{i}</span>)}</div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2>證照</h2>
+    {certifications.map(c => (
+      <div class="cert-block">
+        <h3 class="cert-year">{c.year}</h3>
+        <ul class="cert-list">
+          {c.items.map(item => (
+            <li>
+              <a href={item.url} target="_blank" rel="noopener">{item.name}</a>
+              <span class="cert-issuer">{item.issuer}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </section>
+
+  <section class="contact">
+    <h2>聯絡</h2>
+    <div class="links">
+      {contacts.map(c => <a href={c.url} target="_blank" rel="noopener">{c.label}</a>)}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .about-head { margin: 36px 0 8px; }
+  .kicker { font-size: 13px; color: var(--accent); margin: 0 0 4px; letter-spacing: 0.02em; }
+  .about-head h1 { font-size: 30px; font-weight: 800; margin: 0 0 14px; }
+  .bio { color: var(--label-secondary); font-size: 16px; line-height: 1.8; margin: 0 0 16px; }
+  .focus { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-size: 13px; padding: 5px 12px; border-radius: var(--radius-full);
+    background: var(--glass); color: var(--label-secondary);
+  }
+
+  section { margin-top: 44px; }
+  section h2 {
+    font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--label-tertiary); margin: 0 0 18px; padding-bottom: 8px;
+    border-bottom: 0.5px solid var(--separator);
+  }
+
+  .timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px; }
+  .timeline li { border-left: 2px solid var(--separator); padding-left: 16px; }
+  .t-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+  .t-role { font-weight: 700; font-size: 16px; }
+  .t-years { font-size: 13px; color: var(--label-tertiary); white-space: nowrap; }
+  .t-company { margin: 2px 0 6px; font-size: 14px; color: var(--accent); }
+  .t-desc { margin: 0; font-size: 14px; line-height: 1.7; color: var(--label-secondary); }
+
+  .proj-grid { display: grid; gap: 14px; }
+  .proj-card {
+    display: block; padding: 18px 20px; border-radius: var(--radius-md);
+    border: 0.5px solid var(--separator); background: var(--card-bg);
+    text-decoration: none; color: inherit; transition: border-color 0.15s, transform 0.15s;
+  }
+  .proj-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .proj-card h3 { margin: 0 0 6px; font-size: 17px; }
+  .proj-card p { margin: 0 0 12px; font-size: 14px; line-height: 1.7; color: var(--label-secondary); }
+  .stack, .skill-items { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-size: 12px; padding: 3px 9px; border-radius: var(--radius-sm);
+    background: var(--glass); color: var(--label-tertiary);
+  }
+
+  .skills { display: grid; gap: 16px; }
+  .skill-row { display: grid; grid-template-columns: 140px 1fr; gap: 12px; align-items: start; }
+  .skill-group { font-size: 14px; font-weight: 600; color: var(--label-secondary); }
+
+  .cert-block { margin-bottom: 20px; }
+  .cert-year { font-size: 14px; color: var(--accent); margin: 0 0 8px; font-weight: 600; }
+  .cert-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .cert-list li { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+  .cert-list a { color: var(--label); text-decoration: none; font-size: 14px; border-bottom: 1px dashed var(--separator); }
+  .cert-list a:hover { color: var(--accent); border-color: var(--accent); }
+  .cert-issuer { font-size: 12px; color: var(--label-tertiary); white-space: nowrap; }
+
+  .links { display: flex; flex-wrap: wrap; gap: 10px; }
+  .links a {
+    font-size: 14px; padding: 8px 16px; border-radius: var(--radius-full);
+    border: 0.5px solid var(--separator); color: var(--label-secondary); text-decoration: none;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .links a:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  @media (max-width: 560px) {
+    .skill-row { grid-template-columns: 1fr; gap: 6px; }
+  }
+</style>

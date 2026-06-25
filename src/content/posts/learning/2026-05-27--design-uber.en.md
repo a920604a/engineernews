@@ -4,6 +4,9 @@ date: 2026-05-27T03:40:38.960Z
 category: learning
 tags: ["system-design", "architecture", "uber", "engineering", "interview-prep"]
 lang: en
+series:
+  name: "系統設計 Mock 面試"
+  order: 2
 tldr: "The hardest part of designing Uber isn't picking the right technologies — it's breaking a vague, enormous problem into discussable sub-problems"
 description: "A structured walkthrough of how to approach the 'Design Uber' system design question: scoping, identifying core challenges, and making trade-offs"
 type: case-study

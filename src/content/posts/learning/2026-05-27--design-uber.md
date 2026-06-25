@@ -4,6 +4,9 @@ date: 2026-05-27T03:40:38.960Z
 category: learning
 tags: ["系統設計", "架構", "uber", "工程", "面試準備"]
 lang: zh-TW
+series:
+  name: "系統設計 Mock 面試"
+  order: 2
 tldr: "設計 Uber 最核心的挑戰不是技術選型，而是把一個模糊的大問題拆解成可以討論的子問題"
 description: "從直播複盤中整理出設計 Uber 的思維框架：如何釐清需求範圍、識別核心難點，以及在擴展性與一致性之間做取捨"
 type: case-study

@@ -4,6 +4,9 @@ date: 2026-04-29T19:42:20.716Z
 category: tech
 tags: ["system-design", "doordash", "event-driven", "distributed-systems", "interview"]
 lang: en
+series:
+  name: "系統設計 Mock 面試"
+  order: 1
 tldr: "The DoorDash donation feature is a classic high-concurrency, eventual consistency problem: millions of users triggering small donations at checkout, with a rolling live total displayed in real time. The core trade-off is strong consistency (dual-write + 2PC) vs. eventual consistency (event-driven + counter aggregation)."
 description: "A walkthrough of the DoorDash donation feature system design mock: functional requirements, scale estimation, key design decisions, idempotency, counter aggregation strategies, and how to demonstrate design thinking (not answer memorization) in an interview."
 type: deep-dive

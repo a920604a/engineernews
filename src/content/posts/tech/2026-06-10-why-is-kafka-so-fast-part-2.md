@@ -4,6 +4,9 @@ date: 2026-06-10T03:37:03.200Z
 category: tech
 tags: ["Kafka", "效能優化", "系統設計", "架構", "分散式系統"]
 lang: zh-TW
+series:
+  name: "Kafka 為什麼這麼快"
+  order: 2
 tldr: "Kafka 的水平擴展能力來自 partition 設計：每個 partition 是獨立的 log，Consumer Group 讓多個消費者並行讀取，replication 在不犧牲太多效能的情況下保障可靠性。"
 description: "Kafka 效能深潛第二篇：partition 如何讓 Kafka 水平擴展、Consumer Group 的並行消費機制、replica 同步對 latency 的影響，以及不同部署情境下的效能取捨。"
 type: deep-dive

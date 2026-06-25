@@ -4,6 +4,9 @@ date: 2026-05-27T12:25:00.363Z
 category: tech
 tags: ["github", "open-source", "ai", "tools", "dev-tools"]
 lang: zh-TW
+series:
+  name: "GitHub 開源週報"
+  order: 115
 tldr: "本週 GitHub 熱點：桌面 AI 代理人框架、無痕 Chromium 分支、把任何軟體變成 CLI 工具的框架、以及即時流式 3D 場景重建模型——五個都值得加到 starred 清單的專案。"
 description: "GitHub 一週熱點第 115 期：五個正在引發開發者社群熱議的開源專案，包括桌面 AI 代理人、隱私導向 Chromium、CLI 自動化框架和 3D 重建技術。"
 type: listicle

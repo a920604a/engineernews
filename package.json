@@ -15,7 +15,8 @@
     "fix-mermaid": "tsx scripts/fix-mermaid.ts",
     "rewrite": "tsx scripts/rewrite-posts.ts",
     "rewrite:write": "tsx scripts/rewrite-posts.ts --write",
-    "delete-post": "tsx scripts/delete-post.ts"
+    "delete-post": "tsx scripts/delete-post.ts",
+    "check:glossary": "node scripts/check-glossary-coverage.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.13",

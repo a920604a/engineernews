@@ -4,6 +4,9 @@ date: 2026-05-27T12:25:00.363Z
 category: tech
 tags: ["github", "open-source", "ai", "tools", "dev-tools"]
 lang: en
+series:
+  name: "GitHub 開源週報"
+  order: 115
 tldr: "This week's GitHub trending: a desktop AI agent framework that controls GUI apps without APIs, an ungoogled Chromium fork, a one-decorator CLI conversion framework, a coding agent knowledge graph, and a real-time streaming 3D reconstruction model."
 description: "GitHub trending highlights #115: five projects generating developer community buzz across AI agents, privacy-focused browsing, CLI automation, and 3D reconstruction technology."
 type: listicle

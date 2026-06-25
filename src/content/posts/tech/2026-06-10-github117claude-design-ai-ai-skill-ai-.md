@@ -4,6 +4,9 @@ date: 2026-06-10T12:27:07.655Z
 category: tech
 tags: ["GitHub", "開源", "AI", "設計工具", "開發工具"]
 lang: zh-TW
+series:
+  name: "GitHub 開源週報"
+  order: 117
 tldr: "本週 GitHub 熱門精選：Penpot 開源設計工具替代 Figma、LLMLingua 上下文壓縮、AI 提示詞美學課程、英語學習神器 Anki 進化版，以及 Andrej Karpathy 的 nanoGPT 教學系列。"
 description: "GitHub 開源專案週報第 117 期：五個值得工程師關注的熱門專案，涵蓋設計工具、AI 上下文優化、提示詞工程、語言學習和從零建造 AI 模型。"
 type: listicle

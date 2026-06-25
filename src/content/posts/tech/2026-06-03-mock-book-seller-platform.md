@@ -4,6 +4,9 @@ date: 2026-06-03T13:22:21.272Z
 category: tech
 tags: ["system-design", "microservices", "e-commerce", "database", "caching", "api-design"]
 lang: zh-TW
+series:
+  name: "系統設計 Mock 面試"
+  order: 3
 tldr: "設計一個書籍銷售平台時，關鍵決策是搜尋架構（Elasticsearch vs 全文搜尋）、庫存一致性（強一致 vs 最終一致）、以及訂單狀態機的設計。"
 description: "系統設計 Mock 系列：從需求澄清到容量估算，完整走一遍書籍電商平台的架構設計，重點討論搜尋、庫存和訂單三個核心子系統的取捨。"
 type: deep-dive

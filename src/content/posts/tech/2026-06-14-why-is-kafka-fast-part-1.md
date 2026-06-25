@@ -4,6 +4,9 @@ date: 2026-06-14T14:20:55.098Z
 category: tech
 tags: ["Kafka", "系統設計", "架構", "效能優化", "訊息佇列"]
 lang: zh-TW
+series:
+  name: "Kafka 為什麼這麼快"
+  order: 1
 tldr: "Kafka 的速度來自兩個不直覺的設計：刻意寫磁碟（而非記憶體）但用循序 I/O，以及 Zero-Copy 讓資料從磁碟直達網路卡不經 CPU 搬運。"
 description: "深入解析 Kafka 效能的底層原理：循序 I/O 為何比隨機記憶體存取更快、Zero-Copy 透過 sendfile() syscall 消除 CPU 複製、以及 Page Cache 如何讓磁碟行為像記憶體。"
 type: explainer

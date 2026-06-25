@@ -4,6 +4,9 @@ date: 2026-06-03T13:22:21.272Z
 category: tech
 tags: ["system-design", "microservices", "e-commerce", "database", "caching", "api-design"]
 lang: en
+series:
+  name: "系統設計 Mock 面試"
+  order: 3
 tldr: "For a book selling platform, the key decisions are search architecture (Elasticsearch vs full-text search), inventory consistency (strong vs eventual), and order state machine design."
 description: "System design mock series: from requirements clarification to capacity estimation, a complete walkthrough of a book e-commerce platform's architecture, focusing on search, inventory, and order subsystem tradeoffs."
 type: deep-dive

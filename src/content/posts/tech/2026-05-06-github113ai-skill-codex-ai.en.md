@@ -4,6 +4,9 @@ date: 2026-05-06T02:44:07.467Z
 category: tech
 tags: ["github", "open-source", "ai", "warp", "codex", "agent-skills"]
 lang: en
+series:
+  name: "GitHub 開源週報"
+  order: 113
 tldr: "Three big GitHub moments in early May 2026: Warp terminal goes open source (37K stars in days), GitHub Copilot launches the Agent Skills open standard, and Codex CLI hits general availability — the AI dev toolchain is consolidating fast."
 description: "This week's GitHub trending highlights: Warp terminal open-sources its Rust codebase, GitHub Copilot formalizes Agent Skills as a cross-tool standard, and Codex CLI goes GA for all Copilot subscribers."
 type: listicle

@@ -558,38 +558,83 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
 
   /* 詞彙點擊卡片 */
   :global(.gloss-card) {
+    position: fixed;
     z-index: 200;
     background: var(--bg-secondary);
     border: 0.5px solid var(--separator);
     border-radius: var(--radius-md);
-    padding: 14px 18px;
-    width: 300px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    padding: 14px 16px;
+    width: 320px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22);
+  }
+
+  :global(.gloss-card-head) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
   }
 
   :global(.gloss-card-term) {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     color: var(--label);
-    margin: 0 0 6px;
     text-transform: capitalize;
   }
 
-  :global(.gloss-card-zh) {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--accent);
+  :global(.gloss-card-levels) {
+    display: inline-flex;
+    border: 0.5px solid var(--separator);
+    border-radius: var(--radius-full);
+    padding: 2px;
+    gap: 2px;
+  }
+  :global(.gloss-card-levels button) {
+    font-size: 11px;
+    padding: 2px 9px;
+    border: none;
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: var(--label-secondary);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  :global(.gloss-card-levels button.active) {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  :global(.gloss-card-def) {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--label);
     margin: 0 0 8px;
   }
 
   :global(.gloss-card-context) {
-    font-size: 13px;
+    font-size: 12.5px;
     line-height: 1.6;
     color: var(--label-secondary);
-    margin: 0;
+    margin: 0 0 8px;
     padding-top: 8px;
     border-top: 0.5px solid var(--separator);
   }
+
+  :global(.gloss-card-reading) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  :global(.gloss-card-reading a) {
+    font-size: 12px;
+    color: var(--accent);
+    text-decoration: none;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--glass);
+  }
+  :global(.gloss-card-reading a:hover) { text-decoration: underline; }
 
   /* ── 精讀模式 tooltip ── */
   :global(.gloss) {
@@ -690,3 +735,139 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
 </script>
 
 <ScrollToTop />
+
+<!-- Glossary: highlight technical terms, click for an interactive card (AI explanation + basic/deep toggle + lookup stats) -->
+<script type="application/json" id="glossary-data" set:html={JSON.stringify({ slug: post.id, lang: 'en', entries: post.data.glossary ?? [] })}></script>
+<script>
+  import { applyGlossary } from '../../../lib/applyGlossary';
+
+  type AnyEntry = { term: string; aliases?: string[]; [k: string]: unknown };
+  type Explain = { definition?: string; context?: string; reading?: { label: string; url: string }[] };
+
+  const dataEl = document.getElementById('glossary-data');
+  const cfg = dataEl ? JSON.parse(dataEl.textContent || '{}') : {};
+  const slug: string = cfg.slug || '';
+  const lang: string = cfg.lang || 'en';
+  const isEn = lang === 'en';
+  const frontEntries: AnyEntry[] = Array.isArray(cfg.entries) ? cfg.entries : [];
+  const frontMap = new Map<string, AnyEntry>();
+  for (const e of frontEntries) {
+    frontMap.set(String(e.term).toLowerCase(), e);
+    for (const a of e.aliases || []) frontMap.set(String(a).toLowerCase(), e);
+  }
+
+  const prose = document.querySelector<HTMLElement>('.prose');
+  if (prose) {
+    applyGlossary(prose, frontEntries);
+
+    let card: HTMLDivElement | null = null;
+    const cache = new Map<string, Explain>();
+
+    function closeCard() { card?.remove(); card = null; }
+
+    async function fetchLevel(term: string, context: string, level: string, seed: AnyEntry | undefined): Promise<Explain> {
+      const key = `${term}:${level}`;
+      const hit = cache.get(key);
+      if (hit) return hit;
+      const res = await fetch('/api/glossary/explain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ term, slug, lang, level, context, seed }),
+      });
+      const data = await res.json() as Explain;
+      cache.set(key, data);
+      return data;
+    }
+
+    function renderBody(bodyEl: HTMLElement, data: Explain) {
+      bodyEl.innerHTML = '';
+      const def = document.createElement('p');
+      def.className = 'gloss-card-def';
+      def.textContent = data.definition || '';
+      bodyEl.appendChild(def);
+      if (data.context) {
+        const ctx = document.createElement('p');
+        ctx.className = 'gloss-card-context';
+        ctx.textContent = data.context;
+        bodyEl.appendChild(ctx);
+      }
+      if (Array.isArray(data.reading) && data.reading.length) {
+        const reading = document.createElement('div');
+        reading.className = 'gloss-card-reading';
+        for (const link of data.reading) {
+          const a = document.createElement('a');
+          a.href = link.url;
+          a.textContent = link.label;
+          reading.appendChild(a);
+        }
+        bodyEl.appendChild(reading);
+      }
+    }
+
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const gloss = target.closest<HTMLElement>('.gloss');
+      if (!gloss) {
+        if (!target.closest('.gloss-card')) closeCard();
+        return;
+      }
+      e.stopPropagation();
+
+      const term = gloss.dataset.term || gloss.textContent?.toLowerCase() || '';
+      const quick = gloss.dataset.def || '';
+      const context = (gloss.closest('p, li, blockquote, td')?.textContent || '').slice(0, 400);
+      const seed = frontMap.get(term.toLowerCase());
+
+      closeCard();
+      const rect = gloss.getBoundingClientRect();
+      card = document.createElement('div');
+      card.className = 'gloss-card';
+      card.style.left = `${Math.min(rect.left, window.innerWidth - 332)}px`;
+      card.style.top = `${Math.min(rect.bottom + 8, window.innerHeight - 240)}px`;
+
+      const head = document.createElement('div');
+      head.className = 'gloss-card-head';
+      const termEl = document.createElement('span');
+      termEl.className = 'gloss-card-term';
+      termEl.textContent = term;
+      const toggle = document.createElement('div');
+      toggle.className = 'gloss-card-levels';
+      head.append(termEl, toggle);
+
+      const bodyEl = document.createElement('div');
+      bodyEl.className = 'gloss-card-body';
+      const loading = document.createElement('p');
+      loading.className = 'gloss-card-def';
+      loading.textContent = quick || (isEn ? 'Loading…' : '載入中…');
+      bodyEl.appendChild(loading);
+
+      card.append(head, bodyEl);
+      document.body.appendChild(card);
+
+      const levels: [string, string][] = isEn
+        ? [['beginner', 'Basic'], ['advanced', 'Deep']]
+        : [['beginner', '入門'], ['advanced', '進階']];
+      const btns: Record<string, HTMLButtonElement> = {};
+      const myCard = card;
+
+      async function selectLevel(level: string) {
+        for (const k in btns) btns[k].classList.toggle('active', k === level);
+        const data = await fetchLevel(term, context, level, seed);
+        if (card === myCard) renderBody(bodyEl, data);
+      }
+      for (const [level, label] of levels) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = label;
+        b.addEventListener('click', (ev) => { ev.stopPropagation(); selectLevel(level); });
+        btns[level] = b;
+        toggle.appendChild(b);
+      }
+      selectLevel('beginner');
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeCard();
+    });
+  }
+</script>

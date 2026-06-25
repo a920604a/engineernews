@@ -1,0 +1,77 @@
+---
+export const prerender = true;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { useTranslations } from '../../i18n/utils';
+import { getSeriesSummaries, type SeriesSummary } from '../../utils/series';
+
+const lang = 'zh-TW';
+const t = useTranslations(lang);
+
+export async function getStaticPaths() {
+  const seriesList = await getSeriesSummaries('zh-TW');
+  return seriesList.map(series => ({
+    params: { series: series.slug },
+    props: { series },
+  }));
+}
+
+const { series } = Astro.props as { series: SeriesSummary };
+---
+<BaseLayout title={series.name} description={series.description}>
+  <a href="/series" class="back-link">← {t('series.title')}</a>
+  <header class="series-header">
+    <span class="series-count">{series.count} {t('series.posts')}</span>
+    <h1>{series.name}</h1>
+    <p>{series.description}</p>
+  </header>
+
+  <ol class="series-list">
+    {series.posts.map((post, i) => (
+      <li>
+        <span class="series-order">{i + 1}</span>
+        <PostCard
+          id={post.id}
+          title={post.data.title}
+          date={post.data.date}
+          category={post.data.category}
+          tags={post.data.tags}
+          description={post.data.description}
+          tldr={post.data.tldr}
+          readingTime={post.data.readingTime}
+          lang={lang}
+          type={post.data.type}
+        />
+      </li>
+    ))}
+  </ol>
+</BaseLayout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    font-size: 13px;
+    color: var(--label-tertiary);
+    text-decoration: none;
+    margin: 28px 0 16px;
+  }
+  .back-link:hover { color: var(--label-secondary); }
+  .series-header {
+    border-left: 3px solid var(--accent);
+    padding-left: 16px;
+    margin-bottom: 28px;
+  }
+  .series-count { font-size: 12px; color: var(--label-tertiary); }
+  .series-header h1 { margin: 4px 0 6px; font-size: 26px; }
+  .series-header p { margin: 0; color: var(--label-secondary); font-size: 15px; line-height: 1.7; }
+
+  .series-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+  .series-list li { display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: start; }
+  .series-order {
+    display: flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; margin-top: 8px;
+    border-radius: var(--radius-full);
+    background: var(--glass); color: var(--label-secondary);
+    font-size: 13px; font-weight: 600;
+  }
+</style>

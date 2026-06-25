@@ -4,6 +4,9 @@ date: 2026-06-10T12:27:07.655Z
 category: tech
 tags: ["GitHub", "open source", "AI", "design tools", "developer tools"]
 lang: en
+series:
+  name: "GitHub 開源週報"
+  order: 117
 tldr: "This week's GitHub trending picks: Penpot as an open-source Figma alternative, LLMLingua for prompt compression, an AI aesthetics prompt course, FSRS-based spaced repetition for language learning, and Andrej Karpathy's nanoGPT."
 description: "GitHub open-source weekly roundup #117: five projects worth an engineer's attention—covering design tooling, AI context optimization, prompt engineering, language learning, and building LLMs from scratch."
 type: listicle

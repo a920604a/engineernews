@@ -4,6 +4,9 @@ date: "2026-04-23T04:00:24+00:00"
 category: "tech"
 tags: ["Github", "Karpathy", "Claude Code", "AI Agent", "TTS 模型", "Markdown 工具", "CLI 本地搜索引擎", "IT", "開發"]
 lang: "zh-TW"
+series:
+  name: "GitHub 開源週報"
+  order: 111
 tldr: "Github 一周熱點第 111 期：介紹 Karpathy 的 Claude Code 配置、AI Agent 團隊協作平台等熱門專案"
 description: "Github 一周熱點第 111 期：介紹 Karpathy 的 Claude Code 配置、AI Agent 團隊協作平台等熱門專案"
 type: "listicle"

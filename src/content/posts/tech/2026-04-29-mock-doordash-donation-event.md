@@ -4,6 +4,9 @@ date: 2026-04-29T19:42:20.716Z
 category: tech
 tags: ["system-design", "doordash", "event-driven", "distributed-systems", "interview"]
 lang: zh-TW
+series:
+  name: "系統設計 Mock 面試"
+  order: 1
 tldr: "DoorDash 捐贈活動是一個典型的高并發、最終一致性場景：大量用戶在結帳時觸發小額捐贈，需要即時顯示滾動捐贈總計。核心設計取捨是強一致性（雙重寫入 + 2PC）vs 最終一致性（事件驅動 + counter aggregation）。"
 description: "拆解 DoorDash 捐贈活動的系統設計 Mock 題：功能需求、規模估算、關鍵設計決策、反冪等性處理、計數器聚合策略，以及面試中如何展示系統設計思維而不是背答案。"
 type: deep-dive

@@ -4,6 +4,9 @@ date: 2026-06-14T14:20:55.098Z
 category: tech
 tags: ["Kafka", "system design", "architecture", "performance", "message queue"]
 lang: en
+series:
+  name: "Kafka 為什麼這麼快"
+  order: 1
 tldr: "Kafka's speed comes from two counterintuitive design choices: deliberately writing to disk (not memory) but using sequential I/O, and Zero-Copy to move data from disk to NIC without CPU involvement."
 description: "Deep dive into Kafka's performance fundamentals: why sequential I/O beats random memory access, how Zero-Copy via sendfile() eliminates data movement overhead, and how Page Cache makes disk behave like memory."
 type: explainer

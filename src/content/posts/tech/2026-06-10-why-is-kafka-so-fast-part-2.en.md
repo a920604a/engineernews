@@ -4,6 +4,9 @@ date: 2026-06-10T03:37:03.200Z
 category: tech
 tags: ["Kafka", "performance", "system design", "architecture", "distributed systems"]
 lang: en
+series:
+  name: "Kafka 為什麼這麼快"
+  order: 2
 tldr: "Kafka's horizontal scalability comes from partition design: each partition is an independent log, Consumer Groups enable parallel consumption, and replication provides durability without a large performance penalty."
 description: "Kafka performance deep-dive part 2: how partitions enable linear horizontal scaling, Consumer Group parallel consumption mechanics, ISR replication's impact on latency, and comparison with RabbitMQ and Pulsar."
 type: deep-dive
