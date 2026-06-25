@@ -170,6 +170,9 @@ export const glossary: Record<string, GlossEntry> = {
   "ai agent": { zh: "AI 代理", context: "能自主規劃、呼叫工具、多步執行以完成目標的 LLM 應用。" },
   "stable diffusion": { zh: "Stable Diffusion", context: "開源的文生圖擴散模型，可在消費級 GPU 上運行。" },
   "harness engineering": { zh: "Harness 工程", context: "設計 LLM 與工具、環境互動的「外殼」以發揮模型能力的工程實踐。" },
+  "lora": { zh: "低秩適配", context: "只訓練少量額外低秩參數來微調大模型的方法，省算力又不動原始權重。" },
+  "extractive": { zh: "抽取式", context: "直接從原文挑選保留片段的壓縮／摘要方式，相對於生成全新文字的生成式。" },
+  "ast": { zh: "抽象語法樹", context: "程式碼的樹狀結構表示，編譯器與工具用它精確分析語法，而非靠字串比對。" },
   // ── 全站掃描補充：API / 資料 / infra ──
   "rest": { zh: "REST", context: "以 HTTP 動詞操作資源的 API 設計風格，無狀態、易快取。" },
   "graphql": { zh: "GraphQL", context: "讓客戶端精確查詢所需欄位的 API 查詢語言，避免過度抓取。" },
