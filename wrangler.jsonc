@@ -7,15 +7,13 @@
 		{
 			"binding": "DB",
 			"database_name": "engineer-news-db",
-			"database_id": "0bec497e-9de7-4069-bc90-7d0da0f72e9a",
-			"remote": true
+			"database_id": "0bec497e-9de7-4069-bc90-7d0da0f72e9a"
 		}
 	],
 	"r2_buckets": [
 		{
 			"binding": "OG_IMAGES",
-			"bucket_name": "engineer-news-og-images",
-			"remote": true
+			"bucket_name": "engineer-news-og-images"
 		}
 	],
 	"vectorize": [
@@ -25,7 +23,8 @@
 		},
 	],
 	"ai": {
-		"binding": "AI"
+		"binding": "AI",
+		"remote": true
 	},
 	"vars": {
 		"ADMIN_TOKEN": "dev-secret",

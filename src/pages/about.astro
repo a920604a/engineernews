@@ -28,6 +28,13 @@ const projects = [
   { name: 'Clothing Recommendation Platform', desc: '整合 web scraping、ETL、Redis 快取、FastAPI 後端與 React 前端，依地區風格、色票與性別推薦穿搭。', stack: ['FastAPI', 'React', 'Redis', 'ETL', 'Python'], repo: 'https://github.com/a920604a/clothes-outfit' },
 ];
 
+const moreProjects = [
+  { name: 'Live English Tutor', desc: '即時英語口說家教應用', repo: 'https://github.com/a920604a/live-english-tutor' },
+  { name: 'AMD 復健平台', desc: '黃斑部退化復健平台（C# / Unity）', repo: 'https://github.com/a920604a/amd' },
+  { name: 'Monitoring System', desc: 'Prometheus / Grafana 監控系統', repo: 'https://github.com/a920604a/monitoring_system' },
+  { name: 'DaoDao 島島阿學', desc: '自主學習社群平台後端與管理介面貢獻', repo: 'https://github.com/daodaoedu' },
+];
+
 const skills = [
   { group: 'Backend', items: ['FastAPI', 'Flask', 'Node.js', 'Python', 'C#'] },
   { group: 'Data Engineering', items: ['Airflow', 'Prefect', 'PySpark', 'ETL', 'BigQuery', 'ClickHouse'] },
@@ -101,6 +108,14 @@ const contacts = [
           <h3>{p.name}</h3>
           <p>{p.desc}</p>
           <div class="stack">{p.stack.map(s => <span class="tag">{s}</span>)}</div>
+        </a>
+      ))}
+    </div>
+    <div class="more-projects">
+      {moreProjects.map(p => (
+        <a class="more-proj" href={p.repo} target="_blank" rel="noopener">
+          <span class="more-proj-name">{p.name}</span>
+          <span class="more-proj-desc">{p.desc}</span>
         </a>
       ))}
     </div>
@@ -178,7 +193,19 @@ const contacts = [
   .proj-card:hover { border-color: var(--accent); transform: translateY(-2px); }
   .proj-card h3 { margin: 0 0 6px; font-size: 17px; }
   .proj-card p { margin: 0 0 12px; font-size: 14px; line-height: 1.7; color: var(--label-secondary); }
+  .more-projects { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .more-proj {
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 10px 12px; border-radius: var(--radius-sm);
+    border: 0.5px solid var(--separator); background: var(--glass);
+    text-decoration: none; color: inherit; transition: border-color 0.15s;
+  }
+  .more-proj:hover { border-color: var(--accent); }
+  .more-proj-name { font-size: 13px; font-weight: 600; color: var(--label); }
+  .more-proj-desc { font-size: 12px; color: var(--label-tertiary); }
+
   .stack, .skill-items { display: flex; flex-wrap: wrap; gap: 6px; }
+  @media (max-width: 560px) { .more-projects { grid-template-columns: 1fr; } }
   .tag {
     font-size: 12px; padding: 3px 9px; border-radius: var(--radius-sm);
     background: var(--glass); color: var(--label-tertiary);

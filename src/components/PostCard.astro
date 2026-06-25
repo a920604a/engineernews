@@ -1,6 +1,7 @@
 ---
 import type { Lang } from '../i18n/ui';
 import { getPostUrl } from '../lib/postPaths';
+import { getSeriesHref } from '../utils/series';
 
 interface Props {
   id: string;
@@ -17,17 +18,19 @@ interface Props {
   github?: string;
   url?: string;
   featured?: boolean;
+  series?: { name: string; order: number };
 }
 
 const {
   id, title, date, category, tags,
   description, tldr, type, pinned = false,
   readingTime, lang = 'zh-TW',
-  github, url, featured = false,
+  github, url, featured = false, series,
 } = Astro.props;
 
 const isEn = lang === 'en';
 const postHref = getPostUrl(id, lang);
+const seriesHref = series ? getSeriesHref(series.name, lang) : undefined;
 const catHref  = isEn ? `/en/categories/${category}` : `/categories/${category}`;
 const tagHref  = (t: string) => isEn ? `/en/tags/${t}` : `/tags/${t}`;
 
@@ -61,6 +64,9 @@ const typeLabel = type ? (isEn ? (typeLabels[type]?.en ?? type) : (typeLabels[ty
     <div class="card-badges">
       {pinned && <span class="badge badge-pinned">置頂</span>}
       <a href={catHref} class="badge badge-cat badge-category" data-category={category}>{category}</a>
+      {series && seriesHref && (
+        <a href={seriesHref} class="badge badge-series" title={series.name}>📚 {series.name}</a>
+      )}
     </div>
     <div class="card-meta">
       {typeLabel && <span class="card-type">{typeLabel}</span>}
@@ -213,6 +219,17 @@ const typeLabel = type ? (isEn ? (typeLabels[type]?.en ?? type) : (typeLabels[ty
     background: color-mix(in srgb, var(--cat-color) 12%, transparent);
     color: var(--cat-color);
     border: 0.5px solid color-mix(in srgb, var(--cat-color) 30%, transparent);
+  }
+  .badge-series {
+    background: var(--glass);
+    color: var(--label-secondary);
+    border: 0.5px solid var(--separator);
+    text-transform: none;
+    letter-spacing: 0;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   /* Title */

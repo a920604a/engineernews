@@ -702,7 +702,7 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
     document.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
       const gloss = target.closest<HTMLElement>('.gloss');
-      if (!gloss) {
+      if (!gloss || !gloss.closest('.prose')) {
         if (!target.closest('.gloss-card')) closeCard();
         return;
       }

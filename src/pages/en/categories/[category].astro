@@ -97,6 +97,7 @@ function calcReadingTime(post: (typeof posts)[0]): number {
         <p class="section-label">Featured</p>
         <PostCard
           id={featured.id}
+          series={featured.data.series}
           title={featured.data.title}
           date={featured.data.date}
           category={featured.data.category}
@@ -125,6 +126,7 @@ function calcReadingTime(post: (typeof posts)[0]): number {
         >
           <PostCard
             id={post.id}
+            series={post.data.series}
             title={post.data.title}
             date={post.data.date}
             category={post.data.category}

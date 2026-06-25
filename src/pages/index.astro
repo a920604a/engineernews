@@ -58,6 +58,7 @@ const topics = [
             </div>
             <PostCard
               id={featuredPost.id}
+              series={featuredPost.data.series}
               title={featuredPost.data.title}
               date={featuredPost.data.date}
               category={featuredPost.data.category}
@@ -118,6 +119,7 @@ const topics = [
               <div class="home-post-item" data-slug={post.id} data-audio={post.data.audio_url ? '1' : '0'}>
                 <PostCard
                   id={post.id}
+                  series={post.data.series}
                   title={post.data.title}
                   date={post.data.date}
                   category={post.data.category}
@@ -147,6 +149,7 @@ const topics = [
                 <div class="home-post-item" data-slug={post.id} data-audio={post.data.audio_url ? '1' : '0'}>
                   <PostCard
                     id={post.id}
+                    series={post.data.series}
                     title={post.data.title}
                     date={post.data.date}
                     category={post.data.category}

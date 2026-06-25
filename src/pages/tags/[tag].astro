@@ -48,6 +48,7 @@ const relatedTags = [...new Set(posts.flatMap(p => p.data.tags))]
       {posts.map((post) => (
         <PostCard
           id={post.id}
+          series={post.data.series}
           title={post.data.title}
           date={post.data.date}
           category={post.data.category}

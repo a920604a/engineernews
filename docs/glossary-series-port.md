@@ -22,6 +22,19 @@
 
 ---
 
+## ✅ 收尾補做（已完成、過 build）
+- **A：本地可測 AI** — `remoteBindings: true` + `ai` binding `remote:true`（見下方前提說明）。
+- **BilingualView 雙語卡片升級** — 改用 `/api/glossary/explain` + Basic/Deep 切換；並把 `.prose` 的詞彙腳本加 `.prose` 範圍守衛，避免雙語欄位與內文重複跳卡。
+- **PostCard 系列徽章** — 文章卡片若屬於系列會顯示「📚 系列名」連到 `/series/<slug>`；已串進 index / categories / tags（zh+en）listing。
+- **About 更多作品** — 4 主打外，加 live-english-tutor / AMD / monitoring / DaoDao（zh+en）。
+
+## 🟡 仍未做（需你決定，非 bug）
+- **更多 series 分組**：AI 程式設計實戰/LangGraph 課（有「第三課」但找不齊 1、2）、Stanford 課程、GitHub 週報其他期數 — 我不亂湊，要你確認歸屬。
+- **其他競品 skills**（獨立大工程，未動）：post-verify、tag-audit、post-translate、deep-research、deploy-preflight。
+- **explain API 的 AI 路徑**只在沙箱用 curl 測到 local fallback；AI 真實輸出要你在有 `wrangler login` 的環境用 `make dev` 驗。
+
+---
+
 ## 🚦 Commit / Push 前需要「你」手動做的事
 
 > 程式我都寫好且過 build 了，但這幾件我做不了或不該替你決定：
@@ -36,6 +49,12 @@
 4. **（這項是「部署時」，非 commit 前）** prod D1 migration：`make d1-migrate`（`--remote`，CI 沒有，要手動）。沒跑的話線上 glossary 查詢統計寫入會失敗，但有 try/catch → 卡片仍正常、只是不記錄統計。
 
 不需要你做的（FYI）：`pnpm install` 我已跑過、lockfile 沒變；build 產物都 gitignored。
+
+### ⚠️ AI 詞彙卡入門/進階分層的前提（重要）
+- `astro dev` 預設拿不到 Workers AI → glossary explain 走 local fallback → 只有 12 個 rich 詞會分層，其餘 188 個 legacy 詞「入門=進階」。
+- 已開啟 `remoteBindings: true`（`astro.config.mjs`）+ `ai` binding `remote: true`（`wrangler.jsonc`），讓本地 dev 也能呼叫真正的 Workers AI（由 AI 生成不同 level）。DB/R2 維持 local（已移除它們的 `remote:true`）。
+- **代價：`make dev` 現在需要先 `wrangler login`（或設 `CLOUDFLARE_API_TOKEN`），否則 dev 會啟動失敗、且離線無法 dev。** 若想離線開發，暫時把 `remoteBindings` 改回 `false` 即可（prod 部署不受影響、線上 AI 原生可用）。
+- **production（部署後的 Worker）AI 原生可用，不需要這些設定** → 入門/進階本來就會分層。
 
 ---
 

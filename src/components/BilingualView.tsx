@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { glossary } from '../data/glossary';
 import { applyGlossary } from '../lib/applyGlossary';
+import { findDefaultGlossaryEntry } from '../lib/glossary/terms';
 
 interface BilingualPair {
   en: number | number[];
@@ -15,16 +15,28 @@ interface Props {
   enScript: string;
   zhScript: string;
   alignmentMap: AlignmentMap | null;
+  slug?: string;
 }
 
 interface ActiveCard {
   term: string;
+  context: string;
   x: number;
   y: number;
 }
 
-export function BilingualView({ enScript, zhScript, alignmentMap }: Props) {
+type Level = 'beginner' | 'advanced';
+interface Explain {
+  definition?: string;
+  context?: string;
+  reading?: { label: string; url: string }[];
+}
+
+export function BilingualView({ enScript, zhScript, alignmentMap, slug = '' }: Props) {
   const [activeCard, setActiveCard] = useState<ActiveCard | null>(null);
+  const [level, setLevel] = useState<Level>('beginner');
+  const [data, setData] = useState<Explain | null>(null);
+  const [loading, setLoading] = useState(false);
   const enColRef = useRef<HTMLDivElement>(null);
   const glossaryApplied = useRef(false);
 
@@ -53,19 +65,25 @@ export function BilingualView({ enScript, zhScript, alignmentMap }: Props) {
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       const target = e.target as HTMLElement;
+      // Only handle glosses inside this component's EN column so we don't
+      // collide with the article's own (.prose) glossary handler.
       const gloss = target.closest('.gloss') as HTMLElement | null;
-      if (gloss) {
+      if (gloss && enColRef.current?.contains(gloss)) {
         const rect = gloss.getBoundingClientRect();
         const term = gloss.dataset.term ?? gloss.textContent?.toLowerCase() ?? '';
+        const context = (gloss.closest('p, li, blockquote')?.textContent ?? '').slice(0, 400);
+        setLevel('beginner');
+        setData(null);
         setActiveCard({
           term,
-          x: Math.min(rect.left, window.innerWidth - 320),
-          y: Math.min(rect.bottom + 8, window.innerHeight - 160),
+          context,
+          x: Math.min(rect.left, window.innerWidth - 332),
+          y: Math.min(rect.bottom + 8, window.innerHeight - 240),
         });
         e.stopPropagation();
         return;
       }
-      setActiveCard(null);
+      if (!target.closest('.gloss-card')) setActiveCard(null);
     }
 
     function handleKeydown(e: KeyboardEvent) {
@@ -79,6 +97,23 @@ export function BilingualView({ enScript, zhScript, alignmentMap }: Props) {
       document.removeEventListener('keydown', handleKeydown);
     };
   }, []);
+
+  // Fetch explanation whenever the active term or level changes.
+  useEffect(() => {
+    if (!activeCard) return;
+    let cancelled = false;
+    setLoading(true);
+    const seed = findDefaultGlossaryEntry(activeCard.term);
+    fetch('/api/glossary/explain', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ term: activeCard.term, slug, lang: 'en', level, context: activeCard.context, seed }),
+    })
+      .then(res => res.json())
+      .then((res: Explain) => { if (!cancelled) { setData(res); setLoading(false); } })
+      .catch(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [activeCard, level, slug]);
 
   function handleEnHover(idx: number) {
     document.querySelectorAll<HTMLElement>('.para-card.zh-highlight').forEach(el =>
@@ -94,8 +129,6 @@ export function BilingualView({ enScript, zhScript, alignmentMap }: Props) {
       el.classList.remove('zh-highlight')
     );
   }
-
-  const activeEntry = activeCard ? glossary[activeCard.term] : null;
 
   return (
     <div className="bilingual-cols">
@@ -127,17 +160,30 @@ export function BilingualView({ enScript, zhScript, alignmentMap }: Props) {
         </div>
       </div>
 
-      {activeCard && activeEntry && (
+      {activeCard && (
         <div
           className="gloss-card"
           style={{ position: 'fixed', top: activeCard.y, left: activeCard.x }}
           onClick={e => e.stopPropagation()}
         >
-          <p className="gloss-card-term">{activeCard.term}</p>
-          <p className="gloss-card-zh">{activeEntry.zh}</p>
-          {activeEntry.context && (
-            <p className="gloss-card-context">{activeEntry.context}</p>
-          )}
+          <div className="gloss-card-head">
+            <span className="gloss-card-term">{activeCard.term}</span>
+            <div className="gloss-card-levels">
+              <button type="button" className={level === 'beginner' ? 'active' : ''} onClick={() => setLevel('beginner')}>Basic</button>
+              <button type="button" className={level === 'advanced' ? 'active' : ''} onClick={() => setLevel('advanced')}>Deep</button>
+            </div>
+          </div>
+          <div className="gloss-card-body">
+            <p className="gloss-card-def">{loading || !data ? 'Loading…' : data.definition}</p>
+            {data?.context && <p className="gloss-card-context">{data.context}</p>}
+            {data?.reading && data.reading.length > 0 && (
+              <div className="gloss-card-reading">
+                {data.reading.map((link, i) => (
+                  <a key={i} href={link.url}>{link.label}</a>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

@@ -57,6 +57,7 @@ const topics = [
             </div>
             <PostCard
               id={featuredPost.id}
+              series={featuredPost.data.series}
               title={featuredPost.data.title}
               date={featuredPost.data.date}
               category={featuredPost.data.category}
@@ -104,6 +105,7 @@ const topics = [
           {feedPosts.map((post) => (
             <PostCard
               id={post.id}
+              series={post.data.series}
               title={post.data.title}
               date={post.data.date}
               category={post.data.category}

@@ -153,6 +153,7 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
     {enScript && zhScript && (
       <BilingualView
         client:load
+        slug={post.id}
         enScript={enScript}
         zhScript={zhScript}
         alignmentMap={alignmentMap}

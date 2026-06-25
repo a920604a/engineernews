@@ -1,0 +1,55 @@
+Here's the listening script.
+
+---
+
+The biggest money pit in agent workflows isn't the model you're calling. It's context bloat. Think about it — one `grep` command comes back with a hundred results, one incident log, one retrieval from your vector database, and suddenly you've crammed tens of thousands of tokens into a prompt where maybe a tenth of it actually carries any signal. The rest is noise you're paying for, round after round.
+
+There's a tool called Headroom built to fix exactly that. The idea is simple but the execution is interesting: before your request ever reaches OpenAI or Anthropic, Headroom strips out the noise — locally, on your machine — cutting context by sixty to ninety-five percent, and it claims accuracy stays basically flat.
+
+Now, I didn't want to just give you the feature tour. I went and read the actual code, because I wanted to understand how it decides what to throw away and what to keep. And there's one design in there I almost never see done this maturely — plus one spot where the documentation is writing checks the code can't yet cash. Let's get into both.
+
+So here's the core idea, and it's the easiest thing to get wrong about Headroom. You might assume it "rewrites your content into a summary." It does not. It rewrites nothing. Instead, for every single character, it produces a true-or-false mask — keep, or compressible. And it only ever touches the parts marked compressible.
+
+The flow goes like this. Raw content comes in. A detector classifies what type of content it is. A handler builds a structural mask — the skeleton that must be preserved. Then an entropy mask gets layered on top. And for each span, it asks one question: is this structural? If yes, keep it word for word. If no, hand it to the compression model. Both paths merge back into one result.
+
+And that split is the whole point. Structure is decided by deterministic rules. Meaning gets handed to the machine learning model. So your JSON keys, your function signatures — the skeletons — those are preserved one hundred percent by hard-coded rules and never get mangled by a model. Only the leftover prose goes through the ML side. And if the model can't compress it, or isn't even installed, it gracefully falls back to plain truncation. What that design really does is box the risk of lossy compression into a safe little corner where it can't hurt you.
+
+Headroom starts by figuring out what kind of content it's looking at. The main tool there is Google's Magika — a local deep-learning classifier, runs in about five milliseconds, recognizes over a hundred file types. Headroom boils all that down into seven buckets: JSON, code, logs, diffs, markdown, plain text, and unknown. No Magika installed? It falls back to pattern matching. And here's a nice touch — if its confidence drops below fifty percent, it just gives up and does nothing. It refuses to gamble on compressing something it doesn't understand.
+
+Then it routes to the right handler. Let's talk about the JSON one, and I'm reading from the actual handler code here, not the README. Every key is kept — all of them — so the language model can still see which fields exist and navigate the structure. The structural punctuation, the braces and brackets and colons, all kept. Numbers stay if they're ten digits or shorter. String values stay only if they're twenty characters or less, or if they're high-entropy — meaning no spaces and a randomness score above point eight-five, which is how it catches things like UUIDs and hashes. And arrays? It keeps the first three entries in full, then compresses aggressively from the fourth onward.
+
+There's a clever wrinkle in there. That entropy score? Normal English prose also scores above point eight-five. So if you only checked entropy, you'd mistake a regular sentence for some critical identifier and pointlessly preserve it. The fix is that "no spaces" gate. Sentences have spaces, hashes don't. Simple, but it's the kind of detail that tells you someone actually thought this through.
+
+The code handler is similar in spirit but uses an abstract syntax tree. Primary path is tree-sitter, with a regex fallback, covering Python, JavaScript, TypeScript, Go, Rust, Java, even Perl. What does it keep? Imports, function and method signatures, class and struct and interface definitions, type declarations, decorators. What does it compress? The function bodies, the comments, the whitespace. So after compression, you still see the file's entire API shape — every signature intact — and only the implementation guts are folded away. Which, honestly, is exactly what a language model needs to understand a file.
+
+Okay. Now the part I'd actually steal. If I could show you only one file in this whole project, it'd be the Rust side — a file called compression policy. Because it asks a smarter question than everyone else. Not "can we compress this?" but "does compressing this actually pay off, once you account for the cache?"
+
+Here's what most compression tools completely miss. On providers with prompt caching — KV caching — blind compression can cost you more, not less. Why? Because if you mutate a cached prefix, you invalidate the entire cache downstream of that edit. And rewriting those tokens costs one-point-two-five times the price of a plain input token. So you save a few tokens up front and pay a tax on everything after.
+
+Headroom turns this into an actual economic formula. I won't read you the algebra, but the moving pieces are intuitive. Writing a cached token costs one-point-two-five. Reading a cached token costs only one-tenth. Then it weighs how many tokens you're removing, how many times you expect to read this context again, and how big the suffix is that gets invalidated by your edit. Plug it all in, and you get a net gain — positive or negative.
+
+Let me give you the two scenarios from its own tests, because they make it click. Scenario one: you've got a fifty-thousand-token suffix, and you shave off a measly two thousand tokens, and you'll read it ten times. The math comes out massively negative — you lose around fifty-five thousand. Not worth it. Scenario two: a smaller ten-thousand-token suffix, but now you shave off fifty thousand tokens, read it three times. That comes out positive. Profitable.
+
+The break-even point is the key insight. A tiny shave would need something like two hundred eighty-seven reads before it pays for itself — which basically means never. A big shave pays off after just a couple of turns. So Headroom only pulls the trigger when the gain is genuinely positive.
+
+And it goes one level deeper. It tiers the policy by how you're billed. If you're a subscription user, it turns the cache aligner off entirely — because what you're paying for is prompt-cache stability, and you simply can't let compression go mutating cached prefixes and scrambling the cache hash. That idea — compression bowing to billing reality — is a level of maturity most open-source compressors never even approach.
+
+Now, the obvious fear with aggressive compression: what if you threw away the one thing that mattered? Headroom's answer is something it calls CCR — Compress, Cache, Retrieve. After compression, the originals stick around in a local store. And the language model is handed a retrieve tool. So when the model senses it's missing something, it just asks for the original on demand.
+
+That move quietly demotes "lossy compression" down to "lazy loading." By default you save tokens with the compressed version, and you only pay for one tool round-trip on the rare occasion the model actually needs the full content. That's also the real safety net behind the whole "aggressive compression without losing accuracy" claim.
+
+Quick word on the architecture overall. There are four ways to plug it in: as a library you call inline, as a proxy running on localhost that needs zero code changes, as an agent wrapper, or as an MCP server. Any OpenAI-compatible client works through the proxy. And the text model doing the semantic work — it's called Kompress — is extractive, not generative. It's built on ModernBERT with a LoRA adapter, around a hundred and fifty million parameters, and all it does is predict keep-or-drop for each token. It never generates a summary. Which means, crucially, it physically cannot hallucinate content that wasn't in your original. It can only select from what's already there.
+
+Alright, time for the honest caveat, because I promised you one. After reading the code, I found a real gap. The README and the docs keep stressing that JSON compression does "statistical analysis to keep errors, anomalies, and boundaries." Sounds impressive. But in the actual JSON handler? There's no error detection. No anomaly detection. No statistical sampling. It keeps all the keys, the first three array entries, and short or high-entropy values. That's it. The only thing remotely "statistical" is the entropy scoring, and that exists to catch identifiers, not anomalies.
+
+Now, I don't think they're lying. This is the classic fingerprint of an early-stage, single-author project — plenty of fields "plumbed but not yet consumed." The README is describing the vision. The code is the current reality. And the lesson there is bigger than this one tool: whenever you're evaluating a compression library, don't make architecture decisions based on capability claims. Go read what the code actually does today.
+
+One more reality check. Those headline ratios — ninety-two percent, eighty-seven percent — those are cherry-picked from high-redundancy situations like search results and logs. The ML model on ordinary prose? It defaults to around eighteen percent. So don't go expecting ninety-plus on a normal conversation. It won't happen.
+
+So let me leave you with the three things worth taking away. First, mask-based extraction — the discipline of letting rules guarantee structure and only sending the fuzzy, semantic stuff to a model. That keeps your skeletons safe.
+
+Second, and this is the one I'd genuinely borrow tomorrow: cache-mutation economics. Deciding whether to compress using a cost model instead of compressing blindly. If you're leaning on prompt caching with Anthropic or OpenAI, that single formula will change how you think about trimming context. Sometimes the cheapest move is to leave the bloat alone.
+
+And third, CCR reversibility — turning lossy compression into lazy loading, so a wrong guess costs you one tool call instead of a wrong answer.
+
+Stay skeptical too: the docs run ahead of the code, the ratios are cherry-picked, and it's an early project carried by one person. If you're on a single provider at modest volume, your platform's native context management is probably enough. But if you're running multi-agent, cross-provider dev flows every day and feeling that token bill — Headroom is worth one careful read. Even if you never adopt it, that cache-mutation formula alone earns its keep.
