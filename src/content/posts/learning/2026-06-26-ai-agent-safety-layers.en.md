@@ -10,6 +10,7 @@ series:
 tldr: "A breakdown of the defense-in-depth used by Claude Code, Codex, and others: rule-based keyword matching, classifiers, input/output scanning, execution sandboxes, cross-session behavioral monitoring, and the role of system prompts and skills."
 description: "An in-depth look at how AI agents design safety layers, mapped to Anthropic's Constitutional Classifiers, Claude Code sandboxing, and OpenAI Codex, plus the difference between prompt injection and jailbreak."
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260626_143550_314926.mp3"
 ---
 
 When an LLM is just a chat box, the worst case is that it says something wrong. But once it becomes an agent—able to read files, run a shell, make HTTP requests, and edit your code—a single successful manipulation can leak an SSH key, POST data to an attacker's server, or plant a backdoor in your repo. Safety is therefore not "add one filter." It means placing a layer at each of four different altitudes: when the request arrives, during model inference, during tool execution, and across long-term account behavior. This post breaks down the defense-in-depth actually used by Claude Code, OpenAI Codex, and Anthropic's safety team—what each layer catches, and what it misses.
