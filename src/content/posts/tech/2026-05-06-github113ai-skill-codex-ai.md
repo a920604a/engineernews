@@ -4,9 +4,6 @@ date: 2026-05-06T02:44:07.467Z
 category: tech
 tags: ["github", "open-source", "ai", "warp", "codex", "agent-skills"]
 lang: zh-TW
-series:
-  name: "GitHub 開源週報"
-  order: 113
 tldr: "2026 年 5 月初 GitHub 最熱的三件事：Warp 終端機開源衝上 37K Stars、GitHub Copilot 推出 Agent Skills 開放標準、Codex CLI 正式 GA——AI 開發工具鏈的整合格局正在成形。"
 description: "本週 GitHub 熱門開源專案導覽：Warp 終端機開源、GitHub Copilot Agent Skills 開放標準、Codex CLI GA，以及一站式滲透測試工具箱。"
 type: listicle

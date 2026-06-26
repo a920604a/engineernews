@@ -24,13 +24,6 @@ export interface SeriesSummary {
  * description (see `getSeriesMeta`).
  */
 const SERIES_DEFINITIONS: Record<string, SeriesDefinition> = {
-  'GitHub 開源週報': {
-    slug: 'github-trending',
-    descriptions: {
-      'zh-TW': '每週精選 GitHub 上最值得關注的開源專案：AI 工具、開發框架與正在成形的新趨勢。',
-      en: 'Weekly picks of the most noteworthy open-source projects on GitHub — AI tools, dev frameworks, and emerging trends.',
-    },
-  },
   'Kafka 為什麼這麼快': {
     slug: 'why-kafka-is-fast',
     descriptions: {
@@ -43,13 +36,6 @@ const SERIES_DEFINITIONS: Record<string, SeriesDefinition> = {
     descriptions: {
       'zh-TW': '用 mock 面試的方式，從需求澄清、容量估算到架構取捨，實戰演練系統設計。',
       en: 'Mock-interview walkthroughs of system design — from requirements and capacity estimation to architecture tradeoffs.',
-    },
-  },
-  'Stanford 課程導讀': {
-    slug: 'stanford-courses',
-    descriptions: {
-      'zh-TW': '三門 Stanford AI 課程的完整導讀：從 Beyond LLM 的概念地圖、CS146S 的 vibe coding，到 CS153 的前沿基礎設施。',
-      en: 'Guides to three Stanford AI courses — from the Beyond LLM concept map and CS146S vibe coding to CS153 frontier systems.',
     },
   },
 };

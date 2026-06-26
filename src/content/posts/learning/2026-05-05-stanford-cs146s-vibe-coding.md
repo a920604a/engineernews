@@ -4,9 +4,6 @@ date: 2026-05-05T10:00:00.000Z
 category: learning
 tags: ["ai", "llm", "education", "vibe-coding"]
 lang: zh-TW
-series:
-  name: "Stanford 課程導讀"
-  order: 2
 tldr: "Stanford CS146S 是第一門系統性教 vibe coding 的課程，從 LLM 原理、Coding Agent、MCP、AI IDE 到 Post-Deployment，10 週橫跨完整開發生命週期，有中文版 repo 和逐週學習記錄影片可跟。"
 description: "Stanford CS146S『The Modern Software Developer』完整導讀：課程架構、10 週大綱、程式碼範例、工具操作，以及中文社群資源整理。"
 draft: false

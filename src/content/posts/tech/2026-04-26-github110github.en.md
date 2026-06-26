@@ -4,9 +4,6 @@ date: 2026-04-26T18:59:42.604Z
 category: tech
 tags: ["github", "open-source", "ai", "open-interpreter", "ollama"]
 lang: en
-series:
-  name: "GitHub 開源週報"
-  order: 110
 tldr: "Nearly all of GitHub's fastest-growing projects in 2023-2024 are AI tools. Open Interpreter hit tens of thousands of stars within days of going viral; Ollama topped the 2024 ROSS Index with 261% star growth. The pattern: developers want cloud-AI capabilities running locally on their own machines."
 description: "A look at the fastest-growing open-source projects on GitHub in 2023-2024, focusing on Open Interpreter, Ollama, and the AI tool wave that is reshaping what developers expect from local software."
 type: explainer

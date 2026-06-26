@@ -4,9 +4,6 @@ date: 2026-04-26T18:59:42.604Z
 category: tech
 tags: ["github", "open-source", "ai", "open-interpreter", "ollama"]
 lang: zh-TW
-series:
-  name: "GitHub 開源週報"
-  order: 110
 tldr: "2023-2024 年 GitHub 增長最快的幾個專案幾乎都是 AI 工具：Open Interpreter 靠「讓 LLM 在本機直接跑程式碼」這個概念在數天內衝破萬星，Ollama 以 261% 成長奪 2024 年 ROSS Index 冠軍。這波浪潮說明開發者社群對本地 AI 工具的強烈渴望。"
 description: "回顧 2023-2024 年 GitHub 增長最快的開源專案，聚焦 Open Interpreter、Ollama 等 AI 工具的崛起，分析是什麼讓它們引爆開發者社群。"
 type: explainer

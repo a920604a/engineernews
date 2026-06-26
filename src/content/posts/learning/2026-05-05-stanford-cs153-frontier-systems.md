@@ -4,9 +4,6 @@ date: 2026-05-05T10:00:00.000Z
 category: learning
 tags: ["ai", "education", "llm"]
 lang: zh-TW
-series:
-  name: "Stanford 課程導讀"
-  order: 3
 description: "Stanford CS153 Frontier Systems 深度解析：四大瓶頸框架、Compute 商品化問題、RL 的邊界、語音與視覺 AI 的崛起路徑，以及 Anthropic 的對齊哲學。"
 tldr: "CS153 的核心命題：AI 基礎設施正在全棧重寫，而四大瓶頸（Context、Compute、Capital、Culture）決定了誰能跑在最前面。這篇整理課程的核心框架與各場演講的實質洞察。"
 draft: false
