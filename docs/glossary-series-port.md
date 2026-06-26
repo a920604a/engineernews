@@ -28,10 +28,35 @@
 - **PostCard 系列徽章** — 文章卡片若屬於系列會顯示「📚 系列名」連到 `/series/<slug>`；已串進 index / categories / tags（zh+en）listing。
 - **About 更多作品** — 4 主打外，加 live-english-tutor / AMD / monitoring / DaoDao（zh+en）。
 
-## 🟡 仍未做（需你決定，非 bug）
-- **更多 series 分組**：AI 程式設計實戰/LangGraph 課（有「第三課」但找不齊 1、2）、Stanford 課程、GitHub 週報其他期數 — 我不亂湊，要你確認歸屬。
-- **其他競品 skills**（獨立大工程，未動）：post-verify、tag-audit、post-translate、deep-research、deploy-preflight。
-- **explain API 的 AI 路徑**只在沙箱用 curl 測到 local fallback；AI 真實輸出要你在有 `wrangler login` 的環境用 `make dev` 驗。
+## ✅ 美化（已完成、過 build、已 push）
+- about / series（index+詳情）/ tags（index+詳情）中英共 10 檔：漸層 hero、series 編號卡+文章預覽、series 詳情時間軸 rail、about 經歷圓點時間軸+作品卡光條+年份 pill、tags 依頻率分級的標籤雲。全用既有主題 token。
+- 已 commit（`47f26dd` 收尾、`05a10cd` 美化）並與 `origin/main` 同步。
+
+---
+
+## ⛔ 未完成清單（2026-06-26 更新）
+
+### A. 還沒實際驗證（唯一可能藏 bug）
+- [ ] **explain API 的 AI 路徑沒跑過** — 只用 curl 測到 local fallback；真正 Workers AI 生成的入門/進階分層沒驗。對 qwen `stream:false` 回傳格式 `{response}` 是**假設**。→ 部署後開站、或 `wrangler login` + `make dev` 點 legacy 詞驗。
+- [ ] **沒做瀏覽器煙霧測試** — 詞卡、入門/進階切換、series/about/tags 視覺都只過 build。
+
+### B. 部署 / 維運
+- [ ] **prod D1 migration**：`make d1-migrate`（套 `0010` 到 remote），不然線上 glossary 查詢統計寫不進去（卡片仍正常）。
+- [ ] **確認 deploy 成功**（GitHub Actions deploy.yml；push 後應已觸發）。
+
+### C. 需要你決定（非 bug）
+- [x] **更多 series 分組** — ✅ 新增 **Stanford 課程導讀**（3 篇：Beyond LLM / CS146S / CS153，slug `stanford-courses`）。GitHub 週報只有 110/111/113/115/117（112/114/116 不存在，已全標）。LangGraph 只有「第三課」、湊不成系列 → **不做**。
+- [x] **frontmatter `glossary` 已實際使用** — ✅ Kafka part-1（zh+en）加了 `Zero-Copy`、`Page Cache` 兩個單篇專屬詞條（雙語 + advanced），feature 已端到端驗過（build 確認 data island 帶入詞條）。
+
+### D. 完全沒動（獨立大工程，你之前提過）
+- [ ] **post-verify** skill — 發文前事實查證（抓爬蟲 LLM 寫錯的版本號/數據）。
+- [ ] **tag-audit** skill — 掃 316 篇找同義分裂/太籠統/錯字 tag。
+- [ ] **post-translate** skill — 補約 175 篇缺的英文版。
+- [ ] deep-research、deploy-preflight skill。
+
+### 刻意保留（不算未完成）
+- `src/data/glossary.ts` 當 legacy 資料源沒整併（terms.ts 疊在上面）。
+- `BilingualView` 已升級為 API 卡片（此項已不再是 loose end）。
 
 ---
 

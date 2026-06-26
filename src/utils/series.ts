@@ -45,6 +45,13 @@ const SERIES_DEFINITIONS: Record<string, SeriesDefinition> = {
       en: 'Mock-interview walkthroughs of system design — from requirements and capacity estimation to architecture tradeoffs.',
     },
   },
+  'Stanford 課程導讀': {
+    slug: 'stanford-courses',
+    descriptions: {
+      'zh-TW': '三門 Stanford AI 課程的完整導讀：從 Beyond LLM 的概念地圖、CS146S 的 vibe coding，到 CS153 的前沿基礎設施。',
+      en: 'Guides to three Stanford AI courses — from the Beyond LLM concept map and CS146S vibe coding to CS153 frontier systems.',
+    },
+  },
 };
 
 function slugifySeriesName(name: string): string {

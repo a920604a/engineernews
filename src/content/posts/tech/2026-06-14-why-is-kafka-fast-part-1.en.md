@@ -7,6 +7,21 @@ lang: en
 series:
   name: "Kafka 為什麼這麼快"
   order: 1
+glossary:
+  - term: "Zero-Copy"
+    aliases: ["zero copy", "零拷貝"]
+    zh: "零拷貝"
+    definition: "讓資料從磁碟直接送到網路卡，不經過 CPU 在使用者空間與核心空間之間反覆複製。"
+    advanced: "透過 sendfile() syscall 讓資料在核心空間內從 page cache 直達 socket buffer，避免 user-space 來回搬運；Kafka 用它把 log segment 直接送給 consumer。"
+    definition_en: "Sends data straight from disk to the network card without the CPU copying it between user space and kernel space."
+    advanced_en: "Via the sendfile() syscall, data moves within kernel space from the page cache to the socket buffer, skipping user-space round-trips; Kafka uses it to ship log segments to consumers."
+  - term: "Page Cache"
+    aliases: ["page cache", "頁快取"]
+    zh: "頁快取"
+    definition: "作業系統把最近讀寫過的磁碟資料暫存在記憶體裡，下次存取直接命中記憶體、不用再碰磁碟。"
+    advanced: "由 OS 核心管理；Kafka 刻意把快取交給 page cache 而非自建 JVM heap 快取，避免 GC 壓力並讓多個 consumer 共享同一份熱資料。"
+    definition_en: "The OS keeps recently accessed disk data in RAM so the next read hits memory instead of disk."
+    advanced_en: "Kernel-managed; Kafka deliberately relies on the page cache instead of a JVM-heap cache to avoid GC pressure and let consumers share hot data."
 tldr: "Kafka's speed comes from two counterintuitive design choices: deliberately writing to disk (not memory) but using sequential I/O, and Zero-Copy to move data from disk to NIC without CPU involvement."
 description: "Deep dive into Kafka's performance fundamentals: why sequential I/O beats random memory access, how Zero-Copy via sendfile() eliminates data movement overhead, and how Page Cache makes disk behave like memory."
 type: explainer

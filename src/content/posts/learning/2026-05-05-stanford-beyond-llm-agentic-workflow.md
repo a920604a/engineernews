@@ -4,6 +4,9 @@ date: 2026-05-05
 category: learning
 tags: [ai, llm]
 lang: zh-TW
+series:
+  name: "Stanford 課程導讀"
+  order: 1
 tldr: "Stanford「Beyond LLM」課程的核心地圖：為什麼 base model 不夠用、三種強化單一 LLM 的工具（Prompt Engineering / Fine-Tuning / RAG），以及如何設計 Agentic Workflow 與 Multi-Agent 系統。"
 description: "Gary Chen 整理的 Stanford Beyond LLM 課程筆記，涵蓋 LLM 限制、Prompt Engineering、Fine-Tuning、RAG、Agentic Workflow、評估系統與 Multi-Agent 架構。"
 draft: false
