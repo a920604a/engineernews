@@ -4,6 +4,9 @@ date: 2026-04-24T18:57:04.255Z
 category: tech
 tags: ["harness-engineering", "llm", "ai", "machine-learning", "deep-learning"]
 lang: zh-TW
+series:
+  name: "AI Agent 實戰"
+  order: 2
 tldr: "Harness Engineering 如何引導語言模型提高智能"
 description: "Harness Engineering 如何引導語言模型提高智能"
 type: explainer

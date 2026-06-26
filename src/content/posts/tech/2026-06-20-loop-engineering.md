@@ -4,6 +4,9 @@ date: 2026-06-20
 category: tech
 tags: ["loop-engineering", "ai-agent", "claude-code", "harness-engineering", "automation"]
 lang: zh-TW
+series:
+  name: "AI Agent 實戰"
+  order: 4
 type: deep-dive
 tldr: "Loop Engineering 是把『下 Prompt 的你』換成一個系統：設計自動化的回饋迴圈，讓 Agent 在無人監督下持續、正確地工作"
 description: "從 Boris Cherny 的 daily practice、Addy Osmani 的命名、到 Blake Crosley 的核心洞見——Loop Engineering 的五大構建塊、驗證成本瓶頸、以及今天就能開始的三步驟"

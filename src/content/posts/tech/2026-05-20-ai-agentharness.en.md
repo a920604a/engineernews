@@ -4,6 +4,9 @@ date: 2026-05-20T11:51:47.353Z
 category: tech
 tags: ["ai-agent", "harness-engineering", "llm", "system-design", "ai-engineering"]
 lang: en
+series:
+  name: "AI Agent 實戰"
+  order: 1
 tldr: "AI Agents let models perceive environments and act autonomously. Harness Engineering is the discipline that makes them reliable — the scaffolding that turns a smart-but-unpredictable model into a deployable engineering system."
 description: "A clear explainer on how AI Agents work and what Harness Engineering actually means — the most important AI engineering concept in 2026."
 type: explainer

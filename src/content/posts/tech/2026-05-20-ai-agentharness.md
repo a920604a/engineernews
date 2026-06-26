@@ -4,6 +4,9 @@ date: 2026-05-20T11:51:47.353Z
 category: tech
 tags: ["ai-agent", "harness-engineering", "llm", "system-design", "ai-engineering"]
 lang: zh-TW
+series:
+  name: "AI Agent 實戰"
+  order: 1
 tldr: "AI Agent 是讓模型能持續感知環境、使用工具、自主完成任務的系統；Harness Engineering 則是讓 Agent 可靠運作的工程學科——設計環境、限制、回饋迴圈，讓 AI 從「聰明但不穩定」變成「可部署的工程系統」。"
 description: "用一篇文章搞懂 AI Agent 的運作機制，以及 2026 年最熱的 AI 工程概念 Harness Engineering 到底在說什麼。"
 type: explainer

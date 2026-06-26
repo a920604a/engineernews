@@ -38,6 +38,27 @@ const SERIES_DEFINITIONS: Record<string, SeriesDefinition> = {
       en: 'Mock-interview walkthroughs of system design — from requirements and capacity estimation to architecture tradeoffs.',
     },
   },
+  'AI Agent 實戰': {
+    slug: 'ai-agent-engineering',
+    descriptions: {
+      'zh-TW': '精選導讀（非連載）：把站內拆解 AI Agent 工程的深度文串成一條閱讀路徑——從 harness、agent loop 到迴圈設計與成本控制。',
+      en: 'A curated reading path (not a serialized course): deep-dives on AI agent engineering — from harness and the agent loop to loop design and cost control.',
+    },
+  },
+  'RAG 系統架構': {
+    slug: 'rag-architecture',
+    descriptions: {
+      'zh-TW': '精選導讀（非連載）：重新思考 RAG、向量 vs 推理檢索，到上下文失效與壓縮的系統設計。',
+      en: 'A curated reading path (not a serialized course): rethinking RAG, vector vs reasoning retrieval, and the context-rot / compression problem.',
+    },
+  },
+  'Claude Code 自動化指南': {
+    slug: 'claude-code-automation',
+    descriptions: {
+      'zh-TW': '精選導讀（非連載）：從跑通 Claude Code、對話即文件工作流，到 MCP 整合與 skills/tools 載入機制。',
+      en: 'A curated reading path (not a serialized course): from getting Claude Code running and the dialogue-as-doc workflow to MCP integration and skills/tools loading.',
+    },
+  },
 };
 
 function slugifySeriesName(name: string): string {

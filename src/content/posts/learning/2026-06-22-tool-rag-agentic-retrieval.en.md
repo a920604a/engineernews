@@ -4,6 +4,9 @@ date: "2026-06-22T10:30:00.000Z"
 category: "learning"
 tags: ["ai", "llm", "ai-agent", "rag"]
 lang: "en"
+series:
+  name: "Claude Code 自動化指南"
+  order: 4
 tldr: "When an agent loads tools on demand, it's essentially applying RAG's 'retrieve-then-inject' pattern to tool schemas — the only difference is the retriever is the LLM's own reasoning instead of vector similarity."
 description: "Starting from Claude Code's deferred tools and Skills mechanism, this explains how agents use lazy loading to save context, and clarifies how it differs from vector RAG."
 type: "explainer"

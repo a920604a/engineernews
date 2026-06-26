@@ -4,6 +4,9 @@ date: 2026-06-26
 category: tech
 tags: ["ai", "llm", "ai-agent"]
 lang: en
+series:
+  name: "RAG 系統架構"
+  order: 4
 type: deep-dive
 github: "https://github.com/headroomlabs-ai/headroom"
 tldr: "Headroom compresses tool outputs, logs, and RAG chunks by 60–95% locally, before the request reaches your provider. The part worth stealing isn't the ratio — it's how it decides whether to compress at all using 'mask extraction + cache-mutation economics' — plus a reminder that its docs run ahead of its code."

@@ -4,6 +4,9 @@ date: 2026-06-26
 category: tech
 tags: ["ai", "llm", "ai-agent"]
 lang: zh-TW
+series:
+  name: "RAG 系統架構"
+  order: 4
 type: deep-dive
 github: "https://github.com/headroomlabs-ai/headroom"
 tldr: "Headroom 在 LLM 請求送到供應商前，於本地把 tool 輸出、log、RAG chunk 壓掉 60–95% 的 token。真正值得學的不是壓縮率，而是它用『mask 抽取 + 快取變異經濟學』決定該不該壓——以及一個文件超前實作的提醒。"

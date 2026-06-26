@@ -4,6 +4,9 @@ date: 2026-06-20
 category: tech
 tags: ["loop-engineering", "ai-agent", "claude-code", "harness-engineering", "automation"]
 lang: en
+series:
+  name: "AI Agent 實戰"
+  order: 4
 type: deep-dive
 tldr: "Loop Engineering replaces you as the person who prompts the agent. You design the system that does it instead."
 description: "From Boris Cherny's daily practice to Addy Osmani's naming to Blake Crosley's core insight — the five building blocks of Loop Engineering, the verification bottleneck, and three things you can start today."

@@ -4,6 +4,9 @@ date: 2026-04-21T08:03:40+08:00
 category: learning
 tags: ["ai", "claude-code", "debugging", "writing-automation"]
 lang: zh-TW
+series:
+  name: "Claude Code 自動化指南"
+  order: 2
 description: "示範如何把工程對話與除錯歷程透過 Claude Code 自動整理為技術文章，包含 prompt 設計與常見調整技巧。"
 tldr: "把對話當成可寫成文章的材料：用結構化 prompt 與範本，讓 Claude Code 自動把 debugging thread 轉為可發佈的技術文章。"
 type: "case-study"

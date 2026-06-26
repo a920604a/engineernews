@@ -4,6 +4,9 @@ date: 2026-06-07T19:42:59.311Z
 category: tech
 tags: ["mcp", "claude-code", "ai", "developer-tools", "integration"]
 lang: en
+series:
+  name: "Claude Code 自動化指南"
+  order: 3
 tldr: "MCP (Model Context Protocol) is an open protocol designed by Anthropic that lets Claude Code call external tools and data sources through a standardized interface. Since its November 2024 release, it has rapidly become the de facto standard for AI agent tool integration, adopted by Cursor, Windsurf, and 40+ other editors."
 description: "A deep look at MCP (Model Context Protocol): how Anthropic designed this standard for connecting AI to external tools, Claude Code's MCP integration implementation details, how it differs from function calling, and how Tool Search solves MCP's context consumption problem."
 type: deep-dive

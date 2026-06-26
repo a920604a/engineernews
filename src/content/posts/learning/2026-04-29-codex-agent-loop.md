@@ -4,6 +4,9 @@ date: 2026-04-29T10:00:00.000Z
 category: learning
 tags: ["ai", "llm", "prompt-engineering"]
 lang: zh-TW
+series:
+  name: "AI Agent 實戰"
+  order: 3
 tldr: "OpenAI Michael Bolin 深入解析 Codex CLI 的 agent loop：從 prompt 組建、token 推理、工具執行，到 context window 管理與自動壓縮。"
 description: "深入了解 Codex CLI 的 agent loop 架構：prompt 結構、token 流動、工具執行循環、context 壓縮與 prompt cache 優化策略。"
 draft: false

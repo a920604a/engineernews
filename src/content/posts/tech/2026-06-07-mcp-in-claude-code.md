@@ -4,6 +4,9 @@ date: 2026-06-07T19:42:59.311Z
 category: tech
 tags: ["mcp", "claude-code", "ai", "developer-tools", "integration"]
 lang: zh-TW
+series:
+  name: "Claude Code 自動化指南"
+  order: 3
 tldr: "MCP（Model Context Protocol）是 Anthropic 設計的開放協定，讓 Claude Code 能夠透過標準化介面呼叫外部工具和資料來源。2024 年 11 月發布後迅速成為 AI 代理人工具整合的事實標準，被 Cursor、Windsurf 等 40+ 款編輯器採用。"
 description: "深入了解 MCP Model Context Protocol：Anthropic 如何設計這個讓 AI 連接外部工具的標準、Claude Code 的 MCP 整合實作細節、與 function calling 的差異，以及 Tool Search 如何解決 MCP 的 context 消耗問題。"
 type: deep-dive
