@@ -86,17 +86,10 @@ description: Convert a conversation, notes, experience, or GitHub project into a
    - 如果文章引用工具、框架、官方文件、論文、版本資訊、數據比較或外部說法，文末必須補 `## 參考資料`
    - `tech` / `learning` / `product` 類，以及帶有 `ai` / `policy` / `education` / `marketing` tag 的文章，預設要附參考資料
 
-6. **產生英文版（預設必做，雙語成對）**：
+6. **產生英文版（預設必做，雙語成對）—— 調用 `post-translate` skill**：
    - 本站是雙語站，每篇文章預設要有 zh-TW 與 English 兩份,成對存在
-   - 英文版檔名：`YYYY-MM-DD-<slug>.en.md`(slug 與中文版相同),放在同一個 category 目錄
-   - frontmatter 規則:
-     - `lang: "en"`
-     - `title` / `tldr` / `description` 翻成英文(自然英文,不要逐字直譯)
-     - `date` / `category` / `tags` / `type` / `github` / `url` 與中文版一致
-     - 英文版 frontmatter 的值習慣加雙引號(對齊既有 `.en.md` 檔)
-   - 正文翻成自然、道地的英文;Mermaid 圖中的中文標籤也要一併翻成英文
-   - 參考資料連結維持不變
-   - 例外:使用者明確說「只要中文」或文章屬於極短的 `life` / `creative` 隨筆時,可跳過並告知
+   - 對剛在步驟 5 寫好的 `YYYY-MM-DD-<slug>.md`,**調用 `post-translate` skill** 產生對應的 `.en.md`(同目錄、同 slug、`lang: "en"`)。翻譯規則(frontmatter 對齊、自然英文不逐字直譯、保留 Mermaid／code／連結、技術術語保留原文、`## 參考資料` → `## References`)由該 skill 統一維護,這裡不重複
+   - 例外:使用者明確說「只要中文」或文章屬於極短的 `life` / `creative` 隨筆時,可跳過並告知(此時下一步 glossary 偵測一併跳過,因為它只掃 `.en.md`)
 
 7. **偵測 glossary 術語候選（預設必做）**：
    本站雙語對照檢視會對「英文欄」自動標記術語、hover 顯示解釋（資料源 `src/data/glossary.ts`，比對英文小寫詞，見 `src/components/BilingualView.tsx` 的 `applyGlossary`）。寫完英文版後，從中挑出值得收錄的新術語：
@@ -105,9 +98,15 @@ description: Convert a conversation, notes, experience, or GitHub project into a
    - **去重**：先讀 `src/data/glossary.ts`，比對既有 key（不分大小寫），已存在的不要重複提
    - **必須真的出現在英文版內文**，否則 hover 永遠不會觸發
    - 每個候選產出三欄：`key`（文章中出現的英文詞，存小寫）、`zh`（繁中翻譯）、`context`（一句繁中情境說明，對齊既有寫法，約 20–40 字）
-   - 整理成表格，**留到下一步 review 一起給使用者勾選，先不要寫檔**
+   - 整理成表格，**留到後面的 review 步驟一起給使用者勾選，先不要寫檔**
 
-8. **請使用者 review**：展示中英兩份草稿、上一步的 glossary 術語候選表，並**評估是否歸入現有系列**：
+8. **事實查證（適當時必做）—— 調用 `post-verify` skill**：
+   - 對 `tech` / `learning` / `product` 類，或任何含具體**版本號、發布日期、定價、benchmark 數字、引用統計**的文章，**調用 `post-verify` skill** 對中文草稿做事實層查證
+   - 它只產出 ✅ Confirmed / ⚠️ Outdated / ❌ Contradicted / ❓ Unverifiable 的 verdict 報告（每項附來源 URL），**永不改檔**；把報告留到下一步 review 一併呈現，由使用者決定是否修正
+   - 為何必做：本站大量內容源自爬蟲 + LLM，最常自信地寫錯版本號／定價（尤其 Claude/Anthropic 相關），這層在 commit 前攔截
+   - 例外：`creative` / `life` 隨筆，或通篇無可查證的具體宣稱時跳過
+
+9. **請使用者 review**：展示中英兩份草稿、稍早偵測的 glossary 術語候選表、上一步的事實查證 verdict，並**評估是否歸入現有系列**：
    - 讀 `src/utils/series.ts` 的 `SERIES_DEFINITIONS`（目前系列清單），**只比對已存在的系列**
    - 判準（沿用站上的系列定義）：這篇是否**明顯屬於**某系列、照系列順序讀能**墊高那條路徑**——「同 tag」不算，要有遞進/同一條主線。符合才建議：「這篇像是 ⟨系列名⟩ 的一篇，建議 order = N，要加嗎？」
    - `order` 取該系列目前最大 order + 1（或依內容邏輯插入）
@@ -115,7 +114,7 @@ description: Convert a conversation, notes, experience, or GitHub project into a
    - **多數文章不屬於任何系列 → 不加才是常態**，寧缺勿濫
    - 一併詢問：是否修改草稿、哪些術語要收錄、**是否歸入系列**
 
-9. **確認後執行**：
+10. **確認後執行**：
    - **若使用者同意歸入系列**：在中英**兩份** frontmatter 的 `lang:` 行下方插入（`name` 必須與 `SERIES_DEFINITIONS` 的 key 一字不差）：
      ```yaml
      series:
@@ -130,7 +129,7 @@ description: Convert a conversation, notes, experience, or GitHub project into a
    git commit -m "post(<category>): <title summary>"
    ```
 
-10. **產生語音（TTS，預設必做）**：
+11. **產生語音（TTS，預設必做）**：
    - 用 Makefile 既有目標,**只需指定中文版檔案**——`tts-all.ts` 會自動一併處理同名的 `.en.md`(一次跑出中英兩個音檔):
      ```bash
      make tts-post FILE=src/content/posts/<category>/YYYY-MM-DD-<slug>.md
