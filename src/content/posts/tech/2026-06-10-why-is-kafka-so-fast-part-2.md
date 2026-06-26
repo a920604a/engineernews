@@ -2,7 +2,7 @@
 title: "Kafka 為什麼這麼快？（第二部分）：Partition、Replication 與 Consumer Group"
 date: 2026-06-10T03:37:03.200Z
 category: tech
-tags: ["Kafka", "效能優化", "系統設計", "架構", "分散式系統"]
+tags: ["kafka", "performance", "system-design", "architecture", "distributed-systems"]
 lang: zh-TW
 series:
   name: "Kafka 為什麼這麼快"

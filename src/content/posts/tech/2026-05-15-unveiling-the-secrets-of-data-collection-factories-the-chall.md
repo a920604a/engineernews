@@ -2,7 +2,7 @@
 title: "機器人資料採集工廠的真實挑戰：為什麼高品質訓練資料這麼難取得？"
 date: 2026-05-15T11:25:05.770Z
 category: tech
-tags: ["機器人", "資料採集", "具身智慧", "強化學習", "訓練資料", "製造業"]
+tags: ["robotics", "data-collection", "embodied-ai", "reinforcement-learning", "training-data", "manufacturing"]
 lang: zh-TW
 tldr: "打造具身智慧機器人最稀缺的不是算法也不是晶片，而是在真實物理環境中大規模採集到的高品質動作示範資料。"
 description: "深入解析機器人資料採集工廠的運作方式、瓶頸所在，以及為什麼具身 AI 的資料問題遠比語言模型複雜得多。"

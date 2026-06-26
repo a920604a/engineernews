@@ -2,7 +2,7 @@
 title: "我對 2025 年新款 Apple M4 產品線的看法"
 date: 2026-05-08T02:49:47.988Z
 category: tech
-tags: ["Apple", "M4", "MacBook Air", "Mac Studio", "Apple Intelligence"]
+tags: ["apple", "m4", "macbook-air", "mac-studio", "apple-intelligence"]
 lang: zh-TW
 tldr: "M4 MacBook Air 和 Mac Studio 是紮實的規格升級，但 Apple Intelligence 的 Siri 整合仍然讓人失望——硬體領先，軟體還在追。"
 description: "從工程師角度評析 2025 年 Apple M4 產品線：MacBook Air M4、Mac Studio M4 Max，以及 Apple Intelligence 的實際表現。"

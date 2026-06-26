@@ -2,7 +2,7 @@
 title: "從零開始學 Git 與 GitHub：版本控制的第一堂課"
 date: 2026-05-21T12:20:28.876Z
 category: learning
-tags: ["git", "github", "版本控制", "工具", "開發"]
+tags: ["git", "github", "version-control", "tools", "development"]
 lang: zh-TW
 tldr: "用白話解釋 Git 的核心概念，從初始化到分支合併，讓初學者真正看懂版本控制在做什麼。"
 description: "一篇給初學者的 Git + GitHub 入門指南，從安裝、建立倉庫、提交變更，到分支與合併，用實際操作帶你走過整個流程。"

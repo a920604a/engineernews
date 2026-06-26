@@ -2,7 +2,7 @@
 title: "Android Update Ecosystem in 2026: Which Phones Are Getting It Right"
 date: 2026-06-13T04:27:42.847Z
 category: tech
-tags: ["Android", "phone updates", "Pixel", "Samsung", "software support"]
+tags: ["android", "phone-updates", "pixel", "samsung", "software-support"]
 lang: en
 tldr: "Android's update ecosystem has meaningfully improved in 2025–2026: Pixel's 7-year commitment, Samsung Galaxy S25's faster One UI updates, and OnePlus's policy turnaround are changing the calculus for long-term device ownership."
 description: "Mid-2026 Android software update landscape: Pixel's long-term support commitment, Samsung One UI update cadence improvements, OnePlus policy changes, and what this means for Android developers."

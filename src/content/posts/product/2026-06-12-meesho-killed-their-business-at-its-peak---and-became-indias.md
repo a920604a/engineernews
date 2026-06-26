@@ -2,7 +2,7 @@
 title: "Meesho 如何在巔峰時主動殺死自己的商業模式，然後成為印度第一大電商"
 date: 2026-06-12T12:23:43.990Z
 category: product
-tags: ["商業模式", "產品策略", "電商", "創業", "印度市場", "轉型"]
+tags: ["business-model", "product-strategy", "e-commerce", "startup", "india-market", "transformation"]
 lang: zh-TW
 tldr: "Meesho 在 2022 年主動放棄社群電商的佣金模式（當時他們每月已有數千萬訂單），轉型為 0% 佣金的直接電商平台，用虧損換市場，最終拿下印度 29–31% 的電商市場份額。"
 description: "Meesho 的產品轉型案例：從 WhatsApp 社群轉售起家，到主動放棄佣金收入、用 0% 佣金策略衝規模，最終在 Flipkart 和 Amazon 主導的市場拿下最大份額。決策邏輯、技術挑戰和關鍵數字完整拆解。"

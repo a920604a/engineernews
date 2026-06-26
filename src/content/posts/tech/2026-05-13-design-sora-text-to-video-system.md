@@ -2,7 +2,7 @@
 title: "設計一個 Sora 等級的文字轉視訊系統"
 date: 2026-05-13T02:56:25.977Z
 category: tech
-tags: ["Sora", "文字轉視訊", "擴散模型", "Transformer", "AI生成", "系統設計"]
+tags: ["sora", "text-to-video", "diffusion-model", "transformer", "ai-generation", "system-design"]
 lang: zh-TW
 tldr: "Sora 的核心架構是 Diffusion Transformer（DiT）：把影片壓縮成時空 patch token，用擴散模型訓練去雜訊，Transformer 負責全域一致性。設計這類系統的真正難點在於時空一致性、可變長度/解析度支援，以及訓練規模。"
 description: "從系統設計角度剖析 Sora 的技術架構：時空自編碼器、Diffusion Transformer、可變輸入設計，以及開源替代方案 Open-Sora 的工程選擇。"

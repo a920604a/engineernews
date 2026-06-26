@@ -2,7 +2,7 @@
 title: "Titans：在測試時學習記憶（論文分析）"
 date: 2026-06-16T14:14:14.528Z
 category: tech
-tags: ["人工智慧", "深度學習", "記憶學習", "ai", "machine-learning", "paper-analysis"]
+tags: ["ai", "deep-learning", "memory-learning", "machine-learning", "paper-analysis"]
 lang: zh-TW
 tldr: "Titans 提出了一個神經記憶模組，能在測試（推論）時透過梯度下降即時更新記憶，突破 Transformer 上下文長度限制並保持線性複雜度。"
 description: "論文深度分析：Titans: Learning to Memorize at Test Time，探討神經長期記憶模組如何在推論期間即時學習，以及三種整合架構 MAC、MAG、MAL 的設計取捨。"

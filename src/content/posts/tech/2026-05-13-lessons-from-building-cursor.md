@@ -2,7 +2,7 @@
 title: "打造 Cursor 的工程教訓：從 VSCode Fork 到 $500M ARR 的 AI 編輯器"
 date: 2026-05-13T11:33:45.374Z
 category: tech
-tags: ["cursor", "ai-editor", "engineering", "系統設計", "agent"]
+tags: ["cursor", "ai-editor", "engineering", "system-design", "ai-agent"]
 lang: zh-TW
 tldr: "Cursor 是由四位 MIT 畢業生在 2022 年創建的 AI 程式編輯器，兩年內突破 5 億美元年度營收。這篇文章整理他們在打造 Cursor 過程中公開分享的核心工程教訓：為什麼 Fork VSCode 而不自己造編輯器、Tab 補全的延遲工程、Agent Mode 的生產挑戰。"
 description: "Cursor 工程團隊分享的真實挑戰：VSCode Fork 的決策邏輯、Tab 預測的超低延遲設計、Agent Mode 從 pipeline 到真正代理的演化，以及為什麼用戶信任才是最終指標。"

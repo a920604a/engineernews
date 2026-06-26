@@ -2,7 +2,7 @@
 title: "PostgreSQL 為什麼是世界上最安全的系統"
 date: 2026-04-25T13:10:07.624Z
 category: tech
-tags: ["PostgreSQL", "資料庫安全", "AI", "科技"]
+tags: ["postgresql", "database-security", "ai", "tech"]
 lang: zh-TW
 tldr: "了解 PostgreSQL 的安全性"
 description: "了解 PostgreSQL 的安全性"

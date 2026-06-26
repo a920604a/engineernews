@@ -2,7 +2,7 @@
 title: "Python functools.reduce 到底什麼時候該用？"
 date: 2026-06-18T03:51:49.631Z
 category: tech
-tags: ["python", "高階函數", "functools", "程式設計", "工具"]
+tags: ["python", "higher-order-functions", "functools", "programming", "tools"]
 lang: zh-TW
 tldr: "reduce() 不是讓程式碼「更有效率」，而是讓累積運算更具聲明式風格——但 Python 官方其實不太鼓勵你用它"
 description: "深入解析 Python functools.reduce：它真正的用途、與 for 迴圈和 list comprehension 的差異，以及 Guido van Rossum 為什麼把它從內建函數移出去"

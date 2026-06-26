@@ -2,7 +2,7 @@
 title: "科學家發現 AI Agent 之間有更好的溝通語言——不是自然語言"
 date: 2026-06-20T04:20:31.986Z
 category: tech
-tags: ["AI", "AI-agents", "多智能體", "研究", "通訊協定", "語言"]
+tags: ["ai", "ai-agent", "multi-agent", "research", "protocol", "language"]
 lang: zh-TW
 tldr: "研究發現 AI Agent 之間用「湧現語言」（emergent language）比用自然語言溝通更有效率——更短、更省計算資源，但也更不透明"
 description: "多個 AI Agent 組成系統時，讓它們用自然語言溝通其實很浪費。研究顯示 Agent 會自發發展出壓縮的內部語言，比自然語言更有效率，但可解釋性是新的問題"

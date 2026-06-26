@@ -2,7 +2,7 @@
 title: "Stanford Beyond LLM 課程精華：從 Prompt Engineering 到 Multi-Agent"
 date: 2026-05-05
 category: learning
-tags: [ai, llm]
+tags: ["ai", "llm"]
 lang: zh-TW
 series:
   name: "Stanford 課程導讀"

@@ -2,7 +2,7 @@
 title: "RTK：讓 AI Coding 助手少吃 80% token 的 Rust 工具"
 date: 2026-05-11T09:00:00.000Z
 category: tech
-tags: [ai, llm, cli]
+tags: ["ai", "llm", "cli"]
 lang: zh-TW
 description: "RTK (Rust Token Killer) 攔截 shell 命令輸出，在進入 AI context 前壓縮 60-90%，支援 100+ 命令與 12 個 AI coding 工具，overhead < 10ms。"
 tldr: "裝一個 Rust binary，git/npm/docker 等命令的輸出自動壓縮後再送進 AI context，30 分鐘 session 從 118,000 token 壓到 23,900。"

@@ -2,7 +2,7 @@
 title: "Stanford CS153 Frontier Systems：AI 基礎設施全棧的核心框架與關鍵洞察"
 date: 2026-05-05T10:00:00.000Z
 category: learning
-tags: [ai, education, llm]
+tags: ["ai", "education", "llm"]
 lang: zh-TW
 series:
   name: "Stanford 課程導讀"

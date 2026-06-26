@@ -2,7 +2,7 @@
 title: "系統設計面試複盤：Live 評論會"
 date: 2026-04-24T13:28:53.795Z
 category: tech
-tags: ["系統設計", "面試", "複盤", "工程", "技術"]
+tags: ["system-design", "interview", "retrospective", "engineering", "tech"]
 lang: zh-TW
 tldr: "系統設計面試複盤：Live 評論會"
 description: "系統設計面試複盤：Live 評論會"

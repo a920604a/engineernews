@@ -2,7 +2,7 @@
 title: "Claude Opus 4.8：終結謊言機器的具體做法"
 date: 2026-06-13T09:28:26.609Z
 category: tech
-tags: ["Claude", "Anthropic", "AI", "對齊", "SWE-bench", "誠實性"]
+tags: ["claude", "anthropic", "ai", "ai-alignment", "swe-bench"]
 lang: zh-TW
 tldr: "Opus 4.8 最大的升級不是 benchmark 數字，而是讓模型對自己的錯誤更誠實：比 Opus 4.7 少 4 倍的機率讓程式碼缺陷悄悄通過。"
 description: "Claude Opus 4.8 的核心改進是誠實性對齊——比前一版少 4 倍機率隱藏錯誤，同時推出 Dynamic Workflows 與 Effort Control。Two Minute Papers 的深入解析。"

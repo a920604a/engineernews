@@ -2,7 +2,7 @@
 title: "GitHub 熱門開源週報 #117：設計工具、AI 上下文壓縮、英語學習、手搓 AI"
 date: 2026-06-10T12:27:07.655Z
 category: tech
-tags: ["GitHub", "開源", "AI", "設計工具", "開發工具"]
+tags: ["github", "open-source", "ai", "design-tools", "developer-tools"]
 lang: zh-TW
 series:
   name: "GitHub 開源週報"

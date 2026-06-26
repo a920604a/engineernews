@@ -2,7 +2,7 @@
 title: "GitHub Hot Projects #117: Design Tools, AI Context Compression, English Learning, Build-Your-Own AI"
 date: 2026-06-10T12:27:07.655Z
 category: tech
-tags: ["GitHub", "open source", "AI", "design tools", "developer tools"]
+tags: ["github", "open-source", "ai", "design-tools", "developer-tools"]
 lang: en
 series:
   name: "GitHub 開源週報"

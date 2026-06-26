@@ -2,7 +2,7 @@
 title: "技術 YouTuber 的工作流程拆解：從選題到發布"
 date: 2026-06-14T19:48:08.223Z
 category: tech
-tags: ["影片製作", "工具", "工作流程", "技術創作", "AI", "創作者"]
+tags: ["video-production", "tools", "workflow", "tech-content", "ai", "creator"]
 lang: zh-TW
 tldr: "一個技術 YouTube 頻道的完整製作流程——從選題、腳本、錄製、剪輯到發布，以及 AI 工具如何改變每個環節。"
 description: "技術 YouTuber 分享的完整影片製作工作流程：選題研究、腳本撰寫、錄製設定、剪輯工具選擇，以及現在 AI 協助的具體方式。"

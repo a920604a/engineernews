@@ -2,7 +2,7 @@
 title: "系統設計複盤：設計一個 Uber — 從需求拆解到架構取捨"
 date: 2026-05-27T03:40:38.960Z
 category: learning
-tags: ["系統設計", "架構", "uber", "工程", "面試準備"]
+tags: ["system-design", "architecture", "uber", "engineering", "interview-prep"]
 lang: zh-TW
 series:
   name: "系統設計 Mock 面試"

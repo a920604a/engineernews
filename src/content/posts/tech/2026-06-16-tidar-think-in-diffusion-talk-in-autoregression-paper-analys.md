@@ -2,7 +2,7 @@
 title: "TiDAR：用擴散模型思考、用自回歸模型表達的混合架構（論文分析）"
 date: 2026-06-16T03:59:09.324Z
 category: tech
-tags: ["TiDAR", "論文分析", "擴散模型", "自回歸", "AI", "語言模型", "推論效率"]
+tags: ["tidar", "paper-analysis", "diffusion-model", "autoregressive", "ai", "llm", "inference-efficiency"]
 lang: zh-TW
 tldr: "TiDAR 在一次 forward pass 裡讓擴散模型負責平行「起草」token，再讓自回歸模型負責輸出，達到 AR 等級的品質但快了近 6 倍。"
 description: "深度分析 TiDAR（arXiv 2511.08923）：一個在單次 forward pass 內結合擴散式思考與自回歸表達的混合語言模型架構，以 5.91x 的速度提升維持 AR 等級品質。"

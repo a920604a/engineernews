@@ -2,7 +2,7 @@
 title: "WWDC 2026: Siri Rebuilt, Intel Macs Out, Liquid Glass Fixed"
 date: 2026-06-12T03:50:52.651Z
 category: tech
-tags: ["WWDC", "Apple", "iOS", "macOS", "Siri", "Apple Intelligence"]
+tags: ["wwdc", "apple", "ios", "macos", "siri", "apple-intelligence"]
 lang: en
 tldr: "WWDC 2026's biggest moves: Siri rebuilt from scratch using Google Gemini, macOS Golden Gate ends Intel Mac support, and iOS 27 adds an opacity slider to fix Liquid Glass readability."
 description: "WWDC 2026 overview for developers: Siri AI rewrite with Gemini, iOS 27 Liquid Glass fixes, macOS Golden Gate going Apple Silicon-only, and Apple Intelligence updates."

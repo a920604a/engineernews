@@ -2,7 +2,7 @@
 title: "超越 RAG：Andrej Karpathy 的 LLM Wiki 模式深度解析"
 date: 2026-05-01T00:00:00.000Z
 category: learning
-tags: [ai, llm, rag, knowledge-management]
+tags: ["ai", "llm", "rag", "knowledge-management"]
 lang: zh-TW
 tldr: "LLM Wiki 不是查詢工具，是讓知識隨時間複利成長的架構——LLM 主動建構並維護一個 markdown 知識庫，而非每次查詢都重新從原始文件撈取。"
 description: "深入解析 Andrej Karpathy 於 2026 年 4 月提出的 LLM Wiki 模式：三層架構設計、與傳統 RAG 的根本差異、適合的使用場景，以及社群的實作現況。"

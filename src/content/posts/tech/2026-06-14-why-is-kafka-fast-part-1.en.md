@@ -2,7 +2,7 @@
 title: "Why Is Kafka Fast? Sequential I/O and Zero-Copy Explained"
 date: 2026-06-14T14:20:55.098Z
 category: tech
-tags: ["Kafka", "system design", "architecture", "performance", "message queue"]
+tags: ["kafka", "system-design", "architecture", "performance", "message-queue"]
 lang: en
 series:
   name: "Kafka 為什麼這麼快"

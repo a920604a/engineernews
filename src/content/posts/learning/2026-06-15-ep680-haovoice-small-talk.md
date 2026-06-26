@@ -2,7 +2,7 @@
 title: "書買了沒看完很內疚？郝旭烈說：重點從來都不是讀完"
 date: 2026-06-15T04:10:12.551Z
 category: learning
-tags: ["閱讀", "學習", "個人成長", "郝旭烈", "讀書方法"]
+tags: ["reading", "learning", "personal-growth", "study-methods"]
 lang: zh-TW
 tldr: "讀書的焦慮，常常來自把「讀完」當成目標。郝旭烈在《郝聲音》EP680 的觀點：閱讀的價值不在頁數，在於你有沒有和書中某個地方產生連結。"
 description: "郝旭烈在《大人的 Small Talk》分享他對閱讀的看法：讀書不需要讀完，重要的是找到書中跟自己人生的連結點。散文式記錄他的核心觀點和對讀書焦慮的解法。"

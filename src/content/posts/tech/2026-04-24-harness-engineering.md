@@ -2,7 +2,7 @@
 title: "Harness Engineering：有時候語言模型不是不夠聰明，只是沒有人類好好引導"
 date: 2026-04-24T18:57:04.255Z
 category: tech
-tags: ["Harness Engineering", "語言模型", "AI", "機器學習", "深度學習"]
+tags: ["harness-engineering", "llm", "ai", "machine-learning", "deep-learning"]
 lang: zh-TW
 tldr: "Harness Engineering 如何引導語言模型提高智能"
 description: "Harness Engineering 如何引導語言模型提高智能"

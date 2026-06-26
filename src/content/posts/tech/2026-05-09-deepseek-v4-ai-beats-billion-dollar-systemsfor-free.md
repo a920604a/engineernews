@@ -2,7 +2,7 @@
 title: "DeepSeek V3 如何以 $5.6M 訓練成本挑戰百億美元系統"
 date: 2026-05-09T08:05:43.493Z
 category: tech
-tags: ["DeepSeek", "AI", "開源模型", "MoE", "LLM"]
+tags: ["deepseek", "ai", "open-source-models", "moe", "llm"]
 lang: zh-TW
 tldr: "DeepSeek V3 以 671B 參數 MoE 架構、僅 278 萬 H800 GPU 小時的訓練成本，在多項基準測試上達到接近 GPT-4 的表現，API 費用僅是 OpenAI 的十分之一。"
 description: "深入解析 DeepSeek V3 的 MoE 架構、訓練效率突破與成本優勢，以及對 AI 產業競爭格局的影響。"

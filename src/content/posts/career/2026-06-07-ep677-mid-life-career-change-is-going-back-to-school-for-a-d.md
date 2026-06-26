@@ -2,7 +2,7 @@
 title: "中年轉職：回學校拿學位，還是一個好策略？"
 date: 2026-06-07T14:10:58.256Z
 category: career
-tags: ["中年轉職", "職涯規劃", "進修", "個人成長"]
+tags: ["career-change", "career-planning", "further-education", "personal-growth"]
 lang: zh-TW
 tldr: "回學校不是中年轉職的唯一路徑，也不一定是最快的路徑——關鍵問題是：你要的那扇門，真的需要學位才能打開嗎？"
 description: "中年轉職要回學校念書嗎？大人的Small Talk EP677 聊聊這個決定值得認真考量的幾個面向：成本、時間、替代路徑，以及這個年紀做決定時最容易忽略的事"

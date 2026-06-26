@@ -2,7 +2,7 @@
 title: "Scientists Found a Better Language for AI Agents — It's Not Natural Language"
 date: 2026-06-20T04:20:31.986Z
 category: tech
-tags: ["ai", "ai-agents", "multi-agent", "research", "communication-protocol", "language"]
+tags: ["ai", "ai-agent", "multi-agent", "research", "communication-protocol", "language"]
 lang: en
 tldr: "Research shows AI agents communicating through emergent compressed languages outperform those using natural language — shorter, more compute-efficient, but less interpretable"
 description: "When multiple AI agents collaborate, natural language communication is wasteful. Research shows agents spontaneously develop compressed internal languages that are more efficient — but opacity becomes the new problem"

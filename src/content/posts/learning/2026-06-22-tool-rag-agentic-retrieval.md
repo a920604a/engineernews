@@ -2,7 +2,7 @@
 title: "Claude Code 的按需載入 skills/tools 是 RAG 嗎？拆解 agentic retrieval"
 date: 2026-06-22T10:30:00.000Z
 category: learning
-tags: [ai, llm, agent, rag]
+tags: ["ai", "llm", "ai-agent", "rag"]
 lang: zh-TW
 tldr: "Agent 按需載入工具，本質就是把 RAG 的『先檢索再注入』套在 tool schema 上，差別只在檢索器從向量相似度換成 LLM 自己的推理。"
 description: "從 Claude Code 的 deferred tools 與 Skills 機制出發，解釋 agent 如何用惰性載入節省 context，並釐清它與向量 RAG 的異同。"

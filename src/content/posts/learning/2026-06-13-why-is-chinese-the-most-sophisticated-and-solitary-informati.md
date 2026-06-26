@@ -2,7 +2,7 @@
 title: "中文為什麼是世界上最「孤獨」的資訊媒介"
 date: 2026-06-13T14:17:31.178Z
 category: learning
-tags: ["中文", "語言學", "漢字", "資訊密度", "文化"]
+tags: ["chinese-language", "linguistics", "chinese-characters", "information-density", "culture"]
 lang: zh-TW
 tldr: "中文的孤獨性不來自複雜度，而是它的表意系統讓它成為一個自足的資訊宇宙——和所有拼音語言的連接點極少，但內部的資訊密度極高。"
 description: "為什麼說中文是「最孤獨的資訊媒介」？從表意文字 vs 表音文字的根本差異、漢字的資訊密度、方言的多樣性，到數位時代中文的演化，探討這個最獨特的書寫系統。"

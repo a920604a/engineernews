@@ -2,7 +2,7 @@
 title: "什麼是 Data Lakehouse？從資料倉儲到湖倉一體的演化"
 date: 2026-05-06T11:11:02.900Z
 category: tech
-tags: ["資料湖倉", "apache-iceberg", "delta-lake", "系統設計", "資料工程"]
+tags: ["data-lakehouse", "apache-iceberg", "delta-lake", "system-design", "data-engineering"]
 lang: zh-TW
 tldr: "Data Lakehouse 把資料倉儲的 ACID 事務性和資料湖的低成本開放儲存合二為一，以 Apache Iceberg 和 Delta Lake 為核心的開放表格格式是現在的主流實作路徑。"
 description: "深入解析 Data Lakehouse 架構：為什麼出現、怎麼運作、Apache Iceberg 與 Delta Lake 的差異，以及 2025 年湖倉融合的最新趨勢。"

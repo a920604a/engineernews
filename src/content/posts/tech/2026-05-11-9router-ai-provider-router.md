@@ -2,7 +2,7 @@
 title: "9Router：跨 40+ AI Provider 自動路由，訂閱額度不再浪費"
 date: 2026-05-11T09:30:00.000Z
 category: tech
-tags: [ai, llm, cli]
+tags: ["ai", "llm", "cli"]
 lang: zh-TW
 description: "9Router 在 localhost:20128 跑一個 OpenAI-compatible proxy，三層 fallback 路由跨 40+ AI provider，內建 OAuth auto-refresh 與跨 API 格式轉換。"
 tldr: "Claude Code 的 endpoint 指向 localhost:20128，9Router 自動從訂閱服務 → 便宜 API → 免費服務做三層 fallback，OAuth token 自動刷新，格式轉換透明。"

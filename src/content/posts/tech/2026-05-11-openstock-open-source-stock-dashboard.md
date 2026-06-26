@@ -3,7 +3,7 @@ title: "OpenStock：11k ⭐ 的開源股市儀表板，AGPL 授權、可自架�
 date: 2026-05-11T10:00:00.000Z
 category: tech
 type: case-study
-tags: [fintech, open-source, next-js]
+tags: ["fintech", "open-source", "next-js"]
 lang: zh-TW
 description: "Open Dev Society 打造的免費股市平台，Next.js 15 + MongoDB + Finnhub，整合 Inngest 非同步 AI 摘要與多來源情緒分析，AGPL-3.0 授權。"
 tldr: "可自架的股市儀表板，Next.js 15 App Router + Better Auth + Finnhub，Inngest 排程 Gemini 生成個人化摘要 Email，含 Reddit/X/Polymarket 情緒分析，免費 tier 有延遲數據。"

@@ -2,7 +2,7 @@
 title: "How a Tech YouTuber Actually Makes Videos: The Full Workflow"
 date: 2026-06-14T19:48:08.223Z
 category: tech
-tags: ["video production", "workflow", "tools", "AI", "content creation"]
+tags: ["video-production", "workflow", "tools", "ai", "content-creation"]
 lang: en
 tldr: "A complete behind-the-scenes look at tech YouTube production: topic selection, scripting, recording, editing, and how AI tools have changed each step."
 description: "A tech YouTuber breaks down the complete production workflow for a 10-minute video—research, scripting, recording setup, editing tools, and where AI actually saves time."

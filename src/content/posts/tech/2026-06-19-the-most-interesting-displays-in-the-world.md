@@ -2,7 +2,7 @@
 title: "世界上最有趣的顯示技術：從 E Ink 車身到全息懸浮影像"
 date: 2026-06-19T04:11:00.345Z
 category: tech
-tags: ["顯示技術", "硬體", "E-Ink", "OLED", "Micro-LED", "全息顯示", "科技"]
+tags: ["display-tech", "hardware", "e-ink", "oled", "micro-led", "holographic-display", "tech"]
 lang: zh-TW
 tldr: "主流的 OLED 和 Mini-LED 只是開始——E Ink 長在 BMW 車身上、Looking Glass 靠 Hololuminescent 拿下 SID 年度最佳顯示獎、可捲曲 AMOLED 和可拉伸顯示器正在實驗室裡成熟"
 description: "2025-2026 年最值得關注的顯示技術：E Ink 彩色戶外標牌、BMW iX3Flow 的 E Ink 車身、Looking Glass Hololuminescent 全息顯示、透明 OLED、可捲曲 AMOLED、可拉伸顯示器"

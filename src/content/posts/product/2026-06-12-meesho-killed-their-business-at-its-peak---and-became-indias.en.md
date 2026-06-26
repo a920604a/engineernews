@@ -2,7 +2,7 @@
 title: "How Meesho Killed Its Business Model at Peak, Then Became India's #1 Shopping App"
 date: 2026-06-12T12:23:43.990Z
 category: product
-tags: ["product strategy", "business model", "e-commerce", "India", "startup", "pivot"]
+tags: ["product-strategy", "business-model", "e-commerce", "india", "startup", "pivot"]
 lang: en
 tldr: "In 2022, Meesho voluntarily dropped to 0% seller commission—at a time when they had tens of millions of monthly orders—then used that scale advantage to become India's #1 e-commerce platform by order volume, ahead of Flipkart and Amazon."
 description: "Meesho's product pivot case study: from WhatsApp social commerce reseller to 0% commission direct marketplace. Full breakdown of the decision logic, technical challenges, and the metrics behind India's biggest e-commerce upset."

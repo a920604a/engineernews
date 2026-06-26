@@ -2,7 +2,7 @@
 title: "從基本原理出發：3 個思考練習，讓你不再被選項牽著鼻子走"
 date: "2026-04-25T18:57:43.111Z"
 category: "learning"
-tags: ["第一原理", "批判性思考", "決策", "職涯", "個人成長", "學習"]
+tags: ["first-principles", "critical-thinking", "decision-making", "career", "personal-growth", "learning"]
 lang: "zh-TW"
 tldr: "從基本原理出發的思考方式，透過 3 個練習，讓你做出更好的決定"
 description: "從基本原理出發的思考方式，透過 3 個練習，讓你做出更好的決定"

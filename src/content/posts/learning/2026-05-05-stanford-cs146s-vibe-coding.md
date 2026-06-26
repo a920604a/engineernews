@@ -2,7 +2,7 @@
 title: "Stanford CS146S 完整導讀：10 週學會 AI 驅動的現代軟體開發"
 date: 2026-05-05T10:00:00.000Z
 category: learning
-tags: [ai, llm, education, vibe-coding]
+tags: ["ai", "llm", "education", "vibe-coding"]
 lang: zh-TW
 series:
   name: "Stanford 課程導讀"

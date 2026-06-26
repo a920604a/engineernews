@@ -2,7 +2,7 @@
 title: "7 天讓 AI 代替我思考——這是我大腦的變化"
 date: 2026-04-21T19:00:29+08:00
 category: learning
-tags: [ai, neuroscience, cognitive-science, experiment, brain, working-memory]
+tags: ["ai", "neuroscience", "cognitive-science", "experiment", "brain", "working-memory"]
 lang: zh-TW
 tldr: "創作者小宁子用 7 天讓 AI 全面代替思考與消費 AI 生成內容，MRI 顯示全腦激活像素從 44,000 降至 20,000（降幅 54%），工作記憶出現毀滅性下降，但空間思考與批判性思維不受影響，且可恢復。"
 description: "根據 bilibili 創作者小宁子的人體實驗影片整理：7 天把所有工作與思考外包給 AI，同時每天消費 4 小時以上 AI 生成內容，從 MRI、腦波監測到認知測試，完整記錄大腦的功能性變化。"

@@ -2,7 +2,7 @@
 title: "Kafka 為什麼這麼快？循序 I/O 與 Zero-Copy 原理解析"
 date: 2026-06-14T14:20:55.098Z
 category: tech
-tags: ["Kafka", "系統設計", "架構", "效能優化", "訊息佇列"]
+tags: ["kafka", "system-design", "architecture", "performance", "message-queue"]
 lang: zh-TW
 series:
   name: "Kafka 為什麼這麼快"

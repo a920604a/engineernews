@@ -2,7 +2,7 @@
 title: "依賴注入實戰：寫出真正好維護的程式碼"
 date: 2026-06-15T15:20:44.214Z
 category: tech
-tags: ["程式碼設計", "依賴注入", "軟體工程", "typescript", "測試"]
+tags: ["code-design", "dependency-injection", "software-engineering", "typescript", "testing"]
 lang: zh-TW
 tldr: "依賴注入不只是「把東西傳進去」，它是讓程式碼可測試、可替換、可演進的核心手法。"
 description: "深入解析依賴注入的設計哲學、實作手法與常見誤區，並以 TypeScript 示範從手動注入到容器管理的完整流程。"

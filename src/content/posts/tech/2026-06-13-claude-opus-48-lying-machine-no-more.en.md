@@ -2,7 +2,7 @@
 title: "Claude Opus 4.8: What \"Lying Machine No More\" Actually Means"
 date: 2026-06-13T09:28:26.609Z
 category: tech
-tags: ["Claude", "Anthropic", "AI", "alignment", "SWE-bench", "honesty"]
+tags: ["claude", "anthropic", "ai", "alignment", "swe-bench", "honesty"]
 lang: en
 tldr: "Opus 4.8's headline improvement is a 4x reduction in the probability of letting code flaws pass silently—plus Dynamic Workflows for parallel subagents and Effort Control for cost tuning."
 description: "Claude Opus 4.8's core upgrade is alignment-side honesty: 4x less likely to hide bugs than Opus 4.7. Plus Dynamic Workflows and Effort Control. A Two Minute Papers breakdown."

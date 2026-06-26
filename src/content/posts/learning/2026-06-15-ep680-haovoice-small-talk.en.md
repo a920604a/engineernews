@@ -2,7 +2,7 @@
 title: "Books You Never Finished: Why That's Fine, According to Hao Xu-Lie"
 date: 2026-06-15T04:10:12.551Z
 category: learning
-tags: ["reading", "learning", "personal growth", "Hao Xu-Lie", "reading habits"]
+tags: ["reading", "learning", "personal-growth", "hao-xu-lie", "reading-habits"]
 lang: en
 tldr: "Reading guilt comes from treating 'finishing the book' as the goal. Hao Xu-Lie's point in Haovoice EP680: the real purpose of reading is finding your own connection to the material—not page count."
 description: "Taiwanese financial author and podcast host Hao Xu-Lie shares his reading philosophy in Haovoice EP680: stop measuring reading by completion, start measuring by connection. A reflective essay on reading habits."

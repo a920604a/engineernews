@@ -2,7 +2,7 @@
 title: "LLM 推論時的三個層次：Decoding、Workflow、Reasoning 技術整理"
 date: 2026-05-03T03:58:51.216Z
 category: tech
-tags: ["AI", "LLM", "推論", "Chain-of-Thought", "解碼策略", "AI Agent", "機器學習"]
+tags: ["ai", "llm", "inference", "chain-of-thought", "decoding", "ai-agent", "machine-learning"]
 lang: zh-TW
 tldr: "LLM 的輸出品質由三個層次共同決定：token 層級的 decoding 策略、任務層級的 workflow 設計、以及模型層級的 reasoning 能力。搞清楚這三層的差異，才能針對問題選對工具。"
 description: "從 greedy decoding 到 chain-of-thought、從 ReAct 到 ES-CoT，本文系統性整理 LLM 推論時三個層次的技術選擇，幫助工程師在應用層面做出有依據的設計決定。"

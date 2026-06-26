@@ -2,7 +2,7 @@
 title: "Engineering Lessons from Building Cursor: From VSCode Fork to $500M ARR"
 date: 2026-05-13T11:33:45.374Z
 category: tech
-tags: ["cursor", "ai-editor", "engineering", "system-design", "agent"]
+tags: ["cursor", "ai-editor", "engineering", "system-design", "ai-agent"]
 lang: en
 tldr: "Cursor is an AI-powered code editor by Anysphere, built by four MIT graduates, that hit $500M ARR within two years of launch. This article distills the real engineering lessons they've shared publicly: why they forked VSCode instead of building an extension, how Tab prediction's latency engineering works, and the hard production lessons from shipping Agent Mode."
 description: "Engineering lessons from building Cursor: the VSCode fork decision, ultra-low-latency Tab prediction, Agent Mode's production challenges including why tool use must be trained into the model, and why user trust is the only metric that matters."

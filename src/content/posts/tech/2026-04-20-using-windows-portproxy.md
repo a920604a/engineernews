@@ -2,7 +2,7 @@
 title: "Using Windows Portproxy to Run Codex with Remote GPU Ollama (No Proxy Server Needed)"
 date: 2026-04-28T15:11:51+08:00
 category: tech
-tags: [ollama, codex, aider, docker, gpu, windows, portproxy]
+tags: ["ollama", "codex", "aider", "docker", "gpu", "windows", "portproxy"]
 lang: zh-TW
 description: "在 Windows 上用 portproxy 把 Codex 指向遠端 GPU 上的 Ollama：完整 Docker、網路與驗證流程，並修正實作上的常見坑。"
 tldr: "透過 Docker 在 GPU 機上部署 Ollama，並在 Windows 用 netsh portproxy 將 localhost:11434 轉發到 GPU 機，讓 Codex 在 Windows 上透明使用遠端 GPU。"

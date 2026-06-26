@@ -3,7 +3,7 @@ title: "Stock MLOps"
 date: 2026-04-23T14:56:03+08:00
 category: tech
 type: case-study
-tags: ["python", "react", "docker", "postgresql", "redis", "mlflow", "prometheus", "grafana", "CICD"]
+tags: ["python", "react", "docker", "postgresql", "redis", "mlflow", "prometheus", "grafana", "cicd"]
 lang: zh-TW
 description: "端到端股價預測 MLOps 系統，整合 MLflow 實驗追蹤、Prefect 排程 ETL、Evidently 資料漂移監控與 GitHub Actions CI/CD。"
 tldr: "端到端台美股 ML 系統：MLflow + Prefect + Evidently + CI/CD，從訓練到部署全程可追蹤。"

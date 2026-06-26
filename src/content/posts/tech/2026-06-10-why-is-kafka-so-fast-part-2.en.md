@@ -2,7 +2,7 @@
 title: "Why Is Kafka Fast? Part 2: Partitions, Replication, and Consumer Groups"
 date: 2026-06-10T03:37:03.200Z
 category: tech
-tags: ["Kafka", "performance", "system design", "architecture", "distributed systems"]
+tags: ["kafka", "performance", "system-design", "architecture", "distributed-systems"]
 lang: en
 series:
   name: "Kafka 為什麼這麼快"

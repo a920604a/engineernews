@@ -2,7 +2,7 @@
 title: "大學畢業後該不該馬上讀研究所？一個沒有標準答案的問題"
 date: 2026-05-31T04:40:35.723Z
 category: learning
-tags: ["研究所", "職涯規劃", "教育決策", "個人成長"]
+tags: ["graduate-school", "career-planning", "education", "personal-growth"]
 lang: zh-TW
 tldr: "讀研究所的時機沒有標準答案，但有一個問題可以幫你釐清：你讀研究所是為了解決一個具體的問題，還是因為還沒想好下一步？"
 description: "大學畢業要不要馬上讀研究所？聊聊這個決定背後真正值得問的問題，以及不同選擇各自適合什麼樣的人"

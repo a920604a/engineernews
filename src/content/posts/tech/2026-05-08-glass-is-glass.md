@@ -2,7 +2,7 @@
 title: "玻璃就是玻璃：Meta Ray-Ban Display 智慧眼鏡的技術突破與現實"
 date: 2026-05-08T10:28:22.229Z
 category: tech
-tags: ["Meta", "AR", "穿戴式裝置", "Ray-Ban", "AI硬體"]
+tags: ["meta", "ar", "wearables", "ray-ban", "ai-hardware"]
 lang: zh-TW
 tldr: "Meta Ray-Ban Display 是第一款真正將 AI 顯示器整合進一般眼鏡鏡框的消費產品，但 $799 的售價和 6 小時電池壽命顯示這還是早期採用者的市場。"
 description: "深入解析 Meta Ray-Ban Display 智慧眼鏡的技術架構、顯示技術、EMG 神經腕帶設計，以及對 AR 穿戴裝置路線圖的意義。"

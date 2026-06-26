@@ -2,7 +2,7 @@
 title: "Anthropic 叫大家停，然後推了 Fable 5，然後政府把它關掉了"
 date: 2026-06-14T04:54:52.915Z
 category: tech
-tags: ["AI", "Anthropic", "Fable 5", "安全", "政策", "政府監管"]
+tags: ["ai", "anthropic", "fable-5", "security", "policy", "regulation"]
 lang: zh-TW
 tldr: "Anthropic 發表暫停呼籲後五天推出 Fable 5，四天後被美國政府以國家安全為由強制下線。一場把所有矛盾壓縮進十天的業界速成劇。"
 description: "Fable 5 從發布到被政府強制下線只有四天。Anthropic 這十天的故事，是一個關於 AI 安全聲明與商業現實之間張力的案例研究。"

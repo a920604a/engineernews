@@ -2,7 +2,7 @@
 title: "我把過去 100 年的重要 CS 論文都讀了一遍——然後呢？"
 date: 2026-06-18T12:30:14.323Z
 category: learning
-tags: ["計算機科學", "論文", "程式設計", "AI", "歷史"]
+tags: ["computer-science", "paper", "programming", "ai", "history"]
 lang: zh-TW
 tldr: "Fireship 用一支影片帶你走過 10 篇改變電腦科學歷史的論文，從圖靈機到 GPT-3，每一篇都是一次典範轉移"
 description: "10 篇跨越 100 年的 CS 經典論文回顧：圖靈、Shannon、Perceptron、Backprop、PageRank、AlexNet、Transformer、GPT-3——這些名字背後的想法如何環環相扣，最終走向今天的 AI 時代"

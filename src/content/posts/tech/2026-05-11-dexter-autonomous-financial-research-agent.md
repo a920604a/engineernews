@@ -3,7 +3,7 @@ title: "Dexter：25k ⭐ 的自主金融研究 Agent，任務分解 + 自我驗�
 date: 2026-05-11T10:30:00.000Z
 category: tech
 type: case-study
-tags: [ai, llm, fintech, open-source]
+tags: ["ai", "llm", "fintech", "open-source"]
 lang: zh-TW
 description: "TypeScript + Bun 打造的 autonomous financial research agent，任務自動分解、self-validation 迴圈、JSONL scratchpad 稽核、LangSmith LLM-as-judge 評估框架，支援 OpenAI / Claude / Gemini / Ollama。"
 tldr: "問一個財務問題，Dexter 自動拆解成子任務、選工具執行（財報 API + 搜尋）、自我驗證直到結果夠充分，所有推理步驟記錄到 JSONL scratchpad。TypeScript + Bun，支援多個 LLM provider。"

@@ -2,7 +2,7 @@
 title: "NVIDIA Lyra 2.0：從一張照片生成永不崩潰的可探索 3D 世界"
 date: 2026-05-05T02:39:32.891Z
 category: tech
-tags: ["NVIDIA", "Lyra", "3D生成", "世界模型", "影像處理", "研究", "生成模型"]
+tags: ["nvidia", "lyra", "3d-generation", "world-model", "image-processing", "research", "generative-model"]
 lang: zh-TW
 tldr: "NVIDIA 的 Lyra 2.0 能從單張照片生成幾何一致、可無限探索的 3D 世界，透過幾何導引的幀檢索解決了舊方法的「空間遺忘」和「時序漂移」問題，2026 年 4 月以 Apache 2.0 開源釋出。"
 description: "Lyra 2.0 是 NVIDIA Spatial Intelligence Lab 發布的開源 3D 世界生成框架，結合長程幾何一致影片生成與前饋式 3D 重建，輸出可即時渲染的 3D Gaussian Splat 和網格。本文解析其技術架構與跟 GEN3C 的差異。"

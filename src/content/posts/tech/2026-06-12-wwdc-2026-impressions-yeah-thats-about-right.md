@@ -2,7 +2,7 @@
 title: "WWDC 2026 速覽：Siri 重建、macOS 告別 Intel、Liquid Glass 補丁"
 date: 2026-06-12T03:50:52.651Z
 category: tech
-tags: ["WWDC", "Apple", "iOS", "macOS", "Siri", "Apple Intelligence"]
+tags: ["wwdc", "apple", "ios", "macos", "siri", "apple-intelligence"]
 lang: zh-TW
 tldr: "WWDC 2026 最大的改變是 Siri 從頭重寫成獨立 App、macOS Golden Gate 宣告 Intel Mac 終結，其他更新在預期之中。"
 description: "WWDC 2026 的開發者大會綜覽：Siri AI 重建用 Google Gemini、iOS 27 Liquid Glass 修補、macOS Golden Gate 為 Apple Silicon 專屬，以及 Apple Intelligence 的新功能。"

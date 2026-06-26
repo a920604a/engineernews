@@ -2,7 +2,7 @@
 title: "Github 一周熱點第 111 期：Karpathy 的 Claude Code 配置、AI Agent 團隊協作平台等"
 date: "2026-04-23T04:00:24+00:00"
 category: "tech"
-tags: ["Github", "Karpathy", "Claude Code", "AI Agent", "TTS 模型", "Markdown 工具", "CLI 本地搜索引擎", "IT", "開發"]
+tags: ["github", "karpathy", "claude-code", "ai-agent", "tts", "markdown", "cli-tools", "it", "development"]
 lang: "zh-TW"
 series:
   name: "GitHub 開源週報"

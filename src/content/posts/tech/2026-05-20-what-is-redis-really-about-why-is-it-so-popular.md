@@ -2,7 +2,7 @@
 title: "Redis 到底是什麼？為什麼每個工程師都愛用它？"
 date: 2026-05-20T03:28:46.983Z
 category: tech
-tags: ["redis", "nosql", "資料庫", "系統設計", "架構", "快取"]
+tags: ["redis", "nosql", "database", "system-design", "architecture", "caching"]
 lang: zh-TW
 tldr: "Redis 是基於記憶體的資料結構伺服器，靠著單執行緒事件迴圈、豐富的資料型別和極低的延遲，成為快取、Session 管理、排行榜、速率限制等場景的首選——而且在 2026 年，它還成了 AI Agent 的記憶層基礎設施。"
 description: "從架構原理到實際使用場景，完整解析 Redis 為什麼在工程師社群中長期維持極高評價，以及 2026 年它在 AI 工程中的新角色。"

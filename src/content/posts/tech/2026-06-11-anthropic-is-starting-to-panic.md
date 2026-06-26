@@ -2,7 +2,7 @@
 title: "Anthropic 那週發生了什麼：IPO、暫停呼籲、Fable 5、政府關停，十天全包"
 date: 2026-06-11T03:52:03.183Z
 category: tech
-tags: ["Anthropic", "AI", "安全", "IPO", "政策"]
+tags: ["anthropic", "ai", "security", "ipo", "policy"]
 lang: zh-TW
 tldr: "Anthropic 在同一週發表暫停 AI 呼籲、提交 IPO 申請、推出 Fable 5，最後模型被政府強制下線——一個公司同時做了所有矛盾的事。"
 description: "從 IPO 申請到政府強制下線，Anthropic 在 2026 年 6 月經歷了業界最戲劇化的十天。"

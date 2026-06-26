@@ -2,7 +2,7 @@
 title: "Running LLMs Locally with Ollama: A Getting-Started Guide"
 date: 2026-06-14T09:50:35.451Z
 category: tech
-tags: ["LLM", "Ollama", "local inference", "privacy", "AI tools"]
+tags: ["llm", "ollama", "local-inference", "privacy", "ai-tools"]
 lang: en
 tldr: "Running an LLM locally with Ollama is simpler than you think: one line to install, one line to pull a model, one line to chat. This guide takes you from install to a working local RAG pipeline."
 description: "Complete guide to running LLMs locally with Ollama: installation, model selection (Llama 3, Gemma, Mistral), hardware requirements, OpenAI-compatible API setup, and a working local RAG example."

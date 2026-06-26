@@ -2,7 +2,7 @@
 title: "AI 影片生成的宿敵終於被解決了：時序漂移問題的技術演進"
 date: 2026-05-02T19:12:26.224Z
 category: tech
-tags: ["AI", "影片生成", "時序一致性", "Diffusion Model", "研究", "深度學習"]
+tags: ["ai", "video-generation", "temporal-consistency", "diffusion-model", "research", "deep-learning"]
 lang: zh-TW
 tldr: "AI 影片生成長年被「時序漂移（temporal drift）」和「記憶遺忘（forgetting）」困擾，2025 年多個新架構——FramePack、MoC、A2RD——提出了系統性的解法，讓長影片生成終於成為可能。"
 description: "從擴散模型的固有限制，到 2025 年 FramePack、Mixture of Contexts 等新架構的解法，本文系統性整理 AI 影片生成最頑固的技術問題如何在近兩年被逐步克服。"

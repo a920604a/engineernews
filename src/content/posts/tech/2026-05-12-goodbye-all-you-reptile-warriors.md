@@ -2,7 +2,7 @@
 title: "再見，所有的爬蟲勇士：Python 在 AI 時代的角色轉變"
 date: 2026-05-12T02:51:16.245Z
 category: tech
-tags: ["Python", "AI", "程式語言", "開發工具", "LLM"]
+tags: ["python", "ai", "programming-language", "developer-tools", "llm"]
 lang: zh-TW
 tldr: "Python 依然是 AI 開發的主力語言，但 AI 工具的普及讓「寫 Python 程式碼」和「做 AI 開發」這兩件事的界線越來越模糊——這篇文章探討 Python 在 AI 時代的定位轉變。"
 description: "探討 Python 在 AI 時代的角色演變：從脫稿語言到 AI 基礎設施的主幹，以及 LLM 輔助程式開發如何改變 Python 工程師的工作方式。"

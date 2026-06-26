@@ -2,7 +2,7 @@
 title: "Sakana AI 的神明模擬器：用神經細胞自動機看演化動力學"
 date: 2026-05-02T13:38:40.277Z
 category: tech
-tags: ["AI", "Sakana AI", "演化計算", "神經細胞自動機", "AI Scientist", "研究"]
+tags: ["ai", "sakana-ai", "evolutionary-computation", "neural-cellular-automata", "ai-scientist", "research"]
 lang: zh-TW
 tldr: "Sakana AI 推出的「神明模擬器」用神經細胞自動機讓使用者扮演演化的規則制定者，觀察數位生態系如何在不同生存壓力下興衰、合作或崩潰。"
 description: "Sakana AI 的 God Simulator 是一個基於神經細胞自動機的互動模擬平台，讓使用者調整生存規則觀察數位生物的演化行為。本文解析其技術原理、設計哲學，以及它跟 Sakana AI 更大研究圖景的關係。"

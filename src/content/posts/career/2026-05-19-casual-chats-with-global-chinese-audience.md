@@ -2,7 +2,7 @@
 title: "程式設計師閒聊：為什麼中文技術 YouTube 對海外工程師意義重大"
 date: 2026-05-19T12:14:59.247Z
 category: career
-tags: ["youtube", "中文技術社群", "海外工程師", "職涯"]
+tags: ["youtube", "chinese-tech-community", "overseas-engineers", "career"]
 lang: zh-TW
 tldr: "對散落在全球的華語工程師來說，一支能用母語聊技術的頻道，不只是學習資源，更是文化歸屬感的錨點。"
 description: "探討為什麼中文技術 YouTube 頻道對全球華語工程師有獨特的吸引力，以及閒聊風格的內容如何填補技術社群的空缺。"

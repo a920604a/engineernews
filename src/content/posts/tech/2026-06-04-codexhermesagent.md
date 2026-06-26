@@ -2,7 +2,7 @@
 title: "長期免費使用 Codex、Hermes 等 AI Coding Agent：完整攻略"
 date: 2026-06-04T03:54:50.503Z
 category: tech
-tags: ["openai-codex", "ai-coding", "agent", "free-tier", "developer-tools", "llm"]
+tags: ["openai-codex", "ai-coding", "ai-agent", "free-tier", "developer-tools", "llm"]
 lang: zh-TW
 tldr: "OpenAI Codex CLI 和多個 AI coding agent 工具都有免費方案，關鍵是了解各自的額度機制、如何組合使用以延長免費額度，以及什麼情境下值得付費。"
 description: "整理 OpenAI Codex CLI、Hermes、Claude Code 等 AI coding agent 的免費方案、額度限制和實際使用策略，讓你在不花錢的情況下把 AI 程式開發效率最大化。"

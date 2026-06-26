@@ -2,7 +2,7 @@
 title: "為了幫助社交焦慮的粉絲，我做了一個 AI 視訊通話產品"
 date: 2026-05-12T11:24:47.018Z
 category: tech
-tags: ["indie developer", "AI", "視訊通話", "社交焦慮", "WebRTC", "產品開發"]
+tags: ["indie-developer", "ai", "video-call", "webrtc", "product-development"]
 lang: zh-TW
 tldr: "一位 YouTuber/indie developer 注意到粉絲因社交焦慮難以開口，於是自己做了一個 AI 驅動的視訊通話練習平台，這篇文章拆解這類產品的技術架構和從零到一的取捨。"
 description: "Indie developer 案例研究：用 AI 視訊通話幫助社交焦慮用戶，涵蓋 WebRTC、AI 即時語音、Tavus 等技術選型，以及產品從想法到 MVP 的工程決策。"

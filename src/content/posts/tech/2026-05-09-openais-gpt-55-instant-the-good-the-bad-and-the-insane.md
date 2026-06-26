@@ -2,7 +2,7 @@
 title: "OpenAI 的 o3、o4-mini 與 GPT-4.1：好用的、有問題的、與瘋狂的"
 date: 2026-05-09T03:42:45.473Z
 category: tech
-tags: ["OpenAI", "o3", "o4-mini", "GPT-4.1", "AI", "LLM"]
+tags: ["openai", "o3", "o4-mini", "gpt-41", "ai", "llm"]
 lang: zh-TW
 tldr: "OpenAI 2025 年春季一次推出三款新模型：GPT-4.1 強化程式碼與指令遵循、o3 是目前最強推理模型、o4-mini 以低成本達到驚人的數學與程式效能——但定價策略和 API 存取限制讓開發者有複雜感受。"
 description: "評析 OpenAI 2025 年春季發布的 o3、o4-mini 和 GPT-4.1 三款模型的優缺點、基準表現與適用場景。"

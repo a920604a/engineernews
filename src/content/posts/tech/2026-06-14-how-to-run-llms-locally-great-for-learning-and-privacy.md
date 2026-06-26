@@ -2,7 +2,7 @@
 title: "在本機跑 LLM：用 Ollama 五分鐘起步"
 date: 2026-06-14T09:50:35.451Z
 category: tech
-tags: ["LLM", "Ollama", "本地推論", "隱私", "AI工具"]
+tags: ["llm", "ollama", "local-inference", "privacy", "ai-tools"]
 lang: zh-TW
 tldr: "用 Ollama 在本機跑 LLM 比你想像的簡單：一行安裝、一行下載模型、一行啟動。本文從安裝到實際使用，帶你跑起第一個本地 LLM。"
 description: "完整的本機 LLM 入門指南：Ollama 安裝、模型選擇（Llama 3、Gemma、Mistral）、硬體需求、OpenAI-compatible API 設定，以及本機推論的實際限制。"

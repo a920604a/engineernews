@@ -2,7 +2,7 @@
 title: "NVIDIA Isaac GR00T N1：讓我重新思考機器人 AI 的基礎模型架構"
 date: 2026-05-05T10:50:48.652Z
 category: tech
-tags: ["NVIDIA", "GR00T", "機器人", "基礎模型", "Physical AI", "具身智慧", "研究"]
+tags: ["nvidia", "gr00t", "robotics", "foundation-model", "physical-ai", "embodied-ai", "research"]
 lang: zh-TW
 tldr: "NVIDIA 的 Isaac GR00T N1 是第一個真正意義上的人形機器人通用基礎模型，雙系統架構讓一個模型可以控制多種不同的機器人硬體，開源釋出後迅速成為人形機器人開發的標準起點。"
 description: "NVIDIA Isaac GR00T N1 用雙系統架構（視覺語言模型 + 擴散 Transformer）解決了機器人 AI 最難的問題：怎麼讓一個模型跨越不同硬體體型，同時具備高層推理與低層精細動作控制能力。"

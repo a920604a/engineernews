@@ -2,7 +2,7 @@
 title: "Anthropic Asked the World to Stop, Shipped Fable 5, Then Got It Shut Down"
 date: 2026-06-14T04:54:52.915Z
 category: tech
-tags: ["AI", "Anthropic", "Fable 5", "safety", "policy", "government"]
+tags: ["ai", "anthropic", "fable-5", "safety", "policy", "government"]
 lang: en
 tldr: "Anthropic published a pause-AI paper on June 4, launched Fable 5 on June 9, and had it forcibly taken offline by the US government on June 12. All within ten days."
 description: "Fable 5 went from launch to government-mandated shutdown in four days. A case study in the gap between AI safety rhetoric and shipping reality."

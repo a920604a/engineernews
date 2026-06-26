@@ -2,7 +2,7 @@
 title: "NVIDIA 的效率怪獸：新一代 AI 推論技術如何重新定義算力邊界"
 date: 2026-05-16T13:49:04.570Z
 category: tech
-tags: ["nvidia", "ai推論", "模型壓縮", "量化", "推論優化", "晶片"]
+tags: ["nvidia", "ai-inference", "model-compression", "quantization", "inference-optimization", "chip"]
 lang: zh-TW
 tldr: "NVIDIA 最新推論優化技術透過量化、稀疏性與專用硬體架構的協同設計，在幾乎不損失精確度的前提下大幅提升吞吐量、降低延遲，讓部署成本直接壓縮到過去的幾分之一。"
 description: "深入解析 NVIDIA 新一代 AI 推論優化技術的原理、與傳統模型部署方式的差距，以及對實際 AI 應用部署成本的影響。"

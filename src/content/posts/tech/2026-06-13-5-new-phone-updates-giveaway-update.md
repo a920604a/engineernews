@@ -2,7 +2,7 @@
 title: "2026 年 Android 更新現況：哪些手機在做對的事"
 date: 2026-06-13T04:27:42.847Z
 category: tech
-tags: ["Android", "手機更新", "Pixel", "Samsung", "軟體支援"]
+tags: ["android", "phone-updates", "pixel", "samsung", "software-support"]
 lang: zh-TW
 tldr: "Android 更新生態在 2026 年有明顯改善，Pixel 7 年支援承諾、Samsung Galaxy S25 的快速安全性補丁、OnePlus 的更新政策轉變，是這一代 Android 手機值得關注的地方。"
 description: "2026 年中的 Android 手機軟體更新現況：Pixel 的長期支援承諾、Samsung One UI 更新速度、OnePlus 政策轉變，以及對 Android 開發者的實際影響。"

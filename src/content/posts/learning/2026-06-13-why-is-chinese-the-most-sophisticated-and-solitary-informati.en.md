@@ -2,7 +2,7 @@
 title: "Why Chinese Is the World's Most 'Solitary' Information Medium"
 date: 2026-06-13T14:17:31.178Z
 category: learning
-tags: ["Chinese", "linguistics", "writing systems", "information density", "culture"]
+tags: ["chinese", "linguistics", "writing-systems", "information-density", "culture"]
 lang: en
 tldr: "Chinese's 'solitude' isn't about complexity—it's that its logographic system makes it a self-contained information universe with almost no structural connection to the world's other major writing systems."
 description: "Why is Chinese called the world's most 'solitary' writing system? From logographic vs. phonographic fundamentals, to information density, dialect diversity, and what this means for the digital age."

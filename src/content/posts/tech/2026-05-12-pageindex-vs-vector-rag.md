@@ -2,7 +2,7 @@
 title: "PageIndex 深度解析：用 LLM 推理取代向量搜尋的 RAG 架構"
 date: 2026-05-12T10:00:00.000Z
 category: tech
-tags: [ai, llm, rag, cloudflare]
+tags: ["ai", "llm", "rag", "cloudflare"]
 lang: zh-TW
 tldr: "PageIndex 用階層樹索引 + LLM Agent 推理取代向量 DB，在長文件場景（FinanceBench 98.7%）表現亮眼；本站的 Hybrid RAG 則以向量搜尋 + 關鍵字 fallback 在 Cloudflare edge 上跑，取捨完全不同。"
 description: "深入研究 VectifyAI/PageIndex 的無向量 RAG 架構，並與本站 bge-m3 + Cloudflare Vectorize 實作做完整比較，分析兩種路線的設計哲學、適用場景與取捨。"

@@ -2,7 +2,7 @@
 title: "GitHub 趨勢週報 113：Warp 開源、Agent Skills 正式化、Codex CLI 登場"
 date: 2026-05-06T02:44:07.467Z
 category: tech
-tags: ["github", "開源專案", "ai", "warp", "codex", "agent-skills"]
+tags: ["github", "open-source", "ai", "warp", "codex", "agent-skills"]
 lang: zh-TW
 series:
   name: "GitHub 開源週報"

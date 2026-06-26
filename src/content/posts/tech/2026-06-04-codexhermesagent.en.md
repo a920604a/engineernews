@@ -2,7 +2,7 @@
 title: "How to Use Codex, Hermes, and Other AI Coding Agents for Free (Long-Term)"
 date: 2026-06-04T03:54:50.503Z
 category: tech
-tags: ["openai-codex", "ai-coding", "agent", "free-tier", "developer-tools", "llm"]
+tags: ["openai-codex", "ai-coding", "ai-agent", "free-tier", "developer-tools", "llm"]
 lang: en
 tldr: "OpenAI Codex CLI and multiple AI coding agents have free tiers. The key is understanding each tool's quota mechanism, how to combine them to extend free usage, and when paid tiers are actually worth it."
 description: "A practical guide to the free tiers of OpenAI Codex CLI, GitHub Copilot, Continue.dev, and open-source local models — strategies to maximize AI coding productivity without spending money."

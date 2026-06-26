@@ -2,7 +2,7 @@
 title: "Anthropic's Wildest Ten Days: IPO, Pause Call, Fable 5, Government Shutdown"
 date: 2026-06-11T03:52:03.183Z
 category: tech
-tags: ["Anthropic", "AI", "safety", "IPO", "policy"]
+tags: ["anthropic", "ai", "safety", "ipo", "policy"]
 lang: en
 tldr: "In ten days, Anthropic filed an IPO, called for a global AI pause, launched Fable 5, and watched it get forced offline by the US government—all contradictions compressed into one week."
 description: "From IPO filing to government-mandated shutdown, Anthropic's June 2026 was the most dramatic ten days in AI industry history."

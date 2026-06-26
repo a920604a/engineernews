@@ -2,7 +2,7 @@
 title: "金管會調高 ETF 單股上限至 25%：台積電效應與台股結構性變化"
 date: 2026-05-02T03:36:27.638Z
 category: tech
-tags: ["台積電", "台股", "ETF", "金管會", "投資", "半導體", "財經"]
+tags: ["tsmc", "taiwan-stocks", "etf", "regulation", "investing", "semiconductor", "finance"]
 lang: zh-TW
 tldr: "金管會將主動型 ETF 單一個股持股上限從 10% 調高至 25%，台積電成為唯一受益者，單日吸引近兩千億元資金輪動。"
 description: "2026 年 4 月金管會放寬主動型基金與 ETF 的單股集中度上限，實質上等於為台積電量身訂做新規則。本文分析政策背景、市場影響、以及對台股結構帶來的長期效應。"

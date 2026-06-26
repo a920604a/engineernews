@@ -2,7 +2,7 @@
 title: "Transformer 怎麼知道詞的順序？從絕對位置編碼到 RoPE 的演進"
 date: 2026-05-10T04:00:23.072Z
 category: tech
-tags: ["Transformer", "RoPE", "位置編碼", "NLP", "機器學習", "深度學習"]
+tags: ["transformer", "rope", "positional-encoding", "nlp", "machine-learning", "deep-learning"]
 lang: zh-TW
 tldr: "Transformer 的 self-attention 天生不知道詞的順序，位置編碼是補救措施。從正弦函數絕對編碼、可學習絕對編碼、相對位置編碼，到 RoPE（旋轉位置嵌入）——現代 LLM 幾乎都用 RoPE，因為它是免參數、天然表達相對距離、且可外推到更長序列的最佳方案。"
 description: "系統性介紹 Transformer 位置編碼的四種主要方案：Sinusoidal 絕對編碼、可學習絕對編碼、相對位置編碼（T5、ALiBi），以及 RoPE 的數學直覺與工程優勢。"
