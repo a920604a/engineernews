@@ -39,7 +39,8 @@ type D1Data = {
   page_views_top: { slug: string; count: number }[];
 };
 type R2Data = { count: number; truncated: boolean };
-type VecData = { chunk_count: number | null; embedding_model: string; dimensions: number; index_name: string; metadata_indexes: string[] };
+type VecCoverage = { total_posts: number; covered: number; uncovered: number; uncovered_posts: { id: string; title: string; lang: string }[] };
+type VecData = { chunk_count: number | null; vector_count?: number | null; drift?: number | null; processed_up_to?: string | null; coverage?: VecCoverage; embedding_model: string; dimensions: number; index_name: string; metadata_indexes: string[] };
 type CfgData = { embedding_model: string; embedding_dims: number; chat_model: string; vector_top_k: number; max_sources: number; vectorize_index: string; d1_database: string; r2_bucket: string; compatibility_date: string; astro_output: string };
 type PostRow = { id: string; title: string; category: string; lang: string; created_at: string; updated_at: string; chunk_count: number };
 type ContentStats = { draft_true: number; draft_false: number; published_with_audio: number };
@@ -412,13 +413,56 @@ function VectorizeDetail({ vec, token }: { vec: VecData; token: string }) {
 
   return (
     <div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: '12px', marginBottom: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))', gap: '12px', marginBottom: '16px' }}>
         <div style={s.card}><p style={s.label}>Index</p><p style={{ ...s.mono, margin: '4px 0 0', fontWeight: 700, fontSize: '11px' }}>{vec.index_name}</p></div>
         <div style={s.card}><p style={s.label}>Model</p><p style={{ ...s.mono, margin: '4px 0 0', fontWeight: 700, fontSize: '11px' }}>{vec.embedding_model.split('/').at(-1)}</p></div>
         <div style={s.card}><p style={s.label}>Dimensions</p><p style={{ ...s.value, fontSize: '22px' }}>{vec.dimensions}</p></div>
-        <div style={s.card}><p style={s.label}>Total Chunks</p><p style={{ ...s.value, fontSize: '22px' }}>{vec.chunk_count ?? '–'}</p></div>
-        <div style={s.card}><p style={s.label}>Metadata Indexes</p><p style={{ ...s.mono, margin: '4px 0 0', fontWeight: 700 }}>{vec.metadata_indexes.join(', ') || '–'}</p></div>
+        <div style={s.card}><p style={s.label}>D1 Chunks</p><p style={{ ...s.value, fontSize: '22px' }}>{vec.chunk_count ?? '–'}</p></div>
+        <div style={s.card}><p style={s.label}>Vectorize Vectors</p><p style={{ ...s.value, fontSize: '22px' }}>{vec.vector_count ?? '–'}</p></div>
       </div>
+
+      {/* Drift: Vectorize vs D1. 0 = in sync; >0 = orphan vectors; <0 = missing vectors */}
+      {typeof vec.drift === 'number' && (
+        <div style={{ ...s.card, marginBottom: '16px', borderColor: vec.drift === 0 ? 'var(--separator)' : '#ff9f0a', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '13px', fontWeight: 700, color: vec.drift === 0 ? 'var(--color-green)' : '#ff9f0a' }}>
+            {vec.drift === 0 ? '✓ In sync' : `⚠ Drift ${vec.drift > 0 ? '+' : ''}${vec.drift}`}
+          </span>
+          <span style={{ fontSize: '12px', color: 'var(--label-secondary)' }}>
+            {vec.drift === 0
+              ? 'Vectorize 向量數 = D1 chunk 數，索引一致。'
+              : vec.drift > 0
+                ? `Vectorize 比 D1 多 ${vec.drift} 個向量（可能有孤兒向量，下次 sync 的 cleanupOrphans 會清）。`
+                : `Vectorize 比 D1 少 ${-vec.drift} 個向量（有 chunk 還沒進索引，需重跑 sync）。`}
+          </span>
+        </div>
+      )}
+
+      {/* Coverage: how many posts have chunks at all */}
+      {vec.coverage && (
+        <div style={{ marginBottom: '24px' }}>
+          <p style={s.section}>Post Coverage</p>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center', marginBottom: vec.coverage.uncovered > 0 ? '10px' : 0 }}>
+            <span style={{ fontSize: '14px', fontWeight: 700, color: vec.coverage.uncovered === 0 ? 'var(--color-green)' : '#ff9f0a' }}>
+              {vec.coverage.covered}/{vec.coverage.total_posts} posts covered
+            </span>
+            <span style={{ fontSize: '12px', color: 'var(--label-secondary)' }}>
+              {vec.coverage.uncovered === 0 ? '✓ 每篇文章都有向量' : `${vec.coverage.uncovered} 篇沒有任何 chunk（未進 Vectorize）`}
+            </span>
+          </div>
+          {vec.coverage.uncovered > 0 && (
+            <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+              {vec.coverage.uncovered_posts.map(p => (
+                <div key={p.id} style={{ ...s.row, gap: '8px' }}>
+                  <span style={s.pill('#48484a')}>{p.lang}</span>
+                  <span style={{ fontSize: '13px', flex: 1 }}>{p.title}</span>
+                  <span style={{ ...s.mono, color: '#ff9f0a', fontSize: '11px' }}>0 chunks</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       <p style={s.section}>Chunks per Post</p>
       {loading && <CardSkeleton lines={6} />}
       {err && <Err msg={err} />}

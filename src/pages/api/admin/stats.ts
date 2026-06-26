@@ -180,7 +180,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
 
   // ── Overview (single batched call for main dashboard) ─────────────────────
 
-  const [d1Result, r2Result, postsResult, contentStatsResult] = await Promise.allSettled([
+  const [d1Result, r2Result, postsResult, contentStatsResult, vectorizeResult] = await Promise.allSettled([
     safe(async () => {
       const [counts, langDist, catDist, recentPosts, postsTrend, searchTrend, searchStats, pageViewsTop] = await Promise.all([
         env.DB.batch([
@@ -273,6 +273,15 @@ export const GET: APIRoute = async ({ request, locals }) => {
         { draft_true: 0, draft_false: 0, published_with_audio: 0 }
       );
     }),
+    // Actual Vectorize index stats (real vector count, for drift detection)
+    safe(async () => {
+      const desc = await (env.VECTORIZE as unknown as { describe: () => Promise<Record<string, unknown>> }).describe();
+      const vectorCount = (desc.vectorCount ?? desc.vectorsCount ?? desc.count) as number | undefined;
+      return {
+        vector_count: typeof vectorCount === 'number' ? vectorCount : null,
+        processed_up_to: (desc.processedUpToDatetime ?? null) as string | null,
+      };
+    }),
   ]);
 
   const settle = <T>(r: PromiseSettledResult<SafeResult<T>>): SafeResult<T> =>
@@ -282,19 +291,37 @@ export const GET: APIRoute = async ({ request, locals }) => {
   const r2 = settle(r2Result);
   const posts = settle(postsResult);
   const content_stats = settle(contentStatsResult);
+  const vecIndex = settle(vectorizeResult);
+
+  // Coverage: a post with 0 chunks is NOT represented in Vectorize.
+  const postRows = posts.data ?? [];
+  const uncovered = postRows.filter(p => Number(p.chunk_count) === 0);
+  const coverage = {
+    total_posts: postRows.length,
+    covered: postRows.length - uncovered.length,
+    uncovered: uncovered.length,
+    uncovered_posts: uncovered.slice(0, 50).map(p => ({ id: p.id, title: p.title, lang: p.lang })),
+  };
+  const chunkCount = d1.data?.doc_chunks ?? null;
+  const vectorCount = vecIndex.data?.vector_count ?? null;
 
   return Response.json({
     d1,
     r2,
     vectorize: {
       data: {
-        chunk_count: d1.data?.doc_chunks ?? null,
+        chunk_count: chunkCount,
+        vector_count: vectorCount,
+        // >0 → orphan vectors in Vectorize; <0 → chunks missing from Vectorize
+        drift: (typeof vectorCount === 'number' && typeof chunkCount === 'number') ? vectorCount - chunkCount : null,
+        processed_up_to: vecIndex.data?.processed_up_to ?? null,
+        coverage,
         embedding_model: EMBEDDING_MODEL,
         dimensions: EMBEDDING_DIMS,
         index_name: VECTORIZE_INDEX,
         metadata_indexes: ['lang'],
       },
-      error: d1.error,
+      error: vecIndex.error ?? d1.error,
     },
     config: {
       data: {
