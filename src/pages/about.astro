@@ -23,8 +23,8 @@ const timeline = [
 
 const projects = [
   { name: 'GitHub Data Analytics Pipeline', desc: '用 GCP、Airflow、BigQuery 自動處理 GitHub Watch events，透過 Streamlit dashboard 即時呈現開源趨勢與開發者參與度。', stack: ['GCP', 'Airflow', 'BigQuery', 'Python', 'Streamlit', 'Terraform'], repo: 'https://github.com/a920604a/gitHub-data-analytics' },
-  { name: 'Stock Price Prediction with MLOps', desc: '完整 MLOps pipeline：自動化 ETL、模型訓練、實驗追蹤、即時推論、監控與 CI/CD，跑在 Dockerized 基礎設施上。', stack: ['Prefect', 'MLflow', 'FastAPI', 'Prometheus', 'Grafana', 'PostgreSQL', 'ClickHouse', 'Docker', 'GitHub Actions'], repo: 'https://github.com/a920604a/stock-mlops' },
-  { name: 'Arxiv Knowledge Assistant', desc: 'arXiv 論文檢索平台：每日 ingestion、向量檢索、LLM RAG、雙語問答與視覺化 dashboard，全程容器化並以 Prometheus/Grafana 監控。', stack: ['FastAPI', 'Prefect', 'Qdrant', 'PostgreSQL', 'MinIO', 'React', 'Docker', 'Grafana'], repo: 'https://github.com/a920604a/llm-assistant' },
+  { name: 'Stock Price Prediction with MLOps', desc: '完整 MLOps pipeline：自動化 ETL、模型訓練、實驗追蹤、即時推論、監控與 CI/CD，跑在 Dockerized 基礎設施上。', stack: ['Prefect', 'MLflow', 'FastAPI', 'Prometheus', 'Grafana', 'PostgreSQL', 'ClickHouse', 'Docker', 'GitHub Actions'], repo: 'https://github.com/a920604a/stock-mlops', article: '/posts/tech/2026-04-23-stock-mlops' },
+  { name: 'Arxiv Knowledge Assistant', desc: 'arXiv 論文檢索平台：每日 ingestion、向量檢索、LLM RAG、雙語問答與視覺化 dashboard，全程容器化並以 Prometheus/Grafana 監控。', stack: ['FastAPI', 'Prefect', 'Qdrant', 'PostgreSQL', 'MinIO', 'React', 'Docker', 'Grafana'], repo: 'https://github.com/a920604a/llm-assistant', article: '/posts/tech/2026-04-23-llm-assistant' },
   { name: 'Clothing Recommendation Platform', desc: '整合 web scraping、ETL、Redis 快取、FastAPI 後端與 React 前端，依地區風格、色票與性別推薦穿搭。', stack: ['FastAPI', 'React', 'Redis', 'ETL', 'Python'], repo: 'https://github.com/a920604a/clothes-outfit' },
 ];
 
@@ -134,12 +134,15 @@ const certTotal = certifications.reduce((n, c) => n + c.items.length, 0);
     <h2>精選作品</h2>
     <div class="proj-grid">
       {projects.map(p => (
-        <a class="proj-card" href={p.repo} target="_blank" rel="noopener">
+        <div class="proj-card">
           <h3>{p.name}</h3>
           <p>{p.desc}</p>
           <div class="stack">{p.stack.map(s => <span class="tag">{s}</span>)}</div>
-          <span class="proj-cta">GitHub →</span>
-        </a>
+          <div class="proj-links">
+            <a href={p.repo} target="_blank" rel="noopener">GitHub →</a>
+            {'article' in p && p.article && <a href={p.article}>讀文章 →</a>}
+          </div>
+        </div>
       ))}
     </div>
     <div class="more-projects">
@@ -298,14 +301,13 @@ const certTotal = certifications.reduce((n, c) => n + c.items.length, 0);
   .proj-card:hover { border-color: color-mix(in srgb, var(--accent) 35%, var(--separator)); transform: translateY(-2px); box-shadow: var(--shadow-md); }
   .proj-card:hover::before { opacity: 1; }
   .proj-card h3 { margin: 0 0 6px; font-size: 17px; }
-  .proj-card h3::after { content: ' ↗'; color: var(--accent); font-size: 13px; opacity: 0.7; }
   .proj-card p { margin: 0 0 12px; font-size: 14px; line-height: 1.7; color: var(--label-secondary); }
-  .proj-cta {
-    display: inline-block; margin-top: 12px;
-    font-size: 12.5px; font-weight: 600; color: var(--accent);
-    transition: transform 0.18s;
+  .proj-links { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; }
+  .proj-links a {
+    font-size: 12.5px; font-weight: 600; color: var(--accent); text-decoration: none;
+    transition: transform 0.18s; display: inline-block;
   }
-  .proj-card:hover .proj-cta { transform: translateX(3px); }
+  .proj-links a:hover { transform: translateX(3px); }
 
   .more-projects { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
   .more-proj {
@@ -320,8 +322,11 @@ const certTotal = certifications.reduce((n, c) => n + c.items.length, 0);
 
   .stack, .skill-items { display: flex; flex-wrap: wrap; gap: 6px; }
   .tag {
-    font-size: 12px; padding: 3px 9px; border-radius: var(--radius-sm);
-    background: var(--glass); color: var(--label-tertiary);
+    font-size: 12px; padding: 3px 10px; border-radius: var(--radius-sm);
+    background: color-mix(in srgb, var(--accent) 9%, transparent);
+    border: 0.5px solid color-mix(in srgb, var(--accent) 22%, var(--separator));
+    color: color-mix(in srgb, var(--accent) 75%, var(--label));
+    font-weight: 500;
   }
 
   .skills { display: grid; gap: 16px; }
