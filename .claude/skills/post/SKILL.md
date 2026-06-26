@@ -107,9 +107,21 @@ description: Convert a conversation, notes, experience, or GitHub project into a
    - 每個候選產出三欄：`key`（文章中出現的英文詞，存小寫）、`zh`（繁中翻譯）、`context`（一句繁中情境說明，對齊既有寫法，約 20–40 字）
    - 整理成表格，**留到下一步 review 一起給使用者勾選，先不要寫檔**
 
-8. **請使用者 review**：展示中英兩份草稿，以及上一步的 glossary 術語候選表，詢問是否修改、哪些術語要收錄
+8. **請使用者 review**：展示中英兩份草稿、上一步的 glossary 術語候選表，並**評估是否歸入現有系列**：
+   - 讀 `src/utils/series.ts` 的 `SERIES_DEFINITIONS`（目前系列清單），**只比對已存在的系列**
+   - 判準（沿用站上的系列定義）：這篇是否**明顯屬於**某系列、照系列順序讀能**墊高那條路徑**——「同 tag」不算，要有遞進/同一條主線。符合才建議：「這篇像是 ⟨系列名⟩ 的一篇，建議 order = N，要加嗎？」
+   - `order` 取該系列目前最大 order + 1（或依內容邏輯插入）
+   - **絕不自動開新系列**；新系列是策展主張，一律由使用者決定
+   - **多數文章不屬於任何系列 → 不加才是常態**，寧缺勿濫
+   - 一併詢問：是否修改草稿、哪些術語要收錄、**是否歸入系列**
 
 9. **確認後執行**：
+   - **若使用者同意歸入系列**：在中英**兩份** frontmatter 的 `lang:` 行下方插入（`name` 必須與 `SERIES_DEFINITIONS` 的 key 一字不差）：
+     ```yaml
+     series:
+       name: "<系列名>"
+       order: <N>
+     ```
    - 將使用者勾選的術語寫入 `src/data/glossary.ts`：插入到語意最接近的分類註解區塊下（系統設計 / API / 儲存快取 / 安全 / 開發流程 / 容器雲端 / AI ML / 職場英文），對齊既有 `"term": { zh: "…", context: "…" },` 格式；使用者全不選則略過此檔
    ```bash
    git add src/content/posts/<category>/YYYY-MM-DD-<slug>.md \

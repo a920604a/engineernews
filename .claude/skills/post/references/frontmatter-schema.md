@@ -10,6 +10,7 @@
 | description | string | ❌ | SEO meta description |
 | tldr | string | ❌ | 一句話摘要（tech / learning 類強烈建議填） |
 | draft | boolean | ❌ | true 時不顯示（預設 false） |
+| series | object | ❌ | 歸入系列時填 `{ name, order }`。`name` 必須與 `src/utils/series.ts` 的 `SERIES_DEFINITIONS` key 一字不差；`order` 為閱讀順序（數字）。**只在文章明顯屬於某現有系列時才加，不自動開新系列**。中英兩份要一致。 |
 
 ## Category 選項（只能選一個）
 
