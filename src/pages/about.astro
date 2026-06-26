@@ -74,6 +74,21 @@ const contacts = [
   { label: 'Email', url: 'mailto:a920604a@gmail.com' },
 ];
 
+const tagline = '做能跑在生產環境的 AI 與資料系統，並把技術決策留成文件。';
+
+const principles = [
+  '技術決策即文件——把決策過程留下來，往往比結論本身更有價值。',
+  '需要的不是更多輸出，而是更低成本的理解。',
+  '工程真正的價值，在於可重現與可維護。',
+];
+
+const interests = [
+  { name: '旅行', why: '換個環境，常常比埋頭硬想更能把問題想清楚。' },
+  { name: '閱讀 / 音樂', why: '輸入的品質，決定輸出的品質。' },
+];
+
+const socials = contacts.filter(c => ['GitHub', 'LinkedIn', 'Email'].includes(c.label));
+
 const certTotal = certifications.reduce((n, c) => n + c.items.length, 0);
 ---
 <BaseLayout title="關於" description={profile.bio}>
@@ -81,11 +96,22 @@ const certTotal = certifications.reduce((n, c) => n + c.items.length, 0);
     <p class="eyebrow">About</p>
     <h1>{profile.name}</h1>
     <p class="kicker">{profile.title} · {profile.location}</p>
+    <p class="tagline">{tagline}</p>
+    <div class="hero-social">
+      {socials.map(c => <a href={c.url} target="_blank" rel="noopener">{c.label}</a>)}
+    </div>
     <p class="bio">{profile.bio}</p>
     <div class="focus">
       {focus.map(f => <span class="chip">{f}</span>)}
     </div>
   </header>
+
+  <section>
+    <h2>理念</h2>
+    <ul class="principles">
+      {principles.map(p => <li>{p}</li>)}
+    </ul>
+  </section>
 
   <section>
     <h2>經歷</h2>
@@ -112,6 +138,7 @@ const certTotal = certifications.reduce((n, c) => n + c.items.length, 0);
           <h3>{p.name}</h3>
           <p>{p.desc}</p>
           <div class="stack">{p.stack.map(s => <span class="tag">{s}</span>)}</div>
+          <span class="proj-cta">GitHub →</span>
         </a>
       ))}
     </div>
@@ -154,6 +181,18 @@ const certTotal = certifications.reduce((n, c) => n + c.items.length, 0);
     ))}
   </section>
 
+  <section>
+    <h2>興趣</h2>
+    <div class="interests">
+      {interests.map(i => (
+        <div class="interest">
+          <span class="interest-name">{i.name}</span>
+          <span class="interest-why">{i.why}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
   <section class="contact">
     <h2>聯絡</h2>
     <div class="links">
@@ -173,9 +212,40 @@ const certTotal = certifications.reduce((n, c) => n + c.items.length, 0);
     background: linear-gradient(120deg, var(--label), var(--accent));
     -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   }
-  .kicker { font-size: 13px; color: var(--accent); margin: 0 0 14px; font-weight: 600; letter-spacing: 0.02em; }
-  .bio { color: var(--label-secondary); font-size: 16px; line-height: 1.8; margin: 0 0 16px; max-width: 64ch; }
+  .kicker { font-size: 13px; color: var(--accent); margin: 0 0 12px; font-weight: 600; letter-spacing: 0.02em; }
+  .tagline { font-size: 17px; line-height: 1.6; color: var(--label); margin: 0 0 12px; max-width: 60ch; font-weight: 500; }
+  .hero-social { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 0 18px; }
+  .hero-social a {
+    font-size: 13px; font-weight: 600; color: var(--label-secondary);
+    text-decoration: none; display: inline-flex; align-items: center;
+    transition: color 0.15s;
+  }
+  .hero-social a::before { content: '↗'; font-size: 11px; margin-right: 3px; color: var(--accent); }
+  .hero-social a:hover { color: var(--accent); }
+  .bio { color: var(--label-secondary); font-size: 15px; line-height: 1.8; margin: 0 0 16px; max-width: 64ch; }
   .focus { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .principles { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .principles li {
+    position: relative; padding-left: 22px;
+    font-size: 16px; line-height: 1.6; color: var(--label); font-weight: 500;
+  }
+  .principles li::before {
+    content: ''; position: absolute; left: 0; top: 9px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: linear-gradient(140deg, var(--accent), var(--heading-accent));
+  }
+
+  .interests { display: grid; gap: 12px; }
+  .interest { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+  .interest-name {
+    font-size: 14px; font-weight: 700; color: var(--label);
+    padding: 3px 12px; border-radius: var(--radius-full);
+    background: color-mix(in srgb, var(--accent) 10%, var(--glass));
+    border: 0.5px solid color-mix(in srgb, var(--accent) 22%, var(--separator));
+    white-space: nowrap;
+  }
+  .interest-why { font-size: 14px; color: var(--label-secondary); line-height: 1.6; }
   .chip {
     font-size: 13px; padding: 5px 12px; border-radius: var(--radius-full);
     background: color-mix(in srgb, var(--accent) 8%, var(--glass));
@@ -230,6 +300,12 @@ const certTotal = certifications.reduce((n, c) => n + c.items.length, 0);
   .proj-card h3 { margin: 0 0 6px; font-size: 17px; }
   .proj-card h3::after { content: ' ↗'; color: var(--accent); font-size: 13px; opacity: 0.7; }
   .proj-card p { margin: 0 0 12px; font-size: 14px; line-height: 1.7; color: var(--label-secondary); }
+  .proj-cta {
+    display: inline-block; margin-top: 12px;
+    font-size: 12.5px; font-weight: 600; color: var(--accent);
+    transition: transform 0.18s;
+  }
+  .proj-card:hover .proj-cta { transform: translateX(3px); }
 
   .more-projects { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
   .more-proj {

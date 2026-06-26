@@ -73,6 +73,21 @@ const contacts = [
   { label: 'Email', url: 'mailto:a920604a@gmail.com' },
 ];
 
+const tagline = 'Building AI and data systems that actually run in production — and turning the decisions into documentation.';
+
+const principles = [
+  'Technical decisions as documentation — the process is often worth more than the conclusion.',
+  "What's needed isn't more output, but lower-cost understanding.",
+  'The real value of engineering is reproducibility and maintainability.',
+];
+
+const interests = [
+  { name: 'Travel', why: 'A change of scenery often untangles a problem better than grinding at it.' },
+  { name: 'Reading / Music', why: 'The quality of your input shapes the quality of your output.' },
+];
+
+const socials = contacts.filter(c => ['GitHub', 'LinkedIn', 'Email'].includes(c.label));
+
 const certTotal = certifications.reduce((n, c) => n + c.items.length, 0);
 ---
 <BaseLayout title="About" description={profile.bio}>
@@ -80,11 +95,22 @@ const certTotal = certifications.reduce((n, c) => n + c.items.length, 0);
     <p class="eyebrow">About</p>
     <h1>{profile.name}</h1>
     <p class="kicker">{profile.title} · {profile.location}</p>
+    <p class="tagline">{tagline}</p>
+    <div class="hero-social">
+      {socials.map(c => <a href={c.url} target="_blank" rel="noopener">{c.label}</a>)}
+    </div>
     <p class="bio">{profile.bio}</p>
     <div class="focus">
       {focus.map(f => <span class="chip">{f}</span>)}
     </div>
   </header>
+
+  <section>
+    <h2>Principles</h2>
+    <ul class="principles">
+      {principles.map(p => <li>{p}</li>)}
+    </ul>
+  </section>
 
   <section>
     <h2>Experience</h2>
@@ -111,6 +137,7 @@ const certTotal = certifications.reduce((n, c) => n + c.items.length, 0);
           <h3>{p.name}</h3>
           <p>{p.desc}</p>
           <div class="stack">{p.stack.map(s => <span class="tag">{s}</span>)}</div>
+          <span class="proj-cta">GitHub →</span>
         </a>
       ))}
     </div>
@@ -153,6 +180,18 @@ const certTotal = certifications.reduce((n, c) => n + c.items.length, 0);
     ))}
   </section>
 
+  <section>
+    <h2>Interests</h2>
+    <div class="interests">
+      {interests.map(i => (
+        <div class="interest">
+          <span class="interest-name">{i.name}</span>
+          <span class="interest-why">{i.why}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
   <section class="contact">
     <h2>Contact</h2>
     <div class="links">
@@ -172,9 +211,40 @@ const certTotal = certifications.reduce((n, c) => n + c.items.length, 0);
     background: linear-gradient(120deg, var(--label), var(--accent));
     -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   }
-  .kicker { font-size: 13px; color: var(--accent); margin: 0 0 14px; font-weight: 600; letter-spacing: 0.02em; }
-  .bio { color: var(--label-secondary); font-size: 16px; line-height: 1.8; margin: 0 0 16px; max-width: 64ch; }
+  .kicker { font-size: 13px; color: var(--accent); margin: 0 0 12px; font-weight: 600; letter-spacing: 0.02em; }
+  .tagline { font-size: 17px; line-height: 1.6; color: var(--label); margin: 0 0 12px; max-width: 60ch; font-weight: 500; }
+  .hero-social { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 0 18px; }
+  .hero-social a {
+    font-size: 13px; font-weight: 600; color: var(--label-secondary);
+    text-decoration: none; display: inline-flex; align-items: center;
+    transition: color 0.15s;
+  }
+  .hero-social a::before { content: '↗'; font-size: 11px; margin-right: 3px; color: var(--accent); }
+  .hero-social a:hover { color: var(--accent); }
+  .bio { color: var(--label-secondary); font-size: 15px; line-height: 1.8; margin: 0 0 16px; max-width: 64ch; }
   .focus { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .principles { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .principles li {
+    position: relative; padding-left: 22px;
+    font-size: 16px; line-height: 1.6; color: var(--label); font-weight: 500;
+  }
+  .principles li::before {
+    content: ''; position: absolute; left: 0; top: 9px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: linear-gradient(140deg, var(--accent), var(--heading-accent));
+  }
+
+  .interests { display: grid; gap: 12px; }
+  .interest { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+  .interest-name {
+    font-size: 14px; font-weight: 700; color: var(--label);
+    padding: 3px 12px; border-radius: var(--radius-full);
+    background: color-mix(in srgb, var(--accent) 10%, var(--glass));
+    border: 0.5px solid color-mix(in srgb, var(--accent) 22%, var(--separator));
+    white-space: nowrap;
+  }
+  .interest-why { font-size: 14px; color: var(--label-secondary); line-height: 1.6; }
   .chip {
     font-size: 13px; padding: 5px 12px; border-radius: var(--radius-full);
     background: color-mix(in srgb, var(--accent) 8%, var(--glass));
@@ -229,6 +299,12 @@ const certTotal = certifications.reduce((n, c) => n + c.items.length, 0);
   .proj-card h3 { margin: 0 0 6px; font-size: 17px; }
   .proj-card h3::after { content: ' ↗'; color: var(--accent); font-size: 13px; opacity: 0.7; }
   .proj-card p { margin: 0 0 12px; font-size: 14px; line-height: 1.7; color: var(--label-secondary); }
+  .proj-cta {
+    display: inline-block; margin-top: 12px;
+    font-size: 12.5px; font-weight: 600; color: var(--accent);
+    transition: transform 0.18s;
+  }
+  .proj-card:hover .proj-cta { transform: translateX(3px); }
 
   .more-projects { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
   .more-proj {
