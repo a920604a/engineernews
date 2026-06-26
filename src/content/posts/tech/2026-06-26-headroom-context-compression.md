@@ -9,6 +9,7 @@ github: "https://github.com/headroomlabs-ai/headroom"
 tldr: "Headroom 在 LLM 請求送到供應商前，於本地把 tool 輸出、log、RAG chunk 壓掉 60–95% 的 token。真正值得學的不是壓縮率，而是它用『mask 抽取 + 快取變異經濟學』決定該不該壓——以及一個文件超前實作的提醒。"
 description: "深入拆解 headroomlabs-ai/headroom 的上下文壓縮架構：mask-based 抽取式壓縮、JSON/code/text 三種 handler、CCR 可逆快取，以及最值得學的 KV cache 變異成本模型。"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260625_235929_783456.mp3"
 ---
 
 Agent 工作流最大的成本黑洞不是模型本身，而是**上下文膨脹**。一次 `grep` 回 100 筆結果、一份 incident log、一個 RAG 檢索，動輒上萬 token 塞進 prompt，而其中真正有訊號的可能不到一成。[Headroom](https://github.com/headroomlabs-ai/headroom) 想解決的就是這件事：在請求送到 OpenAI / Anthropic 之前，於**本地**把這層雜訊壓掉 60–95%，宣稱準確度幾乎不變。
