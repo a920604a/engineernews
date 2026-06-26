@@ -91,8 +91,19 @@ export const GET: APIRoute = async ({ request, locals }) => {
   if (view === 'page-views') {
     const result = await safe(async () => {
       const rows = await env.DB.prepare(
-        `SELECT slug, count, updated_at FROM page_views ORDER BY count DESC LIMIT 50`
-      ).all<{ slug: string; count: number; updated_at: string }>();
+        `SELECT pv.slug, pv.count, pv.updated_at, p.title,
+                SUM(CASE WHEN r.emoji = '❤️' THEN 1 ELSE 0 END) AS r_heart,
+                SUM(CASE WHEN r.emoji = '👍' THEN 1 ELSE 0 END) AS r_thumb,
+                SUM(CASE WHEN r.emoji = '💡' THEN 1 ELSE 0 END) AS r_idea,
+                SUM(CASE WHEN r.emoji = '🔥' THEN 1 ELSE 0 END) AS r_fire,
+                COUNT(r.id) AS r_total
+         FROM page_views pv
+         LEFT JOIN post_reactions r ON r.post_slug = pv.slug
+         LEFT JOIN posts p ON p.id = pv.slug
+         GROUP BY pv.slug
+         ORDER BY r_total DESC, pv.count DESC
+         LIMIT 60`
+      ).all<{ slug: string; count: number; updated_at: string; title: string | null; r_heart: number; r_thumb: number; r_idea: number; r_fire: number; r_total: number }>();
       return rows.results;
     });
     return Response.json(result);

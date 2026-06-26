@@ -52,7 +52,7 @@ type TraceRow = { id: number; query: string; lang: string; vector_hits: number; 
 type TracePage = { rows: TraceRow[]; total: number; limit: number; offset: number };
 type ChunkRow = { source_id: string; title: string; category: string; lang: string; chunk_count: number; last_updated: string };
 type R2Object = { key: string; size: number; uploaded: string };
-type PageView = { slug: string; count: number; updated_at: string };
+type PageView = { slug: string; count: number; updated_at: string; title?: string | null; r_heart: number; r_thumb: number; r_idea: number; r_fire: number; r_total: number };
 type TTSRecord = { id: number; created_at: string; type: 'tts'; title: string; voice: string; audio_filename: string; srt_filename: string };
 
 type CommentRow = { id: number; post_slug: string; author_name: string; body: string; hidden: number; created_at: string };
@@ -737,17 +737,32 @@ function PageViewsDetail({ token }: { token: string }) {
     <div>
       {loading && <CardSkeleton lines={10} />}
       {err && <Err msg={err} />}
-      {rows && rows.map(r => (
-        <div key={r.slug} style={{ ...s.row, gap: '10px', flexWrap: 'wrap' }}>
-          <a href={slugToUrl(r.slug)} target="_blank" rel="noopener noreferrer" style={{ ...s.mono, flex: 1, fontSize: '12px', color: '#0a84ff', wordBreak: 'break-all', textDecoration: 'none' }}>
-            {r.slug}
-          </a>
-          <div style={{ width: '120px', height: '5px', borderRadius: '3px', background: 'var(--separator)', overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${(r.count / max) * 100}%`, background: '#5e5ce6', borderRadius: '3px' }} />
+      {rows && (
+        <p style={{ fontSize: '11px', color: 'var(--label-tertiary)', margin: '0 0 10px' }}>
+          有 reaction 的文章排在最前 · ❤️ 喜歡 / 👍 讚 / 💡 啟發 / 🔥 精彩
+        </p>
+      )}
+      {rows && rows.map(r => {
+        const reactions: [string, number][] = [['❤️', r.r_heart], ['👍', r.r_thumb], ['💡', r.r_idea], ['🔥', r.r_fire]];
+        return (
+          <div key={r.slug} style={{ ...s.row, gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <a href={slugToUrl(r.slug)} target="_blank" rel="noopener noreferrer" style={{ flex: 1, minWidth: '160px', fontSize: '13px', color: '#0a84ff', textDecoration: 'none' }}>
+              {r.title || r.slug}
+            </a>
+            <div style={{ display: 'flex', gap: '7px', minWidth: '130px', alignItems: 'center' }}>
+              {r.r_total > 0
+                ? reactions.filter(([, n]) => n > 0).map(([e, n]) => (
+                    <span key={e} style={{ fontSize: '12px', fontWeight: 600, color: 'var(--label)', whiteSpace: 'nowrap' }}>{e} {n}</span>
+                  ))
+                : <span style={{ fontSize: '11px', color: 'var(--label-tertiary)' }}>無 reaction</span>}
+            </div>
+            <div style={{ width: '90px', height: '5px', borderRadius: '3px', background: 'var(--separator)', overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${(r.count / max) * 100}%`, background: '#5e5ce6', borderRadius: '3px' }} />
+            </div>
+            <span style={{ ...s.mono, fontWeight: 700, minWidth: '36px', textAlign: 'right' }} title="page views">{r.count}</span>
           </div>
-          <span style={{ ...s.mono, fontWeight: 700, minWidth: '36px', textAlign: 'right' }}>{r.count}</span>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
