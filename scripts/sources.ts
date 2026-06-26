@@ -38,7 +38,7 @@ export const SOURCES: Source[] = [
     url: 'https://www.youtube.com/@muerstalk',
     tags: ['職涯', '個人成長', '學習'],
     lang: 'zh-TW',
-    enabled: true,
+    enabled: false, // 停用：心理/情緒/人際內容，非本站技術範疇（2026-06）
     days: [1],
     maxAgeDays: 365,
   },
@@ -228,7 +228,7 @@ export const SOURCES: Source[] = [
     url: 'https://www.youtube.com/@benzi2662',
     tags: ['個人成長', '學習'],
     lang: 'zh-TW',
-    enabled: true,
+    enabled: false, // 停用：個人成長/生活 vlog，非本站技術範疇（2026-06）
     days: [6],
     maxAgeDays: 365,
   },
