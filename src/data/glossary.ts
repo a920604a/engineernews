@@ -173,6 +173,11 @@ export const glossary: Record<string, GlossEntry> = {
   "lora": { zh: "低秩適配", context: "只訓練少量額外低秩參數來微調大模型的方法，省算力又不動原始權重。" },
   "extractive": { zh: "抽取式", context: "直接從原文挑選保留片段的壓縮／摘要方式，相對於生成全新文字的生成式。" },
   "ast": { zh: "抽象語法樹", context: "程式碼的樹狀結構表示，編譯器與工具用它精確分析語法，而非靠字串比對。" },
+  "prompt injection": { zh: "提示注入", context: "第三方把惡意指令藏進模型會讀到的資料中，誘使 agent 在使用者不知情下執行攻擊者意圖。" },
+  "jailbreak": { zh: "越獄", context: "使用者刻意繞過模型安全訓練，誘導它產出本該拒絕的內容。" },
+  "red-teaming": { zh: "紅隊測試", context: "由攻擊方視角主動嘗試突破系統防護，用來找出安全漏洞。" },
+  "least privilege": { zh: "最小權限", context: "只授予完成任務所需的最小權限，縮小被攻陷後的爆炸範圍。" },
+  "defense in depth": { zh: "縱深防禦", context: "在不同層級疊多道獨立防線，假設任一層都可能失守的安全設計。" },
   // ── 全站掃描補充：API / 資料 / infra ──
   "rest": { zh: "REST", context: "以 HTTP 動詞操作資源的 API 設計風格，無狀態、易快取。" },
   "graphql": { zh: "GraphQL", context: "讓客戶端精確查詢所需欄位的 API 查詢語言，避免過度抓取。" },
