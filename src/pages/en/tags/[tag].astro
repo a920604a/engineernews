@@ -23,7 +23,7 @@ const { posts = [] } = Astro.props;
 
 <BaseLayout title={`#${tag}`}>
   <section style="padding-top: 32px;">
-    <h1 style="margin-bottom: 4px;">#{tag}</h1>
+    <h1 style="margin-bottom: 4px; font-size: clamp(32px, 7vw, 52px); line-height: 1.1; background: linear-gradient(120deg, var(--label), var(--accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">#{tag}</h1>
     <p style="color:var(--label-secondary); font-size:15px; margin:0 0 32px;">{posts.length} results</p>
 
     <div class="feed">

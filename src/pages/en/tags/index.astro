@@ -16,6 +16,8 @@ for (const post of allPosts) {
 const tagList = Object.entries(countMap)
   .map(([tag, count]) => ({ tag, count }))
   .sort((a, b) => b.count - a.count);
+const maxCount = tagList[0]?.count ?? 1;
+const tierOf = (count: number) => count >= maxCount * 0.6 ? 3 : count >= maxCount * 0.28 ? 2 : 1;
 ---
 
 <BaseLayout title="Tags">
@@ -38,7 +40,7 @@ const tagList = Object.entries(countMap)
 
     <div class="tag-grid" id="tag-grid">
       {tagList.map(({ tag, count }) => (
-        <a href={`/en/tags/${tag}`} class="tag-chip" data-tag={tag}>
+        <a href={`/en/tags/${tag}`} class={`tag-chip tier-${tierOf(count)}`} data-tag={tag}>
           <span class="tag-hash">#</span>{tag}
           <span class="tag-count">{count}</span>
         </a>
@@ -90,6 +92,9 @@ const tagList = Object.entries(countMap)
     font-size: clamp(32px, 7vw, 52px);
     margin: 0 0 12px;
     line-height: 1.1;
+    background: linear-gradient(120deg, var(--label), var(--accent));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .subtitle {
@@ -142,14 +147,26 @@ const tagList = Object.entries(countMap)
     border-radius: var(--radius-full);
     font-size: 13px;
     font-weight: 500;
-    color: var(--accent);
+    color: var(--label-secondary);
     text-decoration: none;
-    transition: background 0.15s, border-color 0.15s;
+    transition: background 0.15s, border-color 0.15s, transform 0.15s, color 0.15s;
   }
 
   .tag-chip:hover {
     background: color-mix(in srgb, var(--accent) 12%, transparent);
     border-color: color-mix(in srgb, var(--accent) 40%, var(--separator));
+    color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  /* frequency tiers — popular tags stand out */
+  .tag-chip.tier-3 {
+    font-size: 15px; font-weight: 700; color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 30%, var(--separator));
+  }
+  .tag-chip.tier-2 {
+    font-size: 14px; color: color-mix(in srgb, var(--accent) 85%, var(--label));
   }
 
   .tag-hash {

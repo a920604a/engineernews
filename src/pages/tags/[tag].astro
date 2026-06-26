@@ -99,6 +99,9 @@ const relatedTags = [...new Set(posts.flatMap(p => p.data.tags))]
     font-size: clamp(32px, 7vw, 52px);
     margin: 0 0 12px;
     line-height: 1.1;
+    background: linear-gradient(120deg, var(--label), var(--accent));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
   .tag-hash {
     color: var(--accent);

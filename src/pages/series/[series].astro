@@ -19,59 +19,99 @@ export async function getStaticPaths() {
 const { series } = Astro.props as { series: SeriesSummary };
 ---
 <BaseLayout title={series.name} description={series.description}>
-  <a href="/series" class="back-link">← {t('series.title')}</a>
-  <header class="series-header">
-    <span class="series-count">{series.count} {t('series.posts')}</span>
-    <h1>{series.name}</h1>
-    <p>{series.description}</p>
-  </header>
+  <section class="series-detail">
+    <a href="/series" class="back-link">← {t('series.title')}</a>
 
-  <ol class="series-list">
-    {series.posts.map((post, i) => (
-      <li>
-        <span class="series-order">{i + 1}</span>
-        <PostCard
-          id={post.id}
-          title={post.data.title}
-          date={post.data.date}
-          category={post.data.category}
-          tags={post.data.tags}
-          description={post.data.description}
-          tldr={post.data.tldr}
-          readingTime={post.data.readingTime}
-          lang={lang}
-          type={post.data.type}
-        />
-      </li>
-    ))}
-  </ol>
+    <header class="series-hero">
+      <p class="eyebrow">Series · {series.count} {t('series.posts')}</p>
+      <h1>{series.name}</h1>
+      <p class="hero-sub">{series.description}</p>
+    </header>
+
+    <ol class="series-list">
+      {series.posts.map((post, i) => (
+        <li>
+          <span class="series-order">{String(i + 1).padStart(2, '0')}</span>
+          <div class="series-item-card">
+            <PostCard
+              id={post.id}
+              title={post.data.title}
+              date={post.data.date}
+              category={post.data.category}
+              tags={post.data.tags}
+              description={post.data.description}
+              tldr={post.data.tldr}
+              readingTime={post.data.readingTime}
+              lang={lang}
+              type={post.data.type}
+            />
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
 </BaseLayout>
 
 <style>
+  .series-detail { padding-top: 32px; }
+
   .back-link {
     display: inline-block;
-    font-size: 13px;
-    color: var(--label-tertiary);
-    text-decoration: none;
-    margin: 28px 0 16px;
+    font-size: 13px; color: var(--label-tertiary);
+    text-decoration: none; margin-bottom: 20px;
   }
-  .back-link:hover { color: var(--label-secondary); }
-  .series-header {
-    border-left: 3px solid var(--accent);
-    padding-left: 16px;
+  .back-link:hover { color: var(--accent); }
+
+  .series-hero {
+    position: relative;
+    padding: 22px 0 26px 18px;
     margin-bottom: 28px;
   }
-  .series-count { font-size: 12px; color: var(--label-tertiary); }
-  .series-header h1 { margin: 4px 0 6px; font-size: 26px; }
-  .series-header p { margin: 0; color: var(--label-secondary); font-size: 15px; line-height: 1.7; }
+  .series-hero::before {
+    content: ''; position: absolute; left: 0; top: 4px; bottom: 4px;
+    width: 4px; border-radius: var(--radius-full);
+    background: linear-gradient(180deg, var(--accent), var(--heading-accent));
+  }
+  .eyebrow {
+    color: var(--heading-accent);
+    font-size: 11px; font-weight: 800;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin: 0 0 10px;
+  }
+  .series-hero h1 {
+    font-size: clamp(28px, 6vw, 42px);
+    line-height: 1.15; margin: 0 0 12px;
+    letter-spacing: -0.02em;
+  }
+  .hero-sub { margin: 0; color: var(--label-secondary); font-size: 15px; line-height: 1.7; max-width: 64ch; }
 
-  .series-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
-  .series-list li { display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: start; }
+  .series-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+  .series-list li {
+    position: relative;
+    display: grid; grid-template-columns: 40px 1fr; gap: 14px; align-items: start;
+  }
+  /* vertical rail connecting the order markers */
+  .series-list li:not(:last-child)::before {
+    content: ''; position: absolute;
+    left: 19px; top: 38px; bottom: -16px;
+    width: 2px; background: var(--separator);
+  }
   .series-order {
+    z-index: 1;
     display: flex; align-items: center; justify-content: center;
-    width: 26px; height: 26px; margin-top: 8px;
-    border-radius: var(--radius-full);
-    background: var(--glass); color: var(--label-secondary);
-    font-size: 13px; font-weight: 600;
+    width: 38px; height: 38px; margin-top: 6px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    border: 1.5px solid color-mix(in srgb, var(--accent) 40%, var(--separator));
+    color: var(--accent);
+    font-size: 13px; font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .series-item-card { min-width: 0; }
+
+  @media (max-width: 560px) {
+    .series-list li { grid-template-columns: 30px 1fr; gap: 10px; }
+    .series-list li:not(:last-child)::before { left: 14px; }
+    .series-order { width: 30px; height: 30px; font-size: 11px; }
   }
 </style>

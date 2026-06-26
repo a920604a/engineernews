@@ -7,57 +7,146 @@ import { getSeriesSummaries, getSeriesHref } from '../../utils/series';
 const lang = 'zh-TW';
 const t = useTranslations(lang);
 const seriesList = await getSeriesSummaries(lang);
+const totalPosts = seriesList.reduce((n, s) => n + s.count, 0);
 ---
 <BaseLayout title={t('series.title')} description={t('series.subtitle')}>
-  <header class="page-head">
-    <h1>{t('series.title')}</h1>
-    <p>{t('series.subtitle')}</p>
-  </header>
+  <section class="series-page">
+    <header class="page-hero">
+      <p class="eyebrow">Series</p>
+      <h1>系列</h1>
+      <p class="hero-sub">{t('series.subtitle')}</p>
+      <p class="hero-stat"><strong>{seriesList.length}</strong> 個系列 · <strong>{totalPosts}</strong> 篇文章</p>
+    </header>
 
-  {seriesList.length === 0 ? (
-    <p class="empty">{t('series.empty')}</p>
-  ) : (
-    <div class="series-grid">
-      {seriesList.map(series => (
-        <a href={getSeriesHref(series.name, lang)} class="series-card">
-          <div class="series-meta">
-            <span class="series-count">{series.count} {t('series.posts')}</span>
-            <span class="series-date">{series.latestDate.toLocaleDateString('zh-TW')}</span>
-          </div>
-          <h2>{series.name}</h2>
-          <p>{series.description}</p>
-        </a>
-      ))}
-    </div>
-  )}
+    {seriesList.length === 0 ? (
+      <p class="empty">{t('series.empty')}</p>
+    ) : (
+      <div class="series-grid">
+        {seriesList.map((series, i) => (
+          <a href={getSeriesHref(series.name, lang)} class="series-card">
+            <span class="series-index">{String(i + 1).padStart(2, '0')}</span>
+            <div class="series-body">
+              <div class="series-meta">
+                <span class="series-count">{series.count} {t('series.posts')}</span>
+                <span class="dot">·</span>
+                <span class="series-date">更新於 {series.latestDate.toLocaleDateString('zh-TW')}</span>
+              </div>
+              <h2>{series.name}</h2>
+              <p class="series-desc">{series.description}</p>
+              <ul class="series-peek">
+                {series.posts.slice(0, 3).map(p => (
+                  <li>{p.data.title}</li>
+                ))}
+                {series.count > 3 && <li class="more">還有 {series.count - 3} 篇 →</li>}
+              </ul>
+            </div>
+            <span class="series-arrow">→</span>
+          </a>
+        ))}
+      </div>
+    )}
+  </section>
 </BaseLayout>
 
 <style>
-  .page-head { margin: 32px 0 28px; }
-  .page-head h1 { font-size: 28px; font-weight: 700; margin: 0 0 6px; }
-  .page-head p { color: var(--label-secondary); margin: 0; font-size: 15px; }
+  .series-page { padding-top: 32px; }
+
+  .page-hero {
+    padding: 24px 0 28px;
+    border-bottom: 0.5px solid var(--separator);
+    margin-bottom: 28px;
+  }
+  .eyebrow {
+    color: var(--heading-accent);
+    font-size: 11px; font-weight: 800;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin: 0 0 10px;
+  }
+  .page-hero h1 {
+    font-size: clamp(32px, 7vw, 52px);
+    line-height: 1.1; margin: 0 0 12px;
+    background: linear-gradient(120deg, var(--label), var(--accent));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-sub { margin: 0 0 8px; color: var(--label-secondary); font-size: 15px; max-width: 60ch; }
+  .hero-stat { margin: 0; font-size: 13px; color: var(--label-tertiary); }
+  .hero-stat strong { color: var(--accent); }
 
   .series-grid { display: grid; gap: 14px; }
+
   .series-card {
-    display: block;
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 22px 24px;
     border: 0.5px solid var(--separator);
-    border-radius: var(--radius-md);
-    padding: 18px 20px;
-    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    background: var(--bg-secondary);
     text-decoration: none;
     color: inherit;
-    transition: border-color 0.15s, transform 0.15s;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
   }
-  .series-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .series-card::before {
+    content: '';
+    position: absolute; inset: 0 auto 0 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--accent), var(--heading-accent));
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .series-card:hover {
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--separator));
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .series-card:hover::before { opacity: 1; }
+  .series-card:hover .series-arrow { transform: translateX(4px); opacity: 1; }
+
+  .series-index {
+    font-size: 34px; font-weight: 800;
+    line-height: 1; letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(140deg, var(--accent), var(--heading-accent));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.85; flex-shrink: 0; min-width: 46px;
+  }
+  .series-body { flex: 1; min-width: 0; }
   .series-meta {
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    font-size: 12px;
-    color: var(--label-tertiary);
-    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 7px;
+    font-size: 12px; color: var(--label-tertiary); margin-bottom: 6px;
   }
-  .series-card h2 { margin: 0 0 6px; font-size: 18px; color: var(--label); }
-  .series-card p { margin: 0; color: var(--label-secondary); font-size: 14px; line-height: 1.7; }
+  .series-count { color: var(--accent); font-weight: 700; }
+  .series-card h2 { margin: 0 0 6px; font-size: 19px; color: var(--label); letter-spacing: -0.01em; }
+  .series-desc { margin: 0 0 12px; font-size: 14px; line-height: 1.65; color: var(--label-secondary); }
+
+  .series-peek { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .series-peek li {
+    font-size: 12.5px; color: var(--label-tertiary);
+    padding-left: 14px; position: relative;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .series-peek li::before {
+    content: ''; position: absolute; left: 2px; top: 8px;
+    width: 4px; height: 4px; border-radius: 50%;
+    background: color-mix(in srgb, var(--accent) 50%, transparent);
+  }
+  .series-peek li.more { color: var(--accent); font-weight: 600; }
+  .series-peek li.more::before { display: none; }
+
+  .series-arrow {
+    align-self: center;
+    font-size: 18px; color: var(--label-tertiary);
+    opacity: 0; transition: transform 0.2s, opacity 0.2s;
+    flex-shrink: 0;
+  }
+
   .empty { color: var(--label-tertiary); margin-top: 24px; }
+
+  @media (max-width: 560px) {
+    .series-index { font-size: 26px; min-width: 36px; }
+    .series-arrow { display: none; }
+  }
 </style>
