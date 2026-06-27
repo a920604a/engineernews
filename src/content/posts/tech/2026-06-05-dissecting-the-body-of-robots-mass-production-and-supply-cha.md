@@ -8,7 +8,7 @@ tldr: "人形機器人的後空翻看起來很帥，但真正困難的是讓它�
 description: "深入拆解人形機器人的硬體架構：執行器選型（電機 vs 液壓）、感測器整合、結構材料的取捨，以及當前量產瓶頸在哪裡。"
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=DZIhQeFEdXI"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_201249_839609.mp3"
 ---
 

@@ -8,7 +8,7 @@ tldr: "Mainstream OLED and Mini-LED are just the baseline — E Ink now covers B
 description: "2025-2026 display technologies worth knowing: color E Ink for outdoor signage, BMW iX3Flow's E Ink exterior, Looking Glass Hololuminescent holographic display, transparent OLED, rollable AMOLED, and stretchable displays"
 type: listicle
 original_url: "https://www.youtube.com/watch?v=WOzcFkld6_g"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260620_083415_024201.mp3"
 ---
 

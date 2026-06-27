@@ -8,7 +8,7 @@ tldr: "2026 年出現了多個被稱為『Whoop 殺手』的競爭者：Google F
 description: "分析 2026 年 Whoop 的競爭格局：Fitbit Air 的免訂閱策略、Garmin Cirqa 的傳感器規格、Apple Watch 的生態整合，以及 Whoop 訂閱制背後的護城河到底有多深。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=9GSDvO0LFFE"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_200418_626034.mp3"
 ---
 

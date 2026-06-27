@@ -8,7 +8,7 @@ tldr: "DeepMind's AlphaProof combines a language model with AlphaZero-style rein
 description: "How AlphaProof's neurosymbolic architecture reached silver-medal level at IMO 2024, and what it means for AI reasoning beyond math."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=Dkqzqw8rxXI"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_201902_158049.mp3"
 ---
 

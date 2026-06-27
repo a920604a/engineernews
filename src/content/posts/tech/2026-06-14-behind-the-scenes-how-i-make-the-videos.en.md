@@ -8,7 +8,7 @@ tldr: "A complete behind-the-scenes look at tech YouTube production: topic selec
 description: "A tech YouTuber breaks down the complete production workflow for a 10-minute video—research, scripting, recording setup, editing tools, and where AI actually saves time."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=d6V-nGaNbhw"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_202823_727605.mp3"
 ---
 

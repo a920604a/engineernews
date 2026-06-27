@@ -8,7 +8,7 @@ tldr: "DeepSeek V3's 671B-parameter MoE architecture trained on just 2.78M H800 
 description: "A deep dive into DeepSeek V3's MoE architecture, training efficiency breakthroughs, cost advantages, and what it means for the competitive AI landscape."
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=p7K3xfViWCE"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234740_883751.wav"
 ---
 

@@ -8,7 +8,7 @@ tldr: "TiDAR 在一次 forward pass 裡讓擴散模型負責平行「起草」to
 description: "深度分析 TiDAR（arXiv 2511.08923）：一個在單次 forward pass 內結合擴散式思考與自回歸表達的混合語言模型架構，以 5.91x 的速度提升維持 AR 等級品質。"
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=taCVT5vDAk0"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260616_060719_338259.mp3"
 ---
 

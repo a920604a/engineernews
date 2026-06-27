@@ -8,7 +8,7 @@ tldr: "10B 左右的小型語言模型（SLM）已經能在本機即時執行，
 description: "探討 10B 參數小型語言模型在遊戲開發中的實際應用：動態 NPC、程序化敘事、互動小說，以及 SLM 跟大模型在遊戲場景的真實差距與設計取捨。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=Yysg5-WnVhg"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234029_669531.wav"
 ---
 

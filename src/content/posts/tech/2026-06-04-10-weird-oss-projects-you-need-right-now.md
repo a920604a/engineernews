@@ -8,7 +8,7 @@ tldr: "從把程式碼轉成美圖的 Carbon、反向生成 API client 的 Hopps
 description: "10 個真正解決特定痛點的開源專案，有的讓你的 README 瞬間上檔次，有的讓你不用推上 CI 就能本地跑 GitHub Actions，有的讓終端機輸出直接變成互動式 UI。"
 type: listicle
 original_url: "https://www.youtube.com/watch?v=qPuzWFvRajk"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_200930_235704.mp3"
 ---
 

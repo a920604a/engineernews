@@ -8,7 +8,7 @@ tldr: "糟糕的工作環境可以在你意識到之前就把你消耗殆盡—�
 description: "「草台班子」是近年流行的說法，指那些表面上正常運作、實際上充滿混亂與無效率的組織。在這樣的環境裡工作，如何保護自己不被拖垮？"
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=ALruCKQQ_pw"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_232959_108901.wav"
 ---
 

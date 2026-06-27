@@ -8,7 +8,7 @@ tldr: "主流的 OLED 和 Mini-LED 只是開始——E Ink 長在 BMW 車身上�
 description: "2025-2026 年最值得關注的顯示技術：E Ink 彩色戶外標牌、BMW iX3Flow 的 E Ink 車身、Looking Glass Hololuminescent 全息顯示、透明 OLED、可捲曲 AMOLED、可拉伸顯示器"
 type: listicle
 original_url: "https://www.youtube.com/watch?v=WOzcFkld6_g"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260620_083419_947903.mp3"
 ---
 

@@ -8,7 +8,7 @@ tldr: "DeepMind 在 Demis Hassabis 帶領下的核心策略是：用遊戲環境
 description: "深入了解 DeepMind CEO Demis Hassabis 的研究哲學與戰略：從 AlphaGo 到 AlphaFold 諾貝爾獎，DeepMind 如何用 RL + 深度學習打開一個又一個科學問題的大門。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=huAwz_BR8WM"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_195734_678197.mp3"
 ---
 

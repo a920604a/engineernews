@@ -8,7 +8,7 @@ tldr: "A bad work environment can drain you before you realize it's happening �
 description: "'Grass-stage troupe' (草台班子) is a term for organizations that barely hold together while looking functional on the surface. If you're working in one, here's how to protect yourself from being worn down."
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=ALruCKQQ_pw"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260523_000605_146522.wav"
 ---
 

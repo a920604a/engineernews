@@ -8,7 +8,7 @@ tldr: "TiDAR runs a diffusion model to draft tokens in parallel (Think), then le
 description: "A deep-dive into TiDAR (arXiv 2511.08923): a hybrid language model architecture that combines diffusion-based thinking with autoregressive output in one forward pass, achieving 5.91x speed gains over pure AR."
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=taCVT5vDAk0"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260616_060656_667276.mp3"
 ---
 

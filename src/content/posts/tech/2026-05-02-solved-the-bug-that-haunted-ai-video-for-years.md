@@ -8,7 +8,7 @@ tldr: "AI 影片生成長年被「時序漂移（temporal drift）」和「記�
 description: "從擴散模型的固有限制，到 2025 年 FramePack、Mixture of Contexts 等新架構的解法，本文系統性整理 AI 影片生成最頑固的技術問題如何在近兩年被逐步克服。"
 type: research
 original_url: "https://www.youtube.com/watch?v=yzajLZXh9JU"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234301_829944.wav"
 ---
 

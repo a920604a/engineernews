@@ -8,7 +8,7 @@ tldr: "Codex CLI is OpenAI's open-source terminal coding agent — it reads your
 description: "What OpenAI Codex CLI actually is, how it works, what distinguishes it from Claude Code, and whether it's worth trying if you're already using AI coding tools."
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=4gciWspBVHw"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_233345_560848.wav"
 ---
 

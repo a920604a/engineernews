@@ -9,7 +9,7 @@ description: "整合 Microsoft Edge TTS 與本地 OpenAI Whisper 的語音處理
 tldr: "Edge TTS（322 語音）+ 本地 Whisper 的一站式語音平台，完全免費無需 API Key。"
 github: "https://github.com/a920604a/stt-tts-unified"
 pinned: false
-draft: false
+draft: true
 ---
 
 STT-TTS Unified 是一個整合文字轉語音（TTS）與語音轉文字（STT）的 Web 平台，TTS 使用 Microsoft Edge 雲端神經語音（322 種語言），STT 使用本地 Whisper 離線推論，所有結果持久化至 SQLite，完全免費且無需 API Key。

@@ -8,7 +8,7 @@ tldr: "Ring 在 2024 年開放了 Appstore API，讓開發者可以直接從 Rin
 description: "Ring Appstore API 實作案例：如何訂閱攝影機事件、處理影像 webhook、結合電腦視覺偵測特定車輛進出，並觸發通知。包含認證流程和 webhook 端點設計。"
 type: case-study
 original_url: "https://www.youtube.com/watch?v=5kHpeVvO7cY"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_201736_262215.mp3"
 ---
 

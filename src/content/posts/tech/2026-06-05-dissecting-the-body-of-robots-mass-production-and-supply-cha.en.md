@@ -8,7 +8,7 @@ tldr: "The backflip looks impressive, but the real challenge is making a mass-pr
 description: "A deep dive into humanoid robot hardware: actuator choices (electric vs. hydraulic), sensor integration, structural material tradeoffs, and where the current mass-production bottlenecks actually are."
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=DZIhQeFEdXI"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_201219_841690.mp3"
 ---
 

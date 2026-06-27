@@ -11,7 +11,7 @@ tldr: "DoorDash 捐贈活動是一個典型的高并發、最終一致性場景�
 description: "拆解 DoorDash 捐贈活動的系統設計 Mock 題：功能需求、規模估算、關鍵設計決策、反冪等性處理、計數器聚合策略，以及面試中如何展示系統設計思維而不是背答案。"
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=xbnrvkVf0s8"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234122_451736.wav"
 ---
 

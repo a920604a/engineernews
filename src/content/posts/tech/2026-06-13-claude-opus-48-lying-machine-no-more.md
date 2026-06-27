@@ -8,7 +8,7 @@ tldr: "Opus 4.8 最大的升級不是 benchmark 數字，而是讓模型對自�
 description: "Claude Opus 4.8 的核心改進是誠實性對齊——比前一版少 4 倍機率隱藏錯誤，同時推出 Dynamic Workflows 與 Effort Control。Two Minute Papers 的深入解析。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=ypL7kUiw_LM"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_202623_754727.mp3"
 ---
 

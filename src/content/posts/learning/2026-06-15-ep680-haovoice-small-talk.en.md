@@ -8,7 +8,7 @@ tldr: "Reading guilt comes from treating 'finishing the book' as the goal. Hao X
 description: "Taiwanese financial author and podcast host Hao Xu-Lie shares his reading philosophy in Haovoice EP680: stop measuring reading by completion, start measuring by connection. A reflective essay on reading habits."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=EGPEnipo3vM"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_194639_221202.mp3"
 ---
 

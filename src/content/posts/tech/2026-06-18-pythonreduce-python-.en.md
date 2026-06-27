@@ -8,7 +8,7 @@ tldr: "reduce() is about declarative style, not performance — and Python's own
 description: "A practical look at Python's functools.reduce: what it actually does, real use cases where it makes sense, and why Guido van Rossum moved it out of builtins"
 type: explainer
 original_url: "https://www.youtube.com/shorts/1Ytv1b7CN1E"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260620_083357_247983.mp3"
 ---
 

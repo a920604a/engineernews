@@ -8,7 +8,7 @@ tldr: "Nearly all of GitHub's fastest-growing projects in 2023-2024 are AI tools
 description: "A look at the fastest-growing open-source projects on GitHub in 2023-2024, focusing on Open Interpreter, Ollama, and the AI tool wave that is reshaping what developers expect from local software."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=iBGVMcXnkWo"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_233854_903027.wav"
 ---
 

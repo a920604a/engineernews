@@ -8,7 +8,7 @@ tldr: "For Chinese-speaking engineers scattered around the world, a channel that
 description: "Why Chinese-language tech YouTube channels have a unique appeal for global Chinese engineers, and how casual-format content fills a gap that formal tutorials can't."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=bZSw2y1xCXE"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_233127_576866.wav"
 ---
 

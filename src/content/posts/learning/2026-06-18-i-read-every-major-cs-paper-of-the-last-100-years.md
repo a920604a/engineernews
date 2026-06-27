@@ -8,7 +8,7 @@ tldr: "Fireship 用一支影片帶你走過 10 篇改變電腦科學歷史的論
 description: "10 篇跨越 100 年的 CS 經典論文回顧：圖靈、Shannon、Perceptron、Backprop、PageRank、AlexNet、Transformer、GPT-3——這些名字背後的想法如何環環相扣，最終走向今天的 AI 時代"
 type: case-study
 original_url: "https://www.youtube.com/watch?v=ML3q7Ok4hJg"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260620_083238_224542.mp3"
 ---
 

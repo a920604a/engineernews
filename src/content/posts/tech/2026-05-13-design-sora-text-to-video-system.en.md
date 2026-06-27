@@ -8,7 +8,7 @@ tldr: "Sora's core architecture is a Diffusion Transformer (DiT): compress video
 description: "A system design analysis of Sora's technical architecture: spatiotemporal autoencoder, Diffusion Transformer, variable-input design, and engineering choices in the open-source alternative Open-Sora."
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=ZuQ4B0CwNjo"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235121_123214.wav"
 ---
 

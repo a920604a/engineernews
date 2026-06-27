@@ -8,7 +8,7 @@ tldr: "Sakana AI 推出的「神明模擬器」用神經細胞自動機讓使用
 description: "Sakana AI 的 God Simulator 是一個基於神經細胞自動機的互動模擬平台，讓使用者調整生存規則觀察數位生物的演化行為。本文解析其技術原理、設計哲學，以及它跟 Sakana AI 更大研究圖景的關係。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=QzZ4VwDHAT4"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234225_203254.wav"
 ---
 

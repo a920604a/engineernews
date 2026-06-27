@@ -26,7 +26,7 @@ tldr: "Kafka 的速度來自兩個不直覺的設計：刻意寫磁碟（而非�
 description: "深入解析 Kafka 效能的底層原理：循序 I/O 為何比隨機記憶體存取更快、Zero-Copy 透過 sendfile() syscall 消除 CPU 複製、以及 Page Cache 如何讓磁碟行為像記憶體。"
 type: explainer
 original_url: "https://www.youtube.com/shorts/wvLdBJEl-wc"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_203046_307980.mp3"
 ---
 

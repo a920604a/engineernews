@@ -8,7 +8,7 @@ tldr: "DuckDB 在過去三年把 group by 效能提升 12 倍、join 提升 4 �
 description: "DuckDB 的效能演進分析：從 2022 到 2025 年的 benchmark 資料、TPC-H 實測結果、與其他 OLAP 系統的比較，以及為什麼它的效能天花板仍然是個開放問題。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=wmGikV_393Y"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_233944_689310.wav"
 ---
 

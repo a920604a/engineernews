@@ -8,7 +8,7 @@ tldr: "DeepSeek V4 is a 1.6T parameter MoE open-source model with 1M token conte
 description: "DeepSeek V4 deep dive: 1.6 trillion parameter MoE architecture, 1M token context, Huawei Ascend optimization, and what it means for open-source AI and the US-China AI competition."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=LpXhy2iiaQE"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_195144_023317.mp3"
 ---
 

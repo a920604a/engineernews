@@ -8,7 +8,7 @@ tldr: "Ring opened its Appstore API in 2024, letting developers receive camera e
 description: "Ring Appstore API case study: subscribing to camera events, processing image webhooks, combining computer vision to detect specific vehicle patterns, and triggering notifications — including auth flow and webhook endpoint design."
 type: case-study
 original_url: "https://www.youtube.com/watch?v=5kHpeVvO7cY"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_201712_628563.mp3"
 ---
 

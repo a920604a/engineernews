@@ -8,7 +8,7 @@ tldr: "Companies that genuinely self-improve with AI don't just adopt tools — 
 description: "How to build AI-driven continuous improvement feedback loops in organizations: data flywheels, automated decision-making, organizational culture changes, and the most common failure modes."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=X_JsIHUfUjc"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_195010_170807.mp3"
 ---
 

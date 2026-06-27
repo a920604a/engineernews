@@ -8,7 +8,7 @@ tldr: "OpenAI Codex CLI 和多個 AI coding agent 工具都有免費方案，關
 description: "整理 OpenAI Codex CLI、Hermes、Claude Code 等 AI coding agent 的免費方案、額度限制和實際使用策略，讓你在不花錢的情況下把 AI 程式開發效率最大化。"
 type: how-to
 original_url: "https://www.youtube.com/watch?v=FwAQ75QCEoU"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_201026_365287.mp3"
 ---
 

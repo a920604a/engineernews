@@ -8,7 +8,7 @@ tldr: "一個技術 YouTube 頻道的完整製作流程——從選題、腳本�
 description: "技術 YouTuber 分享的完整影片製作工作流程：選題研究、腳本撰寫、錄製設定、剪輯工具選擇，以及現在 AI 協助的具體方式。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=d6V-nGaNbhw"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_202851_845832.mp3"
 ---
 

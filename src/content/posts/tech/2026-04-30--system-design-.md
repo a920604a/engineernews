@@ -8,7 +8,7 @@ tldr: "系統設計面試的核心不是記答案，而是展示你能從 first 
 description: "系統設計面試不是八股文：分析為什麼死背架構圖沒用、面試官真正在評估什麼、以及如何培養可以應對任何題目的設計思維。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=a7JHJ8Tzwpg"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234134_514022.wav"
 ---
 

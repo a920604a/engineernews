@@ -8,7 +8,7 @@ tldr: "Demis Hassabis 對『硬題』的偏好不是個人風格，而是一種�
 description: "Demis Hassabis 的研究哲學：為什麼選困難但有槓桿的問題比選容易的問題更重要，以及這個哲學如何具體體現在 AlphaFold、AlphaGo 和 DeepMind 的研究方向選擇上。"
 type: explainer
 original_url: "https://www.youtube.com/shorts/kIvvzCR5NjA"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_200316_241367.mp3"
 ---
 

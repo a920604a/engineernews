@@ -8,7 +8,7 @@ tldr: "Redis is an in-memory data structure server that achieves sub-millisecond
 description: "A complete explainer on why Redis consistently ranks as one of engineers' most-loved databases, covering architecture, data types, persistence, and its new role in AI engineering."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=z_NbVtbgBJw"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235514_561141.wav"
 ---
 

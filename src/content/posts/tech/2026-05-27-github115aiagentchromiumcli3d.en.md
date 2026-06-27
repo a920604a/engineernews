@@ -8,7 +8,7 @@ tldr: "This week's GitHub trending: a desktop AI agent framework that controls G
 description: "GitHub trending highlights #115: five projects generating developer community buzz across AI agents, privacy-focused browsing, CLI automation, and 3D reconstruction technology."
 type: listicle
 original_url: "https://www.youtube.com/watch?v=KbZHF8s3CQA"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_195757_944365.mp3"
 ---
 

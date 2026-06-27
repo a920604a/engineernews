@@ -8,7 +8,7 @@ tldr: "NVIDIA's latest inference optimizations — FP8/INT4 quantization, 2:4 st
 description: "A technical breakdown of NVIDIA's new AI inference efficiency techniques, their real-world impact on deployment costs, and how they compare to alternative approaches."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=4wC8hnQawiA"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235339_348601.wav"
 ---
 

@@ -8,7 +8,7 @@ tldr: "LLM output quality is determined at three distinct layers: token-level de
 description: "From greedy decoding to chain-of-thought, from ReAct to ES-CoT — a systematic breakdown of the three layers of LLM inference to help engineers make informed design choices."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=m3i2mk5hs8U"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234345_047106.wav"
 ---
 

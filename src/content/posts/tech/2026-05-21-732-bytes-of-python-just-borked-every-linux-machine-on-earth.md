@@ -8,7 +8,7 @@ tldr: "CVE-2026-31431（CopyFail）是一個 Linux 核心頁面快取漏洞，�
 description: "CVE-2026-31431 CopyFail 漏洞解析：一個 732 bytes 的 Python 腳本如何利用 Linux 核心頁面快取缺陷，靜默修改記憶體內容並提權到 root。"
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=lkifbWtxxlk"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_194934_897340.mp3"
 ---
 

@@ -8,7 +8,7 @@ tldr: "用 LLM API 加上精心設計的系統提示，打造一個能自動用�
 description: "從零開始用 LLM API 建立一個全自動 Mansplainer Bot：系統提示設計、角色固化技巧、以及意外得到的 prompt engineering 啟示。"
 type: how-to
 original_url: "https://www.youtube.com/watch?v=xHi8PUIVyoo"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235457_841867.wav"
 ---
 

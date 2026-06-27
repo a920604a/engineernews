@@ -8,7 +8,7 @@ tldr: "Cursor 是由四位 MIT 畢業生在 2022 年創建的 AI 程式編輯器
 description: "Cursor 工程團隊分享的真實挑戰：VSCode Fork 的決策邏輯、Tab 預測的超低延遲設計、Agent Mode 從 pipeline 到真正代理的演化，以及為什麼用戶信任才是最終指標。"
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=dUMsFQ8y3gM"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235213_331925.wav"
 ---
 

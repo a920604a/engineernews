@@ -8,7 +8,7 @@ tldr: "Google I/O 2026's core signal isn't any single product feature — it's t
 description: "Deep analysis of Google I/O 2026's core AI strategic shift: from Gemini 3.5 Flash to Gemini Omni, Gemini Spark, and Antigravity 2.0 — how Google is moving AI from the application layer to the infrastructure layer."
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=9OQ5vaYbGV0"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_195607_916240.mp3"
 ---
 

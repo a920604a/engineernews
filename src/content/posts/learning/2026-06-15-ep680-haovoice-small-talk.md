@@ -8,7 +8,7 @@ tldr: "讀書的焦慮，常常來自把「讀完」當成目標。郝旭烈在�
 description: "郝旭烈在《大人的 Small Talk》分享他對閱讀的看法：讀書不需要讀完，重要的是找到書中跟自己人生的連結點。散文式記錄他的核心觀點和對讀書焦慮的解法。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=EGPEnipo3vM"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_194709_273634.mp3"
 ---
 

@@ -8,7 +8,7 @@ tldr: "2026 年 5 月 11 日，TeamPCP 組織在 6 分鐘內入侵 42 個 TanSta
 description: "Mini Shai-Hulud 攻擊事件深度解析：42 個 TanStack 套件在 6 分鐘內遭入侵，超過 170 個套件受影響、累計下載量 5.18 億次，攻擊鏈結合 GitHub Actions cache poisoning 與 OIDC token 記憶體提取技術。"
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=gwTQLZSIlsU"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235411_655482.wav"
 ---
 

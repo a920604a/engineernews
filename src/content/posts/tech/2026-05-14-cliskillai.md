@@ -8,7 +8,7 @@ tldr: "用 OpenClaw 的 Playwright CLI + Skill 三段式流程，讓 AI 學一�
 description: "介紹 OpenClaw × Playwright CLI 的三段式 AI 瀏覽器自動化架構：AI 探索 → 蒸餾成 Skill 檔案 → 零 Token 執行，適合登入、表單、爬蟲等重複性瀏覽器任務。"
 type: how-to
 original_url: "https://www.youtube.com/watch?v=nlK7-zuYDcs"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235240_000414.wav"
 ---
 

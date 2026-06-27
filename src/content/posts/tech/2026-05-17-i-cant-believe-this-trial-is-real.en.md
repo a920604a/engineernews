@@ -8,7 +8,7 @@ tldr: "A California jury ruled on March 25, 2026 that Meta and YouTube are liabl
 description: "California jury verdict March 25, 2026: Meta and YouTube held liable for a child's social media addiction with $6 million in damages. Infinite scroll and autoplay recognized as harmful design — a landmark ruling for algorithmic product liability."
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=3tbB2dffx0s"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235427_759005.wav"
 ---
 

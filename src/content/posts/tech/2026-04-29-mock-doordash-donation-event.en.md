@@ -11,7 +11,7 @@ tldr: "The DoorDash donation feature is a classic high-concurrency, eventual con
 description: "A walkthrough of the DoorDash donation feature system design mock: functional requirements, scale estimation, key design decisions, idempotency, counter aggregation strategies, and how to demonstrate design thinking (not answer memorization) in an interview."
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=xbnrvkVf0s8"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234101_855513.wav"
 ---
 

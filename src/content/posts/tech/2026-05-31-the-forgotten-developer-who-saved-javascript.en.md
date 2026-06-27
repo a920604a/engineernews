@@ -8,7 +8,7 @@ tldr: "Douglas Crockford didn't create JavaScript, but he may be the single most
 description: "How Douglas Crockford changed JavaScript's fate through JSON, JSLint, and JavaScript: The Good Parts — from a toy language mocked by professional developers to the core technology of modern web development."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=JfPWbttemYE"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_200444_748047.mp3"
 ---
 

@@ -8,7 +8,7 @@ tldr: "The technical core of a modern NBA broadcast is Sony Hawk-Eye's 3D optica
 description: "Breaking down the tech behind NBA broadcasts: how Hawk-Eye's 3D tracking cameras locate every player and the ball in milliseconds, how real-time data pipelines drive graphic overlays and referee decisions, and the current state of AI-assisted officiating."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=mk_wdHePbtQ"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_200120_896187.mp3"
 ---
 

@@ -8,7 +8,7 @@ tldr: "工程師最常犯的溝通錯誤不是技術不好，而是假設聽眾�
 description: "從舞台音響比喻出發，討論工程師技術溝通的核心問題：如何確認你的解釋真的被聽懂，而不是自以為解釋清楚了。包含具體的文件寫作和 code review 應用場景。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=2Hke7Utt_qQ"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_201443_122100.mp3"
 ---
 

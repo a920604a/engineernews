@@ -8,7 +8,7 @@ tldr: "NVIDIA's Isaac GR00T N1 is the first genuinely open humanoid robot founda
 description: "A technical look at NVIDIA Isaac GR00T N1's dual-system architecture: how a Vision-Language Model and Diffusion Transformer work together to make a single model control multiple humanoid robot platforms."
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=Xf_v62TQOx4"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234354_203825.wav"
 ---
 

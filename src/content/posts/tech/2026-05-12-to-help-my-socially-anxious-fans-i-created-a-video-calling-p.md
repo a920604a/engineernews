@@ -8,7 +8,7 @@ tldr: "一位 YouTuber/indie developer 注意到粉絲因社交焦慮難以開�
 description: "Indie developer 案例研究：用 AI 視訊通話幫助社交焦慮用戶，涵蓋 WebRTC、AI 即時語音、Tavus 等技術選型，以及產品從想法到 MVP 的工程決策。"
 type: case-study
 original_url: "https://www.youtube.com/watch?v=M1bifAQSVcY"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235114_814470.wav"
 ---
 

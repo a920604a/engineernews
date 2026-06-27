@@ -8,7 +8,7 @@ tldr: "Data Lakehouse 把資料倉儲的 ACID 事務性和資料湖的低成本�
 description: "深入解析 Data Lakehouse 架構：為什麼出現、怎麼運作、Apache Iceberg 與 Delta Lake 的差異，以及 2025 年湖倉融合的最新趨勢。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=taSmwcqdkQk"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234547_750922.wav"
 ---
 

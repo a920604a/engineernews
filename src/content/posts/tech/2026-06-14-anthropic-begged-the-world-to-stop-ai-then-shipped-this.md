@@ -8,7 +8,7 @@ tldr: "Anthropic 發表暫停呼籲後五天推出 Fable 5，四天後被美國�
 description: "Fable 5 從發布到被政府強制下線只有四天。Anthropic 這十天的故事，是一個關於 AI 安全聲明與商業現實之間張力的案例研究。"
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=1PBRhm5ZnjU"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_202742_218840.mp3"
 ---
 

@@ -8,7 +8,7 @@ tldr: "In ten days, Anthropic filed an IPO, called for a global AI pause, launch
 description: "From IPO filing to government-mandated shutdown, Anthropic's June 2026 was the most dramatic ten days in AI industry history."
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=0pgCBV8CTZY"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_202240_933916.mp3"
 ---
 

@@ -8,7 +8,7 @@ tldr: "NVIDIA 最新推論優化技術透過量化、稀疏性與專用硬體架
 description: "深入解析 NVIDIA 新一代 AI 推論優化技術的原理、與傳統模型部署方式的差距，以及對實際 AI 應用部署成本的影響。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=4wC8hnQawiA"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235345_232517.wav"
 ---
 

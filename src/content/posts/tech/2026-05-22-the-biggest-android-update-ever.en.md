@@ -8,7 +8,7 @@ tldr: "Google's 2026 Android update is the most sweeping in years: Create My Wid
 description: "Deep dive into Android's biggest 2026 update: AI-driven personalization, immersive 3D navigation, cross-platform Quick Share, and how Google is embedding Gemini into core Android system experiences."
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=eFeDpUVEy48"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_195101_398374.mp3"
 ---
 

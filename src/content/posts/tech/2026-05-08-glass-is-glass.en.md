@@ -8,7 +8,7 @@ tldr: "Meta Ray-Ban Display is the first consumer product to genuinely integrate
 description: "A technical breakdown of the Meta Ray-Ban Display smart glasses: display architecture, waveguide optics, EMG neural wristband design, and what it means for the AR wearables roadmap."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=7YrdI7h2XoY"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234626_822791.wav"
 ---
 

@@ -8,7 +8,7 @@ tldr: "NVIDIA Lyra 2.0 generates geometrically consistent, indefinitely explorab
 description: "Lyra 2.0 is NVIDIA Spatial Intelligence Lab's open-source framework for generating explorable 3D worlds from a single photo. This post breaks down its two-stage architecture, how geometry-based frame retrieval works, and how it compares to GEN3C."
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=eCw33snvoNI"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234406_047446.wav"
 ---
 

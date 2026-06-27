@@ -8,7 +8,7 @@ tldr: "AlphaFold 的蛋白質結構預測成就已獲 2024 年諾貝爾化學獎
 description: "從 CASP 競賽到諾貝爾獎，AlphaFold 如何用深度學習解決 50 年無人能解的蛋白質折疊問題，以及這對藥物開發和生物醫學研究的真實影響。"
 type: explainer
 original_url: "https://www.youtube.com/shorts/MOviZKtFeHM"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_200607_339623.mp3"
 ---
 

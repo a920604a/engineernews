@@ -8,7 +8,7 @@ tldr: "The scarcest resource in embodied AI isn't compute or algorithms — it's
 description: "A deep dive into how robot data collection factories work, why physical demonstration data is so hard to obtain, and what it means for the future of embodied AI."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=ZvHIuIIZ3Is"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235326_841166.wav"
 ---
 

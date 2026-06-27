@@ -29,6 +29,7 @@ const R2_BUCKET = 'engineer-news-og-images';
 
 const isProd = process.argv.includes('--prod');
 const confirmed = process.argv.includes('--yes');
+const keepMd = process.argv.includes('--keep-md');  // 保留本地 .md / .en.md，只清 D1/R2/Vectorize/本地 OG
 const remoteFlag = isProd ? '--remote' : '--local';
 const fileArg = process.argv.find(a => a.startsWith('--file='))?.slice(7);
 const idArg = process.argv.find(a => a.startsWith('--id='))?.slice(5);
@@ -221,9 +222,13 @@ function main() {
       if (confirmed) fs.unlinkSync(localOg);
     }
 
-    // 6) 本地 Markdown
-    console.log(`  🗑️  本地檔案: ${path.relative(process.cwd(), t.filePath)}`);
-    if (confirmed) fs.unlinkSync(t.filePath);
+    // 6) 本地 Markdown（--keep-md 時保留，供之後重新生成）
+    if (keepMd) {
+      console.log(`  📌 保留本地檔案（--keep-md）: ${path.relative(process.cwd(), t.filePath)}`);
+    } else {
+      console.log(`  🗑️  本地檔案: ${path.relative(process.cwd(), t.filePath)}`);
+      if (confirmed) fs.unlinkSync(t.filePath);
+    }
   }
 
   if (confirmed) {

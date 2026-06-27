@@ -6,7 +6,7 @@ tags: ["astro", "cloudflare-workers", "cloudflare-pages", "deployment"]
 lang: zh-TW
 description: "從空專案開始，用 Astro 建靜態前端、Cloudflare Workers 做後端與部署的完整實作指南：adapter 設定、wrangler bindings、D1 migration、常見坑與 GitHub Actions CI/CD。"
 tldr: "Astro + Cloudflare 的關鍵在四個地方：adapter 的 platformProxy 要開、wrangler.jsonc 集中管理所有 bindings、env vars 和 bindings 是兩個不同系統、D1 Preview 環境要指向獨立 staging database。"
-draft: false
+draft: true
 pinned: true
 ---
 

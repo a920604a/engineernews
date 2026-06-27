@@ -8,7 +8,7 @@ tldr: "NVIDIA 的 Lyra 2.0 能從單張照片生成幾何一致、可無限探�
 description: "Lyra 2.0 是 NVIDIA Spatial Intelligence Lab 發布的開源 3D 世界生成框架，結合長程幾何一致影片生成與前饋式 3D 重建，輸出可即時渲染的 3D Gaussian Splat 和網格。本文解析其技術架構與跟 GEN3C 的差異。"
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=eCw33snvoNI"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234425_490216.wav"
 ---
 

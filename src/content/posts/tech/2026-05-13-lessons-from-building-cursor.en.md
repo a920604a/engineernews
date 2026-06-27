@@ -8,7 +8,7 @@ tldr: "Cursor is an AI-powered code editor by Anysphere, built by four MIT gradu
 description: "Engineering lessons from building Cursor: the VSCode fork decision, ultra-low-latency Tab prediction, Agent Mode's production challenges including why tool use must be trained into the model, and why user trust is the only metric that matters."
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=dUMsFQ8y3gM"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235147_643568.wav"
 ---
 

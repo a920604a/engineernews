@@ -8,7 +8,7 @@ tldr: "Anthropic 在同一週發表暫停 AI 呼籲、提交 IPO 申請、推出
 description: "從 IPO 申請到政府強制下線，Anthropic 在 2026 年 6 月經歷了業界最戲劇化的十天。"
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=0pgCBV8CTZY"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_202308_593871.mp3"
 ---
 

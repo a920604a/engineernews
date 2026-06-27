@@ -8,7 +8,7 @@ tldr: "Sakana AI's God Simulator uses neural cellular automata to let users act 
 description: "Sakana AI's God Simulator is an interactive simulation built on neural cellular automata. This post explains how it works, what it reveals about evolutionary dynamics, and how it connects to Sakana AI's broader research agenda."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=QzZ4VwDHAT4"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234218_518557.wav"
 ---
 

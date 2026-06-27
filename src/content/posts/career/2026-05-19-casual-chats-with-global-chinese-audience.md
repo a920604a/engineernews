@@ -8,7 +8,7 @@ tldr: "對散落在全球的華語工程師來說，一支能用母語聊技術�
 description: "探討為什麼中文技術 YouTube 頻道對全球華語工程師有獨特的吸引力，以及閒聊風格的內容如何填補技術社群的空缺。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=bZSw2y1xCXE"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_233132_612726.wav"
 ---
 

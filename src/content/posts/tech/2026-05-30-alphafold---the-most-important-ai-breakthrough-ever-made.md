@@ -8,7 +8,7 @@ tldr: "AlphaFold 在 2020 年以接近實驗測定精度解決了蛋白質折疊
 description: "深入理解 AlphaFold 的技術原理、對生物學的影響、以及為什麼它被認為是史上最重要的 AI 應用突破：從蛋白質折疊問題的歷史、AlphaFold2 的架構創新，到現實世界的科學加速效應。"
 type: explainer
 original_url: "https://www.youtube.com/shorts/VQ2bV58QbH0"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_200226_105792.mp3"
 ---
 

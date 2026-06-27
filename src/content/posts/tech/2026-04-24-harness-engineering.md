@@ -11,7 +11,7 @@ tldr: "Harness Engineering 如何引導語言模型提高智能"
 description: "Harness Engineering 如何引導語言模型提高智能"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=R6fZR_9kmIw"
-draft: false
+draft: true
 ---
 
 # Harness Engineering：有時候語言模型不是不夠聰明，只是沒有人類好好引導

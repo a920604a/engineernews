@@ -8,7 +8,7 @@ tldr: "A plain-language walkthrough of Git core concepts — from init to branch
 description: "A beginner's guide to Git and GitHub covering installation, repository setup, committing changes, branching, and merging through hands-on examples."
 type: how-to
 original_url: "https://www.youtube.com/watch?v=bWUUHBVg-7E"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_140852_952309.mp3"
 ---
 

@@ -8,7 +8,7 @@ tldr: "From Carbon (code-to-image), nektos/act (run GitHub Actions locally), to 
 description: "10 open-source projects that solve specific developer pain points: visual code sharing, local CI execution, runtime type validation, and terminal UI building — none of them are 'yet another X replacement.'"
 type: listicle
 original_url: "https://www.youtube.com/watch?v=qPuzWFvRajk"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_200904_191084.mp3"
 ---
 

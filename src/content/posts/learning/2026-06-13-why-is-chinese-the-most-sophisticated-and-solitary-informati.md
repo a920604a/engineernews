@@ -8,7 +8,7 @@ tldr: "中文的孤獨性不來自複雜度，而是它的表意系統讓它成�
 description: "為什麼說中文是「最孤獨的資訊媒介」？從表意文字 vs 表音文字的根本差異、漢字的資訊密度、方言的多樣性，到數位時代中文的演化，探討這個最獨特的書寫系統。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=ajGdy5JeHIY"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_194615_137221.mp3"
 ---
 

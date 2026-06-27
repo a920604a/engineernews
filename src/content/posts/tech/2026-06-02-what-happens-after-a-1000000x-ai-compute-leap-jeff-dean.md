@@ -8,7 +8,7 @@ tldr: "Jeff Dean 分析 AI 計算能力過去十年增長百萬倍的真實來�
 description: "Google AI 研究主任 Jeff Dean 解析 AI 計算能力百萬倍成長背後的技術驅動力，以及這種規模的計算躍升將如何改變科學研究、藥物開發和氣候建模。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=yz6I23VRbdg"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_200701_472319.mp3"
 ---
 

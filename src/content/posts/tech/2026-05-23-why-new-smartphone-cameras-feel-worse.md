@@ -8,7 +8,7 @@ tldr: "手機相機拍出的照片越來越「AI 感」——過度降噪導致�
 description: "探討手機相機的 AI 計算攝影爭議：為什麼 2025-2026 年的旗艦手機拍出的照片反而感覺失真？過度 AI 處理如何損害色彩準確度、細節真實感，以及這對手機攝影文化的影響。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=coX4duwUCpw"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_195341_050446.mp3"
 ---
 

@@ -52,6 +52,9 @@ type SearchResult = {
 
 const EMBEDDING_MODEL = '@cf/baai/bge-m3';
 const CHAT_MODEL = '@cf/qwen/qwen1.5-14b-chat-awq';
+// 「問這篇」單篇 grounded Q&A 用更強的模型：指令遵循與「只引用本文、不亂編」更可靠。
+// Llama 3.3 70B（fp8-fast）已驗證在本帳號可用，較 qwen1.5-14b 是世代級提升。
+const ASK_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
 const MAX_MATCHES = 8;
 const MAX_SOURCES = 5;
 
@@ -407,7 +410,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         lang: article.lang, category: article.category, chunkId: postId,
       };
       const prompt = buildArticlePrompt(parsed.query, parsed.lang, article);
-      const answerStream = await AI.run(CHAT_MODEL, {
+      const answerStream = await AI.run(ASK_MODEL, {
         messages: [{ role: 'user', content: prompt }],
         stream: true,
       });

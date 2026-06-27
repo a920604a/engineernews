@@ -8,7 +8,7 @@ tldr: "Titans 提出了一個神經記憶模組，能在測試（推論）時透
 description: "論文深度分析：Titans: Learning to Memorize at Test Time，探討神經長期記憶模組如何在推論期間即時學習，以及三種整合架構 MAC、MAG、MAL 的設計取捨。"
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=v67plFw1nMw"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260616_232932_255778.mp3"
 ---
 

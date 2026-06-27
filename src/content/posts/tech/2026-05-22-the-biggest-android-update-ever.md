@@ -8,7 +8,7 @@ tldr: "2026 年 Google I/O 發布的 Android 更新是近年最大規模：Creat
 description: "深度解析 2026 年 Android 重大更新：AI 驅動的個人化功能、3D 沉浸式導航、Quick Share 跨平台分享，以及 Google 如何將 Gemini 整合到核心系統體驗中。"
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=eFeDpUVEy48"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_195120_671542.mp3"
 ---
 

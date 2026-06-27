@@ -8,7 +8,7 @@ tldr: "LLM 的輸出品質由三個層次共同決定：token 層級的 decoding
 description: "從 greedy decoding 到 chain-of-thought、從 ReAct 到 ES-CoT，本文系統性整理 LLM 推論時三個層次的技術選擇，幫助工程師在應用層面做出有依據的設計決定。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=m3i2mk5hs8U"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260523_000632_815049.wav"
 ---
 

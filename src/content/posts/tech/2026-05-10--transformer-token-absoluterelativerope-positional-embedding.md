@@ -8,7 +8,7 @@ tldr: "Transformer 的 self-attention 天生不知道詞的順序，位置編碼
 description: "系統性介紹 Transformer 位置編碼的四種主要方案：Sinusoidal 絕對編碼、可學習絕對編碼、相對位置編碼（T5、ALiBi），以及 RoPE 的數學直覺與工程優勢。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=Ll-wk8x3G_g"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235011_563925.wav"
 ---
 

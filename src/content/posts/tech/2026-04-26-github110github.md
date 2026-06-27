@@ -8,7 +8,7 @@ tldr: "2023-2024 年 GitHub 增長最快的幾個專案幾乎都是 AI 工具：
 description: "回顧 2023-2024 年 GitHub 增長最快的開源專案，聚焦 Open Interpreter、Ollama 等 AI 工具的崛起，分析是什麼讓它們引爆開發者社群。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=iBGVMcXnkWo"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_233859_667343.wav"
 ---
 

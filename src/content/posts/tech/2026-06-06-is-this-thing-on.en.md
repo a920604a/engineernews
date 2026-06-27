@@ -8,7 +8,7 @@ tldr: "The most common engineering communication failure isn't poor technical kn
 description: "Starting from a stage audio metaphor, examining the core problem in engineer technical communication: how to confirm your explanation was actually understood, not just assumed to be clear."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=2Hke7Utt_qQ"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_201419_416774.mp3"
 ---
 

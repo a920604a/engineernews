@@ -8,7 +8,7 @@ tldr: "Redis 是基於記憶體的資料結構伺服器，靠著單執行緒事�
 description: "從架構原理到實際使用場景，完整解析 Redis 為什麼在工程師社群中長期維持極高評價，以及 2026 年它在 AI 工程中的新角色。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=z_NbVtbgBJw"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235520_124143.wav"
 ---
 

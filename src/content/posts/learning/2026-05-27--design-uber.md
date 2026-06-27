@@ -11,7 +11,7 @@ tldr: "設計 Uber 最核心的挑戰不是技術選型，而是把一個模糊�
 description: "從直播複盤中整理出設計 Uber 的思維框架：如何釐清需求範圍、識別核心難點，以及在擴展性與一致性之間做取捨"
 type: case-study
 original_url: "https://www.youtube.com/watch?v=MNfU1tFLiOk"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_141420_299619.mp3"
 ---
 

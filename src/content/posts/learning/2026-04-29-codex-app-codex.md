@@ -8,7 +8,7 @@ tldr: "OpenAI Codex CLI 是一個在本機終端機運行的 AI Coding Agent，�
 description: "介紹 OpenAI Codex CLI：一個開源的終端機 AI Coding Agent，2025 年 4 月發布，支援多種安全模式與 MCP 工具整合。"
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=4gciWspBVHw"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_233400_856238.wav"
 ---
 

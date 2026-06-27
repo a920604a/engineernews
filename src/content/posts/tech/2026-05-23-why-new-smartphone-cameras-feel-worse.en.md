@@ -8,7 +8,7 @@ tldr: "Phone cameras increasingly produce an 'AI feeling' — skin looks like pl
 description: "Why flagship smartphone cameras in 2025-2026 feel increasingly artificial: over-aggressive AI noise reduction, AI-synthesized details, the Samsung moon controversy, and what it means for trust in smartphone photography."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=coX4duwUCpw"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_195322_861183.mp3"
 ---
 

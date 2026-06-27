@@ -8,7 +8,7 @@ tldr: "作業系統不是一個黑盒，而是一條從 UEFI 到 Kernel 到 Proc
 description: "跟著 Fireship 影片的脈絡，從韌體（UEFI/BIOS）、開機載入器、Kernel、行程管理、記憶體管理到系統呼叫，一次建立對作業系統的完整心理模型。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=MtxP2pyCvYA"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235320_976353.wav"
 ---
 

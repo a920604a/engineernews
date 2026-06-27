@@ -8,7 +8,7 @@ tldr: "Meta Ray-Ban Display 是第一款真正將 AI 顯示器整合進一般眼
 description: "深入解析 Meta Ray-Ban Display 智慧眼鏡的技術架構、顯示技術、EMG 神經腕帶設計，以及對 AR 穿戴裝置路線圖的意義。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=7YrdI7h2XoY"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234631_770794.wav"
 ---
 

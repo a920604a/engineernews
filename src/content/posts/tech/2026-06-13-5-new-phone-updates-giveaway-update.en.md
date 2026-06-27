@@ -8,7 +8,7 @@ tldr: "Android's update ecosystem has meaningfully improved in 2025–2026: Pixe
 description: "Mid-2026 Android software update landscape: Pixel's long-term support commitment, Samsung One UI update cadence improvements, OnePlus policy changes, and what this means for Android developers."
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=49-rK7SAfQk"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_202513_499230.mp3"
 ---
 

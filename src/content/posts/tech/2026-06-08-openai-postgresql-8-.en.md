@@ -8,7 +8,7 @@ tldr: "OpenAI's ChatGPT database architecture is a single primary PostgreSQL ins
 description: "Deep analysis of OpenAI's PostgreSQL scaling architecture: how a single primary with ~50 read replicas, PgBouncer connection pooling, and Azure cascading replication lets PostgreSQL support millions of queries per second and 800 million ChatGPT users."
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=1zVLBRIwCr0"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_201811_827010.mp3"
 ---
 

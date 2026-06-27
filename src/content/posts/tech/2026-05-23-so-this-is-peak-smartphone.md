@@ -8,7 +8,7 @@ tldr: "智慧型手機硬體創新已趨近飽和——大螢幕、多鏡頭、�
 description: "探討智慧型手機硬體創新停滯的現象：為什麼每年旗艦機的差異越來越難被感知？折疊機、AI 功能、和軟體服務能否成為新的升級動力？"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=c347oYQO57A"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_195254_229621.mp3"
 ---
 

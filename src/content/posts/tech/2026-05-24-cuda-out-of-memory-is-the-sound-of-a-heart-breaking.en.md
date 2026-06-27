@@ -8,7 +8,7 @@ tldr: "CUDA OOM errors have five common root causes: oversized batch, gradients 
 description: "Practical guide to debugging CUDA Out of Memory errors in PyTorch: computation graph leaks, batch size tuning, mixed precision training, gradient checkpointing — a complete GPU memory optimization checklist."
 type: debug
 original_url: "https://www.youtube.com/shorts/Q5w61PXKuTM"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_195515_586578.mp3"
 ---
 

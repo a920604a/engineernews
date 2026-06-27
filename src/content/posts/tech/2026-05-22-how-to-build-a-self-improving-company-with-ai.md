@@ -8,7 +8,7 @@ tldr: "真正能用 AI 持續自我改進的企業，靠的不是導入工具，
 description: "探討如何利用 AI 建立企業的持續改進反饋迴路：從資料飛輪、自動化決策到組織文化變革，以及常見的陷阱和成功條件。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=X_JsIHUfUjc"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_195033_010092.mp3"
 ---
 

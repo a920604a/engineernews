@@ -8,7 +8,7 @@ tldr: "The M4 MacBook Air and Mac Studio are solid spec upgrades — 16GB standa
 description: "An engineer's perspective on Apple's 2025 M4 product line: MacBook Air M4, Mac Studio M4 Max, and the current state of Apple Intelligence."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=i9TvUGeTltE"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260523_000644_872132.wav"
 ---
 

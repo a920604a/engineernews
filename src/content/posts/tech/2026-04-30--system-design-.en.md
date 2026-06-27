@@ -8,7 +8,7 @@ tldr: "The point of system design interviews isn't memorizing answers — it's d
 description: "Why system design interviews aren't about recitation: analyzing why memorizing architecture diagrams fails, what interviewers actually evaluate, and how to build the design thinking that handles any question."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=a7JHJ8Tzwpg"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234128_755676.wav"
 ---
 

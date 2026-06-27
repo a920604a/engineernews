@@ -8,7 +8,7 @@ tldr: "A YouTuber/indie developer noticed fans couldn't speak up due to social a
 description: "Indie developer case study: using AI video calling to help users with social anxiety, covering WebRTC, real-time AI voice, Tavus, and the engineering decisions from idea to MVP."
 type: case-study
 original_url: "https://www.youtube.com/watch?v=M1bifAQSVcY"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235049_221747.wav"
 ---
 

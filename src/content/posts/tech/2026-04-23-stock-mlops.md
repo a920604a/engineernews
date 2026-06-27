@@ -9,7 +9,7 @@ description: "端到端股價預測 MLOps 系統，整合 MLflow 實驗追蹤、
 tldr: "端到端台美股 ML 系統：MLflow + Prefect + Evidently + CI/CD，從訓練到部署全程可追蹤。"
 github: "https://github.com/a920604a/stock-mlops"
 pinned: false
-draft: false
+draft: true
 ---
 
 Stock MLOps 以台股與美股歷史資料為基礎，實作完整的端到端 ML 系統，涵蓋 ETL 排程、模型訓練、版本管理、即時推理、漂移監控與 CI/CD，讓模型從訓練到部署全程可追蹤。

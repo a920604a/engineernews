@@ -6,7 +6,7 @@ tags: ["astro", "cloudflare", "d1", "vectorize", "typescript"]
 lang: zh-TW
 description: "Engineer News 部落格的完整技術堆疊說明：為什麼選這些工具、它們怎麼組合在一起、以及哪些選擇是有意識的取捨。"
 tldr: "Astro 做靜態渲染與內容管理，Cloudflare Pages/Workers 做部署與動態 API，D1 做輕量資料儲存，Vectorize + Workers AI 做 RAG 語意搜尋，R2 放 OG 圖片和 TTS 音訊。整個 pipeline 從 YouTube 爬取到用戶搜尋，全跑在 Cloudflare 生態系內。"
-draft: false
+draft: true
 pinned: true
 ---
 

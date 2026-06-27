@@ -8,7 +8,7 @@ tldr: "CVE-2026-31431 (CopyFail) is a Linux kernel page cache vulnerability allo
 description: "Deep dive into CVE-2026-31431 (CopyFail): how a logic bug in the Linux kernel's authencesn cryptographic template enables silent page cache corruption and privilege escalation without leaving traces on disk."
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=lkifbWtxxlk"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_194909_949860.mp3"
 ---
 

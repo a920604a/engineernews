@@ -8,7 +8,7 @@ tldr: "Fireship walks through 10 landmark CS papers from Turing to GPT-3, showin
 description: "10 papers across 100 years of CS history: Turing, Shannon, Perceptron, Backprop, PageRank, AlexNet, Transformer, GPT-3 — and what connects them"
 type: case-study
 original_url: "https://www.youtube.com/watch?v=ML3q7Ok4hJg"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260620_083233_168950.mp3"
 ---
 

@@ -8,7 +8,7 @@ tldr: "高通的核心押注不是訓練 AI，而是在推理端——把 AI 跑
 description: "從 Snapdragon Elite X 到 6G 通信標準制定，高通如何在 AI 時代找到不同於 NVIDIA 和 AMD 的定位，以及這對 AI 基礎設施和開發者生態的意義。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=eAYx6CHstNw"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_201144_251501.mp3"
 ---
 

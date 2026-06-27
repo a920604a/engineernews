@@ -8,7 +8,7 @@ tldr: "打造具身智慧機器人最稀缺的不是算法也不是晶片，而�
 description: "深入解析機器人資料採集工廠的運作方式、瓶頸所在，以及為什麼具身 AI 的資料問題遠比語言模型複雜得多。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=ZvHIuIIZ3Is"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235332_156890.wav"
 ---
 

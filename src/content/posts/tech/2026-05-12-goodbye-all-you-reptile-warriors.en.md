@@ -8,7 +8,7 @@ tldr: "Python is still the dominant language for AI development, but the rise of
 description: "Exploring Python's evolving role in the AI era: from scripting glue to AI infrastructure backbone, and how LLM-assisted development is changing what Python engineers actually do."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=pa_DHVnj_uU"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235017_162720.wav"
 ---
 

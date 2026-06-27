@@ -8,7 +8,7 @@ tldr: "Android 更新生態在 2026 年有明顯改善，Pixel 7 年支援承諾
 description: "2026 年中的 Android 手機軟體更新現況：Pixel 的長期支援承諾、Samsung One UI 更新速度、OnePlus 政策轉變，以及對 Android 開發者的實際影響。"
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=49-rK7SAfQk"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_202538_602987.mp3"
 ---
 

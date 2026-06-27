@@ -8,7 +8,7 @@ tldr: "Three big GitHub moments in early May 2026: Warp terminal goes open sourc
 description: "This week's GitHub trending highlights: Warp terminal open-sources its Rust codebase, GitHub Copilot formalizes Agent Skills as a cross-tool standard, and Codex CLI goes GA for all Copilot subscribers."
 type: listicle
 original_url: "https://www.youtube.com/watch?v=jjtfs8lug2s"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234452_651343.wav"
 ---
 

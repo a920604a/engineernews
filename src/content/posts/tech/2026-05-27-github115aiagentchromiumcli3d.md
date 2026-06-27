@@ -8,7 +8,7 @@ tldr: "本週 GitHub 熱點：桌面 AI 代理人框架、無痕 Chromium 分支
 description: "GitHub 一週熱點第 115 期：五個正在引發開發者社群熱議的開源專案，包括桌面 AI 代理人、隱私導向 Chromium、CLI 自動化框架和 3D 重建技術。"
 type: listicle
 original_url: "https://www.youtube.com/watch?v=KbZHF8s3CQA"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_195826_214147.mp3"
 ---
 

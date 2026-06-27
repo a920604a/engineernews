@@ -8,7 +8,7 @@ tldr: "This week's GitHub trending picks: Penpot as an open-source Figma alterna
 description: "GitHub open-source weekly roundup #117: five projects worth an engineer's attention—covering design tooling, AI context optimization, prompt engineering, language learning, and building LLMs from scratch."
 type: listicle
 original_url: "https://www.youtube.com/watch?v=Oruwe_eBbfw"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_201948_948291.mp3"
 ---
 

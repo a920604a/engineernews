@@ -11,7 +11,7 @@ tldr: "Kafka 的水平擴展能力來自 partition 設計：每個 partition 是
 description: "Kafka 效能深潛第二篇：partition 如何讓 Kafka 水平擴展、Consumer Group 的並行消費機制、replica 同步對 latency 的影響，以及不同部署情境下的效能取捨。"
 type: deep-dive
 original_url: "https://www.youtube.com/shorts/la8tzEyg-hY"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260616_060538_702569.mp3"
 ---
 

@@ -8,7 +8,7 @@ tldr: "Transformer self-attention is inherently orderless — positional encodin
 description: "A systematic introduction to the four main positional encoding schemes in Transformers: sinusoidal absolute encoding, learnable absolute encoding, relative positional encoding (T5, ALiBi), and the mathematical intuition and engineering advantages of RoPE."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=Ll-wk8x3G_g"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235005_290699.wav"
 ---
 

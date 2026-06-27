@@ -11,7 +11,7 @@ tldr: "MCP（Model Context Protocol）是 Anthropic 設計的開放協定，讓 
 description: "深入了解 MCP Model Context Protocol：Anthropic 如何設計這個讓 AI 連接外部工具的標準、Claude Code 的 MCP 整合實作細節、與 function calling 的差異，以及 Tool Search 如何解決 MCP 的 context 消耗問題。"
 type: deep-dive
 original_url: "https://www.youtube.com/shorts/VMF4InsZm9I"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_201636_673710.mp3"
 ---
 

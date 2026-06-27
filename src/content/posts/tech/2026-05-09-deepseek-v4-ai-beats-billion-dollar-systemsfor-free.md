@@ -8,7 +8,7 @@ tldr: "DeepSeek V3 以 671B 參數 MoE 架構、僅 278 萬 H800 GPU 小時的�
 description: "深入解析 DeepSeek V3 的 MoE 架構、訓練效率突破與成本優勢，以及對 AI 產業競爭格局的影響。"
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=p7K3xfViWCE"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234746_157792.wav"
 ---
 

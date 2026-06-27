@@ -8,7 +8,7 @@ tldr: "OpenClaw's three-stage workflow — AI exploration, Skill distillation, z
 description: "A guide to OpenClaw × Playwright CLI's three-stage AI browser automation: AI explores once, encodes the workflow into a reusable Skill file, then runs indefinitely with zero token consumption."
 type: how-to
 original_url: "https://www.youtube.com/watch?v=nlK7-zuYDcs"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235235_077608.wav"
 ---
 

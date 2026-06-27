@@ -8,7 +8,7 @@ tldr: "OpenAI 的 ChatGPT 資料庫架構是一個單一主庫 + 近 50 個讀�
 description: "深度解析 OpenAI 的 PostgreSQL 擴展架構：如何用單一主庫 + 50 個讀取副本、PgBouncer 連線池和 Azure 串聯複製，讓 PostgreSQL 支撐每秒百萬級查詢和 8 億 ChatGPT 用戶。"
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=1zVLBRIwCr0"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_201833_553777.mp3"
 ---
 

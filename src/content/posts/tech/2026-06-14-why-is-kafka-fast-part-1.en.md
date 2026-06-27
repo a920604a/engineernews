@@ -26,7 +26,7 @@ tldr: "Kafka's speed comes from two counterintuitive design choices: deliberatel
 description: "Deep dive into Kafka's performance fundamentals: why sequential I/O beats random memory access, how Zero-Copy via sendfile() eliminates data movement overhead, and how Page Cache makes disk behave like memory."
 type: explainer
 original_url: "https://www.youtube.com/shorts/wvLdBJEl-wc"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_203011_214726.mp3"
 ---
 

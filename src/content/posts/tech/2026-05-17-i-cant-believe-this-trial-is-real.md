@@ -8,7 +8,7 @@ tldr: "2026 年 3 月，加州陪審團裁定 Meta 與 YouTube 對一名兒童�
 description: "加州陪審團 2026 年 3 月 25 日裁決：Meta 和 YouTube 對兒童社群媒體成癮負有責任，賠償 600 萬美元。無限滾動與自動播放被認定為損害性設計，標誌著演算法產品責任訴訟的新紀元。"
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=3tbB2dffx0s"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235447_543674.wav"
 ---
 

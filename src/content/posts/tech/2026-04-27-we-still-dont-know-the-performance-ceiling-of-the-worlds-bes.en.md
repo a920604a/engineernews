@@ -8,7 +8,7 @@ tldr: "DuckDB improved its core OLAP operations by 4-12x over three years and ca
 description: "An analysis of DuckDB's performance trajectory from 2022 to 2025: benchmark data, TPC-H results at multi-terabyte scale, comparison with ClickHouse and Polars, and why the performance ceiling is still an open question."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=wmGikV_393Y"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_233918_911954.wav"
 ---
 

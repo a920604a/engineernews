@@ -11,7 +11,7 @@ tldr: "AI Agent 是讓模型能持續感知環境、使用工具、自主完成�
 description: "用一篇文章搞懂 AI Agent 的運作機制，以及 2026 年最熱的 AI 工程概念 Harness Engineering 到底在說什麼。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=B91bZL8wcAI"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235508_393605.wav"
 ---
 

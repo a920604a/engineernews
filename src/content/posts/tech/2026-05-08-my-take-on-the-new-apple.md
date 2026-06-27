@@ -8,7 +8,7 @@ tldr: "M4 MacBook Air 和 Mac Studio 是紮實的規格升級，但 Apple Intell
 description: "從工程師角度評析 2025 年 Apple M4 產品線：MacBook Air M4、Mac Studio M4 Max，以及 Apple Intelligence 的實際表現。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=i9TvUGeTltE"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234639_630710.wav"
 ---
 

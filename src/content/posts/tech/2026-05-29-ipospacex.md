@@ -8,7 +8,7 @@ tldr: "SpaceX 計劃於 2026 年 6 月以 $135/股、$1.75 兆估值在 Nasdaq �
 description: "SpaceX IPO 深度解析：$1.75 兆估值的財務基礎、Starlink 商業模式的實際表現、火箭發射業務的成本結構，以及這個 IPO 對太空產業和科技投資的意義。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=HqsTB0avrh8"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_200056_616612.mp3"
 ---
 

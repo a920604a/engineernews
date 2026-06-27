@@ -11,7 +11,7 @@ tldr: "For a book selling platform, the key decisions are search architecture (E
 description: "System design mock series: from requirements clarification to capacity estimation, a complete walkthrough of a book e-commerce platform's architecture, focusing on search, inventory, and order subsystem tradeoffs."
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=tkikiGfum58"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_200752_839332.mp3"
 ---
 

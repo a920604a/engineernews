@@ -8,7 +8,7 @@ tldr: "DI isn't just 'passing things in' — it's the core technique that makes 
 description: "A practical guide to dependency injection in TypeScript: from constructor injection to container management, with a focus on testability and real-world patterns."
 type: how-to
 original_url: "https://www.youtube.com/shorts/Z072vUn5xMg"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260616_060606_756001.mp3"
 ---
 

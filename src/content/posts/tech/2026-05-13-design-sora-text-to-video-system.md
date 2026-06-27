@@ -8,7 +8,7 @@ tldr: "Sora 的核心架構是 Diffusion Transformer（DiT）：把影片壓縮�
 description: "從系統設計角度剖析 Sora 的技術架構：時空自編碼器、Diffusion Transformer、可變輸入設計，以及開源替代方案 Open-Sora 的工程選擇。"
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=ZuQ4B0CwNjo"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235127_181707.wav"
 ---
 

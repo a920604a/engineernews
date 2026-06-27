@@ -8,7 +8,7 @@ tldr: "DeepSeek V4 是一個 1.6 兆參數（49B 活躍）的 MoE 開源模型�
 description: "DeepSeek V4 深度解析：1.6 兆參數 MoE 架構、百萬 token 上下文、Huawei Ascend 最佳化，以及對開源 AI 生態和中美 AI 競賽的意義。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=LpXhy2iiaQE"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_195204_041560.mp3"
 ---
 

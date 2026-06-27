@@ -11,7 +11,7 @@ tldr: "The hardest part of designing Uber isn't picking the right technologies â
 description: "A structured walkthrough of how to approach the 'Design Uber' system design question: scoping, identifying core challenges, and making trade-offs"
 type: case-study
 original_url: "https://www.youtube.com/watch?v=MNfU1tFLiOk"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_141339_490786.mp3"
 ---
 

@@ -11,7 +11,7 @@ tldr: "設計一個書籍銷售平台時，關鍵決策是搜尋架構（Elastic
 description: "系統設計 Mock 系列：從需求澄清到容量估算，完整走一遍書籍電商平台的架構設計，重點討論搜尋、庫存和訂單三個核心子系統的取捨。"
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=tkikiGfum58"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_200816_565057.mp3"
 ---
 

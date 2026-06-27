@@ -8,7 +8,7 @@ tldr: "The Data Lakehouse merges the ACID reliability of data warehouses with th
 description: "A technical explainer on Data Lakehouse architecture: why it exists, how it works, the differences between Apache Iceberg and Delta Lake, and the 2025 convergence trend."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=taSmwcqdkQk"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234542_004578.wav"
 ---
 

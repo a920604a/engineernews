@@ -8,7 +8,7 @@ tldr: "Python 依然是 AI 開發的主力語言，但 AI 工具的普及讓「�
 description: "探討 Python 在 AI 時代的角色演變：從脫稿語言到 AI 基礎設施的主幹，以及 LLM 輔助程式開發如何改變 Python 工程師的工作方式。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=pa_DHVnj_uU"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235042_800652.wav"
 ---
 

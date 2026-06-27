@@ -8,7 +8,7 @@ tldr: "SpaceX plans to list on Nasdaq in June 2026 at $135/share with a $1.75T v
 description: "SpaceX IPO deep analysis: the financial foundation of a $1.75T valuation, Starlink's actual commercial performance, launch business cost structure, and what this means for the space industry and tech investing."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=HqsTB0avrh8"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_200037_487215.mp3"
 ---
 

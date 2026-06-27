@@ -8,7 +8,7 @@ tldr: "Built an LLM-powered bot that explains anything with condescending overco
 description: "How to build an automatic mansplainer bot using LLM APIs — system prompt design, character stability techniques, and the prompt engineering lessons that came out of it."
 type: how-to
 original_url: "https://www.youtube.com/watch?v=xHi8PUIVyoo"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235453_094921.wav"
 ---
 

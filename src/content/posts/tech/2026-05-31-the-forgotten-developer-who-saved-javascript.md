@@ -8,7 +8,7 @@ tldr: "Douglas Crockford 不是創造 JavaScript 的人，但他可能是讓 Jav
 description: "Douglas Crockford 如何透過 JSON 規範、JSLint 和《JavaScript: The Good Parts》改變了 JavaScript 的命運：從一個被專業開發者嘲笑的玩具語言，到現代 web 開發的核心技術。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=JfPWbttemYE"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_200504_126658.mp3"
 ---
 

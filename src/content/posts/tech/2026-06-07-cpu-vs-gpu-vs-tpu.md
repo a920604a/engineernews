@@ -8,7 +8,7 @@ tldr: "CPU 適合控制流程複雜的任務，GPU 適合大規模平行計算�
 description: "從架構原理到實際成本，清楚說明 CPU、GPU、TPU 的設計哲學差異，以及在 AI 訓練和推理的不同情境下，怎麼選擇對的硬體。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=MUWAbpg1xLo"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_201548_375646.mp3"
 ---
 

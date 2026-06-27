@@ -8,7 +8,7 @@ tldr: "NVIDIA 的 Isaac GR00T N1 是第一個真正意義上的人形機器人�
 description: "NVIDIA Isaac GR00T N1 用雙系統架構（視覺語言模型 + 擴散 Transformer）解決了機器人 AI 最難的問題：怎麼讓一個模型跨越不同硬體體型，同時具備高層推理與低層精細動作控制能力。"
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=Xf_v62TQOx4"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234359_445160.wav"
 ---
 

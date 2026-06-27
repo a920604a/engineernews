@@ -9,7 +9,7 @@ description: "以 RAG 架構建置的 arXiv 學術論文知識平台，整合每
 tldr: "arXiv 論文 RAG 平台：每日自動爬取 + 混合向量搜尋 + 雙語 Q&A + Grafana 監控。"
 github: "https://github.com/a920604a/llm-assistant"
 pinned: false
-draft: false
+draft: true
 ---
 
 LLM Assistant 是一個 arXiv 學術論文知識平台，每日自動爬取論文並建立向量索引，使用者可用中英文提問，系統以混合搜尋 + 文件重排後由 Ollama LLM 回答，並支援 Email 訂閱與 Grafana 監控。

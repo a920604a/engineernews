@@ -8,7 +8,7 @@ tldr: "AI video generation has been plagued by temporal drift and forgetting for
 description: "A systematic look at why AI video generation kept breaking over long sequences — and how 2025 architectures like FramePack, MoC, and A2RD finally addressed the temporal drift and forgetting trade-off."
 type: research
 original_url: "https://www.youtube.com/watch?v=yzajLZXh9JU"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234232_430907.wav"
 ---
 

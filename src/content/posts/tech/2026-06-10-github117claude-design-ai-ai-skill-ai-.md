@@ -8,7 +8,7 @@ tldr: "本週 GitHub 熱門精選：Penpot 開源設計工具替代 Figma、LLML
 description: "GitHub 開源專案週報第 117 期：五個值得工程師關注的熱門專案，涵蓋設計工具、AI 上下文優化、提示詞工程、語言學習和從零建造 AI 模型。"
 type: listicle
 original_url: "https://www.youtube.com/watch?v=Oruwe_eBbfw"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_202029_384114.mp3"
 ---
 

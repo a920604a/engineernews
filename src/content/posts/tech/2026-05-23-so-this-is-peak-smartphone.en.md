@@ -8,7 +8,7 @@ tldr: "Smartphone hardware innovation has reached a plateau — big OLED screens
 description: "Examining the smartphone hardware plateau: why flagship differences are increasingly imperceptible, where foldables and AI features fit, and what peak smartphone means for consumers and the industry."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=c347oYQO57A"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_195236_419276.mp3"
 ---
 

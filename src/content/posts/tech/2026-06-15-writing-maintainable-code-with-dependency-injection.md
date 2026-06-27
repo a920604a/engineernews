@@ -8,7 +8,7 @@ tldr: "依賴注入不只是「把東西傳進去」，它是讓程式碼可測�
 description: "深入解析依賴注入的設計哲學、實作手法與常見誤區，並以 TypeScript 示範從手動注入到容器管理的完整流程。"
 type: how-to
 original_url: "https://www.youtube.com/shorts/Z072vUn5xMg"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260616_060624_275187.mp3"
 ---
 

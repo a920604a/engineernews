@@ -8,7 +8,7 @@ tldr: "CPU for complex control flow, GPU for large-scale parallel computation, T
 description: "From architectural principles to real costs, a clear explanation of how CPU, GPU, and TPU differ in design philosophy, and how to choose the right hardware for AI training vs. inference in different scenarios."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=MUWAbpg1xLo"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_201530_075310.mp3"
 ---
 

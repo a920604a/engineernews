@@ -8,7 +8,7 @@ tldr: "Small language models around 10B parameters can run on local hardware in 
 description: "Exploring real-world uses of 10B-parameter small language models in game development: dynamic NPCs, procedural narrative, interactive fiction, and the genuine gap versus large models in gaming contexts."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=Yysg5-WnVhg"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234023_817178.wav"
 ---
 

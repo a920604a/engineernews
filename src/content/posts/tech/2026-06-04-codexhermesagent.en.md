@@ -8,7 +8,7 @@ tldr: "OpenAI Codex CLI and multiple AI coding agents have free tiers. The key i
 description: "A practical guide to the free tiers of OpenAI Codex CLI, GitHub Copilot, Continue.dev, and open-source local models — strategies to maximize AI coding productivity without spending money."
 type: how-to
 original_url: "https://www.youtube.com/watch?v=FwAQ75QCEoU"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_201000_503496.mp3"
 ---
 

@@ -8,7 +8,7 @@ tldr: "AlphaFold's protein structure predictions earned the 2024 Nobel Prize in 
 description: "From CASP competitions to the Nobel Prize, how AlphaFold used deep learning to crack a 50-year-old problem in structural biology and what it means for drug discovery."
 type: explainer
 original_url: "https://www.youtube.com/shorts/MOviZKtFeHM"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_200544_398635.mp3"
 ---
 

@@ -10,7 +10,7 @@ tldr: "140 種食物 × 4 種慢性病即時風險評分，Workers AI 個人化�
 github: "https://github.com/a920604a/nutrition-risk-engine"
 url: "https://nutrition-risk-engine.pages.dev/"
 pinned: false
-draft: false
+draft: true
 ---
 
 Nutrition Guard 是一個零月費的飲食風險管理平台，140 種食物依病症標籤即時計算風險分數，登入後可記錄飲食日誌，並透過 Workers AI 生成個人化中文建議與 PDF 報告。

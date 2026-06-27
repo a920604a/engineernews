@@ -8,7 +8,7 @@ tldr: "Chinese's 'solitude' isn't about complexity—it's that its logographic s
 description: "Why is Chinese called the world's most 'solitary' writing system? From logographic vs. phonographic fundamentals, to information density, dialect diversity, and what this means for the digital age."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=ajGdy5JeHIY"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_194546_088935.mp3"
 ---
 

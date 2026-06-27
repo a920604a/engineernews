@@ -8,7 +8,7 @@ tldr: "用 Ollama 在本機跑 LLM 比你想像的簡單：一行安裝、一行
 description: "完整的本機 LLM 入門指南：Ollama 安裝、模型選擇（Llama 3、Gemma、Mistral）、硬體需求、OpenAI-compatible API 設定，以及本機推論的實際限制。"
 type: how-to
 original_url: "https://www.youtube.com/watch?v=U8lGbSaCCYI"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_202940_200734.mp3"
 ---
 

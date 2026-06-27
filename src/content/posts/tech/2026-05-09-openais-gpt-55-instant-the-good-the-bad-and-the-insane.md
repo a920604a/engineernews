@@ -8,7 +8,7 @@ tldr: "OpenAI 2025 年春季一次推出三款新模型：GPT-4.1 強化程式�
 description: "評析 OpenAI 2025 年春季發布的 o3、o4-mini 和 GPT-4.1 三款模型的優缺點、基準表現與適用場景。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=4nQnhjimB4Y"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234813_582224.wav"
 ---
 

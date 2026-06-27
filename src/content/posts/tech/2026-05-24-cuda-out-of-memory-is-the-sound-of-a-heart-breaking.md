@@ -8,7 +8,7 @@ tldr: "CUDA OOM 錯誤背後有五個常見的根本原因：batch size 過大�
 description: "深入解析 CUDA Out of Memory 的常見原因與修復方法：從梯度計算圖洩漏、batch size 調整，到混合精度訓練與梯度檢查點，完整的 GPU 記憶體優化清單。"
 type: debug
 original_url: "https://www.youtube.com/shorts/Q5w61PXKuTM"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_195544_452341.mp3"
 ---
 

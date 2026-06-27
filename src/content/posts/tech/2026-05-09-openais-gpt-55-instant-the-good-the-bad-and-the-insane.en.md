@@ -8,7 +8,7 @@ tldr: "OpenAI released three models in spring 2025: GPT-4.1 for coding and instr
 description: "An assessment of OpenAI's spring 2025 releases — o3, o4-mini, and GPT-4.1 — covering their strengths, benchmark performance, and practical use cases."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=4nQnhjimB4Y"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234751_935756.wav"
 ---
 

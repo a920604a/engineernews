@@ -8,7 +8,7 @@ tldr: "用白話解釋 Git 的核心概念，從初始化到分支合併，讓�
 description: "一篇給初學者的 Git + GitHub 入門指南，從安裝、建立倉庫、提交變更，到分支與合併，用實際操作帶你走過整個流程。"
 type: how-to
 original_url: "https://www.youtube.com/watch?v=bWUUHBVg-7E"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_140958_400927.mp3"
 ---
 

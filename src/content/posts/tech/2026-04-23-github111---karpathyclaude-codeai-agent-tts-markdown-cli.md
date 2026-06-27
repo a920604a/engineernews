@@ -8,7 +8,7 @@ tldr: "Github 一周熱點第 111 期：介紹 Karpathy 的 Claude Code 配置�
 description: "Github 一周熱點第 111 期：介紹 Karpathy 的 Claude Code 配置、AI Agent 團隊協作平台等熱門專案"
 type: "listicle"
 original_url: "https://www.youtube.com/watch?v=MreEoXnLysc"
-draft: false
+draft: true
 ---
 # TL;DR
 

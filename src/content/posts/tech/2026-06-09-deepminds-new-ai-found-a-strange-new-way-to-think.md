@@ -8,7 +8,7 @@ tldr: "DeepMind 的 AlphaProof 結合語言模型與強化學習，在 2024 年�
 description: "AlphaProof 如何用神經符號方法在 IMO 達到銀牌水準，以及這對 AI 推理能力意味著什麼。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=Dkqzqw8rxXI"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_201922_257731.mp3"
 ---
 

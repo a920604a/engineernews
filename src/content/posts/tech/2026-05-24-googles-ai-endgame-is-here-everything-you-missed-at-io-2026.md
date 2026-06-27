@@ -8,7 +8,7 @@ tldr: "Google I/O 2026 的核心訊號不是某個產品功能，而是 Google �
 description: "深入解析 Google I/O 2026 的核心 AI 戰略轉向：從 Gemini 3.5 Flash 到 Gemini Omni、Gemini Spark 和 Antigravity 2.0，Google 如何把 AI 從工具層移到基礎設施層。"
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=9OQ5vaYbGV0"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_195634_784848.mp3"
 ---
 

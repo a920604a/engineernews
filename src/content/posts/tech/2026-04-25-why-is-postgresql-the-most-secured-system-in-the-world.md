@@ -8,7 +8,7 @@ tldr: "了解 PostgreSQL 的安全性"
 description: "了解 PostgreSQL 的安全性"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=S_Z8Y0vMSzo"
-draft: false
+draft: true
 ---
 
 # PostgreSQL 的安全性為什麼是全球最頂尖的？

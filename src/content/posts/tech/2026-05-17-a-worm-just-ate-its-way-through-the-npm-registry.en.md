@@ -8,7 +8,7 @@ tldr: "On May 11, 2026, the TeamPCP group compromised 42 TanStack packages in 6 
 description: "A deep dive into the Mini Shai-Hulud attack: 42 TanStack npm packages compromised in 6 minutes, 170+ total packages affected, 518 million cumulative downloads at risk, combining GitHub Actions cache poisoning with in-memory OIDC token extraction."
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=gwTQLZSIlsU"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235351_941874.wav"
 ---
 

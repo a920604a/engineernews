@@ -8,7 +8,7 @@ tldr: "WWDC 2026 最大的改變是 Siri 從頭重寫成獨立 App、macOS Golde
 description: "WWDC 2026 的開發者大會綜覽：Siri AI 重建用 Google Gemini、iOS 27 Liquid Glass 修補、macOS Golden Gate 為 Apple Silicon 專屬，以及 Apple Intelligence 的新功能。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=_gCXmKjDecU"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_202424_219210.mp3"
 ---
 

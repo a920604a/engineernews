@@ -8,7 +8,7 @@ tldr: "從基本原理出發的思考方式，透過 3 個練習，讓你做出�
 description: "從基本原理出發的思考方式，透過 3 個練習，讓你做出更好的決定"
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=hToO6daVuSw"
-draft: false
+draft: true
 ---
 ## TL;DR
 第一原則是一種批判性思考和質疑的方式，透過分解問題、質疑假設和假設的基礎，重新組合和整合新的知識和假設，從而找到事物的本質和根本原因。

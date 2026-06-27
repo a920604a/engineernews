@@ -8,7 +8,7 @@ tldr: "2026 年 5 月初 GitHub 最熱的三件事：Warp 終端機開源衝上 
 description: "本週 GitHub 熱門開源專案導覽：Warp 終端機開源、GitHub Copilot Agent Skills 開放標準、Codex CLI GA，以及一站式滲透測試工具箱。"
 type: listicle
 original_url: "https://www.youtube.com/watch?v=jjtfs8lug2s"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_234500_046829.wav"
 ---
 

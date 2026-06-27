@@ -8,7 +8,7 @@ tldr: "Meesho 在 2022 年主動放棄社群電商的佣金模式（當時他們
 description: "Meesho 的產品轉型案例：從 WhatsApp 社群轉售起家，到主動放棄佣金收入、用 0% 佣金策略衝規模，最終在 Flipkart 和 Amazon 主導的市場拿下最大份額。決策邏輯、技術挑戰和關鍵數字完整拆解。"
 type: case-study
 original_url: "https://www.youtube.com/watch?v=49L8lVe_PVo"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_194843_055884.mp3"
 ---
 

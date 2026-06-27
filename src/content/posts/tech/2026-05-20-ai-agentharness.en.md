@@ -11,7 +11,7 @@ tldr: "AI Agents let models perceive environments and act autonomously. Harness 
 description: "A clear explainer on how AI Agents work and what Harness Engineering actually means — the most important AI engineering concept in 2026."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=B91bZL8wcAI"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260522_235503_405505.wav"
 ---
 

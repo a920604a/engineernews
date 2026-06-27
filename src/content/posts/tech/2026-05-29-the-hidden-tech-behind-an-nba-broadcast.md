@@ -8,7 +8,7 @@ tldr: "現代 NBA 直播的技術核心是 Sony Hawk-Eye 的 3D 光學追蹤系�
 description: "拆解 NBA 直播背後的技術：Hawk-Eye 3D 追蹤攝影機如何在毫秒內定位每個球員和籃球、即時資料管線如何驅動圖形疊加和裁判決策、以及 AI 自動判決系統的現況。"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=mk_wdHePbtQ"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_200139_029588.mp3"
 ---
 

@@ -8,7 +8,7 @@ tldr: "讀研究所的時機沒有標準答案，但有一個問題可以幫你�
 description: "大學畢業要不要馬上讀研究所？聊聊這個決定背後真正值得問的問題，以及不同選擇各自適合什麼樣的人"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=eYpO1zsQZlg"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260615_141830_477135.mp3"
 ---
 

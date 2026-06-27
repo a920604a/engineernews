@@ -8,7 +8,7 @@ tldr: "reduce() 不是讓程式碼「更有效率」，而是讓累積運算更�
 description: "深入解析 Python functools.reduce：它真正的用途、與 for 迴圈和 list comprehension 的差異，以及 Guido van Rossum 為什麼把它從內建函數移出去"
 type: explainer
 original_url: "https://www.youtube.com/shorts/1Ytv1b7CN1E"
-draft: false
+draft: true
 audio_url: "/api/tts/r2/tts/tts_20260620_083402_120522.mp3"
 ---
 
