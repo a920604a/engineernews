@@ -9,6 +9,10 @@ description: "拆解 npj Digital Medicine 的自我催眠 App 大規模研究：
 type: research
 original_url: "https://www.nature.com/articles/s41746-025-02182-0"
 draft: false
+key_points:
+  - "效果量0.7、8萬人看起來漂亮，但沒對照組就只能講相關"
+  - "用單題自評換到8萬人規模，代價是測量很粗、易受期待影響"
+  - "大樣本只讓估計更準，治不了迴歸均值和選擇偏誤"
 ---
 
 如果你在新聞上看到「8 萬人實測，某 App 顯著減壓，效果量 0.7」，你的第一反應應該是什麼？

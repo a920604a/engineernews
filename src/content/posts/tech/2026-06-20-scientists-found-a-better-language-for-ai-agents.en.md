@@ -10,6 +10,10 @@ type: explainer
 original_url: "https://www.youtube.com/watch?v=dUmT0OIGoqE"
 draft: false
 audio_url: "/api/tts/r2/tts/tts_20260620_083449_728699.mp3"
+key_points:
+  - "Given free communication, agents drift from natural language to compressed, task-optimized shorthand that's faster but human-unreadable"
+  - "The real tradeoff is performance versus transparency—efficient agent channels become black boxes you can't audit when things break"
+  - "Don't default agents to natural language; design structured schemas and reserve readability only for channels that need auditing"
 ---
 
 When you build a multi-agent AI system, the intuitive approach is to have agents communicate in natural language — it's what they're trained for. Research suggests this might be a mistake, or at least a suboptimal default.

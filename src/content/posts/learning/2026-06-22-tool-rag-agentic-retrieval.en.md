@@ -12,6 +12,10 @@ description: "Starting from Claude Code's deferred tools and Skills mechanism, t
 type: "explainer"
 draft: false
 audio_url: "/api/tts/r2/tts/tts_20260621_231724_533838.mp3"
+key_points:
+  - "On-demand tool loading is RAG's index-then-load structure, but the LLM's reasoning replaces vector similarity as the retriever"
+  - "Lazy loading cuts context cost roughly 10x and keeps the prompt cache stable versus preloading every schema upfront"
+  - "Deferred tools arrive as names only; call one before fetching its schema and it fails"
 ---
 
 If you've used Claude Code, you may have noticed something: it advertises dozens of skills and hundreds of tools, yet none of them are stuffed into the model's context up front. They appear "on demand." This post unpacks how that mechanism works, and answers a question I confused myself with at first — **is this a form of RAG over the user's query?**

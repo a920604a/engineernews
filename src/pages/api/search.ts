@@ -17,6 +17,7 @@ type SearchSource = {
 type SearchBody = {
   query?: string;
   lang?: PostLang;
+  postId?: string;  // 有值時：限定只問這一篇（「問這篇」功能），只用本文 chunks 當 context
 };
 
 type VectorMatch = {
@@ -222,6 +223,59 @@ async function getKeywordSources(
   return sources;
 }
 
+// 「問這篇」：抓單篇文章的全部 chunks（依序），組成 context。單篇夠小，整篇塞進去即可。
+const ARTICLE_CONTEXT_BUDGET = 7000;
+
+async function getArticleContext(
+  db: D1Database,
+  postId: string
+): Promise<{ title: string; url: string; lang: PostLang; category: string; content: string } | null> {
+  const rows = await db.prepare(`
+    SELECT d.content, d.chunk_index, p.title, p.category, p.lang
+    FROM doc_chunks d
+    JOIN posts p ON p.id = d.source_id
+    WHERE d.source_id = ?
+    ORDER BY d.chunk_index ASC
+  `).bind(postId).all<{ content: string; chunk_index: number; title: string; category: string; lang: PostLang }>();
+
+  const results = rows.results ?? [];
+  if (results.length === 0) return null;
+
+  let content = '';
+  for (const row of results) {
+    if (content.length >= ARTICLE_CONTEXT_BUDGET) break;
+    content += row.content + '\n\n';
+  }
+
+  const first = results[0];
+  return {
+    title: first.title,
+    url: getPostUrl(postId, first.lang),
+    lang: first.lang,
+    category: first.category,
+    content: content.slice(0, ARTICLE_CONTEXT_BUDGET).trim(),
+  };
+}
+
+function buildArticlePrompt(query: string, lang: PostLang, article: { title: string; content: string }) {
+  const answerLang = lang === 'en' ? 'English' : 'Traditional Chinese (Taiwan)';
+  return `You are an assistant that answers questions about ONE specific article.
+
+Rules:
+- Answer in ${answerLang}.
+- Use ONLY the content of the article below. Do not use outside knowledge.
+- If the article does not contain the answer, say so plainly (e.g. "這篇文章沒有提到這個" / "The article doesn't cover this") and, if helpful, point to the closest related point it does make.
+- Be concise and practical. Lead with a direct answer.
+
+Article title: ${article.title}
+
+Article content:
+${article.content}
+
+Question:
+${query}`;
+}
+
 function buildFallbackAnswer(query: string, sources: SearchResult[], lang: PostLang) {
   if (sources.length === 0) {
     return lang === 'en'
@@ -329,6 +383,52 @@ export const POST: APIRoute = async ({ request, locals }) => {
   let vectorHits = 0;
   let keywordHits = 0;
   let llmOk = false;
+
+  // ── 「問這篇」：限定單篇，只用本文 chunks 當 context，跳過全站向量檢索 ──
+  if (typeof body.postId === 'string' && body.postId.trim()) {
+    const postId = body.postId.trim();
+    try {
+      log.info('ask-this-post started', { postId, query: parsed.query });
+      const article = await getArticleContext(DB, postId);
+
+      if (!article) {
+        const msg = parsed.lang === 'en'
+          ? "This article isn't indexed yet, so I can't answer questions about it."
+          : '這篇文章還沒被索引，暫時無法針對它回答。';
+        return new Response(msg, {
+          status: 200,
+          headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-cache, no-transform' },
+        });
+      }
+
+      const source: SearchSource = {
+        citation: 1, postId, title: article.title, url: article.url,
+        excerpt: truncate(article.content, 220), score: 1,
+        lang: article.lang, category: article.category, chunkId: postId,
+      };
+      const prompt = buildArticlePrompt(parsed.query, parsed.lang, article);
+      const answerStream = await AI.run(CHAT_MODEL, {
+        messages: [{ role: 'user', content: prompt }],
+        stream: true,
+      });
+
+      const headers = new Headers();
+      headers.set('Content-Type', 'text/event-stream; charset=utf-8');
+      headers.set('Cache-Control', 'no-cache, no-transform');
+      headers.set('x-rag-sources', JSON.stringify([source]));
+      headers.set('x-rag-lang', parsed.lang);
+      return new Response(answerStream as BodyInit, { headers });
+    } catch (error) {
+      log.error('ask-this-post failed', error);
+      const msg = parsed.lang === 'en'
+        ? 'Sorry, something went wrong answering that. Please try again.'
+        : '抱歉，回答時出了點問題，請再試一次。';
+      return new Response(msg, {
+        status: 200,
+        headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-cache, no-transform' },
+      });
+    }
+  }
 
   try {
     log.info('search started', { query: parsed.query, lang: parsed.lang });

@@ -14,7 +14,7 @@ src/content/posts/tech/2026-06-14-why-is-kafka-fast-part-1.md      # zh-TW (lang
 src/content/posts/tech/2026-06-14-why-is-kafka-fast-part-1.en.md   # English (lang: en)
 ```
 - 同目錄、同檔名，英文版多 `.en` 後綴。
-- 英文版 frontmatter `lang: en`，其餘 key 對齊（保留 `series`、`glossary`、`type`、`tags`、`original_url`、`audio_url` 若有就照搬；`title`/`tldr`/`description` 翻成英文）。
+- 英文版 frontmatter `lang: en`，其餘 key 對齊（保留 `series`、`glossary`、`type`、`tags`、`original_url`、`audio_url` 若有就照搬；`title`/`tldr`/`description`/`key_points` 翻成英文）。
 
 ## 執行步驟
 
@@ -22,6 +22,7 @@ src/content/posts/tech/2026-06-14-why-is-kafka-fast-part-1.en.md   # English (la
 2. **檢查**：若已有 `.en.md` 或來源本身 `lang: en` → 停，回報不需翻。
 3. **翻譯 frontmatter**：
    - `title` / `tldr` / `description` → 自然、技術正確的英文（不是逐字直譯）
+   - `key_points`（若有）→ 逐條翻成英文，保持「短、可一眼掃完」，條數與順序對齊中文版
    - `tags` 照搬（已是 lowercase-kebab 英文）
    - `lang: en`
    - `series`（若有）→ `name` 保持原值（系列以 name 分組，中英共用同一 name），`order` 不變

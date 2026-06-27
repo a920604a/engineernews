@@ -9,6 +9,7 @@ import ScrollToTop from '../../../components/ScrollToTop.astro';
 import PostPrevNext from '../../../components/PostPrevNext.astro';
 import { useTranslations } from '../../../i18n/utils';
 import { TTSPlayer } from '../../../components/TTSPlayer';
+import { AskThisPost } from '../../../components/AskThisPost';
 import { ReadingModeBar } from '../../../components/ReadingModeBar';
 import { BilingualView } from '../../../components/BilingualView';
 import { InteractionBar } from '../../../components/InteractionBar';
@@ -131,6 +132,19 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
       </div>
     )}
 
+    <!-- Key points (for skim-readers: scan in 10 seconds) -->
+    {post.data.key_points && post.data.key_points.length > 0 && (
+      <div class="key-points">
+        <div class="kp-header">
+          <span class="kp-label">Key Points</span>
+          <span class="kp-reading">{readingTime} min read</span>
+        </div>
+        <ul class="kp-list">
+          {post.data.key_points.map((p) => <li>{p}</li>)}
+        </ul>
+      </div>
+    )}
+
     {tocHeadings.length > 2 && (
       <details class="toc-block toc-mobile" open>
         <summary>Table of Contents</summary>
@@ -149,6 +163,9 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
     <ReadingModeBar client:load hasZh={!!(enScript && zhScript)} />
     <div class="prose article-view"><Content /></div>
     <div id="article-end-sentinel"></div>
+
+    <!-- Ask this article (RAG scoped to this post only) -->
+    <AskThisPost client:visible postId={post.id} lang="en" />
 
     {enScript && zhScript && (
       <BilingualView
@@ -373,6 +390,60 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
   .article-body {
     max-width: 720px;
     margin: 0 auto;
+  }
+
+  /* ── Key points ── */
+  .key-points {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--separator);
+    border-left: 4px solid var(--cat-color, var(--accent));
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    margin-bottom: 28px;
+  }
+  .kp-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .kp-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--cat-color, var(--accent));
+  }
+  .kp-reading {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--label-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+  .kp-list {
+    margin: 0;
+    padding-left: 1.2em;
+    list-style: none;
+  }
+  .kp-list li {
+    position: relative;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--label);
+    margin: 0 0 8px;
+    padding-left: 4px;
+  }
+  .kp-list li:last-child { margin-bottom: 0; }
+  .kp-list li::before {
+    content: '';
+    position: absolute;
+    left: -0.9em;
+    top: 0.6em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--cat-color, var(--accent));
   }
 
   .article-share-panel {

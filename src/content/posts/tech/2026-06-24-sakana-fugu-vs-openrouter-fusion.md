@@ -9,6 +9,10 @@ tldr: "兩個 2026 年的產品都在回答同一個問題：單一模型撞到�
 description: "深入比較 Sakana Fugu 與 OpenRouter Fusion 兩種多模型編排架構：學習式協調 vs mixture-of-agents 審議、各自的 benchmark、定價、適用情境與限制。"
 draft: false
 audio_url: "/api/tts/r2/tts/tts_20260624_004846_748441.mp3"
+key_points:
+  - "多模型包成一顆 API 是 2026 趨勢，融合本身就能勝過任何單一模型"
+  - "Fugu 賭黑箱協調換通用，Fusion 賭透明審議換可控，後者貴 4–5 倍"
+  - "Fusion 不省錢、只在答錯成本高時用；Fugu 黑箱且不在 EU/EEA 上線"
 ---
 
 過去兩年大家挑模型的方式很單純：看排行榜，選分數最高那顆，接上 API 就走。但到了 2026，這套邏輯開始失效——前沿模型彼此差距縮小、各有擅長與盲點，而「永遠只用一顆」既要承擔單一供應商風險，也把另外幾顆模型的長處白白丟掉。

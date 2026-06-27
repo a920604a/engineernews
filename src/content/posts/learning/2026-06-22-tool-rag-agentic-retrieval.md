@@ -11,6 +11,10 @@ tldr: "Agent 按需載入工具，本質就是把 RAG 的『先檢索再注入�
 description: "從 Claude Code 的 deferred tools 與 Skills 機制出發，解釋 agent 如何用惰性載入節省 context，並釐清它與向量 RAG 的異同。"
 draft: false
 audio_url: "/api/tts/r2/tts/tts_20260621_231756_477649.mp3"
+key_points:
+  - "按需載入工具本質就是 RAG，只是檢索器換成 LLM 自己"
+  - "全部預載工具比惰性載入貴十倍以上，context 是稀缺資源"
+  - "RAG 價值不在向量資料庫，而在「先檢索再注入」的結構"
 ---
 
 如果你用過 Claude Code，可能注意到一件事:它號稱有幾十個 skill、上百個工具,但這些東西並不是一開始就全部塞進模型的 context。它們是「按需」出現的。這篇想拆解這個機制怎麼運作,並回答一個我自己一開始也搞混的問題——**這算不算對使用者的 query 做 RAG?**

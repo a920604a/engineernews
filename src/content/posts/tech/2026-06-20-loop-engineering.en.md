@@ -12,6 +12,10 @@ tldr: "Loop Engineering replaces you as the person who prompts the agent. You de
 description: "From Boris Cherny's daily practice to Addy Osmani's naming to Blake Crosley's core insight — the five building blocks of Loop Engineering, the verification bottleneck, and three things you can start today."
 draft: false
 audio_url: "/api/tts/r2/tts/tts_20260620_090641_928210.mp3"
+key_points:
+  - "Stop prompting agents; build systems that prompt them. Prompts become one component of a self-running loop, not the job."
+  - "Verification cost, not loop complexity, decides what you can automate. Machine-checkable success conditions are the real prerequisite."
+  - "Never let the agent that did the work judge whether it's done; early exit needs a separate verifier."
 ---
 
 Boris Cherny runs hundreds of agents during the day and thousands overnight.

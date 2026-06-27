@@ -11,6 +11,7 @@ const posts = defineCollection({
     lang: z.enum(['zh-TW', 'en']).default('zh-TW'),
     description: z.string().optional(),
     tldr: z.string().optional(),
+    key_points: z.array(z.string()).optional(),  // 頂部「重點速覽」3 條，給沒耐心逐字讀的讀者 10 秒掃完
     audio_url: z.string().optional(),
     srt_url: z.string().optional(),
     draft: z.boolean().default(false),

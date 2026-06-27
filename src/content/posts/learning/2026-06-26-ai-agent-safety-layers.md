@@ -11,6 +11,10 @@ tldr: "拆解 Claude Code、Codex 等 AI agent 的縱深防禦：規則關鍵字
 description: "深入介紹 AI agent 如何設計安全防護層，對照 Anthropic Constitutional Classifiers、Claude Code sandboxing、OpenAI Codex 的實際做法，以及 prompt injection 與 jailbreak 的差異。"
 draft: false
 audio_url: "/api/tts/r2/tts/tts_20260626_143642_660810.mp3"
+key_points:
+  - "真正穩固的底線是沙箱與最小權限，不是靠模型自律"
+  - "成本換覆蓋率：便宜規則先擋，模稜兩可才丟給貴模型"
+  - "輸入過濾擋不到工具回傳的間接注入，那是另一種威脅"
 ---
 
 當一個 LLM 只是聊天框，最壞的情況是它說錯話。但當它變成 agent——能讀檔案、跑 shell、發 HTTP request、改你的程式碼——一次被誘導就可能洩漏 SSH key、把資料 POST 到攻擊者伺服器，或在你的 repo 裡埋後門。安全防護因此不是「加一個過濾器」就好，而是要在請求進來、模型推論、工具執行、長期帳號行為四個不同高度各放一層。這篇拆解 Claude Code、OpenAI Codex 與 Anthropic 安全團隊實際在用的縱深防禦（defense in depth），以及每一層擋的是什麼、漏的是什麼。

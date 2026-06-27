@@ -9,6 +9,10 @@ tldr: "Two 2026 products answering the same question: when a single model hits i
 description: "A deep comparison of Sakana Fugu and OpenRouter Fusion: learned coordination vs mixture-of-agents deliberation, their benchmarks, pricing, use cases, and limitations."
 draft: false
 audio_url: "/api/tts/r2/tts/tts_20260624_004556_478015.mp3"
+key_points:
+  - "Stacking models wins because the synthesis step adds a second opinion, not merely because the models differ"
+  - "Fugu hides coordination in a black box for generality; Fusion exposes model disagreement for control"
+  - "Fusion isn't cheaper—budget for 4-5x a single call, and reserve it for high-stakes work"
 ---
 
 For the past couple of years, picking a model was simple: check the leaderboard, grab the top scorer, wire up the API, done. By 2026 that logic is breaking down. Frontier models have converged, each with its own strengths and blind spots, and committing to "always one model" means carrying single-vendor risk while throwing away what the others do well.

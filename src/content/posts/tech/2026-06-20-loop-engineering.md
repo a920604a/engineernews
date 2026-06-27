@@ -12,6 +12,10 @@ tldr: "Loop Engineering 是把『下 Prompt 的你』換成一個系統：設計
 description: "從 Boris Cherny 的 daily practice、Addy Osmani 的命名、到 Blake Crosley 的核心洞見——Loop Engineering 的五大構建塊、驗證成本瓶頸、以及今天就能開始的三步驟"
 draft: false
 audio_url: "/api/tts/r2/tts/tts_20260620_090717_723519.mp3"
+key_points:
+  - "不再手動下 prompt，而是設計讓系統自動驅動 agent 的迴圈"
+  - "能自動驗證的任務才適合 loop，靠人判斷的只會退化成等你 review"
+  - "別讓同一個 agent 自評完成，驗證一定要交給另一個 agent"
 ---
 
 Boris Cherny 白天跑數百個 agent，晚上跑數千個。

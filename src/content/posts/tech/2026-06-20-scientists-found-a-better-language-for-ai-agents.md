@@ -10,6 +10,10 @@ type: explainer
 original_url: "https://www.youtube.com/watch?v=dUmT0OIGoqE"
 draft: false
 audio_url: "/api/tts/r2/tts/tts_20260620_083453_722868.mp3"
+key_points:
+  - "讓 Agent 自由溝通，它們會放棄自然語言、自創更短的壓縮協定"
+  - "壓縮通訊省 token 又更快，代價是人類讀不懂、出事難 debug"
+  - "別預設讓 Agent 用自然語言串接，結構化輸出格式更可靠"
 ---
 
 當你把多個 AI Agent 組在一起，讓它們協作完成任務，一個直覺的做法是讓它們用自然語言互相溝通——畢竟這是它們最擅長的東西。但研究顯示，這可能不是最有效率的設計。

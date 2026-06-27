@@ -9,6 +9,7 @@
 | lang | enum | ✅ | zh-TW 或 en，預設 zh-TW |
 | description | string | ❌ | SEO meta description |
 | tldr | string | ❌ | 一句話摘要（tech / learning 類強烈建議填） |
+| key_points | string[] | ❌ | 重點速覽，3 條短句（約 25–45 字／條），給沒耐心逐字讀的讀者 10 秒掃完。面向「該不該讀」，與 tldr 互補。`creative` / `life` 隨筆或短文可不加。中英兩份對齊 |
 | draft | boolean | ❌ | true 時不顯示（預設 false） |
 | series | object | ❌ | 歸入系列時填 `{ name, order }`。`name` 必須與 `src/utils/series.ts` 的 `SERIES_DEFINITIONS` key 一字不差；`order` 為閱讀順序（數字）。**只在文章明顯屬於某現有系列時才加，不自動開新系列**。中英兩份要一致。 |
 

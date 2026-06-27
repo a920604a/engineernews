@@ -82,6 +82,17 @@ description: Convert a conversation, notes, experience, or GitHub project into a
    - 欄位說明見 `references/frontmatter-schema.md`
    - 檔名：`YYYY-MM-DD-<slug>.md`（slug 用英文 kebab-case）
    - 存到 `src/content/posts/<category>/`
+   - **`key_points`（重點速覽，預設必填）**：frontmatter 加 3 條重點，給沒耐心逐字讀的讀者 10 秒判斷要不要讀。
+     - 面向「該不該讀」：核心結論、最關鍵的取捨、或最容易踩的坑——不是改寫標題或目錄
+     - **每條要短、能一眼掃完**（繁中約 25–45 字、一句話），跟 `tldr`（一句總結）互補、不重複
+     - 格式：
+       ```yaml
+       key_points:
+         - "第一條重點"
+         - "第二條重點"
+         - "第三條重點"
+       ```
+     - 例外：`creative` / `life` 隨筆、或短文（< 500 字）可不加
    - case-study 必須填入 `github` 欄位（若有 URL）
    - 如果文章引用工具、框架、官方文件、論文、版本資訊、數據比較或外部說法，文末必須補 `## 參考資料`
    - `tech` / `learning` / `product` 類，以及帶有 `ai` / `policy` / `education` / `marketing` tag 的文章，預設要附參考資料

@@ -56,6 +56,57 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // ── 播放埋點（a）：量播放率 / 完播率，驗證語音導讀有沒有人用 ──────────
+  const firedPlayRef = useRef(false);
+  const firedMilestonesRef = useRef<Set<number>>(new Set());
+  const firedCompleteRef = useRef(false);
+
+  const getSessionId = (): string => {
+    try {
+      let sid = sessionStorage.getItem('tts_sid');
+      if (!sid) {
+        sid = (crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+        sessionStorage.setItem('tts_sid', sid);
+      }
+      return sid;
+    } catch {
+      return 'anon';
+    }
+  };
+
+  const sendAudioEvent = (event: 'play' | 'progress' | 'complete', milestone?: number) => {
+    try {
+      const slug = location.pathname.split('/').filter(Boolean).pop() ?? '';
+      if (!slug) return;
+      const lang = location.pathname.startsWith('/en/') ? 'en' : 'zh-TW';
+      const body = JSON.stringify({ slug, lang, event, milestone, session_id: getSessionId() });
+      // 火後不理，優先用 sendBeacon（離頁也送得出去）
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('/api/audio-events', new Blob([body], { type: 'application/json' }));
+      } else {
+        fetch('/api/audio-events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true }).catch(() => {});
+      }
+    } catch {}
+  };
+
+  const handlePlay = () => {
+    setIsPlaying(true);
+    if (!firedPlayRef.current) {
+      firedPlayRef.current = true;
+      sendAudioEvent('play');
+    }
+  };
+
+  const handleEnded = () => {
+    setIsPlaying(false);
+    if (!firedCompleteRef.current) {
+      firedCompleteRef.current = true;
+      sendAudioEvent('complete');
+    }
+    // 聽完整個 mp3 視為完成一次閱讀，通知頁面計數 script
+    window.dispatchEvent(new CustomEvent('tts:ended'));
+  };
+
   useEffect(() => {
     if (initialAudioUrl) {
       setIsVisible(true);
@@ -220,7 +271,18 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
       const dur = audioRef.current.duration;
       setCurrentTime(current);
       setDuration(dur);
-      setProgress((current / dur) * 100);
+      const pct = (current / dur) * 100;
+      setProgress(pct);
+
+      // 埋點：跨過 25 / 50 / 75% 各送一次 progress（用來看中途流失）
+      if (dur > 0) {
+        for (const m of [25, 50, 75]) {
+          if (pct >= m && !firedMilestonesRef.current.has(m)) {
+            firedMilestonesRef.current.add(m);
+            sendAudioEvent('progress', m);
+          }
+        }
+      }
     }
   };
 
@@ -291,13 +353,9 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
             ref={audioRef}
             src={audioUrl}
             onTimeUpdate={handleTimeUpdate}
-            onEnded={() => {
-            setIsPlaying(false);
-            // 聽完整個 mp3 視為完成一次閱讀，通知頁面計數 script
-            window.dispatchEvent(new CustomEvent('tts:ended'));
-          }}
+            onEnded={handleEnded}
             onLoadedMetadata={handleTimeUpdate}
-            onPlay={() => setIsPlaying(true)}
+            onPlay={handlePlay}
             onPause={() => setIsPlaying(false)}
             onError={handleAudioError}
           />
@@ -434,13 +492,9 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
           ref={audioRef}
           src={audioUrl}
           onTimeUpdate={handleTimeUpdate}
-          onEnded={() => {
-            setIsPlaying(false);
-            // 聽完整個 mp3 視為完成一次閱讀，通知頁面計數 script
-            window.dispatchEvent(new CustomEvent('tts:ended'));
-          }}
+          onEnded={handleEnded}
           onLoadedMetadata={handleTimeUpdate}
-          onPlay={() => setIsPlaying(true)}
+          onPlay={handlePlay}
           onPause={() => setIsPlaying(false)}
           onError={handleAudioError}
         />

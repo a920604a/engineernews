@@ -13,6 +13,10 @@ tldr: "Headroom compresses tool outputs, logs, and RAG chunks by 60–95% locall
 description: "A code-level breakdown of headroomlabs-ai/headroom: mask-based extractive compression, the JSON/code/text handlers, the CCR reversible cache, and the standout KV-cache mutation cost model."
 draft: false
 audio_url: "/api/tts/r2/tts/tts_20260625_235837_329286.mp3"
+key_points:
+  - "Headroom compresses context locally before the LLM, masking spans as keep-or-compress rather than rewriting—structure stays verbatim, prose gets shrunk"
+  - "Compression can backfire by busting the provider's prompt cache; only shave tokens when the net-gain math actually clears"
+  - "Don't trust the README's anomaly-detection claims—the code only keeps keys and high-entropy values; read what's implemented, not promised"
 ---
 
 The biggest cost sink in agent workflows isn't the model — it's **context bloat**. One `grep` returning 100 results, one incident log, one RAG retrieval, and you've stuffed tens of thousands of tokens into a prompt where maybe a tenth carries signal. [Headroom](https://github.com/headroomlabs-ai/headroom) exists to fix exactly that: before a request reaches OpenAI or Anthropic, it strips that noise **locally** by 60–95%, claiming accuracy stays essentially flat.

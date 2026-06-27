@@ -9,6 +9,10 @@ description: "A breakdown of the npj Digital Medicine self-hypnosis app study: 8
 type: research
 original_url: "https://www.nature.com/articles/s41746-025-02182-0"
 draft: false
+key_points:
+  - "A huge sample and large effect size prove nothing without a control group — that's correlation, not causation"
+  - "Single-item self-ratings buy engagement and sample size, but trade away measurement rigor and objectivity"
+  - "Pre/post designs invite regression to the mean and expectation bias, inflating effects that never happened"
 ---
 
 If you saw a headline — "84,000 users, an app significantly reduces stress, effect size 0.7" — what should your first reaction be?
