@@ -132,19 +132,19 @@ function runSqlBatch(statements: string[]) {
 }
 
 function querySql<T = any>(sql: string): T[] {
-  const tmp = path.join(process.cwd(), `.tmp_query_${Date.now()}.sql`);
-  fs.writeFileSync(tmp, sql);
+  // 必須用 --command（不是 --file）：wrangler 4.x 下 --file 跑 SELECT 時 --json
+  // 回的是摘要統計而非實際資料列，會讓變更偵測與 orphan 清理整個失效。
   try {
     const out = execSync(
-      `wrangler d1 execute ${DB_NAME} ${remoteFlag} --file=${tmp} --yes --json`,
-      { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'inherit'] }
+      `wrangler d1 execute ${DB_NAME} ${remoteFlag} --command ${JSON.stringify(sql)} --yes --json`,
+      { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'ignore'] }
     );
-    const parsed = JSON.parse(out);
-    return parsed?.[0]?.results ?? [];
+    const start = out.indexOf('[');
+    const end = out.lastIndexOf(']');
+    if (start < 0 || end < 0) return [];
+    return JSON.parse(out.slice(start, end + 1))?.[0]?.results ?? [];
   } catch {
     return [];
-  } finally {
-    fs.unlinkSync(tmp);
   }
 }
 
@@ -159,13 +159,14 @@ function loadExistingHashes(table: 'posts' | 'projects'): Map<string, string | n
 
 // ── Vectorize helpers ─────────────────────────────────────────────────────────
 
-function deleteVectorsBatch(ids: string[], batchSize = 500) {
+function deleteVectorsBatch(ids: string[], batchSize = 50) {
+  // wrangler 4.x：vectorize delete-vectors 沒有 --force 旗標、單次 id 數有上限（保守 50）。
   if (!isProd || ids.length === 0) return;
   for (let i = 0; i < ids.length; i += batchSize) {
     const chunk = ids.slice(i, i + batchSize);
     try {
       execSync(
-        `wrangler vectorize delete-vectors ${VECTOR_INDEX} --ids ${chunk.join(' ')} --force`,
+        `wrangler vectorize delete-vectors ${VECTOR_INDEX} --ids ${chunk.join(' ')}`,
         { stdio: 'inherit' }
       );
     } catch (e) {
