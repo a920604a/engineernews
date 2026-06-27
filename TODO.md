@@ -2,51 +2,63 @@
 
 ## 英文聽力功能重構（English listening practice）
 
-### 問題診斷（第一性原理）
+### 真實機制（先講清楚，免得又把前提搞錯）
 
-現況：`crawl.ts` 用 `--skip-download` 只抓字幕、丟掉 YouTube 原始母語音檔，改用 TTS 合成；
-`BilingualView.tsx` 把中/英雙欄永遠並排；`srt_url` 在 254 篇全空（無 audio↔text 同步）。
+聽力功能用的音檔與雙語字幕，**跟 YouTube 完全無關、也不動文章本身**。pipeline 是：
 
-這套設計優化的是「**讀懂內容**」，不是「**訓練耳朵**」。聽力習得拆到底層是四層：
+```
+文章（zh）──post-translate──▶ 文章（en）
+   │
+   └─ generateTTSScript（LLM 把文章改寫成「聆聽逐字稿」）
+        ├─ <slug>.tts-script.txt    （zh 稿）
+        ├─ <slug>.en.tts-script.txt （en 稿）
+        ├─ generateBilingualMap ──▶ bilingual-map.json（en↔zh 段級對齊）
+        └─ TTS 合成 ──▶ mp3（audio_url）
+```
 
-| 層 | 內容 | 現況 |
+- `BilingualView` 的雙語字幕 = 這兩份 **LLM 逐字稿**（`.tts-script.txt`），不是 YouTube 字幕。
+- 音檔 = 逐字稿餵 TTS 的**合成音**，不是 native 原音。
+- `srt_url` 目前全空：Edge TTS 的 `SynthesizeResult` 其實會回 `srt_url`，但沒被存檔／回寫 frontmatter，所以沒有句級時間軸。
+
+### 一個必須誠實面對的天花板
+
+因為音源**必然是合成音**（沒有 native 來源可換，且前提是「不變動文章、與 YouTube 無關」），
+這個功能本質是 **「TTS 同步閱讀 / 跟讀練習」**，**無法**訓練真實英語的連音、弱化、吞音解碼——
+那些東西 TTS 根本不產生。要真正練 native 聽力得另尋 native 音源，**那已超出本 TODO 範圍**。
+
+→ 所以這裡的目標收斂成：在現有 TTS 音 + LLM 逐字稿上，把**同步、主動努力、句級重複**做好。
+
+| 層 | 內容 | 在「合成音」前提下能做到嗎 |
 |---|---|---|
-| A. 可理解輸入 (i+1) | 略高於現有程度、靠情境猜懂 | ✅ 有（但靠中文翻譯給，不是靠耳朵）|
-| B. 解碼聲音流 | chunking、弱化音 (gonna/wanna)、連音、吞音 | ❌ TTS 過度清晰，練錯對象 |
-| C. 主動努力 | 先預測 → 再驗證 | ❌ 中文永遠在，被短路 |
-| D. 句級重複 | 同句反覆聽、跟讀 | ❌ 無同步、無 loop |
-
-核心洞察：聽力瓶頸不在「不懂意思」，在「聽不出聲音對應到哪個字」。真實英文的難點（連音、吞音、弱化）TTS 根本不產生；中文翻譯一旦免費，耳朵就停止努力。
-
-三個漏洞：
-1. **中文欄永遠在** → 短路掉主動努力（C 層）。雙字幕是理解輔助，不是聽力訓練器。
-2. **丟原音用 TTS** → 練錯聲音流（B 層）。原始素材本來就是 native 音，卻被丟掉換成更差的合成音。
-3. **無句級同步**（`srt_url` 全空）→ 做不了 loop / 跟讀 / 聽寫（D 層）。
+| A. 可理解輸入 | 略高於程度、靠情境猜懂 | ✅ 逐字稿本就 i+1 |
+| B. 解碼真實聲音流 | 連音、弱化、吞音 | ❌ 合成音做不到，放棄這層 |
+| C. 主動努力 | 先預測再驗證 | ✅ 靠「預設藏中文／藏字」逼出來 |
+| D. 句級重複 | 同句反覆聽、跟讀 | ✅ 靠句級同步 + loop |
 
 ### 任務清單（依槓桿排序）
 
-- [ ] **#1 crawl.ts 保留 YouTube 原始 native 音檔**（移除 `--skip-download`）🔥 最高槓桿
-      把聽力素材從「塑膠 TTS」換回「黃金原音」。素材已在 pipeline 內，近乎免費。
-- [ ] **#2 用 YouTube 字幕時間軸寫入 `srt_url`**，做 audio↔text 句級同步
-      解鎖句級 loop / 跟讀 / 聽寫 / 逐句 highlight 的前置。YouTube 來源自帶時間軸，不用自己對齊。
-- [ ] **#3 BilingualView 預設折疊中文欄，改成 on-demand** 🔥 純前端、零後端、立即見效
-      預設只顯示英文，中文做成點/hover 單句才浮出（查詢而非背景）。
-- [ ] **#4 alignmentMap 從段級延伸到句級 + 時間戳**
-      聽力模式階梯與逐句同步 highlight 的共同基礎設施。
-- [ ] **#5 實作「聽力模式階梯」UI**（依賴 #2、#4）
-      模式1 純聽 → 模式2 英文逐句同步 highlight（預設落這）→ 模式3 點句出中文 → 模式4 隱藏文字、聽→跟讀/聽寫→揭曉。逼大腦逐層脫離拐杖。
-- [ ] **#6 句級 loop + 可調速 + 跟讀控制**（依賴 #2）
+- [ ] **#1 句級時間戳：把 TTS 合成的 `srt_url` 存檔並回寫 frontmatter** 🔥 最高槓桿
+      `synthesizeWithFallback` 拿到的 `srt_url` 目前被丟掉。存進 R2 + 回寫 frontmatter，
+      解鎖句級 loop / 跟讀 / 逐句 highlight 的前置。**完全在 TTS 步驟內，不碰文章。**
+- [ ] **#2 BilingualView 預設折疊中文欄，改成 on-demand** 🔥 純前端、零後端、立即見效
+      預設只顯示英文，中文做成點/hover 單句才浮出（查詢而非背景），逼出主動努力（C 層）。
+- [ ] **#3 alignmentMap 從段級延伸到句級**
+      `generateBilingualMap` 目前是段級對齊；延伸到句級，是聽力階梯與逐句 highlight 的共同基礎。
+      （與 #1 的句級時間戳對齊：一個給「文字↔文字」、一個給「文字↔音檔」。）
+- [ ] **#4 實作「聽力模式階梯」UI**（依賴 #1、#3）
+      模式1 純聽 → 模式2 英文逐句同步 highlight（預設）→ 模式3 點句出中文 → 模式4 藏字，聽→跟讀→揭曉。
+- [ ] **#5 句級 loop + 可調速 + 跟讀控制**（依賴 #1）
       單句 A/B loop、調速、shadowing。
-- [ ] **#7 拆分「native 音聽力」與「中文 TTS 導讀」兩條 pipeline**（架構決策）
-      導讀=自己的中文文章→TTS 合理；聽力=YouTube 來源→用 native 原音。拆開後 #1 才有乾淨落點。
 
-**建議落地順序**：#7（先拆架構）→ #1 + #2（換回原音 + 同步）→ #3（前端立即見效）→ #4 → #5 / #6。
-**投入最小、效果最大的兩顆**：#1 與 #3。
+**建議落地順序**：#1（句級時間戳，前置）→ #2（前端立即見效）→ #3 → #4 / #5。
+**投入最小、效果最大的兩顆**：#1 與 #2。
 
 ### 相關檔案
-- `scripts/crawl.ts` — yt-dlp 抓字幕（`--skip-download` 在此）
+- `src/lib/tts.ts` — `generateTTSScript`（LLM 逐字稿）、`generateBilingualMap`、`SynthesizeResult.srt_url`
+- `scripts/tts-all.ts` — TTS pipeline（產生 `.tts-script.txt` / `bilingual-map.json` / mp3）
 - `src/components/BilingualView.tsx` — 雙語對照檢視、`alignmentMap`、glossary hover
-- `src/components/TTSPlayer.tsx`、`src/lib/tts.ts`、`scripts/tts-all.ts` — TTS pipeline
+- `src/components/TTSPlayer.tsx` — 播放器、`initialSrtUrl`
+- `src/pages/en/posts/[...slug].astro` — 讀 `.tts-script.txt` / `bilingual-map.json` 餵給 `BilingualView`
 - `src/content.config.ts` — `audio_url` / `srt_url` frontmatter 欄位
 
 ---
