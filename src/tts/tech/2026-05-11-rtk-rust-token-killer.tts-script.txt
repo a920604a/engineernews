@@ -1,0 +1,21 @@
+裝一個 Rust 寫的小工具，就能讓你的 AI coding 助手少吃六到九成的 token——這就是今天要聊的 RTK，全名 Rust Token Killer。
+
+先說問題出在哪。你用 Claude Code 寫程式，光是跑一次 git diff，就可能吃掉好幾千個 token。但這不是因為 AI 笨，而是指令輸出本身塞滿了對模型毫無意義的東西——終端機的顏色控制碼、一堆空白行、重複的標頭、又臭又長的 stack trace。這些東西你照樣付費、context window 照樣被佔滿，可是對模型理解你的程式碼，一點幫助都沒有。
+
+RTK 的切入點很聰明：它在命令輸出「進入 AI context 之前」就先攔截、過濾、壓縮，然後把乾淨的版本才交給模型。它是單一一顆 Rust binary、零依賴、支援超過一百種指令，而且 overhead 低於十毫秒。專案在 GitHub 上有六萬六千顆星，更新很活躍，採 Apache 2.0 授權。
+
+來談談它的設計哲學，這是關鍵：RTK 壓的是「噪音」，不是「訊息」。它不是無腦把輸出截斷，而是針對每一種指令的輸出格式做語意壓縮——去掉 ANSI 顏色碼、把重複的區塊摺疊起來、移除沒意義的空白，但真正有資訊量的部分完整保留。換個角度想，對 AI 來說，git status 真正重要的是「哪些檔案被改了」，而不是那一堆排版跟提示文字。
+
+官方有給一組估算，情境是一段三十分鐘的 Claude Code session，跑在一個中型的 TypeScript 或 Rust 專案上。整體效果大概是這樣：列檔案的 ls、tree 這類大約省八成；讀檔案的 cat、read 省七成;跑測試的部分最誇張——cargo test、npm test、pytest、go test 這些通常省到九成，因為測試輸出最囉嗦；而 git add、commit、push 這種，幾乎省到九成二。整段加起來，原本大約十一萬八千 token，壓到大約兩萬三千九，整體掉了八成。當然這是中型專案的估算，實際省多少看你專案大小，但大致都落在六到九成這個區間。
+
+安裝也很簡單。Mac 上推薦用 Homebrew，一行 brew install rtk 就好；Linux 跟 macOS 也可以用官方的一行 curl 安裝腳本；或者你想從原始碼裝，用 cargo install 指定 git 倉庫也行。
+
+接到 AI 工具上更省事。它有個 rtk init 指令，加上對應的旗標——像 dash dash claude 就是接 Claude Code、dash dash copilot 就是接 GitHub Copilot——它會幫你把設定寫好。接好之後，工具呼叫 shell 指令時，輸出會自動先經過 RTK 壓縮才進 context。你的工作流程完全不用改，唯一的差別是 AI 看到的版本變乾淨了。
+
+這裡要特別澄清一個容易混淆的地方：RTK 解的是「指令輸出層」的浪費，它跟兩件事不一樣。第一，它不是 model 端的回應壓縮，也不會去動你的 prompt，它只管「工具輸出到 context」這一段。第二，它跟 9Router 是互補的，不是競爭關係——9Router 處理的是「請求路由層」，解決多 provider 切換跟成本的問題；RTK 處理的是「輸出層」，解決 context 被噪音撐爆。兩個一起用沒有任何衝突。
+
+不過有個命名上的小陷阱要提醒你：9Router 內建一個剛好也叫 RTK 的壓縮 middleware，但那是 9Router 自己家的東西，跟我們今天講的這個獨立 Rust 工具，只是縮寫剛好撞名，別搞混了。
+
+那誰適合用？簡單說，只要你用的是 CLI 形式的 AI coding 工具——Claude Code、Copilot、Codex、Cursor 都算——而且常讓 AI 去跑 git、跑測試、跑 grep、跑 docker 這些指令，那就值得裝。專案越大、AI 跑指令越頻繁，省下的 token 就越可觀。
+
+最後幫你收三個重點。第一，RTK 的核心是在指令輸出進入 context 之前先做語意壓縮，砍掉顏色碼、重複跟空白這些噪音，但保留真正的訊息，所以能省六到九成 token。第二，它的代價幾乎是零——一顆 binary、十毫秒以內的 overhead，而且你的工作流程完全不變。第三，記住它的定位：它動的是「輸出層」，跟改 prompt 或做 provider 路由是不同層次的事，可以跟那些工具搭著一起用。如果你每天都在燒 token 跟 AI 寫程式，這個工具很值得花五分鐘裝起來試試。

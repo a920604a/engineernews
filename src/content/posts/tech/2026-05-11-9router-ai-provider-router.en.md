@@ -12,6 +12,7 @@ key_points:
   - "A single local OpenAI-compatible proxy (port 20128) lets all your AI coding tools share one provider setup — switch providers without touching the tools."
   - "Three-tier fallback: when your subscription quota runs out it drops to cheap APIs (GLM $0.6/1M, MiniMax $0.2/1M), and when those run out it drops to free options (Kiro, OpenCode Free, Vertex's $300 credit)."
   - "Built-in RTK compression for tool_result payloads (git diff, grep, log, and the like); the project claims it saves 20–40% on input tokens."
+audio_url: "/api/tts/r2/tts/tts_20260627_150333_245066.mp3"
 ---
 
 You subscribed to Claude Pro, then bought Cursor, and your company handed you GitHub Copilot too — and now every service manages its own quota in isolation: when one runs out you switch to another by hand, OAuth tokens expire after a few hours and force a re-login, and each tool ships its API in a different format. You've paid for plenty of capacity, yet you keep hitting rate limits at exactly the moment you need them most.

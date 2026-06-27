@@ -15,6 +15,7 @@ key_points:
   - "RAG retrieves chunks from scratch on every query and never accumulates knowledge; the LLM Wiki has the LLM actively weave information into a continuously updated markdown knowledge base that gets smarter the more you use it."
   - "Three layers: Raw Sources (read-only original documents), The Wiki (LLM-maintained markdown pages), and Schema (the rules governing structure and workflow)."
   - "The key insight: the truly tedious part of maintaining a knowledge base isn't reading or thinking—it's the bookkeeping—and LLMs don't get tired, which is exactly the gap they fill."
+audio_url: "/api/tts/r2/tts/tts_20260627_150008_297678.mp3"
 ---
 
 RAG (Retrieval-Augmented Generation) has been the industry's default answer for years now: chunk your documents, vectorize them, and at query time find the relevant chunks and stuff them into the context. It solves the "the LLM doesn't know your private data" problem—but it doesn't solve another one: **knowledge is static**. Every query starts from scratch, there are no links between documents, and the system doesn't get smarter the more you use it.

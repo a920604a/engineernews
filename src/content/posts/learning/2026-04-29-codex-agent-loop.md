@@ -9,7 +9,12 @@ series:
   order: 3
 tldr: "OpenAI Michael Bolin 深入解析 Codex CLI 的 agent loop：從 prompt 組建、token 推理、工具執行，到 context window 管理與自動壓縮。"
 description: "深入了解 Codex CLI 的 agent loop 架構：prompt 結構、token 流動、工具執行循環、context 壓縮與 prompt cache 優化策略。"
-draft: true
+draft: false
+key_points:
+  - "一個對話 turn 背後跑了幾十次「推理 → 工具呼叫 → 把結果塞回 prompt」的迴圈，使用者只看到最終結果。"
+  - "送進 Responses API 的 payload 分三層：Instructions（靜態系統指令）、Tools（JSON schema 工具定義）、Input（對話歷史）；靜態內容放最前面才吃得到 prompt cache。"
+  - "讓 agent 能跑很久的關鍵是 context 管理：auto compaction 在逼近上限時把歷史壓成加密摘要，prompt cache 把二次方成長壓成線性。"
+audio_url: "/api/tts/r2/tts/tts_20260627_145705_773772.mp3"
 ---
 
 大多數人用 Codex CLI 時只看到「輸入一句話，然後 code 就出現了」。但在這個過程中，agent loop 其實已經跑了幾十次推理與工具呼叫。OpenAI 的 Michael Bolin 寫了一篇文章《Unrolling the Codex agent loop》，把這層黑盒子完整攤開。以下是核心內容的整理。

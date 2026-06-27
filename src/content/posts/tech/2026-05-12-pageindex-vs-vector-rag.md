@@ -15,6 +15,7 @@ key_points:
   - "PageIndex 的反命題：相似度 ≠ 相關性。與其用 embedding 找『最像』的段落，不如讓 LLM 在文件的樹狀目錄上推理『哪裡有答案』。"
   - "它無向量 DB、無 chunking，靠章節樹 + LLM tree search 檢索，FinanceBench 拿到 98.7% SOTA，可追蹤、可解釋。"
   - "本站走相反取捨：bge-m3 向量 + Cloudflare Vectorize + 關鍵字 fallback，跑在 edge、低延遲，適合短篇 blog 而非長結構文件。"
+audio_url: "/api/tts/r2/tts/tts_20260627_151134_434445.mp3"
 ---
 
 RAG（Retrieval-Augmented Generation）現在幾乎預設就是「向量資料庫 + 語意搜尋」，但 [VectifyAI/PageIndex](https://github.com/VectifyAI/PageIndex) 提出了一個反命題：**向量相似度不等於相關性**，與其用 embedding 找「最像」的段落，不如讓 LLM 直接推理「哪裡有答案」。這篇文章深入拆解 PageIndex 的架構，並跟本站實際使用的 Hybrid RAG（bge-m3 + Cloudflare Vectorize）做完整比較。
@@ -194,7 +195,7 @@ PageIndex 的 LLM 推理能理解「損益表章節才會有 EBITDA 的計算結
 
 兩種架構回答的是不同的問題：
 
-**PageIndex** 適合：需要精確數字或特定事實的長文件、文件結構清晰（財報/法律/手冊）、可接受 GPT-4o 等級的推理成本、需要追蹤「答案出自第幾頁」的應用場景。
+**PageIndex** 適合：需要精確數字或特定事實的長文件、文件結構清晰（財報/法律/手冊）、可接受「多次 LLM 推理導航」的成本、需要追蹤「答案出自第幾頁」的應用場景。
 
 **Hybrid 向量 RAG** 適合：大量短文件的語意搜尋、需要低延遲、部署在 edge 或資源受限環境、文件語意豐富但結構扁平（blog、新聞、筆記）。
 

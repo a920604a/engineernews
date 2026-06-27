@@ -152,4 +152,5 @@ description: Convert a conversation, notes, experience, or GitHub project into a
      npx tsx scripts/sync-to-d1.ts --prod --file=src/content/posts/<category>/YYYY-MM-DD-<slug>.md
      ```
    - 跑完確認兩份 frontmatter 都已被回寫 `audio_url`；若有改動,記得再 commit 一次
+   - 📎 **延伸（非發文步驟，供讀者學習用）**：這一步會在 `src/tts/<category>/<slug>.en.tts-script.txt` 產出英文逐字稿。日後想拿它練英文時，可餵給 **`english-tutor` skill**（文法/片語高亮 + 5 難字鷹架精讀 + 隱藏答案測驗）。這是下游的「學習者」工具，不是發文流程的一部分，發文時不需執行。
    - 例外:使用者明確說「先不要語音」時可跳過

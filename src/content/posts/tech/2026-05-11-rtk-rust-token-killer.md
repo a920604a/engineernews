@@ -12,6 +12,7 @@ key_points:
   - "問題不在 AI，而在指令輸出本身塞滿對 AI 沒意義的東西：顏色 escape code、空行、重複 header、冗長 stack trace。"
   - "RTK 在輸出進入 context 前攔截壓縮，常見指令省 60–90% token，overhead < 10ms，單一 Rust binary、零依賴。"
   - "跟 9Router 互補：RTK 壓的是『指令輸出』、9Router 管的是『provider 路由與成本』，是兩個不同維度。"
+audio_url: "/api/tts/r2/tts/tts_20260627_150729_457552.mp3"
 ---
 
 用 Claude Code 寫程式，一次 `git diff` 就可能吃掉幾千 token。問題不在 AI 笨，而在輸出本身充滿對 AI 沒意義的內容——顏色 escape code、空白行、重複的 header、冗長的 stack trace。這些 token 你照樣付費、context window 照樣被佔，但對模型理解程式碼毫無幫助。

@@ -184,6 +184,16 @@ export const glossary: Record<string, GlossEntry> = {
   "vectorless": { zh: "無向量", context: "不靠向量資料庫、改用 LLM 在文件結構上推理檢索的 RAG 路線。" },
   "top-k": { zh: "top-k", context: "向量查詢時取相似度最高的前 k 筆結果作為候選。" },
   "tool_result": { zh: "工具回傳結果", context: "agent 呼叫工具（shell、檢索等）後回填給 LLM 的輸出內容。" },
+  // ── 全站掃描補充：LLM 訓練 / agent 內部 ──
+  "pre-training": { zh: "預訓練", context: "LLM 第一階段：在海量文字上自監督學「預測下一個 token」，知識與能力多在此定型。" },
+  "self-supervised": { zh: "自監督", context: "不需人工標註、答案藏在資料本身（如遮住下一個字讓模型猜）的學習方式。" },
+  "sft": { zh: "監督式微調", context: "用人寫的「指令→理想答案」範例微調 base model，讓它聽得懂指令。" },
+  "reward model": { zh: "獎勵模型", context: "RLHF 中學習人類偏好、給答案打分的模型，當作強化學習的訊號。" },
+  "ppo": { zh: "近端策略最佳化", context: "Proximal Policy Optimization，RLHF 常用來磨模型的強化學習演算法。" },
+  "alignment tax": { zh: "對齊稅", context: "對齊（更安全、更聽話）有時讓模型在純能力 benchmark 上略退步的取捨。" },
+  "prompt cache": { zh: "提示快取", context: "快取 prompt 不變前綴（指令、工具定義）的運算結果重用，讓長對話成本從二次方降到線性。" },
+  "compaction": { zh: "上下文壓縮", context: "對話逼近 context 上限時把歷史壓成摘要 item 釋放空間，讓 agent 能跑更久。" },
+  "zero data retention": { zh: "零資料保留", context: "伺服器不持久化原始對話的合規模式；靠無狀態請求加密摘要維持推理連貫。" },
   // ── 全站掃描補充：API / 資料 / infra ──
   "rest": { zh: "REST", context: "以 HTTP 動詞操作資源的 API 設計風格，無狀態、易快取。" },
   "graphql": { zh: "GraphQL", context: "讓客戶端精確查詢所需欄位的 API 查詢語言，避免過度抓取。" },

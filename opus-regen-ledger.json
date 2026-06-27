@@ -1,6 +1,6 @@
 {
   "cutoff": "2026-06-20",
-  "updatedAt": "2026-06-27T17:40:05.115199",
+  "updatedAt": "2026-06-27T23:13:48.455206",
   "items": {
     "career/2026-04-27-alruckqq_pw": {
       "id": "career/2026-04-27-alruckqq_pw",
@@ -104,7 +104,10 @@
       "draftAt": "2026-06-27T03:48:01.404Z",
       "deletedAt": "2026-06-27T03:51:40.687Z",
       "track": "regen",
-      "strategy": "search-polish（你的摘要，上網找來源再潤飾）"
+      "strategy": "search-polish（你的摘要，上網找來源再潤飾）",
+      "regenDone": true,
+      "pipeline": "zh+en+glossary+verify+sync+tts",
+      "regenAt": "2026-06-27T23:13:48.455206"
     },
     "learning/2026-04-23-how-chatgpt-is-trained": {
       "id": "learning/2026-04-23-how-chatgpt-is-trained",
@@ -113,7 +116,10 @@
       "draftAt": "2026-06-27T03:48:01.405Z",
       "deletedAt": "2026-06-27T03:51:49.635Z",
       "track": "regen",
-      "strategy": "B-citations（依文內引用重生）"
+      "strategy": "B-citations（依文內引用重生）",
+      "regenDone": true,
+      "pipeline": "zh+en+glossary+verify+sync+tts",
+      "regenAt": "2026-06-27T23:13:48.455206"
     },
     "learning/2026-04-29-codex-agent-loop": {
       "id": "learning/2026-04-29-codex-agent-loop",
@@ -122,7 +128,10 @@
       "draftAt": "2026-06-27T03:48:01.405Z",
       "deletedAt": "2026-06-27T03:52:06.085Z",
       "track": "regen",
-      "strategy": "B-citations"
+      "strategy": "B-citations",
+      "regenDone": true,
+      "pipeline": "zh+en+glossary+verify+sync+tts",
+      "regenAt": "2026-06-27T23:13:48.455206"
     },
     "learning/2026-05-01-karpathy-llm-wiki-deep-dive": {
       "id": "learning/2026-05-01-karpathy-llm-wiki-deep-dive",
@@ -131,7 +140,10 @@
       "draftAt": "2026-06-27T03:48:01.405Z",
       "deletedAt": "2026-06-27T03:52:33.246Z",
       "track": "regen",
-      "strategy": "B-citations"
+      "strategy": "B-citations",
+      "regenDone": true,
+      "pipeline": "zh+en+glossary+verify+sync+tts",
+      "regenAt": "2026-06-27T23:13:48.455206"
     },
     "learning/2026-05-05-stanford-beyond-llm-agentic-workflow": {
       "id": "learning/2026-05-05-stanford-beyond-llm-agentic-workflow",
@@ -474,7 +486,10 @@
       "draftAt": "2026-06-27T03:48:01.425Z",
       "deletedAt": "2026-06-27T04:04:54.730Z",
       "track": "regen",
-      "strategy": "B-references（參考資料當事實來源）"
+      "strategy": "B-references（參考資料當事實來源）",
+      "regenDone": true,
+      "pipeline": "zh+en+glossary+verify+sync+tts",
+      "regenAt": "2026-06-27T23:13:48.455206"
     },
     "tech/2026-05-11-dexter-autonomous-financial-research-agent": {
       "id": "tech/2026-05-11-dexter-autonomous-financial-research-agent",
@@ -497,7 +512,10 @@
       "draftAt": "2026-06-27T03:48:01.425Z",
       "deletedAt": "2026-06-27T04:05:20.212Z",
       "track": "regen",
-      "strategy": "B-references"
+      "strategy": "B-references",
+      "regenDone": true,
+      "pipeline": "zh+en+glossary+verify+sync+tts",
+      "regenAt": "2026-06-27T23:13:48.455206"
     },
     "tech/2026-05-12-goodbye-all-you-reptile-warriors": {
       "id": "tech/2026-05-12-goodbye-all-you-reptile-warriors",
@@ -513,7 +531,10 @@
       "draftAt": "2026-06-27T03:48:01.426Z",
       "deletedAt": "2026-06-27T04:05:47.629Z",
       "track": "regen",
-      "strategy": "B-references"
+      "strategy": "B-references",
+      "regenDone": true,
+      "pipeline": "zh+en+glossary+verify+sync+tts",
+      "regenAt": "2026-06-27T23:13:48.455206"
     },
     "tech/2026-05-12-to-help-my-socially-anxious-fans-i-created-a-video-calling-p": {
       "id": "tech/2026-05-12-to-help-my-socially-anxious-fans-i-created-a-video-calling-p",

@@ -15,6 +15,7 @@ key_points:
   - "PageIndex's counter-thesis: similarity ≠ relevance. Instead of using embeddings to find the passage that looks 'most alike,' let an LLM reason over the document's tree-shaped table of contents to figure out 'where the answer lives.'"
   - "No vector DB, no chunking — it retrieves via a section tree plus LLM tree search, hits 98.7% SOTA on FinanceBench, and is traceable and explainable."
   - "This site takes the opposite tradeoff: bge-m3 vectors + Cloudflare Vectorize + a keyword fallback, running on the edge with low latency — a fit for short blog posts rather than long structured documents."
+audio_url: "/api/tts/r2/tts/tts_20260627_151054_138985.mp3"
 ---
 
 RAG (Retrieval-Augmented Generation) has almost become synonymous with "vector database + semantic search," but [VectifyAI/PageIndex](https://github.com/VectifyAI/PageIndex) proposes a counter-thesis: **vector similarity is not the same as relevance**. Rather than using embeddings to find the "most alike" passage, let the LLM reason directly about "where the answer is." This article takes apart PageIndex's architecture in depth and fully compares it against the Hybrid RAG (bge-m3 + Cloudflare Vectorize) this site actually runs.

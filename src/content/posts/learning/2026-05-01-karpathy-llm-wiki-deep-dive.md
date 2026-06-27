@@ -15,6 +15,7 @@ key_points:
   - "RAG 每次查詢都從零撈 chunk、知識不累積；LLM Wiki 讓 LLM 主動把資訊編進一個持續更新的 markdown 知識庫，越用越聰明。"
   - "三層架構：Raw Sources（唯讀原始文件）／ The Wiki（LLM 維護的 markdown 頁面）／ Schema（規範結構與工作流程）。"
   - "關鍵洞察：維護知識庫真正麻煩的不是讀或想，而是 bookkeeping——而 LLM 不會累，正好補這塊。"
+audio_url: "/api/tts/r2/tts/tts_20260627_150054_189297.mp3"
 ---
 
 RAG（Retrieval-Augmented Generation）已經是業界標準答案好幾年了：把文件切塊、向量化、查詢時找相關 chunk 塞進 context。它解決了「LLM 不知道你的私有資料」這個問題，但它沒有解決另一個問題：**知識是靜態的**。每次查詢都從零開始，文件之間沒有連結，系統不會因為你使用得越多而變得越聰明。

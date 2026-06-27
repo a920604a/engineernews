@@ -1,0 +1,23 @@
+大多數人用 Codex CLI 的體感，就是輸入一句話，然後 code 就自己冒出來了。但你看不到的是，在這短短一瞬間，背後那個 agent loop 已經跑了幾十次推理跟工具呼叫。OpenAI 的 Michael Bolin 寫了一篇文章，叫《Unrolling the Codex agent loop》，把這層黑盒子整個攤開來看。我們今天就來拆解一下。
+
+先講最核心的東西——什麼是 agent loop。其實每個 AI agent 的本質都是一個迴圈。它收到你的輸入，組建一個 prompt，這個 prompt 裡面包含指令、工具定義、還有整段對話歷史。接著把它送進模型做推理。模型回傳結果，這個結果有兩種可能：一種是工具呼叫，一種是最終回覆。如果是工具呼叫，agent 就在本機把工具跑起來，把結果接回 prompt，再丟回去推理一次；這樣一圈一圈轉，直到模型給出最終回覆，這一輪才算結束，然後等你下一句話。
+
+這裡 Bolin 有個觀念我覺得特別值得記住：對一個 coding agent 來說，它真正的「輸出」其實不是螢幕上那段 assistant message。真正有價值的，是它在你本機寫進去、改掉的那些程式碼。最後那段話只是一個信號，告訴你「這一輪我跑完了」。所以一個你以為很單純的對話 turn，背後可能藏了幾十次「推理、執行工具、再推理」的循環。
+
+接著看 prompt 的結構。Codex 送給 Responses API 的 payload，核心有三塊。第一塊是 Instructions，這是靜態的系統層指令，來自設定檔或模型內建的設定。第二塊是 Tools，包含 Codex 內建的 shell 執行、檔案操作，加上 Responses API 原生工具，還有你自己透過 MCP 掛上去的工具——這些工具用 JSON schema 來定義，讓模型知道什麼時候、該怎麼呼叫。第三塊是 Input，也就是對話歷史，涵蓋 system、developer、user、assistant 各種角色的訊息，外加當前的沙箱權限跟專案 context。
+
+有個細節很關鍵：server 收到 payload 之後，會重新排列成 system message、工具定義、instructions、然後才是 input messages 這個順序。這個順序不是隨便排的，它直接影響到 prompt cache 的命中率，等一下會講到為什麼。
+
+那 token 是怎麼流動的？推理本質上就是一場翻譯：文字 prompt 變成輸入 token，模型取樣之後產生輸出 token，再變回文字。因為 token 是一個一個生出來的，所以輸出可以邊算邊串流回來——這就是為什麼 LLM 應用都有那種打字機效果。而每個模型都有一個固定的 context window，也就是輸入加輸出 token 的總上限。這個上限，是整個 agent loop 設計裡最重要的約束之一。
+
+為什麼最重要？因為對話一長，token 就一直累積，很快會逼近上限。Codex 的解法叫自動壓縮，auto compaction。它的觸發很單純：你設一個閾值，token 用量一超過,就自動壓縮。壓縮會打到一個專用的 compact endpoint,回傳一批摘要 item,直接拿去替換掉原本的歷史。重點是,壓縮結果是以加密的方式存下來,模型的「潛在理解」被保留住了,但那些原始訊息就不再佔 context 空間。
+
+這個設計還順帶解決了一個合規問題,就是支援 Zero Data Retention 的客戶。因為請求模型本身是無狀態的,伺服器不需要把原始對話存下來;而那個加密的壓縮 item,又能帶著模型的推理繼續往下跑。一舉兩得。
+
+再來是 prompt cache 的優化,這塊特別有意思。每次推理都要把整個 prompt 重送一遍,如果不做優化,成本會以二次方往上飆。但如果能讓 server 重複利用之前算過的部分,也就是 cache hit,就能把二次方壓回線性。Codex 怎麼做的?第一,把靜態內容放最前面——instructions、工具定義、沙箱設定這些不會變的東西擺在開頭,才有辦法被 cache 住。第二,這個我覺得最容易被忽略:MCP 工具的排序。如果 MCP server 每次枚舉工具的順序都不一樣,那每個 request 都會 cache miss。Codex 強制讓工具排序一致,就把這個坑補起來了。效果就是,即使 request payload 以二次方在長大,模型取樣還是能維持線性時間。
+
+最後拉高來看,整個 Codex agent loop 的設計,其實就是在幾組相互拉扯的取捨之間找平衡。autonomy 對上 safety——從問答模式到全自主執行,可以連續調節。stateless 對上 continuity——無狀態請求滿足合規,加密壓縮保留推理的連貫。context depth 對上 cost——自動壓縮讓長對話變可能,prompt cache 讓它變得負擔得起。
+
+好,總結一下三個核心要點。第一,你看到的一個對話 turn,背後是幾十次推理跟工具呼叫的迴圈,而 coding agent 真正的輸出是程式碼,不是那段回話。第二,context window 是最硬的約束,Codex 用加密的自動壓縮來換取長對話的續航,同時還顧到了 Zero Data Retention。第三,prompt cache 的關鍵在於靜態內容前置加上工具排序一致,把成本從二次方壓回線性。
+
+如果你也想自己做一個 coding agent,這篇文章最值錢的地方,不是 Codex 怎麼實作,而是這些決策背後的原因——context 管理從來不是可選功能,它是讓你的 agent 能撐過幾分鐘、真正派上用場的必要條件。

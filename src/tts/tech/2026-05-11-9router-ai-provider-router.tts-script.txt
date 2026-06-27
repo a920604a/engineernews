@@ -1,0 +1,23 @@
+你有沒有過這種狀況——訂了 Claude Pro，又買了 Cursor，公司還發了 GitHub Copilot，結果每個服務的額度各管各的。一個用完得手動切到另一個，OAuth token 過幾個小時就過期、又要重登，而且每個工具送出去的 API 格式還不一樣。明明額度買了一大堆，卻常常在你最需要的時候，撞上 rate limit。
+
+9Router 的切入點很單純：在你的本機跑一個 OpenAI 相容的 proxy，把所有 AI coding 工具的請求統一收進來，再自動路由到當下最划算、又還有額度的那個 provider。它在 GitHub 上已經累積到一萬八千顆星，更新很活躍，背後也有對應的 npm 套件跟 Docker image。
+
+先講它的設計哲學。傳統做法是每個工具各自設定 provider、各自塞 API key，provider 一變動，每個工具都得重設一次，很煩。9Router 把這層抽出來：工具端只要支援「自訂 OpenAI endpoint」，你就全部指向本機那個 localhost:20128 的位址，provider 的選擇、切換、認證全部交給 9Router。換句話說，provider 怎麼換都是 9Router 的事，工具本身設定一次到位，之後完全不用再動。
+
+安裝也很簡單，npm 全域裝好、跑起來，dashboard 就開在那個 port。接著把工具的 endpoint 跟 API key 改成 dashboard 給你的值，model 填像是 claude-sonnet-4.5 這種就行。重點是——你的 API key 跟 OAuth token 都只存在本機，不會送到第三方去。
+
+那它核心的機制是什麼？是一個三層的 fallback 路由，照成本由低到高,用完才往下掉。第一層是你已經付錢的訂閱服務，像 Claude Code、Codex、Copilot；這一層額度耗盡，就自動掉到第二層的便宜 API，例如 GLM、MiniMax 這種一百萬 token 才幾毛美金的；萬一連第二層的預算上限都碰到了，再掉到第三層的免費資源。三層之間自動切換，完全不用你手動介入。而且同一個 provider 如果你有多個帳號，它還能 round-robin 輪流分配，dashboard 上即時看得到額度追蹤跟重置倒數。
+
+免費這一層，現在比較可靠的有三個：Kiro AI，標榜 unlimited free，給你 Claude、GLM、MiniMax；OpenCode Free，免認證、自動抓可用模型；還有 Vertex AI，三百美金的免費額度，可以用 Gemini 3 Pro 那一批。要注意的是，README 有特別講，像 iFlow、Qwen、Gemini CLI 那些免費方案，在 2026 年陸續關掉了，現在主力就是這三個。
+
+再來幾個讓它好用的細節。第一是 OAuth 自動刷新。Claude Code、Codex、GitHub、Cursor 這些走 OAuth 的訂閱，token 效期通常只有幾小時，9Router 會在過期前自動幫你刷新，避免你跑一個長 session 跑到一半突然斷線、被踢出去重登。
+
+第二是跨 API 格式轉換。不同 provider 的原生格式不一樣，OpenAI 跟 Claude 的 messages 結構就長得不同。9Router 在路由的時候自動幫你轉，所以工具端只要會講 OpenAI 格式就夠，你不必為每個 provider 各寫一套。
+
+第三個我覺得蠻聰明的，是內建的 RTK token 壓縮。它有一個 middleware，專門針對 tool_result 的內容——就是 git diff、grep、ls、log 這類 shell 輸出——先偵測類型、過濾掉冗餘，再送進 LLM，官方說每次請求可以省下兩成到四成的輸入 token。這裡有個命名要提醒一下：這個 RTK 是 9Router 內建的東西，跟另一個獨立的 Rust 工具、那個也叫 RTK 的，只是縮寫剛好一樣，不是同一個東西，別搞混。
+
+支援的工具很廣，主流的 CLI 像 Claude Code、Codex、Cursor、Cline、Continue、Copilot 都在裡面。Provider 端則是 OAuth 那幾家，加上四十多個 API key 類型的。部署預設跑 localhost，但你也可以從原始碼或 Docker 啟動，社群甚至有人示範部署到 Hugging Face Spaces，當作免費常駐、替代 VPS 的方案。
+
+那最後，誰適合用？如果你同時手上有好幾個 AI 訂閱、想要額度自動 fallback，或是要在好幾台裝置共用同一套 AI 設定，那它很對胃口，設定一次，所有工具統一進 9Router。但有件事一定要自己評估：用非官方的 proxy 去接訂閱服務，本質上就是繞過各家原本的用法，個別 provider 是有封號、或違反服務條款的風險的，這個帳要自己算。另外，如果你真正的痛點其實是「shell 命令輸出把 context 撐爆」，那是另一個維度的問題，可以單獨搭配命令輸出層的壓縮工具來處理。
+
+總結一下三個重點。第一，9Router 的核心價值是「工具只認一個 endpoint」，把 provider 的選擇跟認證全部抽到 proxy 這層，設定一次就不用再動。第二，它的三層 fallback 加上 OAuth 自動刷新、格式自動轉換、還有 RTK 壓 token，解決的是多訂閱時代「額度各管各的、又一直撞牆」的真實痛點。第三，方便歸方便，繞過官方用法的封號跟條款風險是實實在在的，要不要用，自己拿捏。

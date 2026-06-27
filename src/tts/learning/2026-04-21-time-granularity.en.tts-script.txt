@@ -1,0 +1,37 @@
+Time granularity. It's the smallest unit you use to schedule your time. And here's the thing most people don't realize: most of us live our lives in units of hours. Excellent managers? They operate in fifteen-minute blocks. And the top performers, the real elite, are supposedly precise down to the second. Now, that last part isn't bragging — it's pointing at something deeper. It's a completely different level of perception about what time actually costs.
+
+So let's start with what time granularity really is. It's the smallest unit of time you use when you arrange your schedule and make commitments. Picture someone who thinks in units of days. For that person, "see you tomorrow" feels totally natural. But for someone who lives in fifteen-minute blocks? "Tomorrow" isn't even a real point in time. They'd ask — which fifteen minutes tomorrow?
+
+There's a great example in the book *Underlying Logic*. Someone whose time granularity is measured in hours invites another person to, quote, "swing by Tianjin while you're at it." To the inviter, that's just one extra hour, no big deal. But for the person who plans in fifteen-minute blocks, that casual little ask might blow up an entire afternoon. And this is the key insight: the gap in granularity isn't an efficiency problem. It's a problem of perceiving the cost of other people's time.
+
+Now, time granularity isn't actually one single thing. It's three layers running at the same time.
+
+The first layer is by the year — that's goals and direction. You set your annual goals, your action plans, you decide which quadrant of activity you're pouring your time into. And without this layer, all your fine-grained scheduling just means you're running faster... in the wrong direction.
+
+The second layer is by the day — that's allocating your discretionary time. You've got roughly eight hours of freely usable time in a day. How you carve up those eight hours decides whether you're actually executing on your goals or just drowning in busywork.
+
+And the third layer is by the hour, or by fifteen minutes — and this one is the battle for focus. The goal is staying a hundred percent locked in during each slot. And once you switch to scheduling in fifteen-minute units, something clicks. You suddenly realize that "let's just chat for a few minutes" doesn't really exist as a free thing. Chatting for five minutes? That's eating up your next entire block.
+
+But here's where it gets interesting, because there's a layer on top of all of this. Energy management beats time management. And this is the blind spot in pure time management — people aren't machines. The quality of what you produce swings wildly depending on the time of day.
+
+Career coach Elvis Lin puts it like this: allocating your tasks according to the natural ebb and flow of your energy matters more than fine-grained scheduling. So those two hours early in the morning, when your energy is peaking? Use them for your hardest deep work. Not for email. Not for routine meetings. You put the hardest things in your most energized window, and you push the mechanical, just-grind-it-out tasks into the windows where your energy is fading.
+
+And this ties directly into the idea of flow. You only slip into that state of total immersion — where you lose yourself in the work — when the difficulty of the challenge matches your skill level. But there's a prerequisite. To enter flow, you need a block of time long enough to go uninterrupted. A fragmented, chopped-up schedule? That straight-up kills flow.
+
+Okay, so let's get practical. A few things you can actually use right away.
+
+First — switch your calendar to fifteen-minute slots. In Google Calendar or Outlook, change the default from one hour down to fifteen minutes. That one move alone makes you start seeing wasted time you literally couldn't see before.
+
+Second — knock out small tasks instantly. Anything you can finish in under two minutes, do it now. Don't let it sit there occupying your cognitive bandwidth. These little wins build a sense of momentum, and they free up mental headroom for the harder stuff later. The point isn't the two minutes — it's that the task stops running in the background of your mind.
+
+Third — and this one stings a little — on time means late. Arriving early is being on time. Showing up right at the wire of the scheduled moment, to someone who lives in fifteen-minute blocks, means you've just wrecked their next slot.
+
+And fourth — it only gets easier once it's a habit. The early phase is genuinely painful, because you're consciously thinking about how to arrange every single slot. But once it's a habit, it goes on autopilot. It's like learning to ride a bike — at first you're white-knuckling your balance, but once it's fluent, your brain is free to think about other things.
+
+So let me leave you with the core of it. Three takeaways.
+
+One — time granularity is a cognitive problem, not a tooling problem. Calendars and reminders only make your intentions visible. The real shift happens underneath, in how you perceive the cost of time.
+
+Two — going from hours to fifteen minutes isn't just cutting the boxes smaller. It's the moment you start genuinely treating time as a non-renewable resource. You can't get it back.
+
+And three — once that perception locks in, your tolerance for phrases like "while you're at it," "let's just chat for a sec," "give me a minute" — it drops off a cliff. And that's not you becoming difficult. That's you finally being honest about your time, and everyone else's.

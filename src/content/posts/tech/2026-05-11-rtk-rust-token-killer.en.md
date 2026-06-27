@@ -12,6 +12,7 @@ key_points:
   - "The problem isn't the AI — it's that command output is stuffed with things meaningless to an AI: color escape codes, blank lines, repeated headers, verbose stack traces."
   - "RTK intercepts and compresses output before it hits the context, saving 60–90% of tokens on common commands, with under 10ms overhead — a single Rust binary, zero dependencies."
   - "It complements 9Router: RTK compresses 'command output' while 9Router handles 'provider routing and cost' — two entirely different dimensions."
+audio_url: "/api/tts/r2/tts/tts_20260627_150644_744190.mp3"
 ---
 
 When you write code with Claude Code, a single `git diff` can eat up thousands of tokens. The problem isn't that the AI is dumb — it's that the output itself is full of stuff that means nothing to an AI: color escape codes, blank lines, repeated headers, verbose stack traces. You pay for those tokens all the same, your context window gets filled all the same, and none of it helps the model understand your code.

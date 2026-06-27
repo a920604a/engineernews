@@ -12,6 +12,7 @@ key_points:
   - "一個本機 OpenAI-compatible proxy（port 20128），讓所有 AI coding 工具共用一套 provider 設定，換 provider 不用動工具。"
   - "三層 fallback：訂閱額度用完自動降到便宜 API（GLM $0.6/1M、MiniMax $0.2/1M），再用完降到免費（Kiro、OpenCode Free、Vertex $300 額度）。"
   - "內建 RTK 壓縮 tool_result（git diff、grep、log 這類），官方宣稱省 20–40% 輸入 token。"
+audio_url: "/api/tts/r2/tts/tts_20260627_150420_138669.mp3"
 ---
 
 訂了 Claude Pro、又買了 Cursor、公司還發了 GitHub Copilot——結果每個服務的額度各管各的：一個用完要手動切到另一個，OAuth token 過幾小時就過期要重登，而且每個工具送出的 API 格式還不一樣。額度明明買了一堆，卻常常在最需要的時候撞到 rate limit。
