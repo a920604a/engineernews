@@ -9,7 +9,12 @@ series:
   order: 2
 tldr: "PageIndex 用階層樹索引 + LLM Agent 推理取代向量 DB，在長文件場景（FinanceBench 98.7%）表現亮眼；本站的 Hybrid RAG 則以向量搜尋 + 關鍵字 fallback 在 Cloudflare edge 上跑，取捨完全不同。"
 description: "深入研究 VectifyAI/PageIndex 的無向量 RAG 架構，並與本站 bge-m3 + Cloudflare Vectorize 實作做完整比較，分析兩種路線的設計哲學、適用場景與取捨。"
-draft: true
+github: https://github.com/VectifyAI/PageIndex
+draft: false
+key_points:
+  - "PageIndex 的反命題：相似度 ≠ 相關性。與其用 embedding 找『最像』的段落，不如讓 LLM 在文件的樹狀目錄上推理『哪裡有答案』。"
+  - "它無向量 DB、無 chunking，靠章節樹 + LLM tree search 檢索，FinanceBench 拿到 98.7% SOTA，可追蹤、可解釋。"
+  - "本站走相反取捨：bge-m3 向量 + Cloudflare Vectorize + 關鍵字 fallback，跑在 edge、低延遲，適合短篇 blog 而非長結構文件。"
 ---
 
 RAG（Retrieval-Augmented Generation）現在幾乎預設就是「向量資料庫 + 語意搜尋」，但 [VectifyAI/PageIndex](https://github.com/VectifyAI/PageIndex) 提出了一個反命題：**向量相似度不等於相關性**，與其用 embedding 找「最像」的段落，不如讓 LLM 直接推理「哪裡有答案」。這篇文章深入拆解 PageIndex 的架構，並跟本站實際使用的 Hybrid RAG（bge-m3 + Cloudflare Vectorize）做完整比較。
@@ -78,7 +83,7 @@ sequenceDiagram
 
 ### 效能與定位
 
-PageIndex 在 FinanceBench（財務文件 QA 基準）達到 **98.7% 準確率**，大幅超越傳統向量 RAG。這個場景的特性是：文件有固定結構（財報格式）、答案需要精確數字、chunk 切壞會直接導致錯誤。
+PageIndex 在 FinanceBench（財務文件 QA 基準）達到 **98.7% 準確率**，大幅超越傳統向量 RAG。這個場景的特性是：文件有固定結構（財報格式）、答案需要精確數字、chunk 切壞會直接導致錯誤。專案打著「vectorless、reasoning-based RAG」的旗號，GitHub 上有 3.3 萬顆星、更新活躍，並推出 PageIndex File System（檔案層級的樹索引）把同樣的推理檢索擴展到「整個 corpus」而非單一文件。
 
 ---
 
@@ -91,7 +96,7 @@ PageIndex 在 FinanceBench（財務文件 QA 基準）達到 **98.7% 準確率**
 ```
 Markdown 文章
   → 按雙換行切 paragraph chunks（max 1000 chars）
-  → bge-m3 embed 每個 chunk（384 dim）
+  → bge-m3 embed 每個 chunk（1024 dim）
   → 存入 Cloudflare Vectorize（cosine similarity）
   → chunk metadata 存 D1 SQLite（doc_chunks table）
 ```
@@ -162,13 +167,13 @@ graph TB
 | **向量 DB** | 不需要 | Cloudflare Vectorize |
 | **檢索機制** | LLM Agent 工具呼叫 | 向量餘弦相似度 |
 | **Fallback** | 無（推理即主路徑） | SQLite LIKE 關鍵字搜尋 |
-| **Embedding** | 無 | bge-m3 384-dim |
-| **生成模型** | GPT-4o | qwen1.5-14b-chat-awq |
+| **Embedding** | 無 | bge-m3 1024-dim |
+| **生成模型** | 不限（OpenAI Agents SDK，可換任意 LLM） | qwen1.5-14b-chat-awq |
 | **文件結構保留** | 完整保留章節層級 | 切碎後失去結構 |
 | **長文件支援** | 設計核心（財報等） | 短 blog post 為主 |
 | **多輪對話** | 支援完整 history | 單輪 |
 | **可解釋性** | 推理路徑可追蹤 | 向量分數不直觀 |
-| **推理成本** | 高（GPT-4o 兩次） | 低（Workers AI） |
+| **推理成本** | 高（多次 LLM 推理導航） | 低（Workers AI） |
 | **部署環境** | Python + OpenAI API | Cloudflare edge |
 
 ---

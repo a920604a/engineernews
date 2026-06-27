@@ -178,6 +178,12 @@ export const glossary: Record<string, GlossEntry> = {
   "red-teaming": { zh: "紅隊測試", context: "由攻擊方視角主動嘗試突破系統防護，用來找出安全漏洞。" },
   "least privilege": { zh: "最小權限", context: "只授予完成任務所需的最小權限，縮小被攻陷後的爆炸範圍。" },
   "defense in depth": { zh: "縱深防禦", context: "在不同層級疊多道獨立防線，假設任一層都可能失守的安全設計。" },
+  // ── 全站掃描補充：RAG / 檢索 ──
+  "chunking": { zh: "分塊", context: "把長文件切成小段以利向量化與檢索的前處理；切壞會讓答案散落在不同塊。" },
+  "cosine similarity": { zh: "餘弦相似度", context: "向量檢索常用的指標，衡量兩段文字在向量空間的語意接近程度。" },
+  "vectorless": { zh: "無向量", context: "不靠向量資料庫、改用 LLM 在文件結構上推理檢索的 RAG 路線。" },
+  "top-k": { zh: "top-k", context: "向量查詢時取相似度最高的前 k 筆結果作為候選。" },
+  "tool_result": { zh: "工具回傳結果", context: "agent 呼叫工具（shell、檢索等）後回填給 LLM 的輸出內容。" },
   // ── 全站掃描補充：API / 資料 / infra ──
   "rest": { zh: "REST", context: "以 HTTP 動詞操作資源的 API 設計風格，無狀態、易快取。" },
   "graphql": { zh: "GraphQL", context: "讓客戶端精確查詢所需欄位的 API 查詢語言，避免過度抓取。" },
