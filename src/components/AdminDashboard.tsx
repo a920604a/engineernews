@@ -58,7 +58,7 @@ type TTSRecord = { id: number; created_at: string; type: 'tts'; title: string; v
 type CommentRow = { id: number; post_slug: string; author_name: string; body: string; hidden: number; created_at: string };
 type CommentsData = { rows: CommentRow[]; total: number };
 
-type MainTab = 'overview' | 'content' | 'search' | 'infra' | 'system' | 'moderation';
+type MainTab = 'overview' | 'content' | 'audience' | 'system';
 
 const TOKEN_KEY = 'admin_token';
 const SESSION_TTL = 36 * 60 * 60 * 1000; // 36 hours
@@ -1246,23 +1246,24 @@ function ModerationTab({ token }: { token: string }) {
 // ── Tab navigation ────────────────────────────────────────────────────────────
 
 const MAIN_TABS = [
-  { id: 'overview'    as MainTab, label: 'Overview' },
-  { id: 'content'     as MainTab, label: 'Content' },
-  { id: 'search'      as MainTab, label: 'Search' },
-  { id: 'infra'       as MainTab, label: 'Infra' },
-  { id: 'system'      as MainTab, label: 'System' },
-  { id: 'moderation'  as MainTab, label: '🗨️ 留言' },
+  { id: 'overview'  as MainTab, label: 'Overview' },
+  { id: 'content'   as MainTab, label: 'Content' },
+  { id: 'audience'  as MainTab, label: 'Audience' },
+  { id: 'system'    as MainTab, label: 'System' },
 ];
 
 const SUB_TABS: Record<string, { id: string; label: string }[]> = {
-  content: [{ id: 'posts', label: 'Posts' }, { id: 'tts', label: 'TTS' }],
-  search:  [{ id: 'analytics', label: 'Analytics' }, { id: 'searchlogs', label: 'Logs' }, { id: 'search-traces', label: 'Traces' }],
-  infra:   [{ id: 'vectorize', label: 'Vectorize' }, { id: 'r2', label: 'R2' }, { id: 'config', label: 'Config' }],
-  system:  [{ id: 'logs', label: 'App Logs' }, { id: 'pageviews', label: 'Page Views' }, { id: 'settings', label: 'Settings' }],
+  content:  [{ id: 'posts', label: 'Posts' }, { id: 'tts', label: 'TTS' }],
+  audience: [{ id: 'pageviews', label: 'Page Views' }, { id: 'search', label: 'Search' }, { id: 'engagement', label: '🗨️ Engagement' }],
+  system:   [{ id: 'storage', label: 'Storage' }, { id: 'logs', label: 'Logs' }, { id: 'settings', label: 'Settings' }],
 };
 
+// 子 view 內的輕量切換（避免再多一層 subtab）
+const SEARCH_VIEWS = [{ id: 'logs', label: 'Logs' }, { id: 'traces', label: 'Traces' }];
+const STORAGE_VIEWS = [{ id: 'vectorize', label: 'Vectorize' }, { id: 'r2', label: 'R2' }];
+
 const DEFAULT_SUB: Record<MainTab, string> = {
-  overview: '', content: 'posts', search: 'analytics', infra: 'vectorize', system: 'logs', moderation: '',
+  overview: '', content: 'posts', audience: 'pageviews', system: 'storage',
 };
 
 function TabBar({ active, onChange }: { active: MainTab; onChange: (t: MainTab) => void }) {
@@ -1303,6 +1304,8 @@ export default function AdminDashboard() {
   const [fetchedAt, setFetchedAt] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<MainTab>('overview');
   const [subTabs, setSubTabs] = useState<Record<string, string>>(DEFAULT_SUB);
+  const [searchView, setSearchView] = useState('logs');     // audience > Search 內：logs | traces
+  const [storageView, setStorageView] = useState('vectorize'); // system > Storage 內：vectorize | r2
 
   useEffect(() => {
     const saved = loadSession();
@@ -1359,8 +1362,8 @@ export default function AdminDashboard() {
                 <Stat label="Draft: true" value={contentStats?.draft_true ?? '–'} sub="content files" />
                 <Stat label="Draft: false" value={contentStats?.draft_false ?? '–'} sub="content files" />
                 <Stat label="Published + Audio" value={contentStats?.published_with_audio ?? '–'} sub="draft:false & audio_url" />
-                <Stat label="Searches (all)" value={d1?.search_logs ?? '–'} sub="AI search queries" onClick={() => goToTab('search', 'searchlogs')} />
-                <Stat label="RAG Traces" value={d1?.search_logs ?? '–'} sub="品質標記 & trace 瀏覽" onClick={() => goToTab('search', 'search-traces')} />
+                <Stat label="Searches (all)" value={d1?.search_logs ?? '–'} sub="AI search queries" onClick={() => goToTab('audience', 'search')} />
+                <Stat label="RAG Traces" value={d1?.search_logs ?? '–'} sub="品質標記 & trace 瀏覽" onClick={() => { setSearchView('traces'); goToTab('audience', 'search'); }} />
                 <Stat
                   label="LLM 成功率 (7d)"
                   value={`${pct(d1?.search_stats.llm_ok ?? 0, d1?.search_stats.total ?? 1)}%`}
@@ -1368,9 +1371,9 @@ export default function AdminDashboard() {
                   sub={`${d1?.search_stats.total ?? 0} queries`}
                 />
                 <Stat label="Avg 耗時 (7d)" value={`${d1?.search_stats.avg_ms ?? 0}`} sub="ms" />
-                <Stat label="R2 Objects" value={data.r2.data ? (data.r2.data.truncated ? '1000+' : data.r2.data.count) : '–'} sub="OG images" onClick={() => goToTab('infra', 'r2')} />
+                <Stat label="R2 Objects" value={data.r2.data ? (data.r2.data.truncated ? '1000+' : data.r2.data.count) : '–'} sub="OG images" onClick={() => { setStorageView('r2'); goToTab('system', 'storage'); }} />
                 <Stat label="TTS Logs" value="View" sub="Synthesis history" onClick={() => goToTab('content', 'tts')} />
-                <Stat label="Vectorize" value={data.vectorize.data?.chunk_count ?? '–'} sub={`${data.vectorize.data?.dimensions ?? 0}D ${data.vectorize.data?.embedding_model.split('/').at(-1) ?? ''}`} onClick={() => goToTab('infra', 'vectorize')} />
+                <Stat label="Vectorize" value={data.vectorize.data?.chunk_count ?? '–'} sub={`${data.vectorize.data?.dimensions ?? 0}D ${data.vectorize.data?.embedding_model.split('/').at(-1) ?? ''}`} onClick={() => { setStorageView('vectorize'); goToTab('system', 'storage'); }} />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: '16px', marginBottom: '16px' }}>
@@ -1433,64 +1436,65 @@ export default function AdminDashboard() {
       );
     }
 
-    // ── Search ──
-    if (activeTab === 'search') {
-      const sub = subTabs.search;
+    // ── Audience（讀者訊號全集中：流量 / 搜尋 / 互動）──
+    if (activeTab === 'audience') {
+      const sub = subTabs.audience;
       return (
         <>
-          <SubTabBar tabs={SUB_TABS.search} active={sub} onChange={setSub('search')} />
-          {sub === 'analytics' && (
-            d1 ? (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: '16px' }}>
-                <div style={s.card}>
-                  <p style={s.section}>Search Stats (7d)</p>
-                  <SearchStatsGauges stats={d1.search_stats} />
+          <SubTabBar tabs={SUB_TABS.audience} active={sub} onChange={setSub('audience')} />
+
+          {sub === 'pageviews' && <PageViewsDetail token={token} />}
+
+          {sub === 'search' && (
+            <>
+              {d1 ? (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: '16px', marginBottom: '16px' }}>
+                  <div style={s.card}>
+                    <p style={s.section}>Search Stats (7d)</p>
+                    <SearchStatsGauges stats={d1.search_stats} />
+                  </div>
+                  <div style={s.card}><SearchTrendChart data={d1.search_trend} /></div>
                 </div>
-                <div style={s.card}><SearchTrendChart data={d1.search_trend} /></div>
-              </div>
-            ) : loading ? <CardSkeleton lines={4} /> : null
+              ) : loading ? <CardSkeleton lines={4} /> : null}
+              <SubTabBar tabs={SEARCH_VIEWS} active={searchView} onChange={setSearchView} />
+              {searchView === 'logs' && <SearchLogsDetail token={token} />}
+              {searchView === 'traces' && <SearchTracesDetail token={token} />}
+            </>
           )}
-          {sub === 'searchlogs' && <SearchLogsDetail token={token} />}
-          {sub === 'search-traces' && <SearchTracesDetail token={token} />}
+
+          {sub === 'engagement' && <ModerationTab token={token} />}
         </>
       );
     }
 
-    // ── Infra ──
-    if (activeTab === 'infra') {
-      const sub = subTabs.infra;
-      return (
-        <>
-          <SubTabBar tabs={SUB_TABS.infra} active={sub} onChange={setSub('infra')} />
-          {sub === 'vectorize' && (data?.vectorize.data
-            ? <VectorizeDetail vec={data.vectorize.data} token={token} />
-            : loading ? <CardSkeleton lines={4} /> : null
-          )}
-          {sub === 'r2' && <R2Detail token={token} />}
-          {sub === 'config' && (data?.config.data
-            ? <ConfigDetail config={data.config.data} />
-            : loading ? <CardSkeleton lines={4} /> : null
-          )}
-        </>
-      );
-    }
-
-    // ── System ──
+    // ── System（後台運維：儲存 / 日誌 / 設定）──
     if (activeTab === 'system') {
       const sub = subTabs.system;
       return (
         <>
           <SubTabBar tabs={SUB_TABS.system} active={sub} onChange={setSub('system')} />
+
+          {sub === 'storage' && (
+            <>
+              <SubTabBar tabs={STORAGE_VIEWS} active={storageView} onChange={setStorageView} />
+              {storageView === 'vectorize' && (data?.vectorize.data
+                ? <VectorizeDetail vec={data.vectorize.data} token={token} />
+                : loading ? <CardSkeleton lines={4} /> : null
+              )}
+              {storageView === 'r2' && <R2Detail token={token} />}
+            </>
+          )}
+
           {sub === 'logs' && <LogsPanel token={token} />}
-          {sub === 'pageviews' && <PageViewsDetail token={token} />}
-          {sub === 'settings' && <SettingsDetail token={token} />}
+
+          {sub === 'settings' && (
+            <>
+              {data?.config.data && <div style={{ marginBottom: '16px' }}><ConfigDetail config={data.config.data} /></div>}
+              <SettingsDetail token={token} />
+            </>
+          )}
         </>
       );
-    }
-
-    // ── Moderation ──
-    if (activeTab === 'moderation') {
-      return <ModerationTab token={token} />;
     }
   };
 
