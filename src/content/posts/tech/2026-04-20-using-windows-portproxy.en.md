@@ -7,6 +7,7 @@ lang: en
 description: "Point Codex on Windows at an Ollama instance running on a remote GPU using portproxy: a full walkthrough of the Docker, networking, and verification flow, with fixes for the common implementation gotchas."
 tldr: "Deploy Ollama on a GPU machine via Docker, then use netsh portproxy on Windows to forward localhost:11434 to the GPU box, so Codex on Windows transparently uses the remote GPU."
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260627_092557_399638.mp3"
 ---
 
 # 🚀 Docker GPU Ollama + Codex Client: Full Architecture Guide

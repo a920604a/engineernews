@@ -1,0 +1,27 @@
+先講結論：這個部落格叫 Engineer News，整套技術堆疊有個很明確的設計原則——能跑在 Cloudflare 生態系內的，就不往外接。從 YouTube 影片爬取、對話筆記轉文章，一路到使用者在瀏覽器裡做語意搜尋，沒有任何一個環節跳出 Cloudflare。這集就來拆解，為什麼是這些工具、它們怎麼接在一起，以及哪些選擇其實是取捨的結果。
+
+先看整體的流動。內容的源頭有兩個：一個是 YouTube，由爬蟲腳本配 llama-3.1-70b 生成中文摘要；另一個是對話跟筆記，由 ingest 腳本配比較小的 llama-3.1-8b 抽取 metadata。這兩條路最後都匯流到 git push，觸發 GitHub Actions，一邊把網站部署到 Cloudflare Pages，一邊跑同步腳本，把文章切塊、生成向量、寫進 D1 跟 Vectorize。使用者端的 Worker 再去讀這些資料庫、讀 R2、呼叫 Workers AI。整張圖你只要記得一件事：所有東西都在同一個圍牆內。
+
+前端用的是 Astro。它跟 React、Vue 不一樣，是「內容優先」的框架，預設就吐純靜態 HTML，只在真的需要互動的元件才注入 JavaScript，這叫 Island Architecture。對部落格來說這個哲學很合理，因為大多數頁面就是純閱讀，根本不需要 JS bundle。文章用 Markdown 管理，frontmatter 有 Zod schema 在 build 階段驗證，欄位寫錯本地就報錯，不用等 CI。多語系路由也是內建的，中文是預設、沒有 URL 前綴，英文走 /en 路徑。
+
+那為什麼不用 Next.js？Next 生態確實更成熟，但對純內容站來說，bundle size 跟設定複雜度都偏高。Astro 搭 Cloudflare adapter 的 server 模式，剛好讓動態的部分走 Workers、靜態的部分走 Pages CDN，分工很自然。
+
+講到部署，就是 Pages 加 Workers 這對組合。Pages 負責靜態資源的 CDN 分發，Workers 是跑在 V8 isolates 上的邊緣運算,負責 API 跟 SSR。兩者在同一份設定檔裡管理、用同一個 token 部署。流程很乾淨：push 到 main,GitHub Actions 跑 build,再用 wrangler 部署。而且只要你推到非 main 的分支，它會自動生一個 Preview URL，合併前先確認效果，很方便。
+
+資料庫用 D1，就是 Cloudflare 跑在邊緣的 SQLite。它最大的好處是,在 Worker 裡直接查就好,沒有連線池、沒有 TCP 開銷、沒有跨服務的權限設定。目前幾張表分工很清楚:posts 放文章的元資料,doc_chunks 放切塊文字給 RAG 用,page_views 記瀏覽次數,search_logs 記搜尋關鍵字,settings 放全站設定。Migration 檔案用版本號前綴管理,本地跟遠端各跑一次指令就好。D1 的限制是單次查詢 25MB、資料庫總量 10GB,對部落格綽綽有餘,真的有大型二進位檔案,像音訊圖片,就丟去 R2。
+
+那為什麼不用 PlanetScale 或 Supabase?關鍵在延遲跟管理成本。外部資料庫意味著額外的連線管理、權限、費用,還有跨服務的延遲跳點。D1 在 Worker 裡是本地呼叫,延遲幾乎可以忽略。
+
+接下來是我覺得整套堆疊裡最有趣的部分:向量搜尋,用 Vectorize 加 Workers AI。文章部署後,同步腳本把每篇切成 chunks,用 bge-m3 模型生成 384 維的 embedding 存進 Vectorize。使用者搜尋的時候,流程是這樣:瀏覽器把 query 送到 Worker,Worker 先呼叫 bge-m3 把問題也轉成向量,拿這個向量去 Vectorize 做相似度搜尋、取最接近的五個 chunk,再回 D1 把這些 chunk 的原文撈出來,最後連同問題一起餵給 qwen-14b 串流生成答案,邊生成邊回傳給瀏覽器。整條 RAG 流程全在 Worker 裡,沒有外部 API 呼叫,也沒有 OpenAI 帳單。
+
+這裡有個值得講的決策:為什麼選 384 維,而不是看起來更高級的 1536 維?因為 Vectorize 的費用跟維度正相關,而 bge-m3 的 384 維對中文技術文章的語意搜尋,效果已經夠了。沒必要為了「數字看起來更高」去多付成本。
+
+物件儲存用 R2。它 API 相容 S3,但最大的賣點是 egress free,流量不收費,只收儲存跟操作費用。R2 在這裡存兩種東西。第一是 OG 分享圖,由 API route 動態生成,用 satori 配中文字體渲染,第一次算完就快取進 R2,之後直接回傳,不重複跑 satori,既能讓社群分享有正確預覽圖,又不用每次都重算。第二是 TTS 音訊,每篇文章都有對應的 wav 檔,批次生成後上傳,frontmatter 裡記下音訊網址,前端直接播。音訊這種大檔,搭配沒有流量費的 R2,特別划算。
+
+AI 模型全部走 Workers AI,這是 Cloudflare 的 serverless 推論平台,在 Worker 裡一行 env.AI.run 就能呼叫。四個模型各司其職:bge-m3 負責 embedding,qwen-14b 負責 RAG 回答串流,llama-3.1-8b 在 ingest 時抽 metadata,llama-3.1-70b 在爬蟲時生成中文摘要。好處是不用管 API key 輪替,也沒有外部服務的延遲跳點,整個 AI pipeline 跟基礎設施共用同一組憑證。對中文內容來說,qwen-14b 的理解跟生成品質,比同量級偏英文的模型好不少。不用 OpenAI 的理由也一樣:夠用,而且不用另外管帳單跟 rate limit。
+
+內容自動化靠兩個腳本。crawl 每天台灣時間早上十點透過 GitHub Actions 跑,爬九個 YouTube 頻道、生成中文摘要、自動 commit 推上去,完全不用手動。ingest 則是把對話或筆記丟進去,自動偵測並遮蔽 token、key、內部網址這些敏感資訊,再生成標題、標籤、摘要,輸出完整文章。這兩個腳本加上 Claude Code 的 post skill,讓每天的工程決策都能很低摩擦地變成文章。
+
+全文搜尋這塊還有 Pagefind 補位。它在 build 完之後掃 dist 目錄產生靜態索引,讓精確的關鍵字搜尋不需要後端,直接在瀏覽器跑。所以站上其實是兩套搜尋分工:RAG 處理開放性的問題,Pagefind 負責找精確的詞彙。開發工具的部分就比較常規,全用 TypeScript 配嚴格 schema、用 pnpm 管套件、三個 GitHub Actions workflow 分別負責部署、爬取跟修 Mermaid 圖。
+
+最後收個尾,三個核心要點。第一,整套架構的主軸是「單一生態系」,前端、部署、資料庫、向量搜尋、AI 推論、物件儲存全在 Cloudflare 內,省掉的不只是費用,更是跨服務的延遲跟管理複雜度。第二,工具選擇都是明確的取捨,選 Astro 是因為內容站不需要重前端框架,選 D1 是因為本地呼叫沒延遲,選 384 維是為了控制成本,每個決定背後都有理由,而不是追新。第三,內容生產這條 pipeline 是高度自動化的,從爬取到 ingest 到部署到搜尋,人要做的事被壓到最低,這才是讓一個個人部落格能持續產出的真正關鍵。

@@ -1,0 +1,19 @@
+這篇要聊的是怎麼把 GPU 跑在一台機器上，然後讓 Windows 上的 Codex 完全感覺不出來——它以為自己在呼叫本機服務，其實背後是一台遠端的 GPU 在幹活。整個關鍵，就是 Windows 內建的 portproxy，不用額外架反向代理，也不用跳板機。
+
+先講 GPU 那台機器，也就是 server 端。建議用 Docker Compose 來管理 Ollama。設定上有幾個重點：第一，要把模型資料的目錄掛載出來，讓模型不會每次重啟就消失，這裡有個常見的手滑，路徑後面別不小心黏到多餘的字，乾乾淨淨對到 Ollama 的資料夾就好。第二，如果你裝了 NVIDIA Container Toolkit，記得在設定裡指定 nvidia runtime，並且把可見的 GPU 設成全部，這樣 container 裡才看得到顯卡。第三，加個 healthcheck，讓 Docker 知道服務到底起來了沒。
+
+跑起來之後，你可以實際 run 一個模型確認 GPU 有在動，或者打一下 models 這個 API 看看模型清單回不回得來。最後一步很容易忘——server 的防火牆要把 11434 這個 port 開出來，不然外面連不進去。
+
+接著是 Windows 客戶端，也就是 Codex 這邊。設定的精神很單純：Codex 的 base url 一律指向 localhost，也就是本機的 11434。為什麼一定要連 localhost？因為這樣可以避開 Ollama adapter 那個 fallback 的 bug，也避免它把你填的遠端 IP 忽略掉，整體行為更可預期。至於連線怎麼飛到遠端 GPU，那是 portproxy 的事，對 Codex 來說完全透明。
+
+順帶一提，同一套架構也適用 Aider。一樣讓它指向 localhost 的 11434，差別只在 Aider 走的是 OpenAI 相容介面，所以 base url 後面要加上 v1 這個路徑，模型名稱也要用 ollama 斜線開頭的格式，告訴它走 Ollama provider。遠端那邊一行都不用改。
+
+好，重頭戲來了——portproxy 本身。你在 Windows 上用管理員權限開 PowerShell，下一條 netsh 的指令，新增一條 v4 對 v4 的轉發規則。意思就是：監聽本機的 127.0.0.1 的 11434，把進來的連線轉到 GPU server 的 IP 的 11434。文章裡用的範例 IP 是 192.168.15.235，你換成自己那台就好。
+
+設完之後用 show all 確認規則有掛上，你會看到一條 listen 在本機 11434、connect 到遠端 11434 的對應。然後在本機打一下 models 的 API，如果模型清單回得來，恭喜，轉發成功，Ollama 也活著。
+
+實務上會踩到的坑，大概這幾類。第一，Codex 連 localhost 沒反應，先檢查 Windows 的 IP Helper 服務有沒有開，因為 portproxy 就是靠它,服務沒跑規則就是死的；順便確認 11434 沒被別的程式占走。第二，規則明明加了卻沒生效，多半是 IPv6 在搗亂，必要時補一條 v6 對 v4 的規則，或確保應用程式是綁在 IPv4 上。第三，GPU 那邊沒回應，先在主機跟 container 裡各跑一次 nvidia-smi，確認顯卡真的看得到；如果要讓 Ollama 對外開放，可以把它綁在 0.0.0.0，再不行就翻 docker logs。第四，模型載不起來通常是 VRAM 不夠，那就換小一點的模型，或者拆成幾個小模型分流。
+
+整條鏈路串起來看就是：Windows 上的 Codex 跟 Aider 都打 localhost 的 11434，連到本機的 portproxy，portproxy 再把流量導到遠端那台跑在 Docker 裡的 Ollama。
+
+最後收個尾，這套做法其實在解三個很真實的問題。第一，GPU server 放在 Linux 上、用 Docker 化部署，最穩、最好維護。第二，Windows 的客戶端通常只認 localhost，靠 portproxy 你完全不用動 Codex 的設定，就能借用遠端 GPU。第三，省掉了額外架反向代理或跳板機的麻煩，延遲更低，運維也更簡單。記住這三點，這套架構你就拿得走了。

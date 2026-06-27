@@ -1,0 +1,39 @@
+想建一個技術部落格，或一個小型的 demo 平台，但又不想每次部署都跟複雜的後端環境搏鬥。今天就聊聊我怎麼用 Astro 加上 Cloudflare Workers，把整套東西變得超級輕量。中間踩到的坑，還有那些真正重要的細節，我都會講。
+
+先說，為什麼是這個組合。靜態網站的選擇其實不少，Vercel、Netlify、Railway，各有各的強項。但如果你的需求很明確，就是「輕量前端、加上一點點動態 API、要全球邊緣部署、而且維運成本幾乎是零」，那 Cloudflare 的整合度是目前最高的。
+
+它高在哪？邊緣執行，它用的是 Workers，也就是 V8 isolates；資料庫有內建的 D1，是 SQLite，還有 KV;甚至連向量資料庫 Vectorize 都是內建的。相對之下,Vercel 跟 Netlify 的資料庫跟向量庫都得另外外接。免費方案上,Workers 每天給你十萬次請求。最關鍵的是冷啟動,因為是 isolate,幾乎沒有 cold start,這點 Vercel 跟 Netlify 都還是會有。
+
+但天下沒有白吃的午餐。選 Cloudflare 的代價是,它的 runtime 是 Workers,不是完整的 Node.js。少數 npm 套件會不相容,而且 fs、path、child_process 這些 Node 內建模組,完全不存在。這是你進場之前,一定要先確認的事。
+
+架構上其實很乾淨。瀏覽器要靜態資源,JS、CSS、圖片這些,就走 Cloudflare Pages 的 CDN 快取分發;要 API 或 SSR 渲染的請求,就交給 Workers 處理。而 Workers 後面再接 D1、KV、R2,還有 Workers AI。兩個角色,一個管靜態、一個管動態,分工很清楚,互不干擾。
+
+接下來講怎麼從零開始,我挑幾個關鍵的點。
+
+初始化專案之後,重點在改 astro.config。adapter 設成 Cloudflare,mode 給它 directory,讓輸出對應 Pages Functions 的目錄格式。然後有一個東西絕對不能忘,就是 platformProxy,要把 enabled 設成 true。這是本地開發時模擬 Cloudflare 環境的關鍵。沒有它,你在本地拿 locals.runtime 會是 undefined,debug 會痛苦到懷疑人生。如果要做多語言,i18n 那邊設一下 defaultLocale 跟 locales 就好。
+
+再來是 wrangler.jsonc。所有 Cloudflare 服務的 binding,都在這個檔案集中管理。binding 就是你程式碼裡取用的名字,比如 env.DB、env.AI。D1、KV、R2、AI,每個服務在這裡宣告一次,給它一個 binding 名稱跟 resource ID。如果你想用部分 Node 內建,像 crypto、buffer、stream,要加上 nodejs_compat 這個 compatibility flag。但再強調一次,nodejs_compat 不包含 fs、path、child_process。
+
+在 API route 裡面用 bindings,建議先在 env.d.ts 宣告一個 Env interface,把 DB、CACHE、AI 這些型別寫清楚。這樣 IDE 的 autocomplete 才會正確提示。實際取用就是從 locals.runtime.env 解構出你要的 binding,然後 DB.prepare 下 SQL,Workers AI 就 AI.run 帶模型名稱,寫法都很一致。
+
+D1 資料庫的建立跟遷移,用 wrangler 指令。注意它分本地跟遠端,加 --local 跑本地、加 --remote 跑遠端,migration 檔放在 migrations 目錄,用數字前綴命名,比如 0001、0002,確保執行順序。
+
+部署的話,GitHub Actions 拉一個 workflow,push 到 main 就觸發,裝相依、build、然後用 cloudflare 的 wrangler-action 部署到 Pages。Token 跟 Account ID 放在 GitHub 的 Secrets 裡。Token 在 Cloudflare Dashboard 建立,最低要 Pages Edit 權限,如果 workflow 裡還要跑 migration,那就再加 D1 Edit。
+
+好,重頭戲,講幾個我真的踩過的坑。
+
+第一個,也是最容易讓人崩潰的:環境變數跟 bindings,是兩套完全不同的系統。現象是,你本地 dev 讀得到 secret,一部署上去,env.MY_SECRET 就變 undefined。原因是,wrangler.jsonc 裡的 bindings,跟 Cloudflare Dashboard 上的 Environment Variables,是兩個獨立的世界。解法是:secret,像 API token、密碼這種,放 Dashboard 的環境變數;資料庫、KV、R2 這種資源,放 wrangler.jsonc 的 bindings。本地開發要用的 secret,放在 .dev.vars,記得加進 gitignore。
+
+第二個,Node API 不相容。某個套件 import 進來,deploy 的時候報 Cannot find module fs。原因就是前面講的,Workers 不是 Node。解法是找有沒有 Workers 相容的版本,或開 nodejs_compat,但 fs 這種它救不了。
+
+第三個坑很陰險,叫 D1 Preview 環境的資料污染。現象是,你開個 PR,Preview 環境跑了測試,結果 production 的資料莫名其妙被改了。原因是,Pages 每個 branch 的 Preview 環境,預設指向 wrangler 裡同一個 database_id,也就是 production 的 D1。所以 Preview 寫東西,等於直接動到正式資料。解法是,在 Pages 專案設定裡,針對 Preview 環境,把 database_id 覆寫成一個獨立的 staging 資料庫。
+
+第四個,isolate 的無狀態性。你設了一個 module 層級的全域變數,第一次請求設好了,第二次請求又變回初始值。因為 V8 isolates 每次請求是獨立的執行環境,全域變數不會在請求之間留著,這跟傳統 Node server 完全不一樣。要跨請求共享的狀態,session、cache 那些,通通放 KV 或 D1,別靠全域變數。
+
+最後幫你把這集的重點收一下。
+
+第一,Cloudflare 最大的賣點就是整合。D1、KV、R2、Vectorize、Workers AI 全在同一個平台,你不用去管一堆服務的 credentials 跟 IAM,這是它最香的地方。
+
+第二,記住那兩個最容易翻車的設定:platformProxy 一定要開,不然本地 runtime 是 undefined;還有環境變數跟 bindings 是兩套系統,secret 放 Dashboard,資源放 wrangler。
+
+第三,部署上線前,務必把 Preview 環境的 D1 指到獨立的 staging 資料庫,不然你的測試會直接污染正式資料。把這幾點顧好,這套低摩擦的平台,就真的能讓你專心寫東西,而不是跟環境搏鬥。

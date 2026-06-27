@@ -8,6 +8,7 @@ description: "A complete hands-on guide to building a static frontend with Astro
 tldr: "The key to Astro + Cloudflare comes down to four things: enable the adapter's platformProxy, manage all bindings centrally in wrangler.jsonc, remember that env vars and bindings are two separate systems, and point your D1 Preview environment at a dedicated staging database."
 draft: false
 pinned: true
+audio_url: "/api/tts/r2/tts/tts_20260627_091812_582568.mp3"
 ---
 
 I wanted to build a technical blog or a small demo platform, but without wrestling with a complicated backend environment every time I deploy. This post records how I made everything lightweight using Astro + Cloudflare Workers, including the pitfalls I hit and the details that actually matter.

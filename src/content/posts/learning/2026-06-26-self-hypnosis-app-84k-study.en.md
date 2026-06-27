@@ -13,6 +13,7 @@ key_points:
   - "A huge sample and large effect size prove nothing without a control group — that's correlation, not causation"
   - "Single-item self-ratings buy engagement and sample size, but trade away measurement rigor and objectivity"
   - "Pre/post designs invite regression to the mean and expectation bias, inflating effects that never happened"
+audio_url: "/api/tts/r2/tts/tts_20260627_091409_618414.mp3"
 ---
 
 If you saw a headline — "84,000 users, an app significantly reduces stress, effect size 0.7" — what should your first reaction be?

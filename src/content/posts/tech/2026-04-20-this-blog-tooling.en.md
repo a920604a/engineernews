@@ -8,6 +8,7 @@ description: "A complete walkthrough of the Engineer News blog's tech stack: why
 tldr: "Astro handles static rendering and content management, Cloudflare Pages/Workers handle deployment and dynamic APIs, D1 provides lightweight data storage, Vectorize + Workers AI power RAG semantic search, and R2 stores OG images and TTS audio. The entire pipeline — from YouTube crawl to user search — runs inside the Cloudflare ecosystem."
 draft: false
 pinned: true
+audio_url: "/api/tts/r2/tts/tts_20260627_092232_484859.mp3"
 ---
 
 This post walks through the Engineer News tech stack: why each tool was chosen, how they fit together, and which choices were the result of tradeoffs.

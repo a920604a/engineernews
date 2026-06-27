@@ -1,0 +1,45 @@
+So what is this blog actually running on? That's the question I want to answer today — every tool in the stack, why I picked it, and where I had to make a tradeoff. And here's the punchline up front: from a YouTube video getting crawled, all the way to a reader typing a search query in their browser, the entire pipeline lives inside one ecosystem — Cloudflare. Let me walk you through how the pieces fit.
+
+Let's start at the front, with the framework: Astro.
+
+Astro is built around a content-first philosophy. By default, it ships pure static HTML and only sprinkles in JavaScript for the components that genuinely need to be interactive. They call that Island Architecture. And for a blog, that's exactly right — most pages are just text you read. There's no reason to ship a JavaScript bundle for that. Astro isn't React, it isn't Vue; it's a framework with content at the center.
+
+Articles are managed as Markdown, with a schema validating the frontmatter at build time. So if I typo a field name, it breaks on my machine, locally, instead of silently failing in CI later. Multilingual routing is baked in too — Traditional Chinese is the default with no URL prefix, and the English version lives under slash-en.
+
+Now, why Astro over Next.js? Next has the more mature ecosystem, no argument there. But for a pure content site, Next means a bigger bundle and more configuration complexity. With Astro running in server mode on the Cloudflare adapter, the dynamic stuff — API routes, server rendering — goes through Workers, and the static stuff is served straight off the Pages CDN. A clean division of labor.
+
+Which brings us to deployment: Cloudflare Pages and Workers, working as a pair. Pages is the CDN — it hosts all the static assets and, on every git push, automatically deploys and hands you a preview URL. Workers is the edge compute side, running on V8 isolates, handling the dynamic requests. The flow is simple: I push to main, GitHub Actions kicks in, runs the build, and deploys. And here's a detail I love — every push to a non-main branch spins up its own preview URL. So before I merge anything, I can actually look at the result live.
+
+Next layer down: the database, D1. This is Cloudflare's SQLite-compatible database running at the edge. And the magic here is that inside a Worker, you just query it directly. No connection pool. No TCP overhead. No cross-service permissions to wire up. It's essentially a local call.
+
+The tables are about what you'd expect: one for article metadata, one for the text chunks used in search, one for view counts per article, one logging search keywords, and one for site-wide settings. Schema changes are handled through migration files, prefixed with version numbers so they apply in order.
+
+Does D1 have limits? Sure — there's a cap of twenty-five megabytes per query and ten gigabytes on the whole database. For a blog, that's enormous headroom. And the big binary stuff — audio, images — never goes in the database anyway. That goes to object storage.
+
+So why not reach for PlanetScale or Supabase? Because an external database drags in connection management, permissions, extra cost, and cross-service latency. D1, being a local call inside Workers, makes that latency basically disappear.
+
+Okay — now the part I find most interesting in the whole stack: vector search. This is Vectorize plus Workers AI.
+
+Here's how it works. After an article deploys, a sync script chops it into chunks, and for each chunk it generates an embedding — a three-hundred-eighty-four-dimensional vector — using a model called bge-m3. Those vectors get stored in Vectorize.
+
+Then a user searches. Their query gets turned into a vector with the same model. We ask Vectorize for the five most similar chunks. We pull the actual text of those chunks out of the database. And then we hand the query plus that context to a language model — qwen-14b — which streams back an answer. That's retrieval-augmented generation, and the beautiful thing is the entire loop runs inside Workers. No external API calls. No OpenAI bill. And qwen-14b is genuinely good enough for Traditional Chinese technical Q&A.
+
+One choice worth explaining: why three-hundred-eighty-four dimensions instead of the fifteen-thirty-six you see elsewhere? Because Vectorize costs scale with dimensionality. And three-eighty-four is already plenty for semantic search over Chinese technical writing. There's no reason to inflate your costs just to look like you're working in higher dimensions.
+
+Next up: object storage, R2. It's Cloudflare's S3-compatible storage, but with one killer difference — there are no bandwidth charges. Egress is free. It stores two things for this blog.
+
+First, the social-share preview images. An API route generates them on demand using a rendering library and a Chinese font, then caches the result to R2. So the first request does the work; every request after that just returns the cached image. Your shared links get a proper preview without recomputing anything.
+
+Second, the text-to-speech audio. Every article has a corresponding audio file, generated in a batch and uploaded, with the audio URL recorded in the article's frontmatter so the frontend can just play it. And because R2 doesn't charge for bandwidth — only storage and operations — it's incredibly friendly for big files like audio.
+
+Now let's talk about the AI models themselves, all served through Workers AI. This is Cloudflare's inference platform, giving you serverless access to a bunch of open-source models, called directly from a Worker. There are four in play here. Bge-m3 does the embeddings. Qwen-14b writes the search answers, streaming. A smaller llama model, the eight-billion one, extracts metadata when I ingest a new article. And a larger llama, the seventy-billion one, generates the Chinese summaries when the crawler runs.
+
+The win is the same theme as everywhere else in this stack: everything runs through Workers AI, so there are no API keys to rotate, no external latency hops. And for Chinese content, qwen-14b's comprehension and generation quality beats comparably-sized English-leaning models by a wide margin. Why not OpenAI? Because Workers AI is good enough here, and the whole AI pipeline shares the same credentials as the infrastructure. No separate billing, no separate rate limits.
+
+That covers serving. Let me close out with how content actually gets made — the automation. There are two scripts. The crawler runs daily, ten in the morning Taiwan time, sweeping nine YouTube channels, generating Traditional Chinese summaries with that big llama model, and committing and pushing entirely on its own. No hands. The other script is the ingester: I feed it a conversation or a notes file, it automatically detects and masks sensitive stuff — tokens, keys, internal URLs — then generates the title, tags, summary, and description, and spits out a finished Markdown article.
+
+There's also a second kind of search worth mentioning. Beyond the RAG vector search, the site uses Pagefind for full-text indexing. After the build finishes, Pagefind scans the output directory and builds an index, so exact keyword search needs no backend at all — it runs entirely in the browser. The way I think about the division: RAG answers open-ended questions, Pagefind finds exact terms.
+
+And underneath it all, the dev tooling is boring in the best way — TypeScript everywhere with a strict schema to catch problems at build time, pnpm for speed and disk savings, and three GitHub Actions workflows handling deploy, the scheduled crawl, and the occasional diagram repair.
+
+So if you take three things away from this, here they are. One: the whole point of this stack is that everything lives in one ecosystem — database, vectors, storage, AI inference — which means almost no cross-service latency and one set of credentials instead of five. Two: pick tools that match the actual workload. A content site doesn't need a heavy JavaScript framework, and a blog's search doesn't need fifteen-hundred-dimensional vectors — matching the tool to the job is where the real savings come from. And three: automation closes the loop. From a YouTube video or a quick note, all the way to a published, searchable, narrated article — the friction is low enough that a day's engineering decisions can just become writing. And that, really, is the whole idea.

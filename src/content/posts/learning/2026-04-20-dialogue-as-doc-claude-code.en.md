@@ -11,6 +11,7 @@ description: "How to turn engineering conversations and debugging sessions into 
 tldr: "Treat a conversation as raw material for an article: with a structured prompt and a template, Claude Code turns a debugging thread into a publishable technical post."
 type: "case-study"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260627_054516_715920.mp3"
 ---
 
 **Claude Code** is Anthropic's CLI tool that lets developers collaborate with Claude on code and docs straight from the terminal. It supports a "skill" extension point — custom workflow scripts. This site's `post` skill turns conversation or notes into structured Markdown articles; under the hood, the `ingest.ts` script handles secret redaction, calls an LLM to extract metadata, and finally writes an article file with complete frontmatter.
