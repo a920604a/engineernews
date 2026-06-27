@@ -65,28 +65,29 @@ function runSql(statements: string[]) {
 }
 
 function querySql<T = any>(sql: string): T[] {
-  const tmp = path.join(process.cwd(), `.tmp_delq_${Date.now()}.sql`);
-  fs.writeFileSync(tmp, sql);
+  // 注意：必須用 --command（不是 --file）。在 wrangler 4.x，--file 跑 SELECT 時
+  // --json 回傳的是摘要統計而非實際資料列，會導致查不到 chunk id。
   try {
     const out = execSync(
-      `wrangler d1 execute ${DB_NAME} ${remoteFlag} --file=${tmp} --yes --json`,
+      `wrangler d1 execute ${DB_NAME} ${remoteFlag} --command ${JSON.stringify(sql)} --yes --json`,
       { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'inherit'] }
     );
-    return JSON.parse(out)?.[0]?.results ?? [];
+    const jsonStart = out.indexOf('[');
+    if (jsonStart < 0) return [];
+    return JSON.parse(out.slice(jsonStart))?.[0]?.results ?? [];
   } catch {
     return [];
-  } finally {
-    fs.unlinkSync(tmp);
   }
 }
 
-function deleteVectors(ids: string[], batchSize = 500) {
+function deleteVectors(ids: string[], batchSize = 50) {
+  // wrangler 4.x：vectorize delete-vectors 沒有 --force 旗標，且單次 id 數有上限（保守取 50）。
   if (!isProd || ids.length === 0) return;
   for (let i = 0; i < ids.length; i += batchSize) {
     const chunk = ids.slice(i, i + batchSize);
     try {
       execSync(
-        `wrangler vectorize delete-vectors ${VECTOR_INDEX} --ids ${chunk.join(' ')} --force`,
+        `wrangler vectorize delete-vectors ${VECTOR_INDEX} --ids ${chunk.join(' ')}`,
         { stdio: 'inherit' }
       );
     } catch (e) {
