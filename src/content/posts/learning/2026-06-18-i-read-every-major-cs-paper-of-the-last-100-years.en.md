@@ -8,8 +8,8 @@ tldr: "Fireship walks through 10 landmark CS papers from Turing to GPT-3, showin
 description: "10 papers across 100 years of CS history: Turing, Shannon, Perceptron, Backprop, PageRank, AlexNet, Transformer, GPT-3 — and what connects them"
 type: case-study
 original_url: "https://www.youtube.com/watch?v=ML3q7Ok4hJg"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260620_083233_168950.mp3"
+draft: false
+audio_url: "/api/tts/r2/tts/tts_20260710_051813_032591.mp3"
 ---
 
 Fireship's "I read every major CS paper of the last 100 years" picks 10 papers and traces how the foundational ideas of computer science connect across a century. It's not academic — it's a practitioner's shortcut to understanding where the tools you use every day actually came from.

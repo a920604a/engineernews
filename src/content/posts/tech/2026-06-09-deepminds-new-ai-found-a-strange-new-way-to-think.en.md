@@ -8,8 +8,7 @@ tldr: "DeepMind's AlphaProof combines a language model with AlphaZero-style rein
 description: "How AlphaProof's neurosymbolic architecture reached silver-medal level at IMO 2024, and what it means for AI reasoning beyond math."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=Dkqzqw8rxXI"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_201902_158049.mp3"
+draft: false
 ---
 
 In July 2024, DeepMind announced that AlphaProof had solved 4 of 6 problems from that year's International Mathematical Olympiad (IMO) — including the hardest problem, which only 5 human competitors solved. This wasn't another LLM benchmark improvement. It was an architectural shift.

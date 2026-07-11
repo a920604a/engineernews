@@ -1,78 +1,81 @@
 ---
-title: "被遺忘的開發者如何拯救 JavaScript：Douglas Crockford 與 JSON 的故事"
-date: 2026-05-31T08:57:39.266Z
-category: tech
-tags: ["javascript", "json", "web", "history", "open-source"]
-lang: zh-TW
-tldr: "Douglas Crockford 不是創造 JavaScript 的人，但他可能是讓 JavaScript 從一個被嘲笑的腳本語言變成現代 web 基礎的最關鍵貢獻者：他發現了 JSON、創造了 JSLint、寫了《JavaScript: The Good Parts》——一本讓開發者理解 JavaScript 其實有好的那一面的書。"
-description: "Douglas Crockford 如何透過 JSON 規範、JSLint 和《JavaScript: The Good Parts》改變了 JavaScript 的命運：從一個被專業開發者嘲笑的玩具語言，到現代 web 開發的核心技術。"
-type: explainer
+title: "被遺忘的開發者如何拯救 JavaScript：Jeremy Ashkenas、Underscore.js 與 CoffeeScript"
+date: "2026-05-31T08:57:39.266Z"
+category: "tech"
+tags: ["javascript","coffeescript","underscore-js","web","history","open-source"]
+type: "explainer"
 original_url: "https://www.youtube.com/watch?v=JfPWbttemYE"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_200504_126658.mp3"
+draft: false
+tldr: "2009 年的 JavaScript 沒有標準函式庫、沒有模組、沒有類別，每個瀏覽器行為還不一樣。Jeremy Ashkenas 用 Underscore.js 補齊工具函式、再用 CoffeeScript 直接繞過語言本身的爛設計，成為讓 JavaScript 被認真對待的關鍵人物之一。"
+description: "從 Underscore.js 到 CoffeeScript：Jeremy Ashkenas 如何在 2009 年前後，用兩個專案改變開發者看待 JavaScript 的方式。"
+key_points:
+  - "Underscore.js 提供約 60 個處理陣列與物件的工具函式，補上當時 IE 缺少的 map/reduce/forEach"
+  - "CoffeeScript 編譯成 JavaScript，讓開發者不必等標準委員會或瀏覽器廠商就能繞過語言的爛設計"
+  - "CoffeeScript 在 Rails 3.1（2011）成為預設前端預處理器，GitHub、Dropbox 等早期新創也採用"
 ---
 
-Brendan Eich 在 1995 年 10 天內創造了 JavaScript，這個故事大家都知道。但有一個更少被提及的故事：在 JavaScript 誕生後的最初十年，它基本上被嚴肅的開發者視為一個玩具。
+2009 年，JavaScript 幾乎是所有工程師心照不宣討厭的語言。
 
-改變這個局面的，不是語言本身的升級，而是一個人的作品。
+它由 Brendan Eich 在 10 天內設計出來，這件事本身已經成了業界笑話——用過的人常會懷疑他第二天之後到底在幹嘛。更糟的是，當時每個瀏覽器對它的解讀都不一樣，沒有標準函式庫、沒有模組、也沒有類別。如果你的主要工作就是寫 JavaScript，在那個年代甚至會被當成上不了檯面的「script kiddie」。
 
-## TL;DR
+但接下來十年，情況徹底反轉：JavaScript 從一個沒人想直接碰的語言，變成世界上數一數二熱門的程式語言；寫 JavaScript 的人，也從被看不起的角色，變成被認真對待的工程師。
 
-Douglas Crockford 是 Yahoo! 的架構師，他做了三件讓 JavaScript 起死回生的事：(1) 在 2001 年「發現」了 JSON 格式並正式化了它，讓 web API 從 XML 的噩夢中解脫出來；(2) 創造了 JSLint，第一個讓 JavaScript 有代碼品質標準的工具；(3) 在 2008 年出版了《JavaScript: The Good Parts》，展示了在那些糟糕部分之下，JavaScript 其實有一個優雅的核心。
+這場轉變有很多原因。而其中一個被嚴重低估、甚至幾乎被時間遺忘的推手，是同一個人——**Jeremy Ashkenas**。
 
-## 是什麼
+## 一個被逼著寫 JavaScript 的 Ruby 開發者
 
-Douglas Crockford 是一位從 1980 年代就開始寫軟體的工程師，2000 年代在 Yahoo! 擔任 JavaScript Architect。他不是 JavaScript 的創造者，但他是讓 JavaScript 被嚴肅對待的人。
+2009 年，Jeremy Ashkenas 在 DocumentCloud 工作，負責一個大量倚賴 client-side JavaScript 的應用程式——在當時，這種「重前端」的專案其實還很少見。
 
-在 2000 年代初期，JavaScript 的聲譽很差。它充斥著設計缺陷：`==` 和 `===` 的混亂、`this` 的不可預測行為、全域命名空間汙染、缺少模組系統。很多後端開發者把它當成「初學者語言」，能不用就不用。
+他的背景是 Ruby，卻被迫每天寫 JavaScript。多數人在這種處境下會選擇忍耐，得了一種「JavaScript 斯德哥爾摩症候群」。但 Ashkenas 不一樣——他真的相信自己能修好它，然後也真的動手去做。
 
-## 為什麼重要
+## 第一步：Underscore.js，補上不存在的標準函式庫
 
-### JSON 的誕生
+他要解決的第一個問題，是 JavaScript 根本沒有標準函式庫。
 
-2001 年，Crockford 需要一個讓瀏覽器和伺服器能夠互相傳遞資料的方式。當時的標準做法是 XML + SOAP，但那個組合的實作成本和解析複雜度讓他覺得荒謬。
+這一點在 2009 年很關鍵。當時 Firefox 已經支援了一些陣列輔助方法，像是 `map`、`reduce`、`forEach`；但 Internet Explorer 還沒有。也就是說，除非你自己寫 polyfill，否則根本不能安心使用這些方法。
 
-他注意到 JavaScript 的物件字面量語法（`{key: value}`）本身就是一個完美的資料格式——易讀、輕量、而且每個 JavaScript 環境都能原生解析。他申請了 `json.org` 域名，寫下了這個格式的完整規範，然後推廣它。
+為了解決這件事，Ashkenas 發布了 **Underscore.js**——一個「工具腰帶」型的函式庫，收錄了大約 60 個輔助函式，讓處理陣列與物件變得容易許多。
 
-2006 年，JSON 正式成為 IETF RFC 4627 標準。
+以今天的標準看，這聽起來一點都不刺激。但在那個開發網頁極其痛苦的年代，Underscore 實實在在幫了很多人。它後來紅到一個程度：許多功能被直接吸收進 JavaScript 語言本身——最終反而讓 Underscore 自己變得多餘。這其實是開源工具最好的結局之一。
 
-今天，JSON 是幾乎所有 web API 的預設資料格式。你每天都在使用它，不管是 RESTful API、設定檔還是前後端通訊。Crockford 沒有發明 JSON 的語法（它就是 JavaScript 物件字面量），但他正式化了它，並讓整個產業接受了它。
+## 第二步：CoffeeScript，乾脆換一種語言
 
-### JSLint：讓 JavaScript 有了品質標準
+Underscore 只是 Ashkenas 的第一發。
 
-2002 年，Crockford 發布了 JSLint——一個靜態分析工具，掃描 JavaScript 程式碼並標出可能的錯誤和不良實踐。
+他接著想：與其用一個新函式庫去「修補」JavaScript，不如直接做一個全新的語言，給自己更大的自由度。於是有了 **CoffeeScript**——一個會編譯成 JavaScript 的語言。
 
-他的描述很有名：「JSLint 會傷害你的感情。」因為它非常嚴格，幾乎任何「隨手寫」的 JavaScript 都會被它挑出一堆問題。
+要理解這個決定，必須記得 2009 年的 JavaScript 有多不一樣：
 
-但這正是它的價值所在：在 JSLint 之前，JavaScript 沒有任何靜態分析工具，沒有代碼風格標準，整個生態系是「能跑就好」的狀態。JSLint 是第一個強制說「JavaScript 可以有品質標準」的工具。今天的 ESLint 是 JSLint 的精神後繼者。
+- **沒有 class。** 繼承得靠一種手動模式——把屬性掛到每個函式都能存取的隱藏物件 `prototype` 上。
+- **變數宣告的作用域規則很詭異。** 宣告會被 hoist 到函式頂端，不管你有沒有意識到。
+- **相等運算子（equality）與嚴格相等運算子（identity）的差別沒人真的搞懂或在意。** 於是到處都在發生你沒察覺的 type coercion。
+- **連定義一個簡單函式，都得每次乖乖打出 `function` 這個字。** 程式碼因此又臭又長。
 
-### 《JavaScript: The Good Parts》：一本改變認知的書
+透過「編譯成 JavaScript」這個做法，Ashkenas 得以繞過整條漫長的路徑：他不必等標準委員會，也不必等各家瀏覽器廠商跟上，就能自己把語言修好。更棒的是，他可以把 JavaScript 那些糟糕的部分，留在 Brendan Eich 當年那 10 天的房間裡，不帶出來。
 
-2008 年，Crockford 出版了一本只有 176 頁的書，標題是《JavaScript: The Good Parts》。
+```mermaid
+flowchart LR
+    A[你寫的 CoffeeScript] --> B[編譯器]
+    B --> C[產出的 JavaScript]
+    C --> D[瀏覽器執行]
+```
 
-這本書的核心論點，用 Crockford 自己的話說，是「21 世紀最重要的發現之一」——JavaScript 裡面其實有一個設計良好的語言，但它被大量糟糕的設計決定包圍著。如果你選擇只使用那些「好的部分」（原型繼承、閉包、函式式特性），JavaScript 是一個優雅的語言。
+這個思路的核心，是「不與現況正面對抗，而是在它之上疊一層」——你保留 JavaScript 的執行環境與相容性，只換掉開發者實際要寫的那一層語法。
 
-這個觀點在當時是真正的異端——大多數人的看法是「JavaScript 整個語言都很糟糕」。Crockford 說不，問題是你用錯了它。
+## CoffeeScript 曾經無所不在
 
-這本書改變了一整個世代開發者看待 JavaScript 的方式，也是 JavaScript 被嚴肅對待的文化起點。
+有一段時間，CoffeeScript 非常火。
 
-## 跟 Brendan Eich 的差別
+Rails 之父 **DHH** 幾乎是一夜之間就採用了它。2011 年，CoffeeScript 作為預設的 JavaScript 預處理器，隨 **Rails 3.1** 一起出貨——這意味著當時全世界每一個新建立的 Rails 專案，前端預設都是用 CoffeeScript 寫的。
 
-Brendan Eich 創造了 JavaScript，這無可爭議。但他的貢獻是在語言存在的前 10 年被大量負面評價所掩蓋的。
-
-Crockford 的貢獻是在那個低谷期，用工具和論述重新定義了「什麼是好的 JavaScript」，為後來 Node.js、V8 引擎、npm 生態系的爆發打好了文化基礎。
-
-如果沒有 Crockford 的 JSON 規範，web API 現在可能還在用 XML。如果沒有 JSLint 和《The Good Parts》，JavaScript 可能要等更久才能被後端開發者嚴肅對待。
+GitHub、Dropbox，以及一長串 2010 年代初期的新創公司，也都採用了它。有那麼幾年，它幾乎是預設的選擇。
 
 ## 小結
 
-Douglas Crockford 不在 JavaScript 的起源故事裡，但他在 JavaScript 的救贖故事裡。
+JavaScript 的翻身，從來不是靠某一次語言層級的官方升級一步到位。它是一群人在最低谷時，用工具、用新語言、用一套「這東西值得認真對待」的態度慢慢累積出來的。
 
-這個故事的另一層意義是：有時候語言或技術的成功不取決於它的原始設計，而取決於有沒有人花時間整理它的使用方式、建立它的最佳實踐、並且說出「它值得被認真對待」。
+Jeremy Ashkenas 不在 JavaScript 的起源故事裡，但他在它的救贖故事裡。Underscore.js 幫大家撐過了沒有標準函式庫的年代，並把好用的模式一路推進到語言本身；CoffeeScript 則示範了一件更重要的事——當現有工具爛到不行時，你不一定要坐等別人修，你可以自己在上面疊一層，先把日子過好。
 
 ## 參考資料
 
-- [Douglas Crockford - Wikipedia](https://en.wikipedia.org/wiki/Douglas_Crockford)
-- [Big Thinkers: Douglas Crockford – The Man Behind JSON and JSLint](https://build5nines.com/big-thinkers-douglas-crockford-the-man-behind-json-and-jslint/)
-- [When Was JSON Invented? Complete History & Timeline](https://www.merge-json-files.com/blog/when-json-was-invented-and-who-invented-it)
 - [The forgotten developer who saved JavaScript...](https://www.youtube.com/watch?v=JfPWbttemYE)

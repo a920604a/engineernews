@@ -1,67 +1,43 @@
-Four MIT friends started a company in 2022. Two years later, they crossed five hundred million dollars in annual recurring revenue. That's Cursor — and the engineering decisions behind that trajectory are worth understanding.
+Cursor is the fastest-growing AI code editor on the planet right now. It's built by four friends — Sualeh Asif, Arvid Lunnemark, Aman Sanger, and Michael Truell — who met while studying at MIT. They founded a company called Anysphere back in 2022, and here's the number that made everyone pay attention: two years after launch, Cursor crossed five hundred million dollars in annual revenue. That's very likely the fastest any developer tools company has ever hit that milestone.
 
-The company is called Anysphere. The four founders — Sualeh Asif, Arvid Lunnemark, Aman Sanger, and Michael Truell — didn't set out to build better autocomplete. They set out to change the fundamental act of programming. That framing matters, because it explains every major technical decision they made.
+Now, the team has been unusually open about the engineering behind it — folks like Pragmatic Engineer and ByteByteGo have gone deep on this. So today I want to distill the lessons that actually transfer to your own work. And the theme running through all of them is the same: it's not about which model they picked. It's about the clarity of their tradeoffs.
 
-Let's start with the biggest one.
+Let's start with the decision that made everything else possible: forking VSCode.
 
----
+When Cursor got started, they had a fork in the road. They could build a VSCode extension — the normal, sane, low-risk path — or they could fork the entire editor and own the whole thing. They chose to fork. And their reasoning is really clean.
 
-When you build an AI code editor, you have two obvious options. Build a VS Code extension, or fork VS Code itself. Extensions are faster to ship, easier to maintain, and you get the full VS Code ecosystem for free. So why did Cursor choose to fork?
+The problem with the extension route is limits. Extensions live inside a sandbox. You can't reach in and redesign how text selection works. You can't insert truly inline ghost text the way you want. You can't change what happens when a user switches files. The editor gives you a fixed set of hooks, and whatever's outside those hooks is simply off the table. So if your whole product idea is to make the editor AI-native down to its bones, an extension caps how far you can go.
 
-Because extensions can't go deep enough. The VS Code extension API gives you a defined surface area — you can add commands, show suggestions, hook into some events. But you can't redesign how ghost text appears inline with the cursor. You can't change the semantics of file switching. You can't rearchitect selection mechanics to feel AI-native. The ceiling on what you can make truly intelligent is baked into the extension model.
+But — and this is the honest part — building an editor from scratch is brutal. A stable code editor quietly solves thousands of hard problems. Unicode handling. Syntax highlighting. Talking to language servers. Rendering fonts correctly across Mac, Windows, and Linux. If you rebuild all of that yourself, you'll burn years before you've written a single line of anything AI-related.
 
-Building from scratch wasn't the answer either. A stable code editor is thousands of hard, boring, solved problems — Unicode edge cases, syntax highlighting for dozens of languages, LSP integration, font rendering across operating systems. Rebuilding that from zero would have burned years before any AI differentiation was even possible.
+So forking was the middle path. Their conclusion was basically: our value is not in building a stable editor — that's a solved problem — our value is in changing how developers actually program. Forking lets you stand on top of VSCode's stability and pour every ounce of your engineering energy into the AI layer.
 
-So Cursor's conclusion was sharp: *their* value isn't in building a stable editor. It's in changing how developers program. Fork VSCode, inherit all the stability, and point every engineering decision at AI integration. That's how you control the full latency stack. That's how you ship things no extension could ever ship.
+And that phrase — "changing how developers program" — is worth sitting with, because it's the real design philosophy. Cursor isn't trying to be fancier autocomplete. It's trying to redefine the relationship between an engineer and their code. You describe intent; the AI fills in the implementation details. You set the direction and you verify the result; the AI iterates. And context stops being just your chat history — it becomes a tool you actively manage.
 
----
+Okay, let's talk about the feature everyone recognizes: Tab prediction. That's the ghost text that appears as you type, guessing your next edit. And the engineering story here is almost entirely about one thing — latency.
 
-The feature most people associate with Cursor is Tab prediction — that ghost text that finishes your line before you've typed it. The engineering challenge here is almost entirely about time.
+Here's the requirement. The prediction has to land in tens of milliseconds. Not hundreds — tens. Because the moment that ghost text shows up with any lag you can feel, it breaks your typing rhythm. It creates this little cognitive stutter where you're waiting on the tool instead of flowing through your code. So speed here isn't a nice-to-have. It's the whole experience.
 
-Prediction has to complete in *tens* of milliseconds. Not hundreds. Tens. Ghost text that appears with any perceptible delay doesn't feel like assistance — it feels like interruption. It breaks your typing rhythm, introduces cognitive friction, and you start ignoring it. The feature dies in the user's perception even if the prediction quality is excellent.
+And that creates a genuine tension, because there's a tradeoff between how much context you send and how good the prediction is. Send the model more of your surrounding code, and the suggestion gets smarter — but gathering and transmitting all that context takes time. Send too little, and you get fast but irrelevant garbage. So this becomes a dial they're constantly tuning: enough context to be useful, never so much that latency blows the budget.
 
-This creates a real tradeoff. Richer context sent to the model produces better predictions. But retrieving more context and transmitting it takes time. So the question is constantly: how much context can we grab without blowing the latency budget?
+Picture the actual flow. You type a character. Cursor grabs your local context and checks its latency budget — basically asking, "how much time do I have right now?" If there's room, it sends a richer context; if things are tight, it sends a stripped-down version. Either way, that goes to a small model trained specifically for Tab prediction — not some giant general-purpose model, but a dedicated one tuned for the sweet spot between accuracy and raw inference speed. The ghost text renders. And then one of two things happens: you hit Tab and the code drops in, or you just keep typing and the prediction quietly vanishes. That whole loop has to feel instant.
 
-Too little context and the suggestions are irrelevant. Too much and the experience breaks. Cursor's answer was to train a dedicated small model specifically for Tab prediction — not call a general-purpose large model, but train something purpose-built for the accuracy-versus-speed balance that inline completion demands. The model size, the context window, the inference setup — all of it optimized for that one job.
+Now for the most complex piece of the puzzle: Agent Mode. This used to be called Composer, and it's the part that can go off and execute multi-step tasks for you — searching, reading files, running commands. The production lessons here are the juiciest.
 
----
+Lesson number one, and this is a big one: tool calls have to be trained into the model, not just prompted into it. Early on, the team tried the obvious thing — writing prompts that explain to the model how to use its tools. And it kind of worked for short tasks. But for long-running work, prompting alone just wasn't reliable enough. Think about an operation like search-and-replace: one small mistake and the whole edit is broken. The model needs to have genuinely internalized when to reach for a tool and how to use it. So the fix was training on trajectory data — showing the model, over and over, the correct sequence of tool calls for all kinds of coding situations, until that behavior was baked in rather than bolted on.
 
-Now let's talk about Agent Mode, because that's where the most interesting production lessons came from.
+Lesson number two: pipelines have a ceiling. Early Cursor ran a fixed sequence — analyze, then plan, then execute, then verify. Clean, predictable, and totally fine for simple tasks. But the moment a task needed the strategy to shift mid-flight, that rigid pipeline hit a wall. And the takeaway is subtle: it's not that pipelines are bad. It's that knowing when you've hit the ceiling matters more than trying to pick the perfect architecture on day one.
 
-Agent Mode is Cursor's ability to execute multi-step coding tasks — think "refactor this module" or "fix this bug across multiple files." Early in development, the team tried to teach models how to call tools — things like searching the codebase, reading a file, running a terminal command — purely through prompting. Write good enough instructions and the model figures it out.
+Lesson number three ties everything back together: speed is a product feature, not just a performance metric. Not every step needs the biggest, smartest frontier model. So Cursor routes. Simple steps go to a small, fast model with low latency. Complex planning goes to a large, accurate model. By sending all the little stuff to fast models, Cursor's overall responsiveness became an actual competitive advantage — something users feel — rather than a number in a dashboard.
 
-The finding was uncomfortable: prompting alone isn't reliable enough for long-running tasks. When you're doing a search-and-replace operation across a codebase, a small mistake in how the model invokes that tool doesn't just produce a bad result — it breaks the edit entirely. The model needs to have *internalized* when and how to use tools, not just be instructed in the moment.
+So how does this stack up against the alternatives? Compared to GitHub Copilot and Cline — that's the VS Code extension — the biggest difference is architecture. Cursor is a full fork; the other two are extensions living inside VS Code. On completions, Cursor runs its own custom-trained model, Copilot leans on the GPT-4 family, and Cline depends on whatever external API you point it at. All three have some form of agent mode now, but Cursor's is built in-house and native. And the deepest split is customization: because Cursor owns the whole editor, it can change things at the UI level that an extension simply cannot reach. Copilot and Cline are both bounded by the API surface they're given.
 
-The solution was training on trajectory data — showing the model correct sequences of tool calls across many different coding situations. The behavior gets baked in, not bolted on.
+So when is Cursor the right call, and when is it not? It fits beautifully if you want deep AI integration as your everyday environment, if you need an agent to run multi-step tasks, and if you're latency-sensitive enough that you want Tab prediction to feel instant. But it might not be your tool if you depend heavily on a specific VS Code extension ecosystem — some extensions behave differently on the fork — or if you're in an enterprise with strict "code never leaves the device" policies, in which case you'll want to carefully check their privacy mode. And honestly, if all you need is basic autocomplete with no agent, it might be more than you need.
 
-The other lesson from Agent Mode was about pipeline architecture. Early Cursor used a fixed sequence: analyze the task, make a plan, execute, verify. Clean and predictable. It worked well for simple tasks. But complex tasks — the ones that require adjusting strategy mid-execution — hit a ceiling. A rigid pipeline can't adapt when the situation on the ground changes.
+Let me leave you with the three things that really stick.
 
-The lesson isn't that pipelines are bad. The lesson is: pipelines hit ceilings, and knowing when you've hit one matters more than picking the perfect architecture upfront. Stay honest about what's breaking and be willing to change the approach.
+First: user experience drove architecture, not the other way around. They forked the editor specifically so they could control latency — the product requirement came first, and the engineering decision followed from it.
 
----
+Second: speed is a feature you can ship. Routing steps by complexity — fast models for simple work, big models for hard thinking — turned responsiveness into something users actively love.
 
-One more engineering principle that runs through all of this: speed is a product feature, not a performance metric.
-
-Not every step in a multi-step agent task needs the biggest, most capable frontier model. Some steps are complex planning decisions — those need the large model. Some steps are simple, well-defined operations — those can use a smaller, faster model. Cursor built a routing layer to make this distinction automatically.
-
-The result is that Cursor *feels* fast in a way that became a competitive differentiator. Users don't consciously notice the routing — they just notice that the tool responds quickly. And responsiveness is trust-building. Every interaction that completes quickly without errors is a deposit into the user's confidence in the tool.
-
-Which brings us to the one metric that ultimately matters.
-
----
-
-You can benchmark models. You can measure latency in milliseconds. You can track accuracy on code completion evals. But the terminal signal is simpler: do users keep trusting the tool?
-
-One bad agent edit that corrupts a file, one suggestion that confidently introduces a bug, one experience where the AI wasted ten minutes of your time — those are withdrawals from the trust account. And the trust account is what you're actually building.
-
-The reason Cursor went from zero to five hundred million in annual revenue in two years wasn't just good models. It was a deep understanding of how engineers actually write code, and a relentless focus on making AI feel like a reliable collaborator rather than an impressive but risky experiment.
-
----
-
-Three things worth taking away from all of this:
-
-First, UX requirements should come before architecture choices. Cursor needed to control latency to build the experience they wanted, so they forked. The fork wasn't about engineering purity — it was about making the product possible.
-
-Second, route by complexity. Not every step needs the heaviest tool. Matching model size to task complexity is how you make speed a feature, not a cost.
-
-And third, the only benchmark that survives contact with production is user retention. Offline evals are useful signals. Continued trust is the real evaluation.
+And third, the one that matters most: user trust is the only terminal metric. Offline benchmarks are useful signals, sure, but the real evaluation is whether people keep coming back. One bad agent edit — one moment where the tool quietly breaks your code — can end the relationship for good. Zero to five hundred million in two years wasn't just good models. It was a deep understanding of how engineers actually write code, and what it takes to make AI feel like a collaborator you can trust, instead of a gamble you're taking.

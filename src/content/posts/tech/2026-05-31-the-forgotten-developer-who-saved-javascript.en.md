@@ -8,8 +8,7 @@ tldr: "Douglas Crockford didn't create JavaScript, but he may be the single most
 description: "How Douglas Crockford changed JavaScript's fate through JSON, JSLint, and JavaScript: The Good Parts — from a toy language mocked by professional developers to the core technology of modern web development."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=JfPWbttemYE"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_200444_748047.mp3"
+draft: false
 ---
 
 Everyone knows Brendan Eich created JavaScript in 10 days in 1995. But there's a less-told story: in the decade after JavaScript was born, serious developers largely considered it a toy.

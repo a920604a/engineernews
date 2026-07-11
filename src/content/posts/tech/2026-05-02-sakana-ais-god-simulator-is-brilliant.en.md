@@ -8,8 +8,8 @@ tldr: "Sakana AI's God Simulator uses neural cellular automata to let users act 
 description: "Sakana AI's God Simulator is an interactive simulation built on neural cellular automata. This post explains how it works, what it reveals about evolutionary dynamics, and how it connects to Sakana AI's broader research agenda."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=QzZ4VwDHAT4"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260522_234218_518557.wav"
+draft: false
+audio_url: "/api/tts/r2/tts/tts_20260710_093723_504628.mp3"
 ---
 
 What happens if you control the rules of survival rather than the survivors themselves? Sakana AI turned that question into a browser-based simulation anyone can run. The God Simulator isn't a game — it's a research tool that makes evolutionary dynamics tangible, and the insights it surfaces connect directly to Sakana AI's core research thesis: that evolution and collective intelligence offer a fundamentally different path to capable AI systems than raw scale alone.

@@ -1,142 +1,185 @@
 ---
-title: "Transformer 怎麼知道詞的順序？從絕對位置編碼到 RoPE 的演進"
-date: 2026-05-10T04:00:23.072Z
-category: tech
-tags: ["transformer", "rope", "positional-encoding", "nlp", "machine-learning", "deep-learning"]
-lang: zh-TW
-tldr: "Transformer 的 self-attention 天生不知道詞的順序，位置編碼是補救措施。從正弦函數絕對編碼、可學習絕對編碼、相對位置編碼，到 RoPE（旋轉位置嵌入）——現代 LLM 幾乎都用 RoPE，因為它是免參數、天然表達相對距離、且可外推到更長序列的最佳方案。"
-description: "系統性介紹 Transformer 位置編碼的四種主要方案：Sinusoidal 絕對編碼、可學習絕對編碼、相對位置編碼（T5、ALiBi），以及 RoPE 的數學直覺與工程優勢。"
-type: explainer
+title: "Transformer 怎麼知道詞的順序？從 Self-Attention 的排列不變性到 Sinusoidal 位置編碼"
+date: "2026-05-10T04:00:23.072Z"
+category: "tech"
+tags: ["transformer","positional-encoding","sinusoidal","self-attention","nlp","deep-learning"]
+type: "explainer"
 original_url: "https://www.youtube.com/watch?v=Ll-wk8x3G_g"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260522_235011_563925.wav"
+draft: false
+key_points:
+  - "Self-Attention 對輸入 Token 的順序是排列不變的，必須額外把位置資訊注入進去"
+  - "Sinusoidal 位置編碼用不同頻率的 sin／cos，兩兩維度合成一支轉速不同的指針"
+  - "它的巧妙在於 P_{k+R} = M_R · P_k，讓 Attention 能間接感知相對位置"
+tldr: "Self-Attention 本質上分不出 Token 的先後順序，所以要靠位置編碼把順序補回來。這篇從最早的 Absolute Positional Embedding 講到 Sinusoidal 位置編碼，並拆解它為何能隱含相對位置資訊。"
+description: "為什麼 Transformer 需要位置編碼？從 Self-Attention 的排列不變性出發，圖解 Sinusoidal Positional Embedding 的設計、時鐘指針比喻，以及它 P_{k+R}=M_R·P_k 的相對位置性質。"
+audio_url: "/api/tts/r2/tts/tts_20260711_001753_780631.mp3"
 ---
 
-把「貓咬狗」和「狗咬貓」丟進 Transformer，如果沒有位置資訊，這兩個句子對模型來說是一樣的——都是「貓、咬、狗」三個 token，順序不知道。Self-attention 機制讓每個 token 能關注所有其他 token，但這個「全連接」的設計本身就失去了序列順序的概念。位置編碼（Positional Encoding）是 Transformer 原始論文就引入的解決方案，但從 2017 年到現在，這個問題的解法已經演進了好幾代。
+「你打我」和「我打你」是同樣三個字、不同順序，意思卻完全相反。如果 Transformer 分不出這兩句話的差別，那它根本沒辦法理解語言。問題是——原始的 Transformer 的 Self-Attention **真的分不出來**。這篇就來講 Positional Embedding（位置編碼）這個技術：它讓 Transformer 知道輸入 Token 的順序。
 
-## TL;DR
+## 先搞清楚：Self-Attention 為什麼「看不到」順序
 
-- **Sinusoidal 絕對位置編碼**（原始 Transformer）：用正弦/餘弦函數計算每個位置的向量，不需要訓練，但無法外推到訓練序列長度之外
-- **可學習絕對位置編碼**（GPT-2、BERT）：把位置向量當參數訓練，有點彈性但同樣不能外推
-- **相對位置編碼**（T5、ALiBi）：讓 attention 直接感知 token 間的相對距離，對長序列更友善
-- **RoPE**（LLaMA、Mistral、Qwen、DeepSeek 等現代 LLM）：用旋轉矩陣把位置資訊乘進 Query 和 Key，免參數、自然編碼相對距離、可透過 YaRN 等技術外推，是目前最主流的方案
+大型語言模型背後是一個叫 Transformer 的神經網路。它的輸入是一串 Token，輸出是去預測下一個 Token。
 
-## 是什麼
+Transformer 怎麼處理輸入？首先每個 Token 會被轉成一個向量，也就是 Embedding；這些向量會被送進一層一層的 Layer，而每個 Layer 裡都有一個 Self-Attention 模組。Self-Attention 做的事情是：輸入一排 Token，吐出數目一樣的另一排 Token。
 
-### 為什麼需要位置編碼
+我們看它的計算過程。假設輸入 4 個 Token，轉成 4 個 Embedding，用 X_A 到 X_D 表示。每個 Embedding 會分別乘上三個矩陣，變成 Q、K、V。若要算 X_D 位置的輸出 O_D：
 
-Self-attention 的計算是：
+1. 用 X_D 產生的 query Q_D，去和每個 Token 的 key K 做內積，得到 Attention weight
+2. 對這些 weight 做 Softmax 做 Normalization
+3. 用 normalized 後的 weight，對每個 Token 的 value 向量做 weighted sum，得到 O_D
 
-```
-Attention(Q, K, V) = softmax(QK^T / √d_k) × V
-```
+**關鍵就在最後這個 weighted sum**。假設我們把 A 跟 C 兩個 Token 對調，輸入從 ABCD 變成 CBAD，會對 O_D 造成什麼影響？答案是**完全沒有影響**。因為當 A、C 位置對調，它們對應的 Q、K、V 和 Attention weight 也跟著對調，而 weighted sum 就只是把所有 value 加起來——先加 C 還是先加 A，結果一模一樣。
 
-這個計算對輸入 token 的排列順序是**排列不變的（permutation-invariant）**。你把輸入 sequence 打亂，每個 token 的輸出向量只是重新排列，數值不變。這在圖像 patch 分類或集合問題中沒關係，但在語言中，詞序攜帶大量語義資訊。
-
-位置編碼的任務：在不改變 attention 機制本身的前提下，把位置資訊注入到 token 的表示中。
-
-## 怎麼運作
-
-### 方案一：Sinusoidal 絕對位置編碼（Vaswani et al., 2017）
-
-原始 Transformer 論文的方法：對每個位置 pos，每個維度 i，計算：
-
-```
-PE(pos, 2i)   = sin(pos / 10000^(2i/d_model))
-PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))
+```mermaid
+flowchart LR
+    subgraph 輸入順序不影響輸出
+    A1["ABCD"] --> O1["O_D"]
+    A2["CBAD"] --> O2["O_D"]
+    end
+    O1 -. 數值相同 .- O2
 ```
 
-這個向量直接**加**到 token embedding 上，之後的計算就隱含了位置資訊。
+這就是所謂的「排列不變（permutation-invariant）」。對集合類的問題沒差，但對語言是致命的：「你打我」（ABC）和「我打你」（CBA）最後一個位置算出來的 Embedding 竟然一樣，模型就沒辦法分辨這兩句話。
 
-**直覺**：不同維度用不同頻率的正弦波，類似二進位計數——低頻維度捕捉整體位置（是前半還是後半），高頻維度捕捉精細位置（是第幾個）。
+所以我們必須額外給 Transformer 位置的資訊。
 
-**缺點**：訓練時只看到特定長度的序列，推論時超出訓練長度，模型沒看過那個 pos 位置的 PE，表現急劇下降。
+> 註：課程尾聲其實會提到，Self-Attention 並非完全沒有位置資訊——它偷偷藏了一點。但先照最直覺、最傳統的講法，把它當成沒有位置資訊來處理。
 
-### 方案二：可學習絕對位置編碼（GPT-2、BERT）
+## 方案一：Absolute Positional Embedding
 
-不用公式計算，直接建立一個 `max_seq_len × d_model` 的嵌入表，每個位置的向量透過反向傳播訓練。BERT 和 GPT-2 用的是這個方法。
+最早的想法很直接：**對每一個位置，都設計一個專屬的 Embedding**，代表這個位置的資訊。用 P_0 到 P_3 代表位置 0、1、2、3 的專屬向量，然後把它加到 Token 上。
 
-**優點**：模型可以學到適合任務的位置表示。
-**缺點**：
-1. 增加參數量
-2. 同樣無法外推——沒有位置 512 之後的向量
-3. 位置 1 和位置 2 的「相對關係」不是顯式建模的，模型要自己學
+- 順序是 ABCD：A 加 P_0、B 加 P_1……
+- 順序是 CBAD：C 加 P_0、B 加 P_1……
 
-### 方案三：相對位置編碼
+這樣一來，同樣是 X_A，放在位置 0 時加的是 P_0，放在位置 2 時加的是 P_2。對 Self-Attention 來說，它看到的不再是單純的 X_A，而是「放在位置 0 的 X_A」和「放在位置 2 的 X_A」——變成不同的東西了，算出來的 Attention 輸出自然就不同。位置資訊就這樣被注入了。
 
-**T5 的方案（Shaw et al., 2018）**：不在 embedding 加位置，而是在 attention 計算時，對每對 (query token, key token) 直接加一個相對位置偏置（relative position bias）。這樣 attention 分數本身就包含了相對距離資訊。
+剩下的問題是：這些 P_0、P_1…… 到底長什麼樣子？
 
-**ALiBi（Press et al., 2021）**：更簡潔的相對編碼——對每個 attention head，把一個與相對距離成比例的負數線性偏置直接加到 attention logit 上。不需要額外參數，越遠的 token 就有越大的負懲罰（相當於衰減）。ALiBi 在外推到更長序列時表現相對穩健。
+## Sinusoidal Positional Embedding：用 sin / cos 建構位置
 
-### 方案四：RoPE — 旋轉位置嵌入（Su et al., 2021）
+Transformer 誕生的時候（可以想像成深度學習的「寒武紀」）採用的，是一種叫 **Sinusoidal** 的位置編碼。
 
-RoPE（Rotary Positional Embedding）是目前最主流的位置編碼方案，被 LLaMA、Mistral、Qwen、DeepSeek、PaLM 2 等幾乎所有現代 LLM 採用。
-
-**核心思想**：把位置資訊**乘**到 Query 和 Key 向量上，而不是**加**到 token embedding 上。具體做法是用旋轉矩陣：
-
-對位置為 m 的 token，把其 Q 向量（或 K 向量）的每對維度 (q_{2i}, q_{2i+1}) 做旋轉：
+先講符號。用 `d` 代表 Positional Embedding 的長度（這是你可以自己決定的，例如 128、256），用 `P_k[i]` 代表第 k 個位置的 Embedding 向量的第 i 個數值。建構規則如下：
 
 ```
-[q_{2i}' ]   [cos(mθ_i)  -sin(mθ_i)] [q_{2i}  ]
-[q_{2i+1}'] = [sin(mθ_i)   cos(mθ_i)] [q_{2i+1}]
+偶數維度：P_k[2i]   = sin( k / 10000^(2i/d) )
+奇數維度：P_k[2i+1] = cos( k / 10000^(2i/d) )
 ```
 
-其中 θ_i = 10000^(-2i/d_model)，是類似 Sinusoidal 的頻率設計。
+拆開來看每個部分：
 
-**為什麼這樣做有效**？當你計算位置 m 的 Q 和位置 n 的 K 的點積時：
+- **分子 k**：第幾個位置。k 越大，送進 sin／cos 的角度越大
+- **分母 10000^(2i/d)**：i 是第幾個維度。維度不同，分母不同，就改變了角度的變化速度
+- 偶數維度用 sin、奇數維度用 cos，但同一對的角度是一樣的
+
+### 圖像化：不同維度 = 不同頻率的波
+
+如果把所有位置在**第 0 維**的數值拿出來（P_0[0]、P_1[0]…P_49[0]），沿著位置軸看，會看到一條 **sine 波**；看第 1 維（奇數），會看到一條 **cosine 波**；看第 10 維，又是一條 sine 波，但**週期跟第 0 維不一樣**——因為分母裡的 i 不同。
+
+把所有位置、所有維度畫成一張熱力圖（橫軸是位置、縱軸一列一列是各維度、顏色代表數值，黃色接近 1、深藍接近 −1，因為是三角函數所以數值只落在 −1 到 1 之間），會看到一張佈滿深淺斑紋的圖：奇偶維度交錯，靠近 0 的維度變化劇烈（頻率高），維度編號越大變化越緩慢（頻率低）。
+
+### 時鐘指針的比喻
+
+換個角度看：偶數維度是 sin、奇數維度是 cos，**每一對（第 2i 維 + 第 2i+1 維）合起來，其實就是二維平面上的一根指針**，隨著位置 k 增加而不斷旋轉。
+
+指針轉一圈需要多少個 k？三角函數週期是 2π，所以令 `k / 10000^(2i/d) = 2π`，得到：
 
 ```
-Q_m^T · K_n = f(q, m)^T · f(k, n) = 只依賴 (q, k, m-n)
+週期 k = 2π × 10000^(2i/d)
 ```
 
-點積的結果**只依賴相對位置 m-n**，不依賴絕對位置。這就自然地把相對距離編碼進了 attention 計算，不需要修改 attention 公式本身。
+以 d = 128（i 從 0 到 63）為例：
 
-**RoPE 的工程優勢**：
-- **免參數**：不需要額外的可學習參數
-- **天然表達相對距離**：點積的值只依賴相對位置
-- **可外推**：搭配 YaRN（Yet another RoPE extensioN）、Positional Interpolation 等技術，可把訓練時的序列長度上下文視窗延伸到數倍，Llama 3.1 用 RoPE + 長文本微調達到 128K 上下文
+| 維度對 | i | 轉一圈所需的位置數 k |
+|--------|---|----------------------|
+| 第 0、1 維 | 0 | 約 6.3（轉最快，像秒針）|
+| 第 64、65 維 | 32 | 約 628.3（像分針）|
+| 第 126、127 維 | 63 | 約 54000（轉最慢，像時針）|
+
+一般時鐘只有三根指針，這裡有幾根呢？看維度有多少——128 維就是 **64 根轉速全都不一樣的指針**。我們希望 Self-Attention 看著這 64 根指針，就能判斷出「現在在哪個位置」。
+
+## 為什麼是這個設計？因為它藏著「相對位置」
+
+用指針表示位置聽起來合理，但方法明明很多，2017 年 Transformer 的作者為什麼偏偏選這個？論文正文只用了一句話帶過，微言大義：他們希望位置編碼能考慮 **relative position（相對位置）**。
+
+什麼是相對位置？看「貓吃了魚」這句話。「貓」和「魚」中間隔了兩個 Token，假設處理「魚」時要 attend 回「貓」，分數是 0.7。現在我在前面硬塞一大堆字——「今天早上我看到貓吃了魚」，甚至塞 1000 個 Token 讓它變成某部長篇小說的一段——**「貓吃了魚」這個事件本身沒變**，我們會希望「魚 attend 到貓」算出來還是 0.7。
+
+反過來，如果「貓」在句首、「魚」在句尾，兩者距離很遠，我們就希望 attention 小一點。
+
+換句話說，**真正重要的往往是相對距離，而不是絕對位置**。而 Sinusoidal 位置編碼恰好有一個能支撐相對位置的漂亮性質。
+
+### 核心性質：P_{k+R} = M_R · P_k
+
+這個性質是說：把位置 k 的 Embedding 乘上一個矩陣 M_R，就會得到位置 k+R 的 Embedding，而**這個矩陣只跟相對距離 R 有關，跟絕對位置 k 無關**：
 
 ```
-                   絕對位置編碼
-                   ┌──────────────────────┐
-                   │ Sinusoidal（加法）   │ ← 原始 Transformer
-                   │ 可學習嵌入（加法）   │ ← BERT, GPT-2
-                   └──────────────────────┘
-
-                   相對位置編碼
-                   ┌──────────────────────┐
-                   │ T5 Bias（attention） │ ← T5
-                   │ ALiBi（線性衰減）    │ ← BLOOM, MPT
-                   └──────────────────────┘
-
-                   旋轉編碼（乘法）
-                   ┌──────────────────────┐
-                   │ RoPE                 │ ← LLaMA, Mistral,
-                   │                      │   Qwen, DeepSeek
-                   └──────────────────────┘
+P_1   × M_3 = P_4
+P_11  × M_3 = P_14
+P_101 × M_3 = P_104
 ```
 
-## 跟沒有位置編碼的差別
+怎麼證明？把分母那一長串 `10000^(2i/d)` 簡記成 Z（注意 Z 裡面藏著 i）。位置 k+R 的一對維度是 `sin((k+R)/Z)` 與 `cos((k+R)/Z)`。用高中的**合角公式**展開：
 
-2023 年有一些研究探討「沒有位置編碼的 Transformer」能不能 work。結論是：對於特定任務（如少量 token 的分類），模型可以靠 causal masking 隱性推斷位置；但對語言生成任務，沒有位置編碼的模型在訓練 loss 更高，生成質量明顯下降。Mamba、RWKV 等非 Transformer 架構透過 SSM（State Space Model）或 RNN 的時間步長隱性編碼位置，是另一條路線。
+```
+sin(A+B) = sinA·cosB + cosA·sinB
+cos(A+B) = cosA·cosB − sinA·sinB
+```
 
-## 小結
+展開後，`sin(k/Z)`、`cos(k/Z)` 這些項正好就是 P_k 的第 2i、2i+1 維。整理成矩陣形式，就得到一個只跟 R／Z 有關的 2×2 旋轉矩陣 M_{R,i}：
 
-| 方案 | 參數量 | 外推能力 | 相對距離 | 現代 LLM 採用 |
-|------|--------|----------|----------|--------------|
-| Sinusoidal | 無 | 差 | 間接 | 少 |
-| 可學習絕對 | 有 | 差 | 間接 | 少（BERT時代） |
-| T5 Bias | 少 | 中 | 直接 | T5 系列 |
-| ALiBi | 無 | 好 | 直接（線性） | BLOOM, MPT |
-| RoPE | 無 | 好（需輔助） | 直接（旋轉） | LLaMA, Mistral, Qwen... |
+```
+[ P_{k+R}[2i]   ]   [ cos(R/Z)  sin(R/Z) ] [ P_k[2i]   ]
+[ P_{k+R}[2i+1] ] = [ -sin(R/Z) cos(R/Z) ] [ P_k[2i+1] ]
+```
 
-RoPE 的勝出不是偶然——它把「免參數」「相對距離」「可外推」三個需求同時滿足，而且在大量 LLM 的實際訓練中被驗證有效。理解 RoPE 的數學原理也有助於理解為什麼 YaRN 這類長文本外推技術能 work：本質上是調整 θ 的頻率，讓模型以為它還在訓練的位置範圍內。
+把每一對維度的 M_{R,i} 沿對角線排起來（其他位置補 0），就組成完整的 M_R。於是 `P_{k+R} = M_R · P_k`——兩個位置的 Embedding 之間的關係，只由相對距離 R 決定。（注意 Z 裡有 i，所以不同維度的小方塊 M_{R,i} 長得不一樣。）
+
+## 這個性質怎麼影響 Self-Attention
+
+有了 M_R，來看它對 attention 分數的實際影響。位置 n 的 Token（當 query）和位置 m 的 Token（當 key），各自的 Q、K 都是「Token Embedding + Positional Embedding」再乘上轉換矩陣。attention 分數是 Q 和 K 做內積：
+
+```
+A = (W_Q (X + P_n))ᵀ · (W_K (X + P_m))
+```
+
+把括號展開，會得到**四項**：
+
+```mermaid
+flowchart TB
+    A["Attention 分數 A"] --> T1["① 內容 × 內容<br/>只跟語意有關，無位置"]
+    A --> T2["② 內容 × 位置"]
+    A --> T3["③ 位置 × 內容"]
+    A --> T4["④ 位置 × 位置<br/>Pₙᵀ WQᵀ WK Pₘ"]
+    T2 -. 內容與位置交互、較複雜 .- T3
+```
+
+- **第 ① 項**：只跟內容有關，完全不看位置
+- **第 ②③ 項**：內容和位置交互，比較複雜，先擱著
+- **第 ④ 項**：`P_nᵀ W_Qᵀ W_K P_m`，**只跟位置有關**
+
+第 ④ 項單看只跟絕對位置 m、n 有關，看不出相對性。但因為 Sinusoidal 有 `P_{k+R} = M_R P_k` 的性質，我們可以把 `P_m` 換成 `M_{m−n} · P_n`，於是這一項就變成：
+
+```
+P_nᵀ · (跟相對距離 m−n 有關的矩陣) · W_Q W_K · P_n
+```
+
+——出現了一項**跟相對位置 (m−n) 有關**的成分，被加進 attention 分數裡，讓 attention 能感知相對距離。
+
+不過要誠實地說：這個影響是**相當間接的**。這一項裡除了相對位置，還混著絕對位置和其他東西；而且四項裡真正純粹跟相對位置有關的也就這麼一小塊。Sinusoidal 是拐了一個彎，才勉強把相對資訊塞進 attention。
+
+## 小結：接下來要走向 Relative Positional Embedding
+
+整理一下這條演進線：
+
+1. **問題**：Self-Attention 排列不變，分不出 Token 順序
+2. **Absolute Positional Embedding**：給每個位置一個專屬向量，加到 Token 上
+3. **Sinusoidal**：用不同頻率的 sin／cos 建構這些向量，兩兩維度合成轉速不同的指針
+4. **意外的好處**：`P_{k+R} = M_R P_k` 讓 attention 能**間接**感知相對位置
+
+既然大家真正想要的是「把相對資訊加進 attention」，那何必拐彎抹角、去設計這種神奇的絕對位置編碼？能不能乾脆跳過 Positional Embedding，直接改 attention？——這就是接下來 **Relative Positional Embedding** 時代要回答的問題了。
 
 ## 參考資料
 
-- [RoFormer 論文（arXiv 2104.09864）](https://arxiv.org/abs/2104.09864)
-- [EleutherAI Blog：Rotary Embeddings 完整介紹](https://blog.eleuther.ai/rotary-embeddings/)
-- [LearnOpenCV：Inside RoPE](https://learnopencv.com/rope-position-embeddings/)
-- [labml.ai：RoPE 實作與解說](https://nn.labml.ai/transformers/rope/index.html)
-- [Medium：Rotary Positional Embeddings 詳解](https://medium.com/ai-insights-cobet/rotary-positional-embeddings-a-detailed-look-and-comprehensive-understanding-4ff66a874d83)
-- [原始影片](https://www.youtube.com/watch?v=Ll-wk8x3G_g)
+- [原始課程影片（YouTube）](https://www.youtube.com/watch?v=Ll-wk8x3G_g)

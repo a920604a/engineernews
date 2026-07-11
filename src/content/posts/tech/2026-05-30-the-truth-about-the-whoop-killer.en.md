@@ -8,8 +8,7 @@ tldr: "2026 has produced several devices labeled 'Whoop killers': Google Fitbit 
 description: "Analyzing Whoop's competitive landscape in 2026: Fitbit Air's no-subscription strategy, Garmin Cirqa's sensor specs, Apple Watch's ecosystem integration, and how deep the moat behind Whoop's subscription model actually is."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=9GSDvO0LFFE"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_200341_334954.mp3"
+draft: false
 ---
 
 "Whoop killer" has appeared constantly in tech media throughout 2025-2026. Every few months a new wearable gets slapped with the label — but Whoop is still running subscriptions, still has loyal users, still maintains a strong brand identity among elite athletes and serious fitness enthusiasts.

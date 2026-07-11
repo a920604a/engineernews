@@ -8,8 +8,8 @@ tldr: "The M4 MacBook Air and Mac Studio are solid spec upgrades — 16GB standa
 description: "An engineer's perspective on Apple's 2025 M4 product line: MacBook Air M4, Mac Studio M4 Max, and the current state of Apple Intelligence."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=i9TvUGeTltE"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260523_000644_872132.wav"
+draft: false
+audio_url: "/api/tts/r2/tts/tts_20260710_235815_191591.mp3"
 ---
 
 Apple's 2025 hardware story can be summarized in one sentence: M4 chips across the lineup, and Apple Intelligence shipping on entry-level products for the first time. The MacBook Air M4 and Mac Studio M4 Max are the core of this wave. Both represent clear spec improvements, but Apple Intelligence's software integration has left the engineering community somewhat disappointed. This article breaks down what actually matters in this update.

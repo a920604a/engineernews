@@ -1,182 +1,94 @@
 ---
-title: "從開機到關機：Fireship 用 15 分鐘串起作業系統所有核心概念"
-date: 2026-05-14T02:59:15.238Z
-category: tech
-tags: ["os", "computer-science", "kernel", "linux", "systems"]
-lang: zh-TW
-tldr: "作業系統不是一個黑盒，而是一條從 UEFI 到 Kernel 到 Process 的清晰流水線。Fireship 的影片用開機到關機的敘事主軸把這條線串起來。"
-description: "跟著 Fireship 影片的脈絡，從韌體（UEFI/BIOS）、開機載入器、Kernel、行程管理、記憶體管理到系統呼叫，一次建立對作業系統的完整心理模型。"
-type: explainer
+title: "從按下電源鍵開始：作業系統如何在幾秒內把一切從無到有建起來"
+date: "2026-05-14T02:59:15.238Z"
+category: "tech"
+tags: ["os","computer-science","kernel","linux","systems"]
+type: "explainer"
 original_url: "https://www.youtube.com/watch?v=MtxP2pyCvYA"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260522_235320_976353.wav"
+draft: false
+key_points:
+  - "開機當下 CPU 處於最原始狀態——沒有記憶體管理、沒有檔案概念，只是在韌體寫死的位址上執行指令。"
+  - "privilege rings 由 CPU 本身強制隔離 ring 0（kernel）與 ring 3（user space），讓一支出錯的程式通常只會弄死自己。"
+  - "virtual memory 是「計算領域最大的謊言」：每個 process 都有自己的 page table，透過 MMU 把假的虛擬位址翻譯成真實實體位址。"
+tldr: "跟著一台電腦從按下電源鍵走到 kernel 把系統建起來，理解 bootloader、privilege rings、virtual memory 與 file system 這四個關鍵階段是怎麼協作的。"
+description: "以 Fireship 影片為主軸，從電源鍵按下的那一刻出發，說明韌體交棒、privilege rings、virtual memory 與 file system 如何在幾秒內把一台裸機變成可用的作業系統。"
+audio_url: "/api/tts/r2/tts/tts_20260711_003716_107341.mp3"
 ---
 
-你每天都在用作業系統，但你知道按下電源鍵之後，在你的程式開始執行之前，系統裡究竟發生了什麼嗎？
+此刻你能看這支影片，是因為某個作業系統決定「可以」。你的 CPU 正同時跑著幾百支程式，Chrome 莫名其妙吃掉一堆 RAM，但當你晃動滑鼠時游標依然順暢地跟著移動。這其實不正常——它是作業系統這個「最被低估的軟體」每秒重複上千次的小奇蹟。
 
-Fireship 的這支影片把作業系統所有核心概念壓進了約 15 分鐘，用「從開機到關機」的生命週期當主軸，把原本散落在教科書各個章節的概念串成一條清晰的敘事線。這篇文章跟著同樣的主軸走，幫你建立對作業系統的完整心理模型。
+Fireship 這支影片的切入點很聰明：不從教科書的章節目錄講起，而是跟著一台電腦「從你按下電源鍵，到你氣到直接關機」這條時間軸走一遍，看 bootloader、process、scheduling、thread、system call、virtual memory、interrupt、privilege ring、I/O、inode 這些名詞如何協作。這篇文章跟著同樣的主軸，把其中最核心的幾個階段講清楚。
 
-## TL;DR
+## 一點歷史
 
-作業系統是介於硬體和應用程式之間的軟體層，負責管理 CPU、記憶體、儲存裝置和 I/O 裝置。理解它的最好方式是跟著一台電腦從開機到關機走一遍——每個階段都對應一組 OS 子系統。
+第一個作業系統 **GM-NAAIO** 在 1956 年由 General Motors 推出，因為有工程師覺得人類不該把時間浪費在手動把打孔卡片餵進兩層樓高的 IBM 大型主機裡。那個系統一次只能跑一支程式，沒有記憶體保護、沒有使用者、沒有檔案的概念——但它當機的次數還是比後來的 Windows Millennium Edition 少。七十年後的今天，我們終於可以把整套機制拆開來看。
 
-## 是什麼
+## 階段一：Bootloader
 
-**作業系統（Operating System）**是一組系統軟體，負責在應用程式和硬體之間扮演中間人的角色。它的核心任務有四：
+你按下電源鍵，電力打到主機板上，CPU 在**最原始的狀態**下醒過來。這個當下，還沒有記憶體管理，甚至連「檔案」這個概念都不存在——就只是一顆核心，在韌體裡**寫死的位址**上開始執行指令。
 
-1. **資源管理**：決定誰能用 CPU、多少記憶體、哪塊磁碟空間
-2. **隔離性**：確保一個程式的崩潰不會拖垮整個系統
-3. **抽象化**：讓應用程式不需要知道底層是哪一顆 CPU 或哪種磁碟格式
-4. **介面**：提供 syscall、檔案系統、網路等標準介面給程式使用
+在現代機器上，這個韌體是 **UEFI**；在更古老的機器上叫 **BIOS**。韌體的工作很單純：喚醒剛好夠用的硬體，找到一顆磁碟，然後把控制權**交棒給 bootloader**。
 
-## 為什麼重要
+不同系統的 bootloader 名字不一樣：
 
-沒有作業系統，每個應用程式都要自己處理 CPU 排程、記憶體分配、硬體驅動——這幾乎是不可能的任務。OS 把這些複雜性收攏在一起，讓開發者可以專注在應用邏輯本身。
+- Linux 上叫 **GRUB**（Grand Unified Bootloader）
+- Mac 上叫 **iBoot**
+- Windows 上叫 **Bootmgr**
 
-理解 OS 的內部機制，能讓你更準確地預測程式行為：為什麼 `fork()` 快但 `exec()` 慢、為什麼大量小檔案比單一大檔案慢、為什麼 context switch 是效能瓶頸的來源。
+但 bootloader 的任務都一樣簡單：在磁碟上找到 **kernel**，把它載入 **RAM**。這就是那個「交棒」的瞬間。交棒之後，CPU 開始執行 kernel 的程式碼，並握有**完整的硬體權限**。
 
-## 怎麼運作：從開機到關機
-
-### 韌體（Firmware）
-
-電源鍵按下去，CPU 第一個執行的不是 Linux 也不是 Windows，而是**韌體**——燒錄在主機板晶片上的低階程式。
-
-現代電腦用的是 **UEFI**（Unified Extensible Firmware Interface），舊機器則是 BIOS。韌體的任務：
-
-- **POST（Power-On Self Test）**：確認 CPU、記憶體、儲存裝置都能正常運作
-- 初始化硬體裝置
-- 找到開機磁碟，交棒給開機載入器
-
-UEFI 比傳統 BIOS 進步許多：支援超過 2TB 的開機磁碟（GPT 分割表）、提供圖形介面、支援安全開機（Secure Boot）。
-
-### 開機載入器（Bootloader）
-
-韌體找到開機磁碟上的 Bootloader（例如 GRUB）後，把控制權交給它。Bootloader 的任務很單純：
-
-1. 從磁碟讀取 OS **核心（Kernel）**映像檔
-2. 把 Kernel 載入記憶體（RAM）
-3. 把控制權交給 Kernel
-
-這個階段通常只有幾秒鐘，但它是從「韌體的世界」進入「作業系統的世界」的關鍵橋樑。
-
-### 核心（Kernel）
-
-Kernel 是作業系統的核心，在**特權模式（Kernel Mode）**下執行，可以直接存取所有硬體資源。它管理的東西幾乎涵蓋後續所有子系統：
-
-```
-Kernel
-├── 行程管理（Process Management）
-├── 記憶體管理（Memory Management）
-├── 檔案系統（File System / VFS）
-├── 裝置驅動程式（Device Drivers）
-└── 系統呼叫介面（System Call Interface）
-```
-
-Linux 是**單體核心（Monolithic Kernel）**，所有子系統都跑在同一個記憶體空間，呼叫效率高；macOS 的 XNU 是**混合核心（Hybrid Kernel）**，部分功能跑在使用者空間以提升穩定性。
-
-### 行程管理（Process Management）
-
-Kernel 啟動後，系統開始建立**行程（Process）**。每個行程是一個獨立的執行實例，有自己的：
-
-- 虛擬記憶體位址空間
-- 開啟的檔案描述子（File Descriptors）
-- 行程 ID（PID）
-- 至少一條**執行緒（Thread）**
-
-行程之間彼此隔離——一個行程崩潰不會直接影響其他行程。**執行緒**則是行程內部的執行單元，同一行程的所有執行緒共享記憶體空間，適合需要高度協作的並行工作（但也因此需要鎖機制避免資料競爭）。
-
-### CPU 排程（CPU Scheduling）
-
-一台電腦可能同時有幾十個行程在「執行」，但 CPU 核心數是有限的。**排程器（Scheduler）**決定誰先執行、執行多久：
-
-- **搶佔式排程（Preemptive Scheduling）**：排程器可以強制中斷一個行程，把 CPU 交給另一個
-- **時間片（Time Slice）**：每個行程輪到的 CPU 時間通常在數毫秒量級
-- **優先級（Priority）**：即時任務（音訊播放、輸入響應）比一般後台任務優先
-
-Linux 使用 **CFS（Completely Fair Scheduler，完全公平排程器）**，根據每個行程「虛擬執行時間」來決定下一個排程的是誰，確保沒有任何行程被長期餓死（starvation）。
-
-### 記憶體管理（Memory Management）
-
-每個行程看到的都是**虛擬位址空間**，不是實際的實體記憶體位址。作業系統透過**分頁（Paging）**機制維護對照表，把虛擬位址映射到實體記憶體的頁框（Page Frame）。
-
-這個設計帶來三個關鍵好處：
-
-- **隔離性**：行程 A 無法直接讀寫行程 B 的記憶體，即使它們都在同一台機器上
-- **按需分頁（Demand Paging）**：記憶體頁只在真正被存取時才分配實體頁框，啟動速度更快
-- **Swap**：當實體記憶體不足時，OS 把較少使用的頁面交換到磁碟，騰出空間給活躍的行程
-
-### 行程間通訊（IPC）
-
-行程彼此隔離，但有時需要協作。作業系統提供幾種 **IPC（Inter-Process Communication）**機制：
-
-| 機制 | 適用場景 |
-|------|----------|
-| Pipe | 父子行程、單向資料流（`cmd1 \| cmd2`） |
-| Unix Socket | 本機行程間的雙向通訊 |
-| 共享記憶體（Shared Memory） | 大量資料、高效能要求 |
-| Signal | 輕量通知（如 `SIGTERM`、`SIGKILL`） |
-| Message Queue | 非同步訊息傳遞 |
-
-### 檔案系統（File System）
-
-對應用程式而言，所有持久化資料都透過「檔案」存取。作業系統透過**虛擬檔案系統（VFS）**提供統一介面，底層可以是 ext4、APFS、NTFS、tmpfs 甚至網路檔案系統（NFS）——對應用程式來說 API 都是一樣的。
-
-Linux 的「一切皆檔案」哲學把硬體裝置（`/dev/sda`）、行程資訊（`/proc/1234/status`）、核心設定（`/sys/`）都暴露成可讀寫的檔案介面，讓 shell 工具可以用同一套 I/O API 操作幾乎所有系統資源。
-
-### 系統呼叫（System Call）
-
-應用程式執行在**使用者模式（User Mode）**，無法直接存取硬體或核心資料結構。每當需要 OS 服務（讀檔、開啟 Socket、建立行程），就必須透過**系統呼叫（syscall）**切換到 Kernel Mode：
-
-```c
-open()   // 開啟檔案，取得 file descriptor
-read()   // 從 fd 讀取資料到緩衝區
-write()  // 把緩衝區資料寫入 fd
-fork()   // 複製當前行程，建立子行程
-exec()   // 以新程式取代當前行程的映像
-exit()   // 結束行程，釋放資源
-```
-
-每次 syscall 都涉及一次 User Mode → Kernel Mode 的切換（context switch），這個開銷不算小。這也是為什麼高效能 I/O 框架（epoll、io_uring）的設計目標之一是**減少 syscall 次數**。
-
-`strace` 可以攔截並顯示一個行程發出的所有 syscall，是除錯「程式到底在對 OS 要求什麼」的利器：
-
-```bash
-strace -e openat,read,write ls /tmp
-```
-
-## 從開機到關機的完整路徑
+值得注意的是：此時你電腦裡所有「有趣的東西」——檔案、process、視窗——**都還不存在**。kernel 得在接下來短短幾秒內，從零把這一切建起來。
 
 ```mermaid
 graph LR
-    A[電源鍵] --> B[UEFI / BIOS]
-    B --> C[Bootloader]
-    C --> D[Kernel]
-    D --> E[行程管理]
-    D --> F[記憶體管理]
-    D --> G[檔案系統 VFS]
-    E --> H[使用者行程]
-    H -->|syscall| D
+    A[電源鍵按下] --> B[韌體 UEFI / BIOS]
+    B -->|喚醒硬體 找到磁碟| C[Bootloader<br/>GRUB / iBoot / Bootmgr]
+    C -->|載入 kernel 進 RAM| D[Kernel<br/>ring 0 完整權限]
+    D -->|從零建起| E[virtual memory / file system / process...]
 ```
 
-## 跟虛擬機、容器的差別
+## 階段二：Privilege Rings
 
-| | 作業系統 | 虛擬機（VM） | 容器（Container） |
-|--|----------|--------------|-------------------|
-| Kernel | 自己的 Kernel | 自己的 Kernel | 共享宿主機 Kernel |
-| 隔離機制 | 硬體本身 | Hypervisor | cgroups + namespaces |
-| 啟動速度 | 秒級 | 秒～分鐘 | 毫秒～秒 |
-| 資源開銷 | 低 | 高 | 極低 |
+在 kernel 繼續往下建之前，得先理解 CPU 提供的保護機制：**privilege rings**。
 
-容器（Docker、Podman）不是「輕量 VM」——它們其實是共享宿主機 Kernel 的隔離行程，隔離靠的是 Linux 的 **cgroups**（資源限制）和 **namespaces**（視野隔離）。所以 Docker 在 macOS 和 Windows 上必須跑一個 Linux VM，因為 macOS/Windows 沒有 Linux Kernel。
+CPU 用多個特權等級來保護自己。在 x86 上其實有四個 ring，但**真正重要的只有兩個**：
+
+- **Ring 0**——kernel 所在，基本上想幹嘛都可以。
+- **Ring 3**——user space，可以跑應用程式，但要做別的事幾乎都得先「請求許可」。
+
+問題在於：現在 kernel 是在 **ring 0** 裡跑 C 程式碼，**完全沒有護欄**。只要一個指標指錯，整台機器就會「著火」。這也是影片開玩笑說 kernel 開發者為什麼要靠喝酒度日的原因。
+
+但這道由 **CPU 本身強制執行**的隔離牆非常關鍵：如果沒有它，每一支程式都能讀取其他程式的記憶體、隨手弄垮整個系統。有了 privilege ring，一支有 bug 的程式**通常只能弄死它自己**。
+
+## 階段三：Virtual Memory —— 計算領域最大的謊言
+
+接下來 kernel 要說出「計算領域裡最大的謊言」：**virtual memory**。
+
+這個「騙局」是這樣運作的：當程式之後請求某個記憶體位址時，**那個位址其實不存在**。它是一個假的**虛擬位址**，會被一塊叫 **MMU**（Memory Management Unit，記憶體管理單元）的硬體翻譯成**真正的實體位址**。而 MMU 依賴的資料結構叫 **page table**——正是 kernel 此刻在建的東西。
+
+記憶體以一塊塊叫 **page** 的單位發出去，每塊**通常 4KB**。真正有意思的是：**每個 process 都有自己的 page table**。這代表兩支應用程式可以同時運作而不會互相破壞——你的瀏覽器讀不到密碼管理器的記憶體，反之亦然。它們活在各自平行的宇宙裡，只有 kernel 能看穿彼此之間。
+
+為了加速，MMU 還會把最近做過的翻譯結果快取在一個小結構 **TLB**（Translation Lookaside Buffer）裡。所謂一次「translation」，就是一個虛擬位址對應到一個實體位址的映射。
+
+而當程式碰到一個**目前不在 RAM 裡**的 page，MMU 會拋出一個 **page fault**：這會喚醒 kernel、從磁碟把該 page 載入，然後讓程式**像什麼事都沒發生過一樣**繼續執行。
+
+## 階段四：File System
+
+有了這些記憶體上的「謊言」之後，就輪到 **file system**。
+
+在最底層，你的磁碟其實只是**一長排編號的區塊（blocks）**。file system 就是那個「掩蓋這件事」的軟體層——它讓上層看到的是有名字、有目錄結構的檔案，而不是一堆冷冰冰的區塊編號。（影片接下來會延伸到 inode 等更底層的實作，這也是「一切從區塊到檔案」這條翻譯鏈的核心。）
 
 ## 小結
 
-作業系統的設計有一條清晰的邏輯線：韌體初始化硬體 → Bootloader 載入 Kernel → Kernel 建立行程和記憶體管理基礎 → 行程透過 syscall 存取 OS 服務。
+把這四個階段串起來，你會發現一個一致的主題：**作業系統一層層地在裸機之上疊出「方便的假象」**。
 
-每個層次都解決了一個明確的問題：韌體抽象了硬體差異，Kernel 抽象了資源競爭，VFS 抽象了儲存後端，syscall 介面抽象了特權模式切換。理解這條抽象鏈，你就能更準確地預測程式在 OS 層面的行為，而不是把它當黑盒猜測。
+- 韌體與 bootloader 把 CPU 從一個只會執行寫死位址的裸核心，帶進 kernel 的世界。
+- privilege rings 用硬體強制的隔離，換來「一支程式壞掉不會拖垮全部」的穩定性。
+- virtual memory 給每個 process 一個獨立、隔離的位址空間的錯覺。
+- file system 把一排區塊編號包裝成我們熟悉的檔案。
+
+理解這條「從無到有」的路徑，比死背各章名詞更能建立起對作業系統的心智模型——因為每一個抽象層，都是為了解決前一層赤裸暴露出來的某個真實問題而存在。
 
 ## 參考資料
 
-- [Every operating system concept in one video... — Fireship（YouTube）](https://www.youtube.com/watch?v=MtxP2pyCvYA)
-- [Fireship 頻道](https://www.youtube.com/@Fireship)
-- [Operating Systems Unveiled: From Boot-Up to Shutdown — OVEX TECH](https://blog.ovexro.com/operating-systems-unveiled-from-boot-up-to-shutdown)
+- [Operating Systems in 15 Minutes（Fireship）](https://www.youtube.com/watch?v=MtxP2pyCvYA)

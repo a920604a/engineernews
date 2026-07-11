@@ -8,8 +8,7 @@ tldr: "From Carbon (code-to-image), nektos/act (run GitHub Actions locally), to 
 description: "10 open-source projects that solve specific developer pain points: visual code sharing, local CI execution, runtime type validation, and terminal UI building — none of them are 'yet another X replacement.'"
 type: listicle
 original_url: "https://www.youtube.com/watch?v=qPuzWFvRajk"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_200904_191084.mp3"
+draft: false
 ---
 
 Your GitHub stars list probably has a bunch of "use this later" repos you've never actually opened. These aren't those. Each one solves a very specific pain point, and most of them are things you'll reach for within three days of installing them.

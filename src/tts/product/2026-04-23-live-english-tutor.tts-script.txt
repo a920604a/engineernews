@@ -1,0 +1,45 @@
+Live English Tutor 是一套把「即時語音」放在正中央的 AI 英文家教系統。它的概念很簡單：學生打開麥克風，需要的話還能開攝影機或分享螢幕，然後就跟一位叫 Emma 的 AI 老師直接對話練習。過程中 Emma 會即時幫你糾錯，等課上完，系統還會生成一份中文的學習報告。
+
+大部分語言學習工具都是以文字為主，你打字、它回你。但這個專案刻意反其道而行，重心放在「自然對話」，讓你真的像跟真人家教一樣開口說。而要做到這件事，最難的工程問題就是：即時語音的延遲，還有整套架構怎麼整合。這也是整個系統設計的主軸。
+
+先講架構。系統刻意分成三層，彼此解耦、各管各的。
+
+第一層是前端，也就是瀏覽器。技術上是 React 加 Vite，用 Firebase 做 Google 登入，透過 REST API 跟後端溝通，然後用 LiveKit 的 JS SDK 建立 WebRTC 的語音跟視訊連線。
+
+第二層是 FastAPI 後端，負責驗證 Firebase token、管理課程跟訊息、簽發 LiveKit token，資料通通存進 PostgreSQL。
+
+第三層是 AI 老師 Emma 本人。她跑在一個獨立的 worker 上，背後接的是 Google Gemini 2.5 Flash Native Audio。
+
+外部服務則有幾個：Self-hosted 的 LiveKit、負責認證的 Firebase、負責對話跟語音的 Gemini API，還有跑在外部伺服器、專門生成課後報告的 Ollama。
+
+接下來這個決策很關鍵——為什麼選 Gemini 的原生音訊模型。
+
+傳統的語音對話系統，通常要串一長串 pipeline。先做語音活動偵測，判斷你有沒有在講話；然後語音轉文字；再把文字丟給大語言模型生成回應；最後再把回應的文字轉回語音。四個階段,每一段都有自己的延遲，疊加起來，對話的流暢感就毀了,你會覺得對方反應很慢，像在跟機器人講話。
+
+這個專案改用 Gemini 2.5 Flash Native Audio，一個原生音訊模型，直接把剛剛那四段——偵測、轉文字、生成、轉語音——整合在同一個模型裡。而且 Agent 端有開 video enabled，所以除了聲音，它也能看到你的攝影機畫面或螢幕分享。這樣一來，把多個服務串接起來的延遲跟複雜度，就大幅降下來了。這是降低對話延遲最核心的一步。
+
+再來聊 Emma 這個老師怎麼運作。她不是一個固定不變的對話模式，而是用一個狀態機在驅動，會依序在四個階段之間切換，每個階段對應不同的 System Prompt。第一階段是暖身，先讓你進入狀況；接著進入對話練習；練習中如果你講錯，就切到即時糾錯，糾完再回到練習；最後練習結束，進入總結。對話的訊息跟糾錯紀錄，會透過 Agent 的回呼機制,呼叫後端的內部 API 存下來。這些內部端點要帶一個叫 x-internal-secret 的 header，只給 Agent 用，跟對外的使用者 API 完全隔離。
+
+那一堂課實際上是怎麼跑的？學生先做 Google 登入，前端跟後端要一個 LiveKit token 並建立課程，後端就去 LiveKit 建立一個房間、把 Agent 派進去，Emma 就啟動了。學生用 WebRTC 加入房間，開始對話。這個過程會不斷循環：你語音輸入，Emma 回應加即時糾錯，同時把訊息跟糾錯持久化到後端。等你結束課程，前端通知後端，後端就去觸發 Ollama 生成課後報告，最後把中文報告回傳給你。
+
+值得注意的是,課後報告這塊是獨立於主對話流程的，由 Ollama 負責，而且預設是關閉的。你得把 ENABLE_REPORT_GENERATION 設成 true，並確認 Ollama 伺服器連得上，它才會啟用。前端可以查報告的狀態，會有三種：關閉、生成中、或已完成。
+
+然後講一個很實務的坑——Self-hosted LiveKit 跟區網連線。
+
+這個專案的 LiveKit 是自己架的 Docker 模式，不需要 LiveKit Cloud 帳號，整套用一個 docker-compose 檔在本地拉起來就好。但實務上會踩到一個很典型的 WebRTC 問題：你在自己這台機器上測都好好的，可是換成區網裡的另一台裝置去連，就失敗了，錯誤訊息是 could not establish pc connection。
+
+原因在哪？在於 ICE candidate 廣播出去的 IP 不對。解法是把 LIVEKIT_NODE_IP 這個設定，設成主機的區網 IP，比如 192.168 那一串，讓 LiveKit 廣播正確的位址，設完重啟 server 就好。這邊給大家一個經驗法則：這種「本地能跑、換裝置就斷線」的問題，十之八九出在 ICE 跟網路層，而不是你的應用邏輯。別在應用程式碼裡瞎找。
+
+安全這塊，整個系統有兩道很清楚的信任邊界。對外的部分，所有使用者 API 都需要 Firebase 的 ID Token，前端先登入拿 token，後端用 Firebase Admin SDK 驗證。對內的部分，就是 Agent 打回後端的那些回呼，用剛剛提到的 x-internal-secret 共享密鑰保護，跟對外 API 隔開。
+
+另外，如果你要部署到 Cloudflare Pages，有兩件事一定要做。第一，去 Firebase Console 的 Authorized domains 把 pages.dev 這個網域加進去，不然 Google 登入會直接回你 unauthorized-domain 的錯誤。第二，去後端的 ALLOWED_ORIGINS 把前端網域加進去，避免 CORS 錯誤。這兩個都是很容易漏掉、然後卡半天的地方。
+
+好，做個收尾。這套 Live English Tutor，我覺得有三個重點值得記住。
+
+第一，架構上把即時語音家教拆成三層——媒體層用 LiveKit 的 WebRTC、API 層用 FastAPI 加 PostgreSQL、AI Agent 層用 Gemini 加狀態機，三層獨立運作、各司其職，這種解耦讓系統好維護也好擴充。
+
+第二，也是最關鍵的技術決策——用原生音訊模型取代傳統的語音轉文字、文字轉語音那一整套 pipeline，這是壓低對話延遲、讓對話變自然的核心。
+
+第三，Self-hosted 的 LiveKit、Firebase 認證,加上內部密鑰這三樣，一起撐起了這套系統在本地跟生產環境的運行基礎跟安全邊界，而且那個 ICE 廣播 IP 的坑，是自架 WebRTC 幾乎人人都會遇到的，先記起來能省你不少時間。
+
+即時語音 AI 的門檻，正在被原生音訊模型快速拉低,這個專案就是一個很好的起手式範例。

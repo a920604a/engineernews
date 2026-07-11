@@ -8,8 +8,8 @@ tldr: "NVIDIA Lyra 2.0 generates geometrically consistent, indefinitely explorab
 description: "Lyra 2.0 is NVIDIA Spatial Intelligence Lab's open-source framework for generating explorable 3D worlds from a single photo. This post breaks down its two-stage architecture, how geometry-based frame retrieval works, and how it compares to GEN3C."
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=eCw33snvoNI"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260522_234406_047446.wav"
+draft: false
+audio_url: "/api/tts/r2/tts/tts_20260710_095414_440959.mp3"
 ---
 
 Upload a single photo of a coffee shop. A model turns it into a 3D space you can walk through, turn corners in, and see rooms that weren't visible in the original image. Not a 360-degree panorama — an actual explorable 3D environment that maintains geometric consistency wherever the virtual camera goes. NVIDIA Spatial Intelligence Lab's **Lyra 2.0**, released April 15, 2026 under Apache 2.0, is the current state of the art for this problem.

@@ -8,8 +8,8 @@ tldr: "The Data Lakehouse merges the ACID reliability of data warehouses with th
 description: "A technical explainer on Data Lakehouse architecture: why it exists, how it works, the differences between Apache Iceberg and Delta Lake, and the 2025 convergence trend."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=taSmwcqdkQk"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260522_234542_004578.wav"
+draft: false
+audio_url: "/api/tts/r2/tts/tts_20260710_235240_366228.mp3"
 ---
 
 Data infrastructure has taken a winding path over the last decade. Data warehouses dominated, then data lakes emerged as a cheap way to store massive amounts of raw data — only to create years of headaches around governance and query performance. The Data Lakehouse is the architecture pattern trying to end that tug-of-war: the same storage layer delivers both data warehouse reliability and data lake flexibility.

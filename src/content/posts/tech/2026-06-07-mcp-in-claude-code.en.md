@@ -11,8 +11,7 @@ tldr: "MCP (Model Context Protocol) is an open protocol designed by Anthropic th
 description: "A deep look at MCP (Model Context Protocol): how Anthropic designed this standard for connecting AI to external tools, Claude Code's MCP integration implementation details, how it differs from function calling, and how Tool Search solves MCP's context consumption problem."
 type: deep-dive
 original_url: "https://www.youtube.com/shorts/VMF4InsZm9I"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_201614_010678.mp3"
+draft: false
 ---
 
 Claude Code can use GitHub, query Postgres, search Slack channels — these aren't Claude's innate capabilities. They're plugged in through MCP (Model Context Protocol).

@@ -1,0 +1,61 @@
+You've probably heard the phrase "first principles" before. The idea is simple enough: when you hit a problem, you don't rush to see how everyone else solved it, you don't reach for industry conventions or so-called best practices. Instead, you step back to the most fundamental essence of the problem, and rebuild the solution from there. The opposite of that is analogical thinking — you find someone who succeeded, and you copy them.
+
+Sounds easy, right? But here's the thing. In this episode of Dadu's Small Talk, Joe — Chang Kuo-yang — makes a sharp observation. After years as a project management consultant and instructor, he's found that where most people get stuck isn't understanding the idea. It's actually getting back to the essence. Tell someone to get back to essence, and they'll say, "I thought I was already there." But they're not. Most people simply don't have the ability to truly step back.
+
+Now, the most famous example of first principles is Elon Musk breaking down the cost of a battery from scratch. But Joe argues this method matters even more for ordinary office workers with limited resources — because we can't afford to take detours. So instead of explaining the concept one more time, he offers three concrete thinking exercises. The goal isn't to understand them. It's to force yourself to decompose every problem this way until it becomes intuition.
+
+Let's start with exercise one: swap "what should I do" for "what am I actually solving."
+
+The classic question Joe gets is, "Joe, should I take the PMP exam or not?" A nice clean yes-or-no. But Joe says if you answer that directly — either way — you've already fallen into a trap. Because until you clarify the context underneath, "yes" or "no" doesn't mean anything.
+
+So he counters with, "What goal are you trying to hit by taking the PMP?" Some people want the certificate to shore up a credential. Some want it to help at work. But most commonly, it's for a career switch. Say someone wants to become a product manager. Joe keeps pressing: "Have you actually looked at product manager job postings? Do any of them require a PMP?" And most people freeze — because they never looked. They just assumed, "get a PMP, become a product manager." That's jumpy, linear thinking.
+
+The truth is, what a product manager actually needs is: have you built a product, can you analyze data, do you understand the business environment, have you worked with engineers. PMP might matter, but it's way down the list. So why burn six months on a certificate that doesn't move you toward your real goal?
+
+That's the most basic application of first principles. You're not deciding at the "should I take the PMP" level. You step back and ask, "what problem am I trying to solve by taking it?" Define that core problem first, then reason up from the ground.
+
+And this works everywhere. In project management, when a new requirement lands, your first reaction shouldn't be "how do I do this." It should be, "wait — why does this problem even exist? Is it technical, is it managerial, or is it political?" Get the nature of the problem wrong, and everything downstream goes crooked. People call this reading the situation. Find the essence, and the solution takes half the effort for twice the result.
+
+How do you practice this? Don't rush to an answer. Write the problem down. Then ask yourself, "is this really the problem I need to solve? Or is the real one sitting a layer deeper?" Ask "why" a few more times, and you get a shot at the core.
+
+Exercise two: surface the hidden assumptions behind "everyone does it this way."
+
+Every day we make decisions, and each one hides assumptions we don't even notice. Joe's example: after five to seven years on the job, a lot of people feel stuck and think, "should I go get a master's?" Ask them why, and they say, "because everyone who got promoted seems to have one."
+
+Let's take that apart. The observation — "the promoted people all have master's degrees" — might be true. But the assumption buried underneath is that the master's caused the promotion. Does that hold? Couldn't it be that those people were just more driven to begin with? They chased the master's because their personality pushes them to chase things, and they got promoted because their work was good — with no direct link to the degree at all? The master's might be one factor, but it's not the whole story.
+
+And that distinction is the entire decision. If the master's is the only reason people get promoted, then sure, go get it. But if it's merely correlated, not causal, you'll spend two years — maybe full-time, giving up real income — only to find it does nothing for your promotion.
+
+Joe suggests breaking any decision into three layers. First, facts — things you can check and verify. Like, it's twenty-seven degrees today. Second, inferences — judgments based on facts, but not yet verified. It's twenty-seven degrees, so the UV outside is probably high. And third, assumptions — premises you take for granted but never checked. Like, "a master's will help me get promoted." And here's the key insight: most bad decisions don't come from misreading a fact or making an unreasonable inference. They come from a bottom-layer assumption that's simply wrong — and nobody ever checked it.
+
+There's another common version of this trap. You're unhappy in your job, you're interested in a different field, so you figure, "a master's will get me in." But in a lot of professional fields, if you have no relevant experience and didn't come from that background, two years of a theory-heavy degree still leaves you on the outside. So the question is: before you commit, did you actually ask anyone working in that field? If that path is common there, great — it's a verified assumption. But very often you ask around and everyone shakes their head. Then you spend two years, send out resumes, and nobody even calls you in. A whole misunderstanding.
+
+To practice: pull the decision apart, find the assumptions inside, and ask — is "doing this will make me rich, or get me promoted, or let me switch careers" actually true? Then verify it against reality. And if you don't have enough data, run the lowest-cost minimum viable experiment first, rather than inventing an assumption in your head and backfilling reasons to believe it. You'll be amazed how many things you took for granted don't survive a little questioning.
+
+Exercise three: start from "what do I need," not "what does the market offer."
+
+We're drowning in options. Want to learn something? Tens of thousands of online courses. Want to invest? Hundreds of financial products. Want a job? Thousands of listings. And when there's too much, most people shortcut it — they check reviews, rankings, recommendations. They hop on Facebook or Threads and post, "I want this thing, what should I get?"
+
+But that's textbook analogical thinking. You start from what the market offers and pick the most-recommended option. And the most-recommended option only suits the most people, or one specific group. It's not necessarily the best fit for you.
+
+First principles flips it. Don't look at the market first. Ask yourself, "what's my situation? What am I lacking? What do I actually need?" Get clear on your own gaps, and then turn to see what in the market connects to them. Your pick might not be the popular one — but it delivers the most value for you.
+
+Joe uses Dadu's own founding as an example. They didn't survey the existing education companies and imitate them — that just leads into a red ocean. They started from their own fumbling experiences through their twenties and thirties, the feeling of "if only I'd known this a few years earlier." They asked the adults around them, found everyone had the same gaps, and designed courses from those root problems. Different starting point, completely different product.
+
+Back to everyday life. Want to learn personal finance? Don't immediately jump on Threads asking "which ETF should I buy." First ask, "why do I want to learn this?" For retirement? For a home down payment in three years? Or because inflation is eating your savings? Different purposes lead to completely different strategies — some steady, some volatile, sometimes something else entirely. Chase what everyone recommends, and you'll end up with a pile of stuff that doesn't fit you at all.
+
+To practice: before any important choice, spend ten minutes writing down your own needs. At this stage, read no recommendation posts, ask no one. Just ask yourself — where am I now, where do I want to be, what's missing in between. Map that gap first, then look at the options. Your judgment gets sharper almost instantly, because now you're holding a clear standard of your own, instead of borrowing everyone else's and pretending it fits.
+
+And here's why this matters especially for ordinary office workers. Most first-principles articles cite Musk or Jobs making huge business calls, so people assume it's a genius-only method. Joe says it's the exact opposite. Geniuses and big bosses have the resources to try everything. Ordinary people don't. Our time, money, and energy are limited — we often literally can't afford the detour. Just like the person who goes for a master's to switch careers and ends up stranded: the field they wanted won't take them, and they've thrown away two years of tenure. Stuck, neither up nor down.
+
+Precisely because we can't cover everything, we need — at the critical moments — to stop and ask: am I taking this path because I've thought through the whole picture and know it serves my real problem? Or just because everyone else takes it, so I blindly trust it'll work out for me too? Spend your limited resources where they count. That's what first principles is really telling you.
+
+So let me leave you with three takeaways.
+
+One: when you hit a problem, ask "what am I actually solving" before agonizing over surface options. If an option doesn't connect to the real problem, yes or no is meaningless.
+
+Two: before any big decision, break the approach down, find the assumptions inside, and verify them. Go only if they pass. That habit might save you two years and a small fortune.
+
+And three: when you choose, start from your own needs, not from what the market hands you. Define the problem clearly, test your assumptions cheaply, and you go straight to the core.
+
+None of these are hard. The real work is turning them into intuition. And once they become intuition, the quality of your decisions changes completely — because you're no longer being pushed along by the options. You're steering the direction yourself.

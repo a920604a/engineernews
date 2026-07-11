@@ -1,111 +1,112 @@
 ---
-title: "什麼是 Data Lakehouse？從資料倉儲到湖倉一體的演化"
-date: 2026-05-06T11:11:02.900Z
-category: tech
-tags: ["data-lakehouse", "apache-iceberg", "delta-lake", "system-design", "data-engineering"]
-lang: zh-TW
-tldr: "Data Lakehouse 把資料倉儲的 ACID 事務性和資料湖的低成本開放儲存合二為一，以 Apache Iceberg 和 Delta Lake 為核心的開放表格格式是現在的主流實作路徑。"
-description: "深入解析 Data Lakehouse 架構：為什麼出現、怎麼運作、Apache Iceberg 與 Delta Lake 的差異，以及 2025 年湖倉融合的最新趨勢。"
-type: explainer
+title: "什麼是 Data Lakehouse？從雙系統同步困境到單一共享資料層"
+date: "2026-05-06T11:11:02.900Z"
+category: "tech"
+tags: ["data-lakehouse","apache-iceberg","delta-lake","system-design","data-engineering"]
+type: "explainer"
 original_url: "https://www.youtube.com/watch?v=taSmwcqdkQk"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260522_234547_750922.wav"
+draft: false
+key_points:
+  - "Data Lakehouse 想在一個共享資料層上，同時保有資料倉儲的可靠性與資料湖的規模。"
+  - "由下而上分四層：物件儲存 → open table format → 共享 catalog → 治理層。"
+  - "open table format（Iceberg／Delta Lake／Hudi）用 metadata 與 snapshot，在物件儲存上加回 ACID 與 schema 演化。"
+tldr: "Data Lakehouse 用「單一物件儲存層 + open table format + 共享 catalog + 治理層」，把原本各自為政的資料湖與資料倉儲合併成一個共享資料層。"
+description: "從資料倉儲與資料湖的雙系統同步困境出發，由下而上拆解 Data Lakehouse 的四個分層：物件儲存、open table format、共享 catalog 與治理層。"
+audio_url: "/api/tts/r2/tts/tts_20260710_235354_350011.mp3"
 ---
 
-資料基礎設施在過去十年走過了一段彎路：先是資料倉儲（Data Warehouse）主宰一切，接著資料湖（Data Lake）以低成本儲存大量原始資料的姿態崛起，但資料湖在治理和查詢效能上的缺陷讓工程師頭痛多年。Data Lakehouse 是試圖終結這場拉鋸的架構模式——在同一個儲存層上，同時提供資料倉儲的可靠性和資料湖的彈性。
+「什麼是 data lakehouse？它跟 data lake 或 data warehouse 有什麼不同？」要回答這個問題，得先看懂 lakehouse 想取代的那兩套系統，以及它們湊在一起時會產生什麼麻煩。
 
-## TL;DR
+## 先認識要被取代的兩套系統
 
-- **Data Warehouse**：結構化、高效能、高成本；Schema-on-write，改資料很痛苦
-- **Data Lake**：低成本、彈性大；但缺 ACID、難治理、查詢慢
-- **Data Lakehouse**：在物件儲存（S3/GCS）上加開放表格格式，同時獲得兩者優點
-- 主流實作：**Apache Iceberg**（跨引擎互通）和 **Delta Lake**（Databricks 生態系優先）
-- 2025 年趨勢：Delta Lake UniForm 讓兩種格式可以互讀，產業走向「寫一次，到處讀」
+**Data Warehouse（資料倉儲）** 存放的是經過整理、可直接拿來分析的資料。它通常支援 ACID transaction，並針對快速的 SQL 查詢做最佳化。例如財務團隊會用它來拉出精準的每日營收報表。
 
-## 是什麼
+**Data Lake（資料湖）** 則是用便宜的物件儲存（object storage），以極大的規模存放原始（raw）、半結構化與非結構化的資料。例如資料科學團隊會把數百萬筆 clickstream log 丟進去，用來訓練機器學習模型。
 
-Data Lakehouse 不是一個具體的軟體產品，而是一種架構模式。它的核心想法是：
+一個是「乾淨、可靠、可查詢」，一個是「便宜、海量、什麼都能塞」——各有各的定位。
 
-> **把事務性元資料層疊加在開放格式的物件儲存上**
+## 問題出在：把兩套系統擺在一起
 
-傳統做法通常是資料湖和資料倉儲並存，資料需要做 ETL 搬來搬去，造成延遲和不一致。Lakehouse 把這兩層合并：資料存在 Parquet 或 ORC 等開放格式的 S3/GCS/ADLS 上，由 Apache Iceberg 或 Delta Lake 這樣的開放表格格式（Open Table Format）提供 ACID 語義、時間旅行和 Schema 演化。
+拿一個忙碌的電商平台當例子。它會產生大量有價值的資訊：raw order events、payment records、support logs。
+
+典型做法是：原始檔案落地到物件儲存，形成 data lake；同時，整理過的分析用資料表放在另一套獨立的 data warehouse 裡。
+
+早期這樣運作沒問題。但隨著平台成長，**每一次 schema 變更都會同時牽動兩條 ingestion 路徑、兩套品質檢查、兩種存取模型**。資料工程師最後花了大把時間，只是在讓這兩套系統彼此同步，而不是在打造新的資料產品。
+
+Data Lakehouse 就是為了解決這件事而生的架構：**維持一個共享的資料層，同時保有資料倉儲的可靠性，以及資料湖的規模。**
+
+## 由下而上，一層一層蓋起來
+
+Lakehouse 不是單一產品，而是把幾個元件疊起來的架構。我們從最底層開始蓋。
+
+### 第一層：單一物件儲存層
+
+一切從單一的儲存層開始。以電商團隊為例，raw order events 和整理後的分析資料表，現在都放在**同一個物件儲存層**上。我們處理原始資料後，把整理好的結果以最佳化的檔案格式（例如 **Parquet**）寫回同一個物件儲存。
+
+這樣做移除了系統之間反覆複製資料的成本。物件儲存高可用、耐久，而且擴充便宜。
+
+但它有個根本限制：**它只是存放原始檔案，並不知道什麼叫「資料庫表格」。** 於是：
+
+- 如果一個寫入工作跑到一半失敗，讀取端可能看到一張不完整或不一致的表。
+- 如果有人在別人正在寫入時去讀，可能只讀到更新的一部分。
+
+我們需要一個方法，直接在這些檔案之上，加回類似資料庫的規則。
+
+### 第二層：Open Table Format
+
+要拿回這些規則，就需要一個 **open table format**，例如 **Apache Iceberg、Delta Lake 或 Apache Hudi**。
+
+這些格式不直接把 raw 檔案暴露出去，而是維護一份 table metadata、snapshot 與 commit history。它帶來兩個關鍵保證：
+
+1. **原子性**：每一次寫入不是完全成功、就是完全失敗；即使有並行更新，讀取端永遠看到一致的視圖。
+2. **schema 演化**：許多 schema 變更被當成 metadata 操作來處理。例如你要改一個欄位名稱，往往只要更新一下 table definition，而**不需要重寫整批歷史資料所在的巨大目錄**。
+
+到這裡，我們已經有了可靠的資料表。
+
+### 第三層：共享 Catalog
+
+有了可靠的表格，下一個問題是：不同工具要怎麼「找到」這些表？這需要一個**共享的 catalog**。
+
+catalog 把一個表名（例如 `orders`）對應到它的 metadata、schema 與目前版本。任何工具想讀或寫的時候，都先問 catalog：「最新版本在哪？」——這就形成了**單一事實來源（single source of truth）**。
+
+舉例來說，你可能用像 **Apache Spark** 這種重量級引擎去 ingest 數百萬筆新訂單，同時用像 **Trino** 這種快速查詢引擎去撐一個 dashboard。因為兩者都查詢同一個 catalog，**Trino 就能看到 Spark 剛剛 commit 的新紀錄。**
+
+### 第四層：治理（Governance）層
+
+有了共享 metadata 之後，接著是團隊規模下的治理問題。當平台成長，治理要回答幾個關鍵的營運問題：
+
+- 有哪些資料集存在？
+- 它們從哪裡來？
+- 究竟**誰**可以讀取像 payment 這類敏感欄位？
+
+像 **AWS Lake Formation** 或 **Databricks Unity Catalog** 這類工具，提供一個集中的地方來管理這些規則，並鎖定特定欄位的存取。
+
+如果說 table format 負責確保資料是**正確的**，那治理層就是負責確保資料是**安全的**。為了落實這一點，許多團隊還會用 cloud security 去把底層的物件儲存本身鎖起來。
+
+## 四層架構總覽
 
 ```mermaid
-graph LR
-    A[資料來源] --> B[物件儲存 S3 / GCS]
-    B --> C[開放表格格式 Iceberg / Delta Lake]
-    C --> D[元資料與事務日誌]
-    C --> E[Spark]
-    C --> F[Trino / Presto]
-    C --> G[Snowflake]
-    C --> H[BigQuery]
-    D --> I[ACID 事務]
-    D --> J[時間旅行]
-    D --> K[Schema 演化]
+graph TD
+    A[治理層 / Governance<br/>Lake Formation · Unity Catalog<br/>誰能讀哪些欄位] --> B
+    B[共享 Catalog<br/>表名 → metadata / schema / 版本<br/>single source of truth] --> C
+    C[Open Table Format<br/>Iceberg · Delta Lake · Hudi<br/>ACID · snapshot · schema 演化] --> D
+    D[物件儲存層<br/>Parquet 等最佳化檔案<br/>高可用 · 耐久 · 便宜]
+
+    E[Spark<br/>ingest 訂單] -.查詢.-> B
+    F[Trino<br/>撐 dashboard] -.查詢.-> B
 ```
 
-## 為什麼重要
-
-資料倉儲的問題在於成本和彈性：大多數雲端資料倉儲的計算和儲存綁定在一起，擴展成本高；而且 Schema 定義嚴格，機器學習和 AI 工作負載需要的非結構化資料很難放進來。
-
-資料湖的問題則是可靠性：沒有 ACID 事務代表並發寫入可能造成資料損毀；沒有 Schema 驗證代表資料品質難以保證；小檔案問題讓查詢效能每隔一段時間就需要人工介入整理。
-
-Lakehouse 解決了：
-- **成本**：資料存在便宜的物件儲存，計算按需啟動
-- **ACID**：開放表格格式的事務日誌確保原子性
-- **多引擎**：同一份資料可被 Spark、Trino、Snowflake、DuckDB 同時讀取
-- **ML/AI 親和**：非結構化和半結構化資料可以和結構化資料共存
-
-## 怎麼運作
-
-以 Apache Iceberg 為例，其元資料層有三個層次：
-
-1. **Metadata files**：記錄表格的 Schema、分區規格和快照歷史
-2. **Manifest lists**：每個快照（snapshot）對應一個 manifest list，記錄哪些資料檔屬於這個快照
-3. **Manifest files**：具體記錄每個 Parquet 資料檔的路徑、行數、統計資訊（最大值/最小值）
-
-查詢引擎在讀取前先走 Metadata → Manifest list → Manifest files，利用統計資訊做 partition pruning 和 file pruning，大幅減少需要掃描的資料量。這個設計也讓 Iceberg 可以在沒有中央 catalog 的情況下做到跨引擎原子切換。
-
-Delta Lake 的架構類似但更 Spark 中心：在資料夾根目錄放一個 `_delta_log/` 目錄，裡面存 JSON 格式的事務紀錄（00000000000000000000.json、00000000000000000001.json……），每隔 10 個版本產生一個 Parquet checkpoint 加速載入。
-
-## 跟資料倉儲和資料湖的差別
-
-| 維度 | 資料倉儲 | 資料湖 | Data Lakehouse |
-|------|---------|--------|----------------|
-| 儲存格式 | 專有格式 | 開放格式（Parquet/ORC） | 開放格式 |
-| 儲存成本 | 高 | 低 | 低 |
-| ACID 事務 | 有 | 無 | 有（靠表格格式） |
-| Schema | 嚴格（Write） | 彈性（Read） | 可演化 |
-| 多引擎存取 | 困難 | 容易 | 容易 |
-| 即時串流 | 有限 | 困難 | 支援（Iceberg v2+） |
-| ML/AI 工作負載 | 困難 | 方便 | 方便 |
-
-### Apache Iceberg vs Delta Lake
-
-| | Apache Iceberg | Delta Lake |
-|-|---------------|-----------|
-| 起源 | Netflix → Apache 基金會 | Databricks → Linux 基金會 |
-| 設計重點 | 跨引擎互通、大規模分區 | Spark 效能、DML 簡易性 |
-| Catalog | 多種（Hive、Nessie、REST） | 主要依賴 Unity Catalog |
-| 社群引擎支援 | Snowflake、Dremio、BigQuery、Flink | 主要 Databricks、Spark |
-| 格式互通 | Iceberg v3 支援讀 Delta | Delta UniForm 可發布 Iceberg 元資料 |
-
-2025 年的趨勢是兩個格式在融合：Delta Lake 的 **UniForm** 功能讓 Delta 表格同時公開 Iceberg 相容的元資料，任何支援 Iceberg 的引擎都能讀取，實現「寫一次、到處讀」。
+由下往上看：物件儲存提供便宜的規模；open table format 加回資料庫級的可靠性；共享 catalog 讓不同引擎看到同一份真相；治理層決定資料是否安全、誰能碰。
 
 ## 小結
 
-Data Lakehouse 已經不是概念，而是 2025 年大多數資料工程團隊在設計新系統時的預設起點。如果你的公司正在考慮要選哪個表格格式：
+Data Lakehouse 的核心不是某個神奇的產品，而是一種疊法：**把可靠性收斂到 table format 與 catalog，把海量與低成本留給物件儲存，再用治理層把安全鎖上。**
 
-- 主要用 **Databricks** 生態系統 → Delta Lake
-- 需要 **多引擎互通**（Snowflake + Spark + Trino）→ Apache Iceberg
-- 兩者都要 → Delta UniForm 或 Iceberg 的多引擎 Catalog
-
-不管選哪個，底層原理是相同的：把可靠性放在元資料層，把彈性和低成本留給物件儲存。
+它真正解掉的痛點，是電商例子裡那個「維護兩套系統同步」的無底洞——當 raw 資料和分析資料表共用同一層儲存、共用同一個 catalog，schema 變更不再需要在兩條路徑上各做一次，工程師才有時間回去打造真正的資料產品。
 
 ## 參考資料
 
-- [Apache Iceberg vs Delta Lake | Dremio 技術部落格](https://www.dremio.com/blog/apache-iceberg-vs-delta-lake/)
-- [The 2025 & 2026 Ultimate Guide to the Data Lakehouse | DataLakehouseHub](https://datalakehousehub.com/blog/2025-09-2026-guide-to-data-lakehouses/)
-- [Exploring the Architecture of Apache Iceberg, Delta Lake, and Apache Hudi | Dremio](https://www.dremio.com/blog/exploring-the-architecture-of-apache-iceberg-delta-lake-and-apache-hudi/)
-- [Apache Iceberg vs Delta Lake Feature Comparison | Onehouse](https://www.onehouse.ai/blog/apache-hudi-vs-delta-lake-vs-apache-iceberg-lakehouse-feature-comparison)
-- [原始影片](https://www.youtube.com/watch?v=taSmwcqdkQk)
+- [原始影片：What's a Data Lakehouse?](https://www.youtube.com/watch?v=taSmwcqdkQk)
+- [Apache Iceberg 官方文件](https://iceberg.apache.org/)
+- [Delta Lake 官方網站](https://delta.io/)
+- [Apache Hudi 官方網站](https://hudi.apache.org/)

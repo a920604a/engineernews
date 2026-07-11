@@ -1,0 +1,37 @@
+Imagine you want real-time stock quotes, company financials, and market news — but every serious tool for that, Bloomberg being the poster child, hides all of it behind a subscription wall that costs a fortune. OpenStock asks a different question: what if that dashboard were open-source, self-hostable, and free forever? Its own tagline says it best — "built openly, for everyone, forever free."
+
+It's maintained by a group called Open Dev Society, and it's released under the AGPL-3.0 license. Now, that license choice matters, so let me unpack it. AGPL basically says: if you modify this, redistribute it, or even just deploy it as a network service that other people use, you have to release your source code under the same license and credit the original authors. There's no taking it private. And the project is upfront about what it is and isn't — it's not a brokerage, the market data can be delayed depending on your provider and setup, and nothing on the site counts as investment advice.
+
+Here's the thing that really defines this project, though. It's not the tech stack — it's the attitude. Open Dev Society ships a manifesto right there in the README, and the core belief is that technology should belong to everyone, knowledge should be open and accessible, and communities should welcome newcomers with trust instead of gatekeeping. Their commitment is to not lock knowledge away, not charge for access, and run on transparency and donations rather than profit. So when you look at OpenStock, understand it less as "here's a clever piece of software" and more as "here's a stance — refuse commercialization, welcome beginner contributions."
+
+Now let's talk about how it's actually built.
+
+At the core, it's Next.js 15 with the App Router, React 19, and TypeScript. Styling is Tailwind CSS version 4, paired with shadcn/ui and Radix primitives, and Lucide for icons. And when I tell you it's a TypeScript project, I mean it — the codebase is roughly ninety-three percent TypeScript, six percent CSS, and a sliver of JavaScript. Essentially pure TypeScript, front to back.
+
+For authentication and data: login is email and password, handled by a library called Better Auth, wired to a MongoDB adapter. The data itself lives in MongoDB, accessed through Mongoose. The actual market data — stock symbols, company profiles, market news — all comes in from the Finnhub API. And the charts? Those are TradingView widgets embedded directly into the page, so you're not reinventing candlestick charts from scratch.
+
+Then there's an automation layer. A tool called Inngest handles background events, cron scheduling, and AI inference. Nodemailer sends email through Gmail. So picture the whole flow: a user hits the Next.js app, which talks to Better Auth for login, MongoDB for storage, Finnhub for prices and news, TradingView for charts — and separately, Inngest fires off scheduled jobs that call an AI model like Gemini to write personalized emails and then send them out through Nodemailer.
+
+So what can it actually do?
+
+You get email-password login with protected routes enforced by Next.js middleware. There's a global search with a Command-K palette — that quick launcher you hit with Cmd or Ctrl plus K — backed by Finnhub, showing popular stocks when it's idle and debouncing your queries as you type. Every user gets a personal watchlist stored in MongoDB, with unique symbols per user.
+
+Drill into a single stock and you get the full TradingView treatment: symbol info, candlestick and advanced charts, baseline views, technical indicators, plus company profile and financials. And optionally — this is a nice touch — cross-source sentiment, pulling from Reddit, X, news, and even the Polymarket prediction market. There's a market overview page too, with a heatmap, quotes, and top stories.
+
+On the personalization side, onboarding asks about your country, your investment goals, your risk tolerance, and the sectors you care about. Then the automation kicks in: an AI-generated welcome email written by Gemini through Inngest, plus a daily cron job that emails you a news digest based on your specific watchlist. The whole interface runs dark theme by default.
+
+Two things worth calling out here. First, the AI provider is swappable — it defaults to Gemini, but you can switch to alternatives called minimax or siray just by changing one environment variable, so you're not locked into a single vendor. Second, that sentiment analysis feature is optional; it needs a separate API key and isn't a core dependency, so the app works fine without it.
+
+If you want to run it yourself, here's the shape of it. You'll need Node 20 or newer, a MongoDB connection — either MongoDB Atlas in the cloud or a local Docker container — a Finnhub API key, a Gmail account for sending mail, and optionally a Gemini key. The basic path is: clone the repo, install dependencies, create your environment file, run a quick database-connection test to make sure Mongo is reachable, and start the dev server. If you want the full workflows, cron jobs, and AI features, you also spin up Inngest locally with its CLI. For production, you build and start, and it defaults to localhost port 3000.
+
+The easier route, honestly, is Docker Compose — it brings up two services together, the app itself and a MongoDB 7 container with a persistent volume and a healthcheck. One thing to watch: inside Docker, your MongoDB connection string points to the container's network hostname, not localhost. And on the environment-variable front, beyond the Mongo URI you'll set an auth secret and URL, your Finnhub key, and — if you want AI and email — a Gemini key, an Inngest signing key, and Gmail credentials. Pro tip on that last one: Gmail works best with an app-specific password rather than your real password.
+
+Before you get too excited, two limitations you should sit with. One — data latency. The stock data doesn't live in OpenStock's own database; it's pulled live from Finnhub. On Finnhub's free tier, that data is typically delayed, and real-time quotes may mean paying for an upgrade. Two — and this is important — it is not a trading platform. There's no order placement, no brokerage function. It's a market-intelligence tool, full stop, and nothing on it is investment advice.
+
+So let me leave you with the three things that matter most.
+
+First, OpenStock is a genuinely complete, self-hostable market dashboard built on a modern stack — Next.js 15, MongoDB, Finnhub, TradingView — and it costs nothing to run.
+
+Second, that AGPL license is the whole philosophy in legal form: you can build on it freely, but any public deployment you create has to give back to the community just as openly. That's a feature, not a restriction, if you buy into the mission.
+
+And third, know what you're getting. This is intelligence, not execution — delayed data unless you pay upstream, and no trading whatsoever. But as a free, fully controllable foundation for a retail investor, a student, or an engineer who wants to build their own market tool, it's a remarkably solid place to start.

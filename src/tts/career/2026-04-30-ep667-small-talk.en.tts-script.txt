@@ -1,35 +1,41 @@
-Here's the script:
+Ever spent weeks on a project, shipped it, and then found out the direction was wrong from day one? Or sat through a dozen meetings on some task where nobody actually had the power to make a decision — and then watched the whole thing quietly evaporate, never resolved? Here's the thing: that's not bad luck, and it's not because you're bad at your job.
 
----
+Episode 667 of the podcast 大人的Small Talk has a great name for this. They call it "sucker work" — 冤大頭工作. And the key insight is that it's not random. It follows five structural patterns, and once you can spot them, you can catch a dead-end task before it eats your time.
 
-You've been there. Weeks of work, dozens of meetings, a polished deliverable — and then someone says, "Oh, we actually went in a different direction." And the worst part? The direction was wrong from day one.
+So let's define our terms first, because not all painful work is wasted work. There's a difference between "busy work" — the stuff that's exhausting but actually produces results — and a sucker task. The sucker task is the one where you pour in real time and energy, and the output has basically zero impact. The tragedy is that it's structurally doomed from the very start. You just don't find that out until you've already finished.
 
-This isn't bad luck. It's a pattern. The podcast 大人的Small Talk calls these "sucker tasks" — and once you know the five structural causes, you'll start seeing them everywhere.
+Okay, five causes. Let's walk through them.
 
----
+Cause number one: no clear goal. You know these assignments. "Make this good." "Clean this up." "Just look into it." What they all have in common is there's no clear standard for what "done" looks like. So the person doing the work has to guess. And if you guess right, that's luck. If you guess wrong, that's wasted work. Notice that whether you nail it has almost nothing to do with your actual skill — it's about how well you read the mind of the person who assigned it.
 
-Here's what separates sucker tasks from just hard work: you invest real time and energy, and the output has near-zero actual impact. The brutal part is that sucker tasks look identical to real work from the outside. Same meetings, same effort, same deliverables. The failure is baked in structurally — you just don't find out until after you've finished.
+The fix is simple but powerful. Before you accept the task, ask: "What does done look like? What form is the output? Who's going to use it?" And if the answer comes back as "eh, whatever you think" — that's your warning light. It means the goal itself was never really thought through.
 
-So let's go through the five causes.
+Cause number two: no decision-maker. So the work is happening, but ask yourself — who actually has the authority to say "yep, that's good enough"? A huge amount of wasted work happens because the person who can approve it just isn't around, or worse, there's no single owner at all. And what do you get? Endless revision cycles. That "let's take another look next week" loop that never ends. Or the task just disappears.
 
-**First: no clear goal.** "Clean this up." "Look into it." "Make this better." Sound familiar? When an assignment has no clear completion standard, you're not doing work — you're guessing. And whether you guess right has nothing to do with your ability. It depends entirely on how well you can read the mind of whoever gave you the task. Before you accept anything like this, ask: what does done look like? What form is the output? Who actually uses it? If the answer is "whatever you think," that's your first warning sign.
+The fix: confirm there's one named decision-maker, and that they're actually available on your timeline. If you're not sure when they'll be reachable, nail that down before you start — not after you've done all the work.
 
-**Second: no decision-maker.** A task is running, but who has the authority to say "this is good enough"? In most organizations, this person is either unavailable, or genuinely doesn't exist for that task. What you get instead: endless revision loops, perpetual "let's review again" meetings, or the task quietly dying with no resolution. Before you start, you need a single named decision-maker and a realistic sense of when they're actually available to give direction. Find that out before you've already put in the work.
+Cause number three: no acceptance criteria. Now this one's subtle, because sometimes the high-level goal is clear, but "how good is good enough" is left totally undefined. And that puts you in this state of constant low-grade anxiety. How detailed should I go? Should I dig deeper here? Am I doing too little? Am I overcooking it? And it cuts both ways — the assigner can't even tell whether what you handed them is what they wanted.
 
-**Third: no acceptance criteria.** Even when the goal is somewhat clear, "what level of done counts as done" is usually left open. This creates sustained anxiety for the person doing the work — how deep do I go, is this enough detail, am I doing too much or too little? And on the other side, the person who assigned it has no real way to evaluate whether what you delivered is what they wanted. A simple way to force this into the open: before you start, ask "If I deliver X, would you consider this complete?" Make them answer yes or no. That question alone surfaces more assumptions than most kickoff meetings.
+The fix is to force those criteria out into the open before you start. Something like: "If I deliver X, would you consider this task complete?" That one question does a lot of work.
 
-**Fourth: insufficient resources.** And resources here means more than budget — it means time, people, access to information, and decision authority. The most common version: you're asked to produce a report in a week that actually requires a month of data gathering. Or you need cross-team coordination with no mechanism to get it. Or a decision has to pass through so many approval layers that by the time it comes back, the window has closed. The executor's temptation is to produce something that looks complete but is actually held together with assumptions. That's a direct path to wasted work. The better move — and the harder one — is to surface the mismatch between resources and expectations before you begin, not halfway through.
+Cause number four: insufficient resources. And when we say resources, we mean the whole package — time, people, access to information, and decision authority. When the expectations for a task and the resources you actually have don't match, wasted work is almost guaranteed. You know the classic version: they want a report in a week that honestly needs a month of data-gathering. Or the task needs cross-team coordination, but there's no mechanism for that coordination to happen. Or a decision has to climb through so many layers of approval that it can never be timely.
 
-**Fifth: no feedback loop.** You deliver the work. It disappears. No "great job," no "this didn't land," no "here's how we actually used it." For the person who did the work, this strips away meaning. For the organization, it removes any chance to learn — so the same structural failure can replay three months later, fresh, as if it never happened before. The fix here is active: after a task closes, follow up on how the output was actually used. Not for validation — for calibration. Which parts were useful? Which weren't? That information makes your next piece of work substantially more likely to matter.
+So you're left with two options. Option one: produce something that looks finished but is really just duct-taped together. Option two: say clearly, up front, "this level of resource cannot meet this expectation." The second one is much harder to say out loud — but the first one is a straight shot to wasted work.
 
----
+The fix: the moment you get the task, ask yourself, "What do I actually need to pull this off?" And if the resources and the goal don't line up, raise it before you start — not halfway through when you're already underwater.
 
-Here's what ties all five together. Think of it as a quick checklist you run in the first 30 minutes after receiving an assignment. Is there a clear goal? Is there a named decision-maker? Do we have agreed acceptance criteria? Do I have the resources to actually meet the expectation? And is there a feedback mechanism after delivery? If any of those is missing, you're not yet working on a real task — you're working on a sucker task in progress.
+Cause number five: no feedback loop. Some tasks you deliver, and then... silence. No "looks great," no "this doesn't work," no "here's how we're using it." For you, that drains the whole thing of meaning. But it's worse than that — for the organization, it kills any chance to learn. Which means the exact same wasted-work pattern shows right back up three months later.
 
-The point isn't to shift blame. Managers own some of these failures, employees own some, organizations own some. But the person who can catch these problems earliest is almost always the person receiving the task — because they're the one about to invest the time.
+The fix here is to be proactive. After you finish, follow up on how your output actually got used. And this isn't just for your own peace of mind — it's about building a feedback loop. Was this useful? Which parts landed? Which parts didn't? That information is what makes your next piece of work actually point in the right direction.
 
-Most wasted work can be identified before it starts. You just have to know what you're looking for.
+Now, if you zoom out, you can picture these five as a kind of gauntlet a task has to run. A task starts. Is the goal clear? If no — high risk right away. If yes, next gate: is there a named decision-maker? No? High risk. Yes? Keep going: are there acceptance criteria? Then, are the resources sufficient? And finally, is there a feedback mechanism? Miss any one of those gates, and the task is architecturally set up to fail — you'll finish it, and only then discover it was wasted. Clear all five, and you get work that actually has impact.
 
----
+And that's really the whole point. Sucker tasks are so hard to dodge because at the beginning they look identical to real work. Same meetings, same output requirements, same time investment. The difference is invisible — it's structural.
 
-Three things to take away: One — sucker tasks are structural, not random. They follow the same five patterns every time. Two — the window to catch them is right at the beginning, not after you've delivered. Three — the intervention isn't working harder. It's asking better questions before you say yes.
+So let me leave you with the three things to hold onto.
+
+First: wasted work isn't random and it isn't your fault. It comes from five specific structural gaps — unclear goals, no decision-maker, no acceptance criteria, not enough resources, and no feedback loop.
+
+Second: the fix is never to work harder. It's to ask the right questions before you start. Most sucker tasks can be spotted in the first thirty minutes of getting the assignment — if you know what to look for.
+
+And third: this is a shared responsibility. Spotting these causes isn't about pointing fingers and saying "well, that's the manager's problem." It's about giving yourself the power to see a dead end coming — before you drive into it.

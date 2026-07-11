@@ -8,8 +8,8 @@ tldr: "In 2022, Meesho voluntarily dropped to 0% seller commission—at a time w
 description: "Meesho's product pivot case study: from WhatsApp social commerce reseller to 0% commission direct marketplace. Full breakdown of the decision logic, technical challenges, and the metrics behind India's biggest e-commerce upset."
 type: case-study
 original_url: "https://www.youtube.com/watch?v=49L8lVe_PVo"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_194817_610363.mp3"
+draft: false
+audio_url: "/api/tts/r2/tts/tts_20260710_053542_252321.mp3"
 ---
 
 In 2022, Meesho was India's largest social commerce platform. Their business model was clear: individual sellers (mostly women) resold products through WhatsApp, Meesho took a commission. This model had generated tens of millions of monthly orders and explosive growth curves.

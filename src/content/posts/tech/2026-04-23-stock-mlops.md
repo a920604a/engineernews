@@ -1,86 +1,151 @@
 ---
-title: "Stock MLOps"
-date: 2026-04-23T14:56:03+08:00
-category: tech
-type: case-study
-tags: ["python", "react", "docker", "postgresql", "redis", "mlflow", "prometheus", "grafana", "cicd"]
-lang: zh-TW
-description: "端到端股價預測 MLOps 系統，整合 MLflow 實驗追蹤、Prefect 排程 ETL、Evidently 資料漂移監控與 GitHub Actions CI/CD。"
-tldr: "端到端台美股 ML 系統：MLflow + Prefect + Evidently + CI/CD，從訓練到部署全程可追蹤。"
+title: "Stock MLOps：股價預測的端到端 ML 系統實作"
+date: "2026-04-23T06:56:03.000Z"
+category: "tech"
+tags: ["python","react","docker","postgresql","redis","mlflow","prometheus","grafana","cicd"]
+type: "case-study"
 github: "https://github.com/a920604a/stock-mlops"
-pinned: false
-draft: true
+draft: false
+tldr: "以股價預測為題，實作涵蓋 ETL、實驗追蹤、模型部署、漂移監控與 CI/CD 的完整 MLOps 生命週期，全部用 Docker Compose 在單機編排起來。"
+description: "Stock MLOps 課程專案：用 Prefect、MLflow、FastAPI、Evidently、Prometheus/Grafana 與 GitHub Actions 打造可維護的端到端股價預測 ML 系統。"
+key_points:
+  - "完整 MLOps 生命週期：資料蒐集 → 特徵工程 → 訓練 → 實驗追蹤 → 即時推理 → 部署 → 監控。"
+  - "raw_db（PostgreSQL）存原始資料、ClickHouse 存清洗後 OLAP 資料，Prefect 2 負責 ETL 與訓練排程。"
+  - "Evidently 把漂移指標輸出到 Prometheus，Grafana 視覺化；Kafka + WebSocket 做即時預測與指標推送。"
+audio_url: "/api/tts/r2/tts/tts_20260710_054343_359278.mp3"
 ---
 
-Stock MLOps 以台股與美股歷史資料為基礎，實作完整的端到端 ML 系統，涵蓋 ETL 排程、模型訓練、版本管理、即時推理、漂移監控與 CI/CD，讓模型從訓練到部署全程可追蹤。
+機器學習課程裡訓練好的模型，多半停在 Jupyter Notebook，缺乏版本管理、排程重訓與監控。**Stock MLOps** 這個課程專案把「股價預測」當成載體，目標很明確：把課程學到的東西全部用上，做出一套帶完整 MLOps 工作流的端到端 ML 系統。
 
-## 背景
+系統要做的是一個**可持續、可維護**的股價預測服務，涵蓋資料蒐集、特徵工程、模型訓練、實驗追蹤、即時推理、部署到監控的完整 lifecycle。使用者可以透過 web 介面查詢預測股價與歷史走勢圖；開發者則能定期重訓模型、追蹤實驗、監控效能與資料漂移，並觸發自動重訓。
 
-機器學習課程中的模型往往停留在 Jupyter Notebook，缺乏生產化所需的版本管理、排程重訓與監控機制。這個專案以股價預測為主題，實作完整 MLOps 工作流，練習將實驗性代碼轉化為可維護的 ML 系統。
+## 技術選型
 
-## 挑戰
+整套系統用 Docker Compose 在單機編排（可延伸到 EC2），各層職責切得很乾淨：
 
-需在單機 Docker Compose 環境中協調多個異質元件——Prefect 排程、Celery 非同步任務、Kafka 事件流、MLflow 模型版本管理、Evidently 漂移偵測與 Nginx 負載均衡——確保各元件在資料管線中正確串接，且推理與訓練請求能分流至不同後端。
+| 類別 | 工具 |
+| --- | --- |
+| Cloud / Infra | Docker Compose、MinIO、PostgreSQL、ClickHouse |
+| ML Pipeline | FastAPI、Scikit-learn、Pandas、MLflow |
+| Workflow Orchestration | Prefect 2 |
+| Monitoring | Evidently + Prometheus + Grafana |
+| CI/CD | GitHub Actions |
+| Testing | pytest（unit + integration） |
+| Formatting / Hooks | black、pre-commit、flake8 |
+| IaC | Docker Compose + Volume + Network（可延伸到 Terraform） |
 
-## 解法
+前端是 Vite + React，後端是多個 FastAPI 容器，前面再掛 Nginx 做靜態檔案服務與反向代理。
 
-以 Docker Compose 統一部署，Nginx 負責路由分流，各元件職責單一：
+## 資料分層：PostgreSQL 原始庫 + ClickHouse OLAP
 
-- 以 **MLflow** 追蹤每次訓練實驗，管理模型版本與 artifact（存放於 MinIO）
-- 以 **Prefect 2** 建置 ETL 排程，從 Yahoo Finance 爬取台股/美股資料並存入 ClickHouse
-- 以 **FastAPI + Scikit-learn** 建置容器化推理 API，Nginx 依路由分流至預測/訓練後端
-- 以 **Celery + Redis** 處理非同步訓練任務，Kafka 串接即時預測結果推送
-- 以 **Evidently + Prometheus + Grafana** 建置資料漂移偵測與模型效能監控看板
-- 以 **GitHub Actions** 建置 CI/CD，整合 pytest、Black、flake8 與 Discord 通知
+這個專案在資料層做了明確分層，而不是把所有東西塞進同一個資料庫：
 
-## 架構圖
+- **raw_db（PostgreSQL）**：存放 ETL 抓進來的原始資料
+- **ClickHouse**：存放清洗後的資料，作為 OLAP 查詢層，推理與訓練都從這裡讀特徵
+
+資料來源是 Yahoo Finance 的台股／美股歷史資料（例如 `2330.TW`、`AAPL`、`TSM`），經 ETL 轉換後以 **Parquet** 格式落地（`workflows/parquet/`）。
+
+## 模型生命週期
+
+整個模型 lifecycle 由 Prefect 串起來：
+
+1. ETL 與訓練 pipeline 由 **Prefect 2** 定期觸發
+2. 訓練結果記錄到 **MLflow**，並註冊成有版本的模型
+3. **FastAPI** 提供 `/predict` 與 `/train` API（背後由 Celery 支援非同步任務）
+4. **Evidently** 把模型漂移指標輸出到 Prometheus
+5. **Grafana** dashboard 視覺化預測準確度、漂移指標與系統指標
+
+MLflow 這邊本身就用了多個資料庫角色：mlflow-db（PostgreSQL）存模型 metadata、另有 MLflow 內部 DB，而模型 artifact 則存進 **MinIO**。
+
+## 系統架構
+
+Nginx 不只是單純反向代理，它依路由把流量分流到不同的 upstream pool，且帶權重做負載均衡：
+
+- `backend_predict`：70% 給 backend1、30% 給 backend2
+- `backend_train`：30% 給 backend1、70% 給 backend2
+- `backend_api`：backend1、backend2 各半（1:1）
+- `/ws`：導向 WebSocket 監控服務
 
 ```mermaid
 graph TD
-  U[User Browser] -->|"HTTP Requests"| NG[Nginx\nReverse Proxy]
-  NG -->|"/api/predict"| B1[backend1]
-  NG -->|"/api/train"| B2[backend2]
-  NG -->|"Static files"| Static[React Build]
+  U[User Browser] -->|HTTP / WS| NG[Nginx<br>Static + Reverse Proxy]
 
-  B1 & B2 -->|"Query data"| CH[("ClickHouse")]
-  B1 & B2 -->|"Push task"| Redis[("Redis")]
+  NG -->|/api/predict| UP1[backend_predict<br>70/30]
+  NG -->|/api/train| UP2[backend_train<br>30/70]
+  NG -->|/api/| UP3[backend_api<br>1:1]
+  NG -->|/ws| W[ws_monitor<br>Kafka Consumer + WebSocket]
+  NG -->|Static| Static[React Build]
+
+  UP1 --> B1[backend1:8000]
+  UP1 --> B2[backend2:8000]
+  UP2 --> B1
+  UP2 --> B2
+  UP3 --> B1
+  UP3 --> B2
 
   subgraph ETL
-    Prefect[Prefect 2] -->|"Fetch + Clean"| CH
+    P[Prefect Workflow] -->|raw| D1[(raw_db<br>PostgreSQL)]
+    P -->|cleaned| D2[("ClickHouse<br>OLAP")]
   end
+
+  B1 & B2 -->|Query features| D2
+  B1 & B2 -->|Push task| E[(Redis)]
 
   subgraph Training
-    Celery[Celery Worker] -->|"Read data"| CH
-    Celery -->|"Track"| MLflow[MLflow Registry]
-    MLflow -->|"Artifacts"| MinIO[("MinIO")]
+    E -->|Execute| L[Celery Worker]
+    L -->|Read| D2
+    L -->|Track| H[MLflow Registry]
+    H -->|Artifact| S[(MinIO)]
+    H --> D3[(mlflow-db<br>PostgreSQL)]
   end
-
-  Redis --> Celery
 
   subgraph Monitoring
-    Prometheus --> Grafana
-    Evidently --> Prometheus
+    M[Evidently] --> J[Prometheus]
+    J --> K[Grafana Dashboard]
+    Q[metrics_publisher<br>每 5s 推送] --> KAF[Kafka]
+    KAF --> W
   end
 ```
 
-## 流程圖
+## 即時推送：Kafka + WebSocket
 
-```mermaid
-flowchart TD
-  A(["使用者送出預測請求"]) --> B[Nginx 路由 /api/predict]
-  B --> C[FastAPI 推理 API]
-  C --> D[從 ClickHouse 取特徵]
-  D --> E[Scikit-learn 模型推理]
-  E --> F[推送結果至 Kafka]
-  F --> G(["回傳預測值"])
+監控不只是離線看板。系統用 Kafka 做即時資料流，搭配兩個專門的服務：
 
-  H(["Prefect 每日排程"]) --> I[Yahoo Finance 爬蟲]
-  I --> J[清洗 + 存入 ClickHouse]
-  J --> K[觸發 Celery 重訓任務]
-  K --> L[MLflow 記錄實驗]
-  L --> M[Evidently 漂移偵測]
+- **metrics_publisher**：每 5 秒抓取指標並發送到 Kafka 的 metrics topic
+- **ws_monitor**：作為 Kafka consumer，同時透過 WebSocket 把 prediction topic 的預測結果與 metrics topic 的指標即時推送到前端
+
+這讓「預測結果」與「系統／模型指標」都能近即時地反映在介面上，而不必輪詢。
+
+## 工程實踐與 CI/CD
+
+這個專案在可重現性與工程紀律上補得相當完整：
+
+- **測試**：pytest 同時涵蓋 unit test（`test_train.py`、`test_predict.py`）與 integration test（predict / train API）
+- **格式與 hooks**：black、flake8，搭配 pre-commit 設定
+- **自動化**：Makefile（`make dev-setup`、`make train`、`make workflow`）讓環境與流程一致
+- **CI/CD**：GitHub Actions 跑 CI（`ci-tests.yml`）與 CD 部署（`cd-deploy.yml`），並透過 webhook 發送 Discord 通知
+
+啟動方式也很單純：
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt
+
+docker compose up --build
+
+make train      # 一次性訓練
+make workflow   # 執行 Prefect workflow
 ```
 
-## 成果
+## 結語
 
-完成端到端 MLOps 工作流，涵蓋資料爬取、實驗追蹤、模型部署、漂移監控與 CI/CD，以台股（2330.TW）與美股（AAPL、TSM）為資料集驗證完整管線。
+Stock MLOps 的價值不在於股價預測本身的精度，而在於它把一條真正可維護的 ML pipeline 從頭到尾串了起來：資料分層（PostgreSQL raw_db → ClickHouse OLAP）、Prefect 排程、MLflow 版本管理、FastAPI + Celery 服務化、Evidently/Prometheus/Grafana 監控，再到 Kafka/WebSocket 即時推送與 GitHub Actions CI/CD。對想把「Notebook 裡的模型」變成「生產級系統」的人來說，這是一份結構清楚的參考骨架。
+
+## 參考資料
+
+- [Stock Price Prediction with MLOps（GitHub）](https://github.com/a920604a/stock-mlops)
+- [MLflow Documentation](https://mlflow.org/)
+- [Evidently AI Docs](https://docs.evidentlyai.com/)
+- [Prefect 2 Docs](https://docs.prefect.io/)
+- [Grafana Dashboards](https://grafana.com/grafana/dashboards)

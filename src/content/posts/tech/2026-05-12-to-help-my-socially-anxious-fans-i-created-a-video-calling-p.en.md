@@ -8,8 +8,8 @@ tldr: "A YouTuber/indie developer noticed fans couldn't speak up due to social a
 description: "Indie developer case study: using AI video calling to help users with social anxiety, covering WebRTC, real-time AI voice, Tavus, and the engineering decisions from idea to MVP."
 type: case-study
 original_url: "https://www.youtube.com/watch?v=M1bifAQSVcY"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260522_235049_221747.wav"
+draft: false
+audio_url: "/api/tts/r2/tts/tts_20260711_002825_889237.mp3"
 ---
 
 Some products come from market research. Some come from personal pain points. This one came from a fan message. A tech YouTuber with a significant following received a comment: "I'd love to ask you questions on YouTube, but I have social anxiety — even typing feels stressful, let alone a real call." He decided to do something about it — not write an advice post, but actually build a product.

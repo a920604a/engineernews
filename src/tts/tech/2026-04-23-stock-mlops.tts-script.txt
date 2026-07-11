@@ -1,0 +1,17 @@
+機器學習課程裡訓練好的模型，多半就停在 Jupyter Notebook 裡，沒有版本管理、沒有排程重訓、也沒有監控。今天要聊的這個叫 Stock MLOps 的課程專案，就是拿「股價預測」當載體，把課堂上學到的東西全部串起來，做成一套帶完整 MLOps 工作流的端到端系統。
+
+它的目標很明確：做一個可持續、可維護的股價預測服務，涵蓋資料蒐集、特徵工程、模型訓練、實驗追蹤、即時推理，一路到部署跟監控的完整生命週期。使用者這一端，可以透過網頁介面查預測股價、看歷史走勢；開發者這一端，則能定期重訓模型、追蹤實驗、監控效能跟資料漂移，還能觸發自動重訓。
+
+先講技術選型。整套系統是用 Docker Compose 在單機上編排的，之後也可以延伸到 EC2。各層的職責切得很乾淨：雲端跟基礎設施用 Docker Compose、MinIO、PostgreSQL 加 ClickHouse；ML pipeline 這一層是 FastAPI、Scikit-learn、Pandas 搭 MLflow；工作流編排交給 Prefect 2；監控用 Evidently 加 Prometheus 加 Grafana；CI/CD 走 GitHub Actions；測試用 pytest，涵蓋單元測試跟整合測試；格式化跟 hooks 則是 black、flake8 配 pre-commit。前端是 Vite 加 React，後端是好幾個 FastAPI 容器，前面再掛一個 Nginx 做靜態檔案服務跟反向代理。
+
+接著是這個專案我覺得做得蠻漂亮的地方，資料分層。它沒有把所有東西塞進同一個資料庫，而是明確分開：PostgreSQL 當原始庫，也就是 raw_db，存 ETL 抓進來的原始資料；ClickHouse 則存清洗過後的資料，當 OLAP 查詢層，之後推理跟訓練都是從 ClickHouse 讀特徵。資料來源是 Yahoo Finance 的台股、美股歷史資料，像是台積電、蘋果這些，經過 ETL 轉換之後，用 Parquet 格式落地。
+
+模型的生命週期，是由 Prefect 串起來的。流程大概是這樣：ETL 跟訓練 pipeline 由 Prefect 2 定期觸發；訓練結果記錄到 MLflow，並且註冊成有版本的模型；FastAPI 對外提供 predict 跟 train 兩個 API，背後由 Celery 支援非同步任務；Evidently 把模型漂移的指標輸出到 Prometheus；最後 Grafana 的儀表板把預測準確度、漂移指標跟系統指標都視覺化出來。這裡值得一提的是，MLflow 本身就用到多個資料庫角色，模型的 metadata 存在一個 PostgreSQL，模型的 artifact 則是存進 MinIO。
+
+再來看系統架構，特別是 Nginx 的角色。它不只是單純的反向代理，而是依照路由把流量分流到不同的後端池，還帶了權重做負載均衡。舉例來說，預測的請求是七比三，七成給 backend1、三成給 backend2；訓練的請求反過來，三比七；一般 API 就是各半、一比一；至於 WebSocket 的路由，會導向專門的監控服務。
+
+即時推送這塊也很有意思。監控不是只有離線看板，系統用 Kafka 做即時資料流，搭配兩個專門的服務。一個叫 metrics_publisher，每五秒抓一次指標，發送到 Kafka 的 metrics topic。另一個叫 ws_monitor，它同時是 Kafka 的 consumer，又透過 WebSocket 把預測結果跟指標即時推到前端。這樣一來，預測結果跟系統、模型的指標，都能近乎即時地反映在介面上，而不用一直輪詢。
+
+工程實踐跟 CI/CD 也補得相當完整。測試用 pytest，單元測試涵蓋訓練跟預測，整合測試則測 predict 跟 train 這兩個 API。格式有 black、flake8 加 pre-commit 把關。自動化用 Makefile，讓環境設定、訓練、跑 workflow 這些流程都保持一致。CI/CD 是 GitHub Actions 跑測試跟部署，並且透過 webhook 發 Discord 通知。啟動方式其實也很單純，建好虛擬環境、裝好依賴，一行 docker compose up --build 就把整套拉起來，訓練跟 workflow 各有對應的 make 指令。
+
+最後收個尾。這個專案真正的價值，我認為有三個重點。第一，它的重點不在股價預測的精度，而在於把一條真正可維護的 ML pipeline 從頭到尾完整串起來。第二，資料分層的思路很值得學，用 PostgreSQL 當原始庫、ClickHouse 當 OLAP 查詢層，職責分明。第三，它示範了怎麼把 Notebook 裡的模型，變成一個有排程、有版本、有監控、有即時推送的生產級系統。對想跨過這一步的人來說，這是一份結構很清楚的參考骨架。

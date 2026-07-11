@@ -8,8 +8,7 @@ tldr: "A complete behind-the-scenes look at tech YouTube production: topic selec
 description: "A tech YouTuber breaks down the complete production workflow for a 10-minute video—research, scripting, recording setup, editing tools, and where AI actually saves time."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=d6V-nGaNbhw"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_202823_727605.mp3"
+draft: false
 ---
 
 If you've watched tech YouTube and wondered "how does someone produce this every week," behind-the-scenes videos give a rare concrete answer. The workflow has more in common with software engineering than it might seem: topic selection is backlog management, scripts are design docs, editing is code review. The deliverable is video instead of code.

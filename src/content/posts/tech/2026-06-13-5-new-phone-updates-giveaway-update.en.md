@@ -8,8 +8,7 @@ tldr: "Android's update ecosystem has meaningfully improved in 2025–2026: Pixe
 description: "Mid-2026 Android software update landscape: Pixel's long-term support commitment, Samsung One UI update cadence improvements, OnePlus policy changes, and what this means for Android developers."
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=49-rK7SAfQk"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_202513_499230.mp3"
+draft: false
 ---
 
 "Bought a phone, stopped getting updates two years later." This complaint has existed in Android's ecosystem for over a decade. But 2025–2026 shows genuine change: several major OEMs are taking long-term software support seriously rather than using it as marketing copy.

@@ -8,8 +8,7 @@ tldr: "AlphaFold solved the protein folding problem in 2020 at near-experimental
 description: "A deep look at AlphaFold's technical principles, its impact on biology, and why it's considered the most important real-world AI breakthrough ever: from the history of the protein folding problem to AlphaFold2's architectural innovations and the scientific acceleration it has enabled."
 type: explainer
 original_url: "https://www.youtube.com/shorts/VQ2bV58QbH0"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_200207_231488.mp3"
+draft: false
 ---
 
 In December 2020, a problem that biology had waited 50 years to solve was cracked.

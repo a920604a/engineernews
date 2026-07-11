@@ -248,22 +248,29 @@ async function stageAudio(pairs: PostPair[]): Promise<{ en: StageStats; zh: Stag
     if (zhData.audio_url) {
       zh.skipped++;
     } else {
-      try {
-        const audioUrl = await synthesizeWithFallback(zhScript, 'zh', slug, {
-          ttsApiUrl: TTS_API_URL,
-          voice: 'zh-TW-HsiaoChenNeural',
-          accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
-          apiToken: process.env.CLOUDFLARE_API_TOKEN,
-          isProd,
-        });
-        if (audioUrl) {
-          setAudioUrl(zhPath, audioUrl);
-          if (isProd) syncD1(audioUrl, slug);
-          zh.generated++;
-        }
-      } catch (e) {
+      // Edge 扛不住 EN→ZH 連續請求，第二個常「無回應」。先給 Edge 喘息，失敗再重試。
+      let audioUrl: string | null = null;
+      let lastErr: unknown = null;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        await new Promise(r => setTimeout(r, attempt === 0 ? 1500 : 3000));
+        try {
+          audioUrl = await synthesizeWithFallback(zhScript, 'zh', slug, {
+            ttsApiUrl: TTS_API_URL,
+            voice: 'zh-TW-HsiaoChenNeural',
+            accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
+            apiToken: process.env.CLOUDFLARE_API_TOKEN,
+            isProd,
+          });
+          if (audioUrl) break;
+        } catch (e) { lastErr = e; }
+      }
+      if (audioUrl) {
+        setAudioUrl(zhPath, audioUrl);
+        if (isProd) syncD1(audioUrl, slug);
+        zh.generated++;
+      } else {
         process.stdout.write('\n');
-        console.warn(`  ⚠️  ZH 合成失敗 [${slug}]: ${e instanceof Error ? e.message : e}`);
+        console.warn(`  ⚠️  ZH 合成失敗 [${slug}]: ${lastErr instanceof Error ? lastErr.message : lastErr}`);
         zh.failed++;
       }
     }

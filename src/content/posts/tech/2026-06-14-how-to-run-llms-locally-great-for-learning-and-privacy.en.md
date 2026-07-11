@@ -8,8 +8,7 @@ tldr: "Running an LLM locally with Ollama is simpler than you think: one line to
 description: "Complete guide to running LLMs locally with Ollama: installation, model selection (Llama 3, Gemma, Mistral), hardware requirements, OpenAI-compatible API setup, and a working local RAG example."
 type: how-to
 original_url: "https://www.youtube.com/watch?v=U8lGbSaCCYI"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_202921_855700.mp3"
+draft: false
 ---
 
 Three reasons to run an LLM locally: **privacy** (sensitive data stays on your machine), **learning** (interact with model behavior directly, no API abstraction layer), and **cost** (hardware is upfront; inference is free after).

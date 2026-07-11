@@ -8,8 +8,7 @@ tldr: "Hassabis's preference for 'hard questions' isn't a personality quirk — 
 description: "Demis Hassabis's research philosophy: why choosing difficult but high-leverage problems matters more than choosing tractable ones, and how this philosophy concretely shapes AlphaFold, AlphaGo, and DeepMind's research direction choices."
 type: explainer
 original_url: "https://www.youtube.com/shorts/kIvvzCR5NjA"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_200256_451763.mp3"
+draft: false
 ---
 
 "I love hard questions."

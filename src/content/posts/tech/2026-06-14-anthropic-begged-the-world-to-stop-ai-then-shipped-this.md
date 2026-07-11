@@ -1,89 +1,93 @@
 ---
-title: "Anthropic 叫大家停，然後推了 Fable 5，然後政府把它關掉了"
-date: 2026-06-14T04:54:52.915Z
-category: tech
-tags: ["ai", "anthropic", "fable-5", "security", "policy", "regulation"]
-lang: zh-TW
-tldr: "Anthropic 發表暫停呼籲後五天推出 Fable 5，四天後被美國政府以國家安全為由強制下線。一場把所有矛盾壓縮進十天的業界速成劇。"
-description: "Fable 5 從發布到被政府強制下線只有四天。Anthropic 這十天的故事，是一個關於 AI 安全聲明與商業現實之間張力的案例研究。"
-type: newsjacking
+title: "Anthropic 一邊喊「全球暫停」，一邊推出史上最強模型 Fable 5"
+date: "2026-06-14T04:54:52.915Z"
+category: "tech"
+tags: ["ai","anthropic","fable-5","llm","ai-safety"]
+type: "newsjacking"
 original_url: "https://www.youtube.com/watch?v=1PBRhm5ZnjU"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_202742_218840.mp3"
+draft: false
+tldr: "上週 Anthropic 呼籲全球 AI 實驗室一起裝上「協調煞車」，這週卻發布了號稱史上最強的 Claude Fable 5。它和只限受控存取的 Mythos 5 其實是同一個底層模型，差別只在一層 classifier 「口罩」，並用 6/22 到期的限時開放製造 FOMO。"
+description: "從 Code Report（2026-06-11）看 Anthropic 的矛盾操作：一邊喊暫停前沿 AI，一邊推出最強的 Fable 5。拆解 Fable 5 與 Mythos 5、Opus 4.8 的差異、$50/M 定價、classifier 攔截與反蒸餾機制，以及 IPO 前的時間點。"
+key_points:
+  - "Fable 5 與受控存取的 Mythos 5 是同一底層模型，差別只有一層監看每則 query 的 classifier「口罩」"
+  - "定價 $50/百萬 output token，是 Opus 4.8（$25）的兩倍；付費方案 6/22 前限時可用，之後只能按 token 計費"
+  - "碰到 cybersecurity / 生物 / 化學 / 模型蒸餾的請求會被攔下、改由 Opus 4.8 回答，順帶擋掉對手蒸餾"
 ---
 
-「我們呼籲大家暫停。」——Anthropic，2026 年 6 月 4 日
+上週，Anthropic 站上舞台，懇求全球的 AI 實驗室一起在前沿 AI 開發上裝一個「協調式的煞車踏板」——因為他們擔心模型正危險地逼近**遞迴自我改善（recursive self-improvement）**。
 
-「Fable 5 現已上線，$50/百萬 output token。」——Anthropic，2026 年 6 月 9 日
+結果這一週，他們把煞車丟進碎木機，油門一路踩到底：發布了號稱世界見過最強的 AI 模型——**Claude Fable 5**。
 
-「Fable 5 已依法強制下線。」——美國政府，2026 年 6 月 12 日
+這篇文章不談影片裡那些玩笑，只把 Code Report（2026-06-11）這集裡真正的技術重點整理出來：Fable 5 到底是什麼、和 Mythos 5 與 Opus 4.8 差在哪、為什麼偏偏挑這個時間點推出。
 
-三個句子，十天，一個把所有矛盾濃縮在一起的故事。
+## 一個模型，兩張臉：Fable 5 與 Mythos 5
 
-## TL;DR
+先講最關鍵、也最容易被行銷話術蓋掉的事實：
 
-Anthropic 在 6 月 4 日聯署論文呼籲全球有條件暫停前沿 AI 開發，五天後推出了他們迄今最強的公開模型 Fable 5，四天後模型被美國政府以國家安全為由強制下線。從「暫停」呼籲到政府下線令：10 天。
+> **Fable 5 和 Mythos 5 其實是同一個底層模型。**
 
-## 發生了什麼
+差別只有一個字——**muzzle（口罩）**。
 
-### 6 月 4 日：《When AI Builds Itself》
+Mythos 5 是「mythos class」的原始模型，只開放給受控存取。Fable 5 則是被「安全地做了額葉切除（lobotomized）」、給一般使用者用的版本。它外面套了一組 **classifier 模型**，會盯著你送出的每一則 query。
 
-Anthropic 員工與創辦人 Jack Clark 聯署發表了一篇論文。核心主張：
+一旦你的請求踩進這幾個領域：
 
-- Claude 現在撰寫 Anthropic 自家程式碼庫 **80%+ 的 commit**
-- 工程師生產力提升 **8 倍**（vs. 2021–2025 平均）
-- 模型的任務視野（task horizon）每 4 個月翻倍——Opus 3 能處理 4 分鐘任務，Opus 4.6 能處理 12 小時任務
-- Jack Clark 估計 2028 年前達到遞迴自我改善的機率：**60%**
+- **cybersecurity（資安）**
+- **biology（生物）**
+- **chemistry（化學）**
+- **model distillation（模型蒸餾）**
 
-結語呼籲業界和政府協調「有條件的全球暫停」機制。
+這則請求就會被攔下、「核掉」，改由 **Claude Opus 4.8** 來回答。
 
-同一時間，Anthropic 正向 SEC 提交 S-1 IPO 申請，估值目標超過 1 兆美元。
+```mermaid
+flowchart TD
+    Q[使用者 query] --> C{classifier 檢查}
+    C -->|一般任務| F[Fable 5 / Mythos 5<br/>同一底層模型]
+    C -->|資安 / 生物 / 化學 / 蒸餾| O[改由 Opus 4.8 回答]
+```
 
-### 6 月 9 日：Fable 5 上線
+換句話說，Fable 5「更弱」的部分不是能力本身，而是它願不願意在敏感領域出力。這也是影片點出的一個副作用：像 DeepSeek、Kimi 這類中國模型，**短時間內沒辦法靠蒸餾拿到一個開源的 Fable 級模型**——因為只要你想蒸餾，classifier 就先把你擋下來了。
 
-五天後，Fable 5 正式發布。
+## 價格與限時 FOMO
 
-這不是一個小更新。Fable 5 在 SWE-bench Verified 得分 88.6%（Opus 4.8 是 87.6%），針對企業和科學研究場景優化，定價 $50/百萬 output token，是 Anthropic 迄今定價最高的公開模型。同時上線的還有更先進、僅限受控存取的 Mythos 5。
+Fable 5 和幾週前才發布的 Opus 4.8 相比，最直接的差別是**貴一倍**：
 
-「呼籲暫停」後五天。
+| 模型 | output 定價 |
+| --- | --- |
+| Claude Opus 4.8 | $25 / 百萬 output token |
+| Claude Fable 5 | $50 / 百萬 output token |
 
-### 6 月 12 日：政府下線令
+行銷手法也很有意思：如果你**現在**有付費的 Claude 方案，可以一路用 Fable 5 用到 **6 月 22 日**；過了這天，Fable 5 就會從方案裡拿掉，之後只能**按 token 計費**使用。
 
-6 月 12 日下午 5:21 ET，美國出口管制指令送達 Anthropic。
+這是很聰明的一步——用「限時可用」直接催出 FOMO，把人推去訂閱 Claude。
 
-原因：有已知的越獄漏洞可以繞過 Fable 5 的安全機制，存在國家安全風險。指令即刻生效——全球下線，在美外籍員工也失去存取。Anthropic 對已付費用戶提供按比例退款。
+## 風評：software engineer 這邊反應很正面
 
-Anthropic 的回應：那個越獄「相對簡單」，在 GPT-5.5 等其他模型上也能做到，政府反應是「誤解」。
+在軟體工程圈，Fable 5 上線後的初期評價相當正面。影片裡提到最強的一個背書，來自 **Bend**（一個給 GPU 用的程式語言）的作者：他形容這是自己的「singularity moment」——Fable 5 直接把他的程式碼掃過一遍，implement 了大幅的效能改進。
 
-距離 Fable 5 上線：**4 天**。
+至於各種「Fable 屌打 GPT-5.5」的 coding benchmark，影片自己也用「trust me, bro」的口吻標註了——意思是這些數字先聽聽就好，別當成定論。原始素材沒有給出具體的分數，所以這裡也不編。
 
-## 為什麼這件事值得關注
+## 為什麼是現在？IPO 的時間點
 
-表面上這是一個 PR 危機，但實質上它暴露了三個更深的問題。
+把「呼籲暫停」和「推出最強模型」放在同一週看，違和感很強。影片給的一個解讀框架是**上市時間點**：
 
-**第一，安全聲明的可信度問題。** 當你的論文呼籲業界暫停，卻在五天內推出定價最高的新模型，你的「安全優先」訊息傳遞出了什麼？答案不是非黑即白——Anthropic 可以同時真心相信 AI 風險和真心需要商業收入。但這兩者之間的張力是真實的，而且不會因為用更精緻的語言解釋就消失。
+- 這一週被形容為「歷史性的一週」，SpaceX 週五要 IPO。
+- Anthropic 本身也正走向公開上市（going public）。
 
-**第二，政府監管的速度問題。** 下線令在模型上線 4 天後才到，且來自一個已知漏洞回報，不是主動監控體系的產出。如果模型的任務視野真的在以 4 個月為週期翻倍，監管的反應速度需要一個根本性的架構調整，而不只是更快的人工審核。
+於是問題就變成：Fable 5 是真正的技術突破，還是**IPO 前用來把數字衝上去的一步棋**？影片作者的立場是保持懷疑、實測看看——而不是照單全收。
 
-**第三，「有條件暫停」缺乏可操作的定義。** 論文提出了觸發條件的概念，但沒有說誰有權宣告觸發、觸發後實際執行什麼程序。在缺乏具體機制的情況下，這份呼籲更像是一份道德立場宣示，而不是一個可以執行的提案。
+值得一提的一段題外話：Sam Bankman-Fried 曾是 Anthropic 的早期投資人，一度持有約 **8%** 股份。
 
-## 技術角度怎麼看
+## 小結
 
-Fable 5 被下線的直接原因是一個越獄漏洞。值得注意的不只是「有漏洞」，而是**政府對這個漏洞的評估**：即使 Anthropic 認為它「相對簡單」，政府認為風險高到足以即刻下線。
+Fable 5 這件事，剝掉行銷包裝後其實很清楚：
 
-這說明模型能力和安全認可之間存在一個越來越複雜的評估過程。隨著模型能處理的任務越來越長、越來越自主，「這個越獄能做什麼傷害」的答案也會越來越嚴重。4 天的審查期顯然不夠，但誰來審查、審查什麼，目前沒有行業標準。
+- 它不是一個全新的底層模型，而是 Mythos 5 加上一層 classifier「口罩」。
+- 「更安全」在這裡的具體意思是：敏感領域的請求會被降級由 Opus 4.8 回答，並順手擋掉蒸餾。
+- 定價翻倍、限時開放，是很明確的商業與行銷設計。
 
-Anthropic 自己的論文數據說任務視野每 4 個月翻倍。這意味著：今天的漏洞只是暖身。
-
-## 後續值得觀察的點
-
-- Fable 5 重新上線的條件是什麼？政府與 Anthropic 的談判進展？
-- Mythos 5 未來是否會開放？安全審查標準是什麼？
-- OpenAI GPT-5.5 有同樣的越獄但沒被下線——兩者的標準是否一致？
-- IPO 時間線是否受這次事件影響？機構投資者怎麼看安全/商業矛盾？
+在「呼籲全球踩煞車」和「推出史上最強模型」之間的張力是真實的——而且不會因為模型名字叫 Fable（寓言，暗示「不是真的」）就消失。這集影片留給觀眾的問題也很簡單：這是奇異點的前奏，還是又一輪 hype cycle？
 
 ## 參考資料
 
-- [Anthropic begged the world to stop AI… then shipped this](https://www.youtube.com/watch?v=1PBRhm5ZnjU)
-- [When AI Builds Itself — Jack Clark 等](https://jack-clark.net)
-- [Fable 5 launch announcement — Anthropic](https://anthropic.com)
+- [Anthropic begged the world to stop AI… then shipped this — The Code Report (2026-06-11)](https://www.youtube.com/watch?v=1PBRhm5ZnjU)

@@ -8,8 +8,7 @@ tldr: "Titans introduces a neural memory module that updates itself via gradient
 description: "Deep dive into Titans: Learning to Memorize at Test Time — how a neural long-term memory module learns during inference using surprise-driven gradient updates, and the design tradeoffs of the three integration architectures MAC, MAG, and MAL."
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=v67plFw1nMw"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260616_231824_619581.mp3"
+draft: false
 ---
 
 Sequence models face a fundamental tension on long-context tasks: Transformers are expressive but scale quadratically with sequence length; State Space Models (SSMs like Mamba) are efficient but store all context in a fixed-size hidden state that limits memory capacity. Google DeepMind's paper "Titans: Learning to Memorize at Test Time" attacks this tension head-on, proposing a neural memory module that keeps learning — via gradient descent — while running inference.

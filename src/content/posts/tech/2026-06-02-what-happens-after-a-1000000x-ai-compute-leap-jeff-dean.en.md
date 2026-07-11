@@ -8,8 +8,7 @@ tldr: "Jeff Dean breaks down where the million-fold AI compute gains actually ca
 description: "Google DeepMind's Jeff Dean analyzes the real technical drivers behind AI's million-fold compute growth and how this scale of improvement is enabling breakthroughs in science, medicine, and climate modeling."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=yz6I23VRbdg"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_200639_290647.mp3"
+draft: false
 ---
 
 Jeff Dean co-founded Google Brain and now serves as a research director at Google DeepMind, continuing to push the frontier of AI research. In a recent public talk, he took a closer look at a claim that sounds like marketing copy but has genuine technical substance: AI computing power has increased by a million-fold over the past decade. What does that actually mean for the future?

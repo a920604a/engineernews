@@ -1,0 +1,19 @@
+付費的市場終端機，像 Bloomberg 那類商業平台，把即時行情、公司資料跟市場新聞全鎖在訂閱牆後面。OpenStock 想走的是另一條路——一個開源、可以自己架設、而且永久免費的股市儀表板。用它自己的標語來說，就是「built openly, for everyone, forever free」，為所有人打造，永遠免費。
+
+這個專案由 Open Dev Society 維護，採用 AGPL-3.0 授權。這個授權有個關鍵點：如果你修改它、再散布它，或是把它部署成一個網路服務，你就必須用同樣的授權把原始碼放出來，並且標註原作者。README 裡也把醜話講在前頭——OpenStock 不是券商，市場數據可能因為資料來源的規則跟你的設定而有延遲，站上任何內容都不構成投資建議。
+
+先講講這是個怎樣的專案。Open Dev Society 在 README 放了一份宣言，核心信念是：技術應該屬於所有人，知識應該是開放、免費、可取得的；社群應該用信任來迎接新人，而不是用門檻把人擋在外面。他們的承諾是不把知識上鎖、不對存取收費、靠透明度跟捐款來運作，而不是靠利潤。所以某種程度上，OpenStock 的性格與其說是被技術棧定義的，不如說是被這份「拒絕商業化、歡迎初學者貢獻」的立場定義的。
+
+接著看技術架構。整個資料流大概是這樣：使用者面對的是 Next.js 15 的 App Router 加上 React 19；往後走，登入交給 Better Auth 搭配 MongoDB adapter，資料則持久化在 MongoDB 加 Mongoose；市場數據來自 Finnhub API，包含股價、公司資料跟新聞；圖表直接嵌入 TradingView 的 widget，像 K 線圖跟熱力圖；然後自動化的部分交給 Inngest，負責事件、排程跟 AI 推論，AI 那端接 Gemini 做個人化 Email，寄信則走 Nodemailer 跟 Gmail。
+
+技術棧細看，核心層是 Next.js 15、React 19、TypeScript，樣式用 Tailwind CSS v4 搭配 shadcn/ui 跟 Radix UI，圖示用 Lucide。整個 repo 幾乎是純 TypeScript，佔了九成三，剩下就是一點 CSS 跟 JavaScript。驗證跟資料層剛剛講過了，是 Better Auth 加 MongoDB。自動化跟通訊層則是 Inngest 加 Nodemailer，另外還用了 next-themes、cmdk 做命令面板，還有 react-hook-form。
+
+功能面向蠻完整的。驗證是 email 加密碼登入，受保護的路由由 Next.js 的 middleware 強制。搜尋有全域搜尋跟 Cmd + K 面板，背後由 Finnhub 支撐，閒置的時候會顯示熱門股，查詢也做了 debounce。每個使用者有自己的 watchlist 追蹤清單，存在 MongoDB，同一個使用者不會有重複的股票代號。個股詳情頁塞了 TradingView 的一整套 widget——K 線、進階圖表、技術指標、公司財務資料，還可以選擇性接入跨來源的情緒分析，涵蓋 Reddit、X、新聞，還有 Polymarket 這種預測市場。市場總覽則是熱力圖、報價跟頭條新聞。另外還有個人化的 onboarding，會問你所在國家、投資目標、風險承受度跟偏好產業，然後用 Inngest 加 Gemini 產生一封 AI 個人化的歡迎信，並且用排程按照你的 watchlist 寄每日新聞摘要。
+
+這裡有個值得注意的設計：AI provider 是可替換的。預設用 Gemini，但也支援 minimax 跟 siray，透過一個 AI_PROVIDER 環境變數就能切換，不綁死在單一廠商。情緒分析也只是選配的整合，需要另外的 API key，不是核心依賴。
+
+自架的部分。前置需求是 Node.js 20 以上、pnpm 或 npm、一組 MongoDB 連線字串、一把 Finnhub API key——免費方案可以用，但即時行情可能要付費——還有一個寄信用的 Gmail 帳號，以及選配的 Gemini key。基本流程就是 clone 下來、裝套件、建 .env、跑一個測試指令驗證資料庫連線，然後啟動 dev server。如果你要跑到完整的 workflow、排程跟 AI，還要另外用 inngest-cli 在本地啟動 Inngest。如果嫌麻煩，也可以直接用 Docker Compose 一次拉起 app 跟 MongoDB，Compose 檔裡就兩個服務，一個是 app、一個是帶了持久化 volume 跟健康檢查的 Mongo 7。
+
+最後講定位跟限制，有兩點要先想清楚。第一是數據延遲——股市數據不是來自 OpenStock 自己的資料庫，而是上游的 Finnhub，免費方案通常是延遲數據，要即時報價可能得升級付費。第二，它不是交易平台——沒有下單、沒有券商功能，README 明白定位它是一個市場情報工具。
+
+好，收尾幫大家抓三個重點。第一，OpenStock 是一個 AGPL-3.0 授權、可自架、永久免費的股市儀表板，它的核心不是技術，而是「知識開放、拒絕商業化」的立場。第二，技術上它是一套幾乎純 TypeScript 的 Next.js 15 全端，市場數據靠 Finnhub、圖表靠 TradingView，AI 跟自動化靠 Inngest，而且 AI 供應商可以自由替換、不鎖廠商。第三，記得它的定位——這是市場情報工具，不是交易平台，數據會延遲，內容不是投資建議。對散戶、學生，或想在一個完全可掌控的基礎上做二次開發的工程師來說，它是個相當完整的起點，只是別忘了 AGPL 的約束——你在它之上做的任何公開部署，也得同樣開放回饋社群。

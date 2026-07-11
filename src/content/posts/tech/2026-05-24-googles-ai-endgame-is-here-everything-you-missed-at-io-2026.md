@@ -1,79 +1,80 @@
 ---
-title: "Google 的 AI 終局：I/O 2026 你可能錯過的關鍵轉變"
-date: 2026-05-24T08:41:15.952Z
-category: tech
-tags: ["google", "gemini", "ai", "io2026", "product"]
-lang: zh-TW
-tldr: "Google I/O 2026 的核心訊號不是某個產品功能，而是 Google 已從「AI 輔助工具」全面轉向「自主代理人」策略：Gemini 3.5 Flash、Gemini Omni、Gemini Spark，每個產品背後都是同一個方向——AI 不是你的助理，是你的代理人。"
-description: "深入解析 Google I/O 2026 的核心 AI 戰略轉向：從 Gemini 3.5 Flash 到 Gemini Omni、Gemini Spark 和 Antigravity 2.0，Google 如何把 AI 從工具層移到基礎設施層。"
-type: newsjacking
+title: "Google I/O 2026：Gemini 無所不在的「代理人時代」"
+date: "2026-05-24T08:41:15.952Z"
+category: "tech"
+tags: ["google","gemini","ai","io2026","product"]
+type: "newsjacking"
 original_url: "https://www.youtube.com/watch?v=9OQ5vaYbGV0"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_195634_784848.mp3"
+draft: false
+tldr: "Google I/O 2026 的主軸是把 Gemini 塞進每一個產品，並宣告進入「agentic Gemini era」：搜尋、Gmail、Android、眼鏡全都變成 AI agent。重點發表包含 Gemini Omni、Gemini Flash 3.5、TPU 拆分為訓練/推論兩種晶片，以及改頭換面的 Antigravity IDE。"
+description: "從 The Code Report 的現場觀察，整理 Google I/O 2026 真正該注意的技術轉變：Gemini Omni 世界模型、Flash 3.5、TPU-T/TPU-I 拆分，以及 Antigravity 現場用 12 小時打造作業系統跑 Doom 的 demo。"
+key_points:
+  - "Google 把策略押在「agentic Gemini era」：搜尋、Gmail、Android、眼鏡全被重新定位成 AI agent。"
+  - "Gemini Flash 3.5 主打速度而非最強智慧；旗艦 Gemini 3.5 Pro 延到夏末才發表。"
+  - "TPU 拆成訓練用 TPU-T 與推論用 TPU-I；Antigravity IDE 轉向管理 agent，現場 demo 從零打造 OS 並跑起 Doom。"
 ---
 
-Google I/O 每年都有大量公告，今年也不例外——光是官方整理就超過 100 條新功能。但真正值得深讀的不是功能清單，而是這些功能背後指向的同一個方向：Google 正在把 AI 從應用層移到基礎設施層。
+2026 年 5 月 22 日，Google I/O 落幕。Sundar 與 Demis 在台上描繪了一個野心十足的軟體未來——而那個未來，簡單講就是「Gemini 藏在每一個產品裡」。
 
-## TL;DR
+這次的產品路線圖幾乎可以用一句話總結：**拿 Gemini，後面接一個名詞，然後出貨**。Gemini Spark、Gemini Omni、Gemini Flow⋯⋯清單一路往下。Google 自己給這個階段取的名字是 **agentic Gemini era（代理人化的 Gemini 時代）**：搜尋是 AI agent、Gmail 是 AI agent、Android 是 AI agent，連你的眼鏡都是 AI agent。
 
-Google I/O 2026 的核心轉變是**從 AI 助理到 AI 代理人**：不是「幫你做事快一點」，而是「代替你做事」。Gemini 3.5 Flash 是目前最快的前沿模型；Gemini Omni 處理多模態生成；Gemini Spark 是 24/7 在背景自主執行任務的企業代理人；Antigravity 2.0 是開發者編排多個代理人的工作台。整個生態系都在往這個方向走。
+坐在現場看完 keynote，會意識到一件事：Google 已經不再想用「藍色超連結」來組織全世界的資訊了。在它的敘事裡，傳統搜尋引擎正在變成一種過時的技術；Google 想做的，是趕在 Anthropic 和 OpenAI 之前，成為「通往現實本身的介面」。
 
-## 發生了什麼
+## Google 真正的護城河：規模
 
-### Gemini 3.5 Flash：把旗艦性能壓進 Flash 速度裡
+無論你喜不喜歡 Google，它最讓人印象深刻的能力始終是**規模化**。它不只把核心產品服務給數十億日活用戶，過去兩年的推論量更是誇張地成長——
 
-Google 發布了 Gemini 3.5 Flash，定位是「旗艦智慧 + Flash 速度」。在 Google 的基準測試中，Gemini 3.5 Flash 在編碼和代理人任務上超越了 Gemini 3.1 Pro。
+- 兩年前：每月約 **9.7 兆（trillion）tokens**
+- 現在：每月約 **3.2 千兆（quadrillion）tokens**
 
-這個組合以前不存在——你要麼用旗艦模型（慢、貴）要麼用 Flash 版（快、但能力有限）。如果 3.5 Flash 的宣稱效能得到獨立驗證，它對 API 定價格局的衝擊不小。
+而且這個數字還會繼續加速。與此同時，Alphabet 的資本支出（capex）也跟著爆炸性成長，蓋新的基礎設施來撐起這一切（包括你們用 nano banana 生的一堆 AI 圖）。
 
-### Gemini Omni：從任何輸入生成任何輸出
+## TPU 拆成兩顆：TPU-T 與 TPU-I
 
-Gemini Omni 是 Google 展示的多模態生成模型，強調「從影片輸入開始，能生成任意格式的輸出」。Google 稱其為「世界理解能力的大躍進」。
+支撐這種規模的關鍵之一，是 Google 自家的 **TPU（Tensor Processing Unit）**。今年 I/O 的一個底層變化是：Google 把 TPU 拆成兩種各司其職的晶片——
 
-實際的 API 存取從 2026 年 Q2 末開始，企業層級透過 Google Cloud 在 Q3 才能用。
+- **TPU-T**：專門優化 **training（訓練）**
+- **TPU-I**：專門優化 **inference（推論）**
 
-### Gemini Spark：AI 從助理變成全職員工
+換句話說，一顆晶片負責「教模型怎麼思考」，另一顆負責「把結果大規模地跑出來」。這種訓練/推論分家的做法，反映的是當推論量衝到千兆 token 等級後，把硬體針對兩種截然不同的工作負載分別優化，比一顆通用晶片全包更划算。
 
-這是 I/O 2026 中最值得企業工程師關注的功能。Gemini Spark 是一個 24/7 在背景運行的個人 AI 代理人，能在使用者指定方向下自主執行任務，不需要每次都手動觸發。
+```mermaid
+flowchart LR
+    A[Gemini 模型] --> B[TPU-T<br/>訓練優化]
+    A --> C[TPU-I<br/>推論優化]
+    B --> D[學會思考]
+    C --> E[大規模服務]
+```
 
-Google 說它適合 Gemini Enterprise 和 Workspace 客戶——這是 Google 把 AI 代理人能力直接賣給企業的明確訊號。
+## Gemini Omni 與 Neural Expressive
 
-### Antigravity 2.0：開發者的代理人編排中心
+I/O 2026 的頭條發表是 **Gemini Omni**：一個能吃下任何輸入（文字、影片、聲音）、產出任何輸出的模型。
 
-面向開發者的 Antigravity 2.0 是一個獨立桌面 app，讓開發者在一個工作台上「引導、自訂和編排」多個 AI 代理人。這個功能直接回應了一個現實問題：當你的系統裡跑著五個以上的 AI 代理人，你需要一個方法管理它們之間的依賴和衝突。
+Demis Hassabis 看起來是徹底的「world model 信徒」。這類模型不再只是生成像素而已，而是理解語言、物理、運動，以及你世界裡的其他一切——理解到足以「按需模擬現實」的程度。
 
-## 技術角度怎麼看
+伴隨 Omni 一起來的，是 Gemini app 全新的設計系統 **Neural Expressive**。乍看之下它只是換了新 icon、漸層更好看的介面改版；但真正特別的地方在於，它是為了**按需生成 UI 元素**而優化的——像是圖表（diagrams）、時間軸（timelines），甚至是在你下 prompt 之前根本不存在的迷你 app。
 
-### Gemini 從 app 到基礎設施
+## Gemini Flash 3.5：主打速度，不是最強腦
 
-Google 最重要的戰略轉型不在任何單一功能，而在整個架構方向：**Gemini 正在成為 Google 所有產品的底層推論基礎設施**，而不只是一個可以呼叫的 app 或 API。
+在核心 LLM 這條線上，Google 發表了 **Gemini Flash 3.5**。要先講清楚：這**不是**那顆最強的大腦，而是那顆**快**的模型。
 
-這跟 Google 過去推廣 AI 的方式根本不同。以前是「你可以在 Gmail 裡用 AI 幫你寫信」；現在是「Gemini 會自動處理你的收件匣裡你沒時間回的信，不需要你手動觸發」。
+根據 Google 自家（就是那種「trust me bro」）的 benchmark，Flash 3.5 的表現逼近 **Opus 4.7** 和 **GPT-5.5**，但跑起來快得多。在它秀出的速度/智慧象限圖裡，Flash 自己獨佔了一個象限。
 
-### 搜尋的代理人化
+不過要提醒的是：這**不是** Google 的頂規模型。真正的旗艦 **Gemini 3.5 Pro** 目前還沒揭曉，預計要**今年夏末**才會發表——這一點讓不少網路上的人相當失望。
 
-Google Search 2026 加入了「Information agents」——搜尋引擎不只是回答問題，而是代替你監控某個主題、定期彙整更新、主動通知。這是搜尋從「你問我答」到「我代替你知道你想知道什麼」的轉型。
+## Antigravity IDE 與那場 Doom demo
 
-### Google 的電商賭注
+不是每個人都對 Google 的 **Antigravity** IDE 新方向買單。Antigravity 的前身是 **Windsurf**，跟 Cursor 一樣是主打 AI coding 的工具。而它最新版本——再一次跟著 Cursor 的腳步——看起來更像是 **OpenAI Codex 的複製品**：重心從「寫程式」偏向「管理一群 agent」。
 
-Google 發布了 Universal Cart——一個「真正智慧的購物車」，整合跨網站的商品比較、庫存確認和結帳。這是 Google 多年來最直接進入電商交易層的一次。
+老派工程師大概不會太開心這個轉向，但現場 demo 確實有點狠：他們用這個工具**從零打造了一個完整的作業系統**，過程花了大約 **12 小時**、燒掉數十億 tokens。接著他們想在上面跑 **Doom**，結果因為缺 driver 而失敗；於是他們當場讓 Gemini 把缺的 driver 寫出來，幾秒後——Doom 就跑起來了。
 
-## 為什麼這件事值得關注
+## 一句話總結這場 I/O
 
-這次 I/O 的公告密度雖高，但背後的策略一點都不複雜：**Google 正在用 Gemini 把它所有的護城河（Search、Gmail、Drive、Maps、Android）升級成 AI 原生服務**，在 OpenAI 和 Anthropic 還在推純 API 的時候，Google 已經有完整的端點可以走。
+如果要抓出這次 I/O 背後的策略主軸，其實不複雜：**Google 想把 Gemini 變成所有產品的底層，讓 agent 直接替使用者行動**，而不只是提供一個可以呼叫的 app 或 API。
 
-對開發者而言，這意味著 Google Cloud 的 AI 能力（Gemini 3.5 Flash API、Gemini Omni、Vertex AI 的代理人框架）正在快速成為一個有完整工具鏈的選項，而不只是 OpenAI API 的替代品。
-
-## 後續值得觀察的點
-
-1. **Gemini 3.5 Flash 的獨立效能驗證**：Google 自家基準測試歷來有爭議，等待 LMSYS、Hugging Face 等中立評測。
-
-2. **Gemini Spark 的實際自主程度**：「24/7 自主執行」在行銷上聽起來很強，實際上如何平衡自主性和使用者控制，值得等企業客戶的真實回饋。
-
-3. **Universal Cart 的商家接受度**：這功能對使用者有利，但對不希望 Google 介入交易過程的商家可能是壓力。
+搜尋、Gmail、Android、眼鏡——這些原本的入口，全被重新包裝成「代理人」。至於這套「代理人化」到底能不能兌現行銷上的承諾，還是只是把 Gemini 這個名詞接到更多產品後面出貨，就得等這些功能真正落地後，用實際體驗來檢驗了。
 
 ## 參考資料
 
-- [100 things we announced at Google I/O 2026 - Google Blog](https://blog.google/innovation-and-ai/technology/ai/google-io-2026-all-our-announcements/)
-- [Google I/O 2026: Every Major AI Announcement - MindStudio](https://www.mindstudio.ai/blog/google-io-2026-ai-announcements-builders)
-- [Google's AI Endgame: What You Missed at I/O 2026 - Thinking About A.I.](https://www.thinkingabout.ai/insights/uncategorized/googles-ai-endgame-what-you-missed-at-i-o-2026/)
+- [The Code Report — Google I/O 2026（YouTube）](https://www.youtube.com/watch?v=9OQ5vaYbGV0)
+- [Google I/O 2026 官方公告整理 - Google Blog](https://blog.google/innovation-and-ai/technology/ai/google-io-2026-all-our-announcements/)

@@ -8,8 +8,8 @@ tldr: "LLM output quality is determined at three distinct layers: token-level de
 description: "From greedy decoding to chain-of-thought, from ReAct to ES-CoT — a systematic breakdown of the three layers of LLM inference to help engineers make informed design choices."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=m3i2mk5hs8U"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260522_234345_047106.wav"
+draft: false
+audio_url: "/api/tts/r2/tts/tts_20260710_094530_685468.mp3"
 ---
 
 When your LLM application underperforms, the problem usually lives at one of three distinct layers: how the model selects tokens during generation (decoding), how you've structured the task into steps (workflow), or whether the model has enough reasoning capability for the problem at hand (reasoning). These three layers are routinely conflated in discussions, but they solve different problems and are optimized differently.

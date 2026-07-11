@@ -8,8 +8,8 @@ tldr: "Going back to school isn't the only path for a mid-life career change —
 description: "Adult's Small Talk EP677 examines whether going back to school still makes sense for mid-life career changers — covering costs, timelines, alternative paths, and the questions most people skip"
 type: explainer
 original_url: "https://www.youtube.com/watch?v=8eatmpr43r8"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_140813_725128.mp3"
+draft: false
+audio_url: "/api/tts/r2/tts/tts_20260710_090311_359130.mp3"
 ---
 
 "I want to change careers, but I'm in my thirties. Do I need to go back and get a degree to have a shot at this?"

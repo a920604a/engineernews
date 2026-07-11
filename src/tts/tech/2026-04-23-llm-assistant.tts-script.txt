@@ -1,0 +1,25 @@
+研究人員每天要追的 arXiv 論文實在太多了，手動一篇一篇檢索效率很低，想快速問答比較更是麻煩。arXiv Knowledge Assistant 想解決的就是這件事——它打造了一條完整的管線，從資料攝取、向量檢索、大語言模型問答，一路到視覺化儀表板，讓你可以直接用自然語言查論文摘要、看 PDF、翻問答歷史，而開發者這邊也能設定攝取流程、管理向量索引、監控模型表現。
+
+整套系統用 Docker Compose 來編排多個微服務，核心目標是「一鍵可重現」。你只要準備好環境變數檔跟 Firebase 金鑰，跑 make build 再 make up，整個環境就拉起來了。
+
+先講它想解決的問題。它列出來的核心功能大概是這幾塊：每天自動抓 arXiv 論文的 metadata、PDF 跟摘要；支援中英雙語的翻譯跟問答；用向量資料庫檢索搭配大語言模型完成 RAG 問答；prompt 模板可以自訂；有查詢歷史的儀表板；還有 Email 推播訂閱。至於 CI/CD、單元測試跟整合測試，這些還在 roadmap 上，算是尚未完成的規劃項目。
+
+再來看系統架構。平台被拆成好幾個職責很單一的微服務，像是 arxivservice、noteservice、emailservice、apiGateway 這些，另外還有 imageservice、speechservice 是留給未來擴充用的。整體可以看成三條資料流。
+
+第一條是每日攝取：定時爬 arXiv，PDF 跟 metadata 存進 MinIO 跟 PostgreSQL，文字的 embedding 就寫進 Qdrant。第二條是 RAG 問答：檢索加上重排之後，交給大語言模型生成答案，再回傳到前端儀表板。第三條是 Email 訂閱：每天從 Qdrant 撈論文、產生摘要、寄出訂閱信。
+
+用一句話描述資料怎麼跑：使用者的請求先進到 API Gateway 做驗證，轉給 RAG 服務；另一邊 arXiv 的內容透過排程器每天觸發，經過抓取、解析、切塊、embedding、建索引之後進到儲存層；問答的時候，RAG 服務跟儲存層一起做混合檢索、重排、組 prompt，丟給本地的 Ollama 模型生成，再把答案送回前端。
+
+說到攝取管線，這裡的排程用的是 Prefect 3。每天定時觸發 arXiv 攝取，把抓回來的論文跑一連串處理：Fetch、Parse、Chunk、Embed、Index。PDF 存進 MinIO，也就是物件儲存，論文的 metadata 存進 PostgreSQL，文字 embedding 寫進 Qdrant 向量資料庫。因為來源、儲存跟索引各自獨立，攝取跟查詢就可以解耦運作，之後要替換或擴充都比較方便。
+
+檢索跟問答這塊，是整個平台的核心。它的 RAG 流程大概是這樣：一開始先做 query rewriting，把使用者的問題改寫一遍，也包含中英轉換，這對應到程式裡用 LangChain 實作的 rewrite_query 方法。接著是 Hybrid Search，在 Qdrant 上同時用 dense 稠密向量跟 sparse 稀疏訊號來檢索，兩種訊號一起用，召回品質更好。然後是 document re-ranking，把召回的文件重新排序，提升相關度。最後由 Ollama 驅動的本地大語言模型生成答案，而且它支援評估多組 prompt 模板。問答策略是 RAG 搭配 agent reflection。整個過程的 prompt trace 會用 Langfuse 記錄下來，方便你追蹤跟評估問答品質。
+
+登入、訂閱跟可觀測性的部分。身分驗證用的是 Firebase Authentication 的 Google 登入，你得把 serviceAccountKey.json 放進 apiGateway 跟 email 這兩個資料夾，少了這把金鑰，登入跟 Firebase 相關的功能就沒辦法運作。快取這層用 Redis。Email 訂閱是透過 SMTP，用 Gmail 的 App Password 來寄每日摘要信。監控則是 Prometheus 加 Grafana 這組經典搭配，負責指標跟看板，還能配 Alertmanager 設定告警。
+
+前端提供兩種介面：一個是 React 加 Vite 的完整版；另一個是 Gradio，這個好處是不依賴 Firebase 也能用，很適合那種不想串接 Firebase 專案的情境。
+
+技術棧快速掃一遍：雲端跟基礎設施是 Docker Compose、MinIO、PostgreSQL、Qdrant；後端跟 API 用 FastAPI 加 Prefect 3；前端是 React、Vite 跟 Gradio；監控是 Prometheus 加 Grafana；CI/CD 用 GitHub Actions，還在規劃中；測試用 pytest，單元跟整合都還在進行；IaC 主要靠 Docker Compose，Terraform 是選用的。
+
+現況是，這個平台已經能跑通完整的端到端流程了——從每日攝取、向量檢索、雙語 RAG 問答，到儀表板跟 Email 訂閱，都串起來了，而且有 Grafana 跟 Langfuse 幫忙做可觀測性。Roadmap 上還沒補完的，包括 GitHub Actions 的 CI/CD、單元跟整合測試、多種 LLM 後端像 OpenAI、Anthropic，還有個人化推薦跟訂閱。授權是 MIT。
+
+最後幫你收斂三個重點。第一，這套系統的核心價值是「解耦」——來源、儲存、索引、問答各自獨立成微服務，用 Docker Compose 一鍵編排，換元件、擴功能都容易。第二，它的 RAG 不是陽春版，而是走 query rewriting、hybrid search、re-ranking 再到 LLM 生成這一整條完整鏈路，還配上 Langfuse 做評估追蹤。第三，它把可觀測性當一等公民，Prometheus 加 Grafana 從一開始就在架構裡，這在很多個人專案其實是很容易被省略掉的一環。

@@ -11,8 +11,7 @@ tldr: "Kafka's horizontal scalability comes from partition design: each partitio
 description: "Kafka performance deep-dive part 2: how partitions enable linear horizontal scaling, Consumer Group parallel consumption mechanics, ISR replication's impact on latency, and comparison with RabbitMQ and Pulsar."
 type: deep-dive
 original_url: "https://www.youtube.com/shorts/la8tzEyg-hY"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260616_062612_382191.mp3"
+draft: false
 ---
 
 [Part 1](./2026-06-14-why-is-kafka-fast-part-1.en.md) covered single-node Kafka performance: sequential I/O, Page Cache, Zero-Copy. These allow one machine to handle very high throughput.

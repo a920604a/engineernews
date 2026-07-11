@@ -196,10 +196,15 @@ export function generateTTSScript(
 
   try {
     console.log(`  🤖 LLM 生成劇本中...`);
-    const result = spawnSync('claude', ['--print', '--dangerously-skip-permissions'], {
+    // --disallowedTools：在 repo 內 claude 會當 agent（用工具、掛住 → ETIMEDOUT），
+    // 禁用工具逼它純文字輸出腳本。timeout 拉長到 240s。
+    const result = spawnSync('claude',
+      ['--print', '--dangerously-skip-permissions',
+       '--disallowedTools', 'Write,Edit,Bash,NotebookEdit,Read,Glob,Grep,WebFetch,WebSearch,Task'], {
       input: prompt,
       encoding: 'utf8',
-      timeout: 120_000,
+      timeout: 240_000,
+      maxBuffer: 20 * 1024 * 1024,
     });
 
     if (result.error) throw result.error;
@@ -213,8 +218,14 @@ export function generateTTSScript(
     console.log(`  💾 劇本已存: ${path.basename(outputPath)}`);
     return script;
   } catch (e) {
+    // TTS_STRICT：撞 quota/逾時等暫時性失敗時「拋錯跳過」，讓上層下個視窗重試，
+    // 絕不把原文 fallback 寫進快取（否則會被當成「已有好稿」永久卡低品質）。
+    if (process.env.TTS_STRICT) throw e instanceof Error ? e : new Error(String(e));
     console.warn(`  ⚠️  LLM 劇本生成失敗，改用原始文字清理: ${e instanceof Error ? e.message : e}`);
-    return processTextForTTS(title, tldr, content);
+    // 非 strict：fallback 腳本也要寫檔，否則階段二/三會因「逐字稿不存在」而跳過、不生音檔
+    const fallback = processTextForTTS(title, tldr, content);
+    try { fs.writeFileSync(outputPath, fallback, 'utf-8'); } catch { /* ignore */ }
+    return fallback;
   }
 }
 
@@ -244,10 +255,12 @@ export async function generateBilingualMap(
 
   try {
     console.log(`  🤖 LLM 生成段落對齊映射...`);
-    const result = spawnSync('claude', ['--print', '--dangerously-skip-permissions'], {
+    const result = spawnSync('claude',
+      ['--print', '--dangerously-skip-permissions',
+       '--disallowedTools', 'Write,Edit,Bash,NotebookEdit,Read,Glob,Grep,WebFetch,WebSearch,Task'], {
       input: prompt,
       encoding: 'utf8',
-      timeout: 60_000,
+      timeout: 120_000,
     });
 
     if (result.error) throw result.error;

@@ -8,8 +8,7 @@ tldr: "Anthropic published a pause-AI paper on June 4, launched Fable 5 on June 
 description: "Fable 5 went from launch to government-mandated shutdown in four days. A case study in the gap between AI safety rhetoric and shipping reality."
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=1PBRhm5ZnjU"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_202708_500781.mp3"
+draft: false
 ---
 
 "We call on the world to pause." — Anthropic, June 4, 2026

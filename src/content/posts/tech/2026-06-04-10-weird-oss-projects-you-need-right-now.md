@@ -1,172 +1,74 @@
 ---
-title: "10 個你可能沒聽過但值得裝的奇怪開源專案"
-date: 2026-06-04T12:02:03.080Z
-category: tech
-tags: ["open-source", "developer-tools", "productivity", "cli", "devtools"]
-lang: zh-TW
-tldr: "從把程式碼轉成美圖的 Carbon、反向生成 API client 的 Hoppscotch，到監控 GitHub Action 的 nektos/act——這 10 個開源專案各有獨特的切入點，不是那種「又一個 X 的替代品」。"
-description: "10 個真正解決特定痛點的開源專案，有的讓你的 README 瞬間上檔次，有的讓你不用推上 CI 就能本地跑 GitHub Actions，有的讓終端機輸出直接變成互動式 UI。"
-type: listicle
+title: "五個不該存在但真的有人做出來的開源專案（The Code Report）"
+date: "2026-06-04T12:02:03.080Z"
+category: "tech"
+tags: ["open-source","developer-tools","rust","terminal","cuda"]
+type: "listicle"
 original_url: "https://www.youtube.com/watch?v=qPuzWFvRajk"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_200930_235704.mp3"
+draft: false
+key_points:
+  - "Ratty 用 Bevy 遊戲引擎把終端機做成 GPU 3D 場景，代價是吃掉 300MB RAM"
+  - "Terminal Phone 完全跑在 Tor 上，用 .onion 位址當身分，沒有伺服器也沒有帳號"
+  - "Nvidia 悄悄丟出 CUDA Oxide，讓你用純 Rust 寫 GPU kernel、直接編到 PTX"
+tldr: "一支 The Code Report 影片盤點了一批「完全沒必要、卻美得莫名其妙」的開源專案：3D 旋轉老鼠游標的終端機、跑在 Tor 上的終端機電話、把上網變成 80 年代科幻恐怖片的擋廣告器、用 Rust 寫 CUDA 的 Nvidia 官方工具，還有把任何歌曲變成 Game Boy 芝麻音的合成器。"
+description: "整理自 The Code Report（2026/5/26）的一批冷門開源專案：Ratty、Terminal Phone、They Live 風格擋廣告器、CUDA Oxide、Wario Synth。"
 ---
 
-你的 GitHub stars 裡大概有一堆「以後要用」卻從沒打開過的 repo。這些不是那種——它們各自解決一個很具體的痛點，而且很多是你裝上去之後三天內就會用到的工具。
+打開 GitHub 動態，畫面幾乎被 AI 佔滿——AI agent 在審查另一個 AI agent 的 pull request，最多星星的 repo 其實只是一堆教你怎麼跟機器人講話的 markdown 檔。但在這層「AI 廢水」底下，還是有一群真人在做著瘋狂、漂亮、而且深度沒必要的軟體。
 
-## TL;DR
+這篇整理自 The Code Report（2026 年 5 月 26 日那一集），挑出裡面幾個「本來就不該存在、卻真的有人做出來」的開源專案。它們的共通點不是實用，而是那種明知代價很高、還是硬要做的偏執。
 
-10 個工程師工具箱裡少見但實用的開源專案，涵蓋程式碼視覺化、本地 CI 執行、終端機 UI 生成、API 測試、Git 工作流強化等領域。每個都有明確的使用場景，不是通用工具。
+## Ratty：游標是一隻旋轉 3D 老鼠的終端機
 
-## 1. Carbon — 把程式碼截圖做得像設計師作品
+Ratty 是一個用 Rust 寫、靈感來自 TempleOS 的終端機模擬器，作者是 Warren Parmacksis。
 
-**GitHub**: `carbon-app/carbon`
+它跟一般終端機最大的不同是：**它不只是渲染文字，而是用 Bevy 遊戲引擎渲染一整個 GPU 加速的 3D 場景**。游標本身是一隻旋轉的 3D 老鼠。你可以按 `Ctrl + Alt + Enter` 把整個終端機在 3D 空間裡傾斜，像在玩 PS2 遊戲一樣「飛」過去；甚至可以把自己用 Blender 做的爛 3D 模型丟進來。
 
-在 Twitter 或技術部落格貼程式碼截圖，直接截螢幕的效果往往很醜。Carbon 讓你選擇主題、字型、背景色，把一段程式碼輸出成美觀的 PNG/SVG。
+唯一的代價是它會吃掉 300MB 的 RAM——而現在的 RAM 並不便宜。作者自己也很清楚這有多離譜，他的原話是：
 
-適合場景：技術分享貼文、演講簡報的程式碼截圖、README 的示例圖。
+> 「一切都是有代價的，尤其是那隻旋轉的老鼠游標。」
 
-不適合場景：你需要貼可以直接複製的程式碼——圖片沒法複製。
+## Terminal Phone：跑在 Tor 上的終端機電話
 
-## 2. Excalidraw — 架構圖的白板工具，看起來像手繪
+想像你人在終端機裡，Vim 開著、tmux 疊了三層 pane，這時要接電話——你不用解鎖手機，直接從 bash 裡打。
 
-**GitHub**: `excalidraw/excalidraw`
+Terminal Phone 是一個開源的**按鍵通話（push-to-talk）語音與文字 app，整個以 shell script 的形式完全跑在 Tor 之上**。沒有伺服器、沒有帳號、沒有電話號碼，你的身分就是一個 `.onion` 位址，所以一切都是短暫的（ephemeral）且端對端加密。
 
-Lucidchart 和 Draw.io 的圖看起來太正式，有時候你就是需要一個「快速草圖」感覺的架構圖。Excalidraw 生成的圖有刻意的「手繪」風格，而且完全免費開源，可以自架。支援即時協作、匯出 SVG。
+作者在二月時把這個專案上線，協定是從零自幹的。這大概就是 1995 年那些 cypherpunk 承諾我們、卻等了三十年才有一個瘋子真的做出來的東西。
 
-VS Code 有對應的 extension，可以直接在編輯器裡開 `.excalidraw` 檔案。
-
-## 3. nektos/act — 在本機跑 GitHub Actions
-
-**GitHub**: `nektos/act`
-
-每次 push 才能測試 CI workflow 是最浪費時間的事之一。`act` 讓你在本機用 Docker 執行 GitHub Actions workflow，迭代速度快十倍。
-
-```bash
-# 安裝（macOS）
-brew install act
-
-# 跑所有 push event 的 workflow
-act push
-
-# 只跑特定 job
-act -j build
-```
-
-限制：部分 GitHub 內建的 action（如 `actions/checkout`）需要額外設定才能在本機正確執行。
-
-## 4. Hoppscotch — 開源的 Postman 替代品，可以自架
-
-**GitHub**: `hoppscotch/hoppscotch`
-
-Postman 免費版的功能越來越受限，而且把你的 API collection 存在他們的雲端。Hoppscotch 完全開源，支援 REST、GraphQL、WebSocket 測試，可以自架在你自己的伺服器，資料完全在你手上。
-
-Web 版免費，自架版社群授權免費。
-
-## 5. Bun Shell (`$`) — 在 JavaScript 裡寫 shell script
-
-**GitHub**: `oven-sh/bun`（內建在 Bun runtime）
-
-`child_process.exec` 很醜，`shelljs` 太老，Bun 內建的 `$` 讓你在 JavaScript/TypeScript 裡直接寫 shell 語法：
-
-```typescript
-import { $ } from "bun";
-
-const result = await $`ls -la`.text();
-const files = await $`find . -name "*.ts"`.lines();
-```
-
-跨平台（在 Windows 上也能用），有完整的 TypeScript 型別，是用 Node.js 寫構建腳本的現代替代方案。
-
-## 6. Ink — 用 React 寫終端機 UI
-
-**GitHub**: `vadimdemedes/ink`
-
-你不需要學 ncurses 就能寫互動式 CLI。Ink 讓你用 React component 的方式寫終端機介面：
-
-```jsx
-import React from 'react';
-import { render, Text, Box } from 'ink';
-
-const App = () => (
-  <Box flexDirection="column">
-    <Text color="green">Build complete!</Text>
-    <Text dimColor>3 files processed</Text>
-  </Box>
-);
-
-render(<App />);
-```
-
-Gatsby CLI 和 Parcel 的 CLI 界面都是用 Ink 做的。
-
-## 7. Slidev — 工程師的簡報工具，用 Markdown 寫投影片
-
-**GitHub**: `slidevjs/slidev`
-
-如果你討厭 PowerPoint 但又需要做技術分享簡報，Slidev 讓你用 Markdown + Vue component 寫投影片，程式碼區塊有語法高亮，可以嵌入互動式 demo，匯出成 PDF 或部署成網頁。
-
-對工程師來說，投影片放進 Git 做版本控制這件事本身就很有吸引力。
-
-## 8. Zod — TypeScript 的執行時期型別驗證
-
-**GitHub**: `colinhacks/zod`
-
-TypeScript 的型別在執行時期消失了。當你從 API 拿到資料，你無法確定它符合你預期的型別。Zod 讓你定義 schema 並在執行時期驗證：
-
-```typescript
-import { z } from "zod";
-
-const User = z.object({
-  id: z.number(),
-  name: z.string(),
-  email: z.string().email(),
-});
-
-// 如果資料不符合 schema，會拋出清楚的錯誤訊息
-const user = User.parse(apiResponse);
-```
-
-和 tRPC 配合使用效果特別好——前後端共用同一份 schema。
-
-## 9. Playwright — 比 Selenium 好用的 E2E 測試工具
-
-**GitHub**: `microsoft/playwright`
-
-Selenium 的 API 設計出自 2004 年，Playwright 是 Microsoft 在 2020 年發布的現代替代品：支援 Chromium、Firefox、WebKit，有自動等待機制（不需要手動加 `sleep`），有 codegen 可以錄製操作生成測試程式碼。
-
-```bash
-# 錄製操作，自動生成測試
-npx playwright codegen https://your-app.com
-```
-
-## 10. Mermaid — 在 Markdown 裡直接畫圖
-
-**GitHub**: `mermaid-js/mermaid`
-
-GitHub、Notion、GitLab 都原生支援 Mermaid。你在 Markdown 裡寫文字，它幫你渲染成流程圖、序列圖、甘特圖。不需要開任何繪圖工具：
-
-```
+```mermaid
 graph LR
-    A[用戶請求] --> B[API Gateway]
-    B --> C[服務 A]
-    B --> D[服務 B]
+    A[你的終端機 bash] -->|自幹協定| B((Tor 網路))
+    B -->|.onion 位址即身分| C[對方的終端機]
+    A -.無伺服器 / 無帳號 / 無號碼.-> A
 ```
 
-文件和程式碼在同一個 repo，架構圖可以做 code review，這才是架構文件該有的樣子。
+## They Live 風格的擋廣告器
 
-## 總結
+1988 年，在網際網路都還沒普及之前，John Carpenter 拍了一部電影：主角戴上一副墨鏡，眼前每一塊看板、每一本雜誌、每一則廣告，都被揭露成外星人的心智控制宣傳，叫你「服從、消費、結婚、生小孩」。
 
-這 10 個工具的共同特點：它們都解決了一個很具體的問題，而不是試圖成為「什麼都能做的平台」。Carbon 就是幫你生成漂亮的程式碼圖，act 就是讓你本機跑 CI，Zod 就是執行時期型別驗證。這種定位清晰的工具，反而是最容易上手、最容易評估是否適合你的。
+開發者 David Lawrence 意識到，這其實是實作一個擋廣告器**在美學上最正確**的方式。他早在 2015 年就有這個點子，放了整整十年，最近才終於做出來——它是 uBlock Origin Light 的一個 fork。
+
+它不只是把廣告擋掉，而是把整個上網體驗變成一部 80 年代的科幻恐怖片。
+
+## CUDA Oxide：用 Rust 寫 GPU kernel（Nvidia 官方出品）
+
+前面那些都出自地下室駭客，但 CUDA Oxide 不一樣——它是市值五兆美元的 Nvidia 上週悄悄丟到 GitHub 上的，而且它解決的是一個很實際的問題。
+
+要寫 CUDA kernel（跑在 GPU 上的程式碼），你得小心翼翼地雕 C++，然後祈禱 compiler 不要 segfault，因為只要一個 pointer 寫錯，就能把你價值四萬美金的 GPU 叢集變成一塊廢鐵。
+
+CUDA Oxide 想解決這件事：**讓你用純 Rust 寫 GPU kernel**。只要在函式上標註 `kernel`，你就有了能真正跑在 GPU 上的 Rust 程式碼，而且它會**直接編譯成 PTX**——中間完全沒有 FFI（foreign function interface），也沒有任何 C++。
+
+## Wario Synth：把任何歌變成 Game Boy 芝麻音
+
+每個很酷的專案都該有自己的主題曲，Wario Synth 就是幹這個的：你貼進一首歌，它把整首歌吐回來，變成 Game Boy 的 chiptune。
+
+它底層用的是 Web Audio API，靠兩個 pulse wave、一個 wave channel 跟一個 noise channel，把整首歌重新合成成聽起來像從 1989 年 Game Boy 裡跑出來的聲音——而且這一切都直接在瀏覽器裡完成。
+
+## 小結
+
+這幾個專案沒有一個是為了「生產力」而做的。它們的價值在於：在滿是 AI agent 互相 review 的 GitHub 動態底下，還是有人願意花力氣做一隻旋轉老鼠游標、一支跑在 Tor 上的電話、一個把網頁變成恐怖片的擋廣告器。明知代價很高、明知沒必要，卻還是做了——這本身就是最高等級的讚美。
 
 ## 參考資料
 
-- [carbon-app/carbon](https://github.com/carbon-app/carbon)
-- [excalidraw/excalidraw](https://github.com/excalidraw/excalidraw)
-- [nektos/act](https://github.com/nektos/act)
-- [hoppscotch/hoppscotch](https://github.com/hoppscotch/hoppscotch)
-- [vadimdemedes/ink](https://github.com/vadimdemedes/ink)
-- [slidevjs/slidev](https://github.com/slidevjs/slidev)
-- [colinhacks/zod](https://github.com/colinhacks/zod)
-- [microsoft/playwright](https://github.com/microsoft/playwright)
-- [mermaid-js/mermaid](https://github.com/mermaid-js/mermaid)
+- [The Code Report — 影片原始來源](https://www.youtube.com/watch?v=qPuzWFvRajk)

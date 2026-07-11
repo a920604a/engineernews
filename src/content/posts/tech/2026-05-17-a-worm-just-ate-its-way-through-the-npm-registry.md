@@ -1,91 +1,89 @@
 ---
-title: "Mini Shai-Hulud：史上最大 npm 供應鏈蠕蟲攻擊解析"
-date: 2026-05-17T19:20:31.395Z
-category: tech
-tags: ["npm", "supply-chain-security", "github-actions", "oidc", "security", "open-source"]
-lang: zh-TW
-tldr: "2026 年 5 月 11 日，TeamPCP 組織在 6 分鐘內入侵 42 個 TanStack 套件，透過 GitHub Actions cache poisoning 與 OIDC token 記憶體提取，打造出史上首個具備 SLSA Build Level 3 provenance 的惡意蠕蟲套件群。"
-description: "Mini Shai-Hulud 攻擊事件深度解析：42 個 TanStack 套件在 6 分鐘內遭入侵，超過 170 個套件受影響、累計下載量 5.18 億次，攻擊鏈結合 GitHub Actions cache poisoning 與 OIDC token 記憶體提取技術。"
-type: newsjacking
+title: "mini Shai-Hulud：一個 fork PR 如何劫持 TanStack 的 npm 發布管線"
+date: "2026-05-17T19:20:31.395Z"
+category: "tech"
+tags: ["npm","supply-chain-security","github-actions","oidc","security","open-source"]
+type: "newsjacking"
 original_url: "https://www.youtube.com/watch?v=gwTQLZSIlsU"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260522_235411_655482.wav"
+draft: false
+tldr: "攻擊者只是對 TanStack 開了一個 fork PR 又立刻關掉，就利用 pull_request_target 的權限把惡意檔案寫進 CI 共享快取，等後續 PR 合併時劫持 npm trusted publishing token，6 分鐘投毒 84 個套件並蠕蟲式擴散到 169 個套件。"
+description: "以 The Code Report 的逐字稿為依據，解析 2026 年 5 月 mini Shai-Hulud 供應鏈蠕蟲：pull_request_target 快取投毒、trusted publishing token 被竊、以及會反噬清理者的 dead man's switch。"
+key_points:
+  - "TanStack 的發布 workflow 用了 pull_request_target，讓 fork 來的 PR 也能以主 repo 權限執行，把惡意檔案寫進 CI 共享快取。"
+  - "後續無關的 PR 合併時觸發惡意檔案，從快取偷走 npm publish token，6 分鐘內投毒 84 個 TanStack 套件，最終擴散到 169 個套件、373 個惡意版本，並跳到 PyPI。"
+  - "惡意程式帶 dead man's switch：偵測到你要清理時反而砍掉 home 資料夾，還偽造 Claude Code GitHub app 簽章的 commit 來混淆維護者。"
 ---
 
-2026 年 5 月 11 日，一隻蠕蟲悄悄爬進了 npm 生態系。6 分鐘之內，42 個屬於 TanStack 的套件全數遭到入侵。這不是鑽研已久的 0-day 漏洞利用，而是一場精心設計的供應鏈攻擊，甚至帶著一張從未有惡意套件擁有過的「通關憑證」——有效的 SLSA Build Level 3 provenance。
+幾天前，開源維護者最大的惡夢成真了。在短短 6 分鐘內，一批每週合計下載量超過 5,000 萬次的套件被供應鏈攻擊攻陷——而且過程中沒有人被釣魚、沒有密碼外洩、也沒有 token 被直接偷走。更糟的是，這些被投毒的套件是經過**簽署、驗證，並透過 npm 的 trusted publishing 機制發布的**。而 trusted publishing 這套機制，正是為了防範這類攻擊而設計、被官方推薦了將近兩年的做法。
 
-## TL;DR
+這次事件被稱為 mini Shai-Hulud。它劫持了 React 生態系中最大的專案之一——TanStack——的發布管線，接著像蠕蟲一樣擴散到數百個套件。本文以 The Code Report（2026 年 5 月 14 日）的說明為事實依據，拆解這個「沒人料到」的攻擊鏈。
 
-- **攻擊代號**：Mini Shai-Hulud，執行者為 TeamPCP 組織
-- **時間軸**：2026 年 5 月 11 日，攻擊在 6 分鐘內完成
-- **範圍**：42 個 TanStack npm 套件直接受害；整體波及超過 170 個 npm/PyPI 套件
-- **規模**：受影響套件累計下載量超過 **5.18 億次**
-- **技術亮點**：首個同時具備有效 SLSA Build Level 3 provenance 的惡意套件群
-- **攻擊鏈核心**：GitHub Actions `pull_request_target` cache poisoning → OIDC token 從 `/proc/<pid>/mem` 記憶體提取 → 蠕蟲自我傳播
+## TanStack 原本的發布流程
 
-## 發生了什麼
+要理解攻擊，得先看 TanStack 正常怎麼發套件：
 
-TeamPCP 針對 TanStack 發動了代號 Mini Shai-Hulud 的供應鏈攻擊。TanStack 是一系列廣受使用的前端工具套件，包括 TanStack Query（前 React Query）、TanStack Router、TanStack Table 等，在現代前端開發中幾乎無所不在。
+- 每當一個 pull request 被合併，就會啟動一個 GitHub Actions workflow，負責把新版本發布到 npm registry。
+- 為了發布，CI server 得先向 npm 拿一個 publish token。
+- 為了證明請求是合法的，**GitHub 本身會簽署一份聲明**，說明「是哪個 workflow、在哪個 repo、哪個 branch 上執行」。
+- npm 拿到這份簽署聲明後，比對組織的 allow list，只有全部吻合才會發出 token。
+- 這個 token 只會在 CI 的快取裡存活幾分鐘就失效。
 
-攻擊者並非直接入侵 TanStack 的程式碼儲存庫，而是利用 GitHub Actions 工作流程設定上的一個結構性弱點：`pull_request_target` 事件。這個觸發條件允許工作流程在特定情況下以較高的權限執行，而攻擊者透過 cache poisoning（快取投毒）的手法，讓惡意程式碼在受信任的工作流程環境中執行。
+這套設計看起來滴水不漏：token 短命、又不經過人手，傳統釣魚攻擊根本沒有東西可偷。
 
-一旦進入工作流程，攻擊者便從 `/proc/<pid>/mem` 這個 Linux 記憶體檔案系統中直接讀取 OIDC（OpenID Connect）token——這個 token 是 GitHub Actions 用來向 npm 等套件倉庫證明身份的憑證。持有這個 token，等同於取得了以 TanStack 官方身份發布套件的能力。
+## 攻擊怎麼繞過這一切
 
-接下來是蠕蟲的精髓：惡意程式碼設計了自我傳播機制，讓攻擊能夠從一個套件跳躍到相關依賴套件，6 分鐘內橫掃 42 個套件。最終波及範圍擴大至 170 個以上的 npm 與 PyPI 套件。
+問題出在觸發條件的設定，而不是 token 本身。攻擊步驟如下：
 
-## 為什麼值得關注
+1. 攻擊者 **fork 了 TanStack 的 repo**，建立一個 pull request，然後**立刻把它關掉**。
+2. 儘管這只是個 fork、而且這個 PR 從頭到尾沒有任何人看過——**光是「建立 PR」這個動作，就足以啟動發布 workflow**。
+3. TanStack 在設定觸發條件時用了 `pull_request_target`。這個選項的關鍵在於：**任何進來的 PR 都會在「主 repo 的上下文」中、帶著「主 repo 的權限」執行，即使這個 PR 是從 fork 建立的。**
+4. 這些權限，足以讓攻擊者的程式碼把一個**被投毒的檔案寫進 CI server 的共享快取**——這個快取是 GitHub Actions 用來在不同 job 之間重複使用相依套件的。
+5. 幾個小時後，一個**完全無關的 PR** 被合併進 main，觸發了那個被投毒的檔案。它從快取裡撈出 npm publish token，用它一口氣投毒了 **84 個全新的 TanStack 套件版本**。
 
-### 下載量代表真實曝險
-
-5.18 億次的累計下載量不是虛數。現代 CI/CD 流程每次建置都會重新安裝依賴套件，企業環境的每日下載量可以輕易達到數百萬次。這意味著受攻擊期間安裝了相關套件的專案，都有可能在開發機或建置環境中執行了惡意程式碼。
-
-### SLSA provenance 作為偽裝工具
-
-SLSA（Supply chain Levels for Software Artifacts）是 Google 領導設計的供應鏈安全框架，Build Level 3 代表建置過程可稽核、不可竄改。許多安全工具與政策會以「是否有 SLSA provenance」作為信任判斷依據。
-
-Mini Shai-Hulud 是**首個具備有效 SLSA Build Level 3 provenance 的惡意套件群**，這代表光靠 provenance 簽章並不足以保護你。攻擊者透過劫持合法的建置流程取得了合法的簽章——這讓傳統的「信任鏈」假設出現了根本性裂縫。
-
-### 蠕蟲特性改變威脅模型
-
-過去的供應鏈攻擊通常是「靜態」的：攻擊者植入惡意套件後等待下載。Mini Shai-Hulud 的蠕蟲特性讓攻擊**主動擴散**，大幅壓縮了防禦反應時間。6 分鐘的橫掃速度，遠超過任何人工監控的反應能力。
-
-## 技術角度怎麼看
-
-### 攻擊流程
+換句話說，攻擊者從未真的碰到 token，也沒有攻破簽署機制。他們是讓自己的程式碼「住進」合法流程會經過的快取，再等合法流程自己來執行它。
 
 ```mermaid
 graph TD
-    A[攻擊者提交惡意 PR] --> B[觸發 pull_request_target 工作流程]
-    B --> C[Cache Poisoning 注入惡意程式碼]
-    C --> D[在受信任環境中執行]
-    D --> E[從 /proc/pid/mem 讀取 OIDC token]
-    E --> F[以合法身份向 npm 發布惡意版本]
-    F --> G[蠕蟲自我傳播至相依套件]
-    G --> H[6 分鐘內入侵 42 個套件]
+    A[攻擊者 fork TanStack 並開一個 PR 後立刻關閉] --> B["pull_request_target 讓 PR<br/>以主 repo 權限執行"]
+    B --> C[把惡意檔案寫進 CI 共享快取]
+    C --> D[數小時後一個無關 PR 合併進 main]
+    D --> E[惡意檔案被觸發<br/>從快取撈出 npm publish token]
+    E --> F[投毒 84 個 TanStack 套件]
+    F --> G[使用者 npm install 後<br/>惡意程式掃描系統]
+    G --> H[找到其他 npm token 就用同樣手法擴散]
 ```
 
-### `pull_request_target` 的設計陷阱
+## 從 TanStack 問題變成「所有人的問題」
 
-GitHub Actions 的 `pull_request_target` 事件本意是讓外部 PR 能夠觸發有限度的工作流程（例如加標籤），但它在 base branch 的上下文中執行，可以存取機密與 token。許多專案為了方便將這個觸發條件與實際的建置步驟結合，無意間開了一道後門。
+真正讓它成為蠕蟲的，是感染後的行為。只要你不幸 `npm install` 了其中一個被投毒的套件：
 
-正確的作法是把 `pull_request_target` 工作流程嚴格限制在無需機密的輕量任務，建置與發布流程應改用 `push` 到受保護分支作為觸發條件。
+- 惡意程式就會執行，掃描你的系統，搜刮任何值錢的東西。
+- 一旦它找到任何 npm publishing token，就用這些 token、以同樣的手法發布新的中毒版本。
 
-### `/proc/<pid>/mem` 記憶體讀取
+於是攻擊自我複製、跳到下一個維護者身上。第一波受害者包括 Mister AI、UiPath、OpenSearch、Guardrails AI 與 Squawk 的維護者；幾小時內，這些公司也把中毒的套件推上了 npm。而透過它們的 **Python SDK，這隻蠕蟲甚至跳到了 PyPI**。
 
-Linux 核心的 `/proc` 虛擬檔案系統允許有足夠權限的程序讀取其他程序的記憶體空間。在 GitHub Actions 的共享執行環境中，這提供了一個繞過環境變數保護、直接從記憶體抓取 token 的管道。這個技術並不新奇，但在 CI/CD 環境中的實際運用展示了其破壞力。
+到隔天早上，資安公司 **Aikido 已追蹤到 169 個套件、共 373 個中毒版本**。
 
-## 後續值得觀察的點
+## 蠕蟲還在變聰明
 
-1. **npm 與 GitHub 的平台層防禦**：npm 是否會引入更嚴格的發布頻率限制或異常偵測？GitHub 是否會修改 `pull_request_target` 的預設行為或加入警告？
+這次攻擊有兩個特別值得注意的「進化」細節：
 
-2. **SLSA 框架的修訂**：provenance 被惡意利用後，SLSA 社群需要重新思考信任模型。單靠簽章證明「建置過程合法」是不夠的——我們還需要驗證「觸發建置的人是否被授權」。
+- **偽造 Claude Code 的簽章**：蠕蟲開始偽造由 Claude Code GitHub app 簽署的 commit，讓自己的惡意活動混進維護者早已習慣看到的「AI 生成 commit」裡，更難被一眼識破。
+- **鑽進開發工具**：在被感染的機器上，它會把自己直接嵌進 Claude Code 與 VS Code。
 
-3. **蠕蟲化供應鏈攻擊的普及**：Mini Shai-Hulud 的成功示範效應可能催生更多模仿者。自我傳播能力的加入，讓供應鏈攻擊的威脅等級大幅提升。
+### Dead man's switch
 
-4. **受影響套件的實際損害評估**：惡意版本在活躍的 CI 環境中到底執行了什麼？資料外洩、後門植入、還是單純的概念驗證？完整的事後分析報告值得持續追蹤。
+最陰險的是它埋了一個「dead man's switch」：在每一台被感染的機器上，**只要你一嘗試清理它，它就會把你的 home 資料夾清空**。這讓事後的補救變得格外危險——照直覺去移除惡意程式，反而可能觸發破壞。
+
+## 值得記住的重點
+
+- **trusted publishing 不是萬靈丹**：token 短命、免人手、經過簽署驗證，這些都擋不住「攻擊者讓程式碼住進 CI 快取、再借合法流程之手執行」的路徑。
+- **`pull_request_target` 是這次的根因**：它讓來自 fork 的、甚至沒人看過的 PR，帶著主 repo 的權限與可寫入的共享快取執行。把發布這類敏感流程綁在這個觸發條件上，等於開了一道後門。
+- **蠕蟲化改變了時間尺度**：從 fork 一個 PR 到 84 個套件中毒只花 6 分鐘，並在一夜之間擴散到跨生態系（npm → PyPI）的 169 個套件——遠超過人工監控能反應的速度。
+- **清理要格外小心**：由於 dead man's switch 的存在，受影響的機器不該貿然「手動移除」，而應在隔離環境中處理。
 
 ## 參考資料
 
-- [A worm just ate its way through the NPM registry...（YouTube）](https://www.youtube.com/watch?v=gwTQLZSIlsU)
-- [SLSA Supply Chain Security Framework](https://slsa.dev/)
+- [A worm just ate its way through the NPM registry…（The Code Report, YouTube）](https://www.youtube.com/watch?v=gwTQLZSIlsU)
 - [GitHub Actions: Security hardening for GitHub Actions](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions)
+- [npm trusted publishing 官方文件](https://docs.npmjs.com/trusted-publishers)

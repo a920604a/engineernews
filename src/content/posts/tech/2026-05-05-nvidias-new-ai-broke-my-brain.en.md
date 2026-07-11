@@ -8,8 +8,8 @@ tldr: "NVIDIA's Isaac GR00T N1 is the first genuinely open humanoid robot founda
 description: "A technical look at NVIDIA Isaac GR00T N1's dual-system architecture: how a Vision-Language Model and Diffusion Transformer work together to make a single model control multiple humanoid robot platforms."
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=Xf_v62TQOx4"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260522_234354_203825.wav"
+draft: false
+audio_url: "/api/tts/r2/tts/tts_20260710_095035_315130.mp3"
 ---
 
 Robot AI has always had a frustrating constraint: a model trained for Robot A doesn't transfer to Robot B without starting over. NVIDIA's Isaac GR00T N1, released at GTC 2025, is the first serious open attempt to break that constraint. Its architecture forced me to reconsider what a general-purpose robot AI should actually look like.

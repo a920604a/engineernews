@@ -1,0 +1,59 @@
+PostgreSQL gets called "the most secure database" a lot. But the original video I'm working from goes further — it calls PostgreSQL the most secure *system* in the world. And the reason is that it can control access all the way down to a single row, a single column, even a single cell. We'll get to those features. But before we do, there's a more interesting question worth sitting with first: the entire software industry takes database security far less seriously than it should.
+
+Let's start with a saying that stuck with me — the essence of system security is really the security of reading and writing data. Look back at the history of security incidents, and they mostly fall into three buckets.
+
+First, data breaches. That's the READ problem — confidential data gets read out. There are more of these than you can count. Honestly, half the dark web is propped up by them.
+
+Second, irreversible destruction. That's the WRITE problem. Here's the thing — most programs, when they break, you just restart them. But the database is the single point of truth. Once the real data gets altered or deleted, it's often gone for good. The textbook example is the 2017 GitLab incident. After a string of just absurd, comedy-of-errors operations, an engineer deleted three hundred gigabytes of user data sitting in their own PostgreSQL. No recovery possible.
+
+And third, system takedown — the DOWN problem. Ransomware, DDoS, the stuff that makes a system unusable. Though that one leans more toward being a network architecture issue.
+
+So notice: two of those three categories, reading and writing, are directly about data. Which means the real core of security is a very simple question — who can read and write which data. Authentication and access control. That's it.
+
+Now here's the paradox, and it's a strange one. If you map out where the industry puts its defensive effort, you find it's tightest at the very outermost layer and gets looser and looser the closer you get to the database.
+
+Think about the frontend. Browsers used to be a sieve of vulnerabilities. Today they're a near-impenetrable sandbox. Think about the communication between frontend and backend — SSL and TLS have gone through generations of upgrades, and HTTPS went from niche to the default everywhere. Think about the backend — carelessly exposing an IP or an SSH port is rare these days.
+
+But the moment the data reaches its final destination, the database, everything suddenly gets sloppy. Tons of large projects have the backend connecting to the database directly with the admin account. Almost no protection. And when there *is* some, it's often just encrypting the admin username and password and stuffing them into the backend code.
+
+There are real reasons people do this. Fewer accounts are easier to manage. The application code is simpler. There are performance benefits. But more often than not, it's a gambler's mindset. The feeling is: the backend is deployed inside our own house, the house is already well-defended, so the backend talking to the database is like walking from the living room to the bedroom — why make it complicated? And the result is that anyone who breaks into this house, intentionally or not, immediately gets their hands on the nuclear button. The admin account that can wipe out everything in an instant.
+
+Here's the principle that reframes all of this: security has a scope, and everything outside that scope must be treated as insecure. Think about it — identity data leaves the browser sandbox, travels over HTTPS, arrives at the backend. And the backend *still* re-verifies identity. Why? Because the moment data steps outside the previous layer's security framework, it's untrustworthy to the next layer. So by exactly the same logic — when the database receives a request, no matter who the source claims to be, as long as it's outside the database's own security scope, the database should run a complete identity and permission check all over again. That's not paranoid. That's just how every other application layer already works.
+
+So how does PostgreSQL actually do this? The whole mechanism is designed around one concept: the role. Whether you're building a sandbox or doing permission checks, you first create the roles yourself. For now, just think of a role as the database's login account.
+
+Let me walk you through the journey a single query takes. Say I want to find the user IDs and names for everyone in a group called "bilibili." That one simple query passes through a whole gauntlet of checks. First it hits the schema layer — is this table even visible to me? If not, denied. If yes, it hits the column layer — do I have permission on these specific columns? If not, denied. If yes, it reaches the row layer, Row Level Security — does the policy allow me to see this exact row, right now? If the policy fails, denied. Only if it passes all three does the row come back. Schema, then column, then row. Outside in.
+
+Let's take those one at a time.
+
+Layer one — the schema sandbox. Unlike MySQL, PostgreSQL has a full three-level structure: database, then schema, then table. A single transaction can't run across databases, but within one database it can query tables across different schemas. Now, there's no hard isolation between schemas, so beyond helping the organizers among us keep things tidy — a namespace effect — what's the real value? It comes from a mechanism called search_path, which lets you set different schema visibility for different roles. So you can restrict each department's system to see only its own schema, while a cross-department system gets to see several.
+
+If your architecture is simple, three schemas is a clean pattern. A "public" schema for tables users can query directly. A "private" schema for the sensitive stuff — accounts, passwords, sessions. A role without permission on that private schema can't even see those tables; it can only touch them indirectly through fixed triggers or functions, which tightly controls how much exposure a user gets to confidential data. And then a "worker" schema for things completely unrelated to users — background async services that run on their own, visible only to the service itself, so nobody accidentally queries them and causes side effects. Using schemas as a sandbox that isolates tables of different security levels — that's PostgreSQL's first line of defense.
+
+Layer two — column-level GRANT. Once you're inside a table, PostgreSQL is nothing like Excel, where opening the file shows you everything. By default, a role has zero read or write permission on *any* column. You have to grant it by hand, and create, read, update, and delete are each granted separately. So back to our query — to read a user's ID and name, you have to explicitly grant SELECT on the ID column and the name column to the role making the request.
+
+Now, a lot of people get lazy and just grant all CRUD on all tables and all columns to every new role in one shot. Sure, that's convenient. But if saving time is really your goal, you might as well just DROP the table and save even more.
+
+The real guidance here is: give each user only the minimum necessary permissions. Membership level? Users can view it but not change it — so grant only SELECT. Synchronized third-party parameters, like an openID or unionID you got from account binding? Those technically belong to the user, but if they're only ever used when the backend calls an external API, and the user never touches them directly, then you shouldn't even grant SELECT.
+
+And there's a sobering statistic behind this. One security report found that ninety-six percent of a company's permission settings were empty — created, but never used and never turned off. And the report's warning is pointed: as AI starts taking over operational tasks, all these lying-around, ready-to-use permissions become an enormous risk. So the recommendation for authorization is an add-only, never-subtract principle. Grant carefully, so you never accidentally leak surplus permissions you forgot you handed out.
+
+Layer three — and this is the last and most powerful piece — Row Level Security, or RLS. It has a dynamic rule system that's actually Turing-complete.
+
+Here's the key distinction. The search_path and GRANT we just talked about are both *static* matching. You run a command, you grant a permission, and that permission just sits there permanently until someone explicitly revokes it. RLS is *fully dynamic*. At the start of every single transaction, it validates the role's permissions in real time.
+
+Let me make it concrete with an orders table. Say the rule is: buyers can read and write only their own orders, and sellers can read but not write. How does RLS pull that off? When the user makes a request, you inject their user ID into the transaction through PostgreSQL's runtime parameters. When the query hits RLS validation, it grabs that user ID and compares it directly against the current row's buyer ID and seller ID. In the update policy, it checks — are you the buyer? In the select policy, it checks — are you the buyer *or* the seller?
+
+And here's the punchline that makes RLS special: even if you are the single highest-privileged user in the entire database, if your ID doesn't match this row's buyer or seller, you cannot read this row. Full stop.
+
+The reason RLS is the strongest lock of all is that its validation logic can be *any* SQL or function, and inside that function you can pull in any data you want, live, to help make the decision. Picture adding a new rule — let a store's employees read all of that store's orders. During RLS validation, you first query the employee table to find which store this user currently works at. Then you go back to the orders table and check whether the order's store ID matches. And because this is real-time, the instant an employee quits and you update the employee table, they lose read access to every order immediately. Zero latency. And if you genuinely don't care about performance, if you have no throughput bottleneck, you could stuff your entire system-layer and business-layer validation logic into that one function and run it all as real-time RLS.
+
+So let me bring this home with a word of caution, because flexibility cuts both ways. If you wanted to take this to the absolute extreme, you could go back to the top and create a separate, independent role for every single user, and configure per-person permissions at the schema level. Don't do that. The reason is performance — a lot of database performance is tied to the role. Connection pooling, for instance: a pooled connection can only be reused among the same role. So the more roles you create, the more you shatter the benefit of connection reuse. There's always a tradeoff between security and performance.
+
+Let me leave you with three things to hold onto.
+
+First — the industry has its defenses backwards. Effort is highest at the outermost layer, the browser, and gets sloppiest right at the database, which is exactly where the crown jewels live. Fix that inversion.
+
+Second — treat every layer boundary as a fresh trust boundary. The database should re-verify identity and permissions on every request, the same way the backend already does, because anything outside your security scope is by definition untrustworthy.
+
+And third — PostgreSQL doesn't hand you one master switch. It hands you four tools that work from the outside in and can be as coarse or as fine as you need. Role decides who you are. Schema fences off the sandbox. GRANT locks things down to the column. And RLS guards every individual row, in real time. Use all four well, and the database itself stops being the soft, unguarded target at the end of the chain — and becomes your last, and most reliable, line of defense.

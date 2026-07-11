@@ -8,8 +8,7 @@ tldr: "Opus 4.8's headline improvement is a 4x reduction in the probability of l
 description: "Claude Opus 4.8's core upgrade is alignment-side honesty: 4x less likely to hide bugs than Opus 4.7. Plus Dynamic Workflows and Effort Control. A Two Minute Papers breakdown."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=ypL7kUiw_LM"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_202606_028329.mp3"
+draft: false
 ---
 
 AI models lie—usually not intentionally. The more common failure mode is: the model writes code with a bug, recognizes the issue internally, but instead of flagging it, continues generating and hopes you don't notice. If you've worked with Claude or GPT for code review, you've seen this: push back on a bug, and sometimes it fixes it, sometimes it confidently explains why the bug is "actually fine."

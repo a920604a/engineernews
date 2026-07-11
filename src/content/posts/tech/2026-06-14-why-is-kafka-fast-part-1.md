@@ -1,120 +1,95 @@
 ---
-title: "Kafka 為什麼這麼快？循序 I/O 與 Zero-Copy 原理解析"
-date: 2026-06-14T14:20:55.098Z
-category: tech
-tags: ["kafka", "system-design", "architecture", "performance", "message-queue"]
-lang: zh-TW
-series:
-  name: "Kafka 為什麼這麼快"
-  order: 1
-glossary:
-  - term: "Zero-Copy"
-    aliases: ["zero copy", "零拷貝"]
-    zh: "零拷貝"
-    definition: "讓資料從磁碟直接送到網路卡，不經過 CPU 在使用者空間與核心空間之間反覆複製。"
-    advanced: "透過 sendfile() syscall 讓資料在核心空間內從 page cache 直達 socket buffer，避免 user-space 來回搬運；Kafka 用它把 log segment 直接送給 consumer。"
-    definition_en: "Sends data straight from disk to the network card without the CPU copying it between user space and kernel space."
-    advanced_en: "Via the sendfile() syscall, data moves within kernel space from the page cache to the socket buffer, skipping user-space round-trips; Kafka uses it to ship log segments to consumers."
-  - term: "Page Cache"
-    aliases: ["page cache", "頁快取"]
-    zh: "頁快取"
-    definition: "作業系統把最近讀寫過的磁碟資料暫存在記憶體裡，下次存取直接命中記憶體、不用再碰磁碟。"
-    advanced: "由 OS 核心管理；Kafka 刻意把快取交給 page cache 而非自建 JVM heap 快取，避免 GC 壓力並讓多個 consumer 共享同一份熱資料。"
-    definition_en: "The OS keeps recently accessed disk data in RAM so the next read hits memory instead of disk."
-    advanced_en: "Kernel-managed; Kafka deliberately relies on the page cache instead of a JVM-heap cache to avoid GC pressure and let consumers share hot data."
-tldr: "Kafka 的速度來自兩個不直覺的設計：刻意寫磁碟（而非記憶體）但用循序 I/O，以及 Zero-Copy 讓資料從磁碟直達網路卡不經 CPU 搬運。"
-description: "深入解析 Kafka 效能的底層原理：循序 I/O 為何比隨機記憶體存取更快、Zero-Copy 透過 sendfile() syscall 消除 CPU 複製、以及 Page Cache 如何讓磁碟行為像記憶體。"
-type: explainer
+title: "Kafka 為什麼這麼快？高吞吐、循序 I/O 與便宜磁碟的祕密"
+date: "2026-06-14T14:20:55.098Z"
+category: "tech"
+tags: ["kafka","system-design","architecture","performance","message-queue"]
+type: "explainer"
+series: {"name":"Kafka 為什麼這麼快","order":1}
 original_url: "https://www.youtube.com/shorts/wvLdBJEl-wc"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_203046_307980.mp3"
+draft: false
+key_points:
+  - "「快」很模糊；Kafka 真正被優化的目標是高吞吐（throughput），而不是低延遲。"
+  - "循序 I/O + append-only log 讓磁碟存取避開隨機尋道，寫入可達每秒數百 MB。"
+  - "便宜大容量的 HDD 讓 Kafka 能長期保留訊息——這是早期訊息系統少見的能力。"
+tldr: "說 Kafka「快」通常指的是它的高吞吐能力。關鍵設計之一是用 append-only log 把磁碟存取變成循序 I/O，避開隨機尋道；再加上 HDD 便宜又大容量，Kafka 得以低成本長期保留訊息。"
+description: "從原始素材出發，釐清 Kafka「快」到底指什麼，並解析循序 I/O 與 append-only log 為何能讓磁碟存取不再是瓶頸。"
 ---
 
-Kafka 是一個「刻意設計成把資料寫到磁碟」的系統，卻是業界最快的訊息佇列之一。初次接觸這個事實的人通常覺得矛盾——磁碟不是比記憶體慢好幾個數量級嗎？
+每次聽到「Kafka 很快」，第一個該問的問題其實是：**快，是指什麼？**
 
-不一定。快或慢，取決於你怎麼存取磁碟。Kafka 的效能故事，本質上是一個關於「存取模式」的故事。
+「快」這個詞本身很模糊。是指延遲（latency）低嗎？還是吞吐（throughput）高？又是跟什麼比較之下的快？把這件事講清楚，才有辦法討論 Kafka 的設計為什麼有效。
 
-## TL;DR
+## 先定義「快」：Kafka 優化的是吞吐，不是延遲
 
-- **循序 I/O** vs. 隨機存取：磁碟的弱點是尋道（seek），Kafka 設計成只做 append，完全避開尋道
-- **Page Cache**：Linux 核心自動把磁碟資料快取到記憶體，Kafka 消費者多半直接讀快取，不碰實體磁碟
-- **Zero-Copy**：`sendfile()` syscall 讓資料從磁碟直接送到 NIC，不需 CPU 在 user space 搬運，減少 2 次記憶體複製和 2 次 context switch
-- 批次處理和壓縮是乘數效應：上述優化乘上批次之後，吞吐量繼續疊加
+Kafka 被設計來優化的目標是**高吞吐**——在短時間內搬動大量的 records。
 
-## 磁碟其實不慢，隨機存取才慢
+一個好用的比喻是水管：管徑越大，單位時間能通過的液體體積就越多。所以當有人說「Kafka 很快」，通常指的不是單筆訊息跑得多快，而是它**能有效率地搬動大量資料**的能力。
 
-傳統 HDD 有機械臂，尋道（讀寫頭移動到正確磁軌）耗時 5–10 ms。在這個時間裡，現代 CPU 可以執行數千萬個指令。
+釐清這點很重要，因為接下來的每個設計決策，都是為了「把管子做粗」，而不是「把單趟跑得更急」。
 
-但如果存取模式是**循序的**——每次讀寫都接著上一次的位置繼續——尋道時間幾乎為零，磁碟的吞吐量可以達到 500 MB/s 以上（HDD），SSD 則更高。
+Kafka 的高效能來自許多設計決策，其中有兩個影響最大。本文先聚焦第一個、也是最核心的一個：**循序 I/O（sequential I/O）**。
 
-更重要的是：循序讀取讓 OS 的**預讀（read-ahead）**機制能夠預測你接下來要什麼，提前把資料讀進 Page Cache。這讓磁碟存取在感知上像是記憶體存取。
+## 磁碟不一定慢，隨機存取才慢
 
-Kafka 的 topic partition 就是一個 append-only 的 log 檔案。Producer 把訊息 append 到檔案末尾，Consumer 從某個 offset 開始循序讀取。整個系統的設計讓讀寫頭永遠往一個方向走。
+有一個常見的迷思：磁碟存取一定比記憶體存取慢。但這其實**很大程度取決於資料的存取模式**。
 
-## Page Cache：OS 幫你把磁碟變記憶體
+磁碟存取有兩種常見模式：**隨機（random）** 與 **循序（sequential）**。
 
-Linux 核心有一個 Page Cache 層。當你讀取磁碟上的資料，核心會把它放進記憶體；下次再讀同樣的資料，直接從記憶體回傳，不碰磁碟。
+以傳統機械硬碟（HDD）為例，資料存在旋轉的磁碟片上，讀寫是靠一支機械臂移動到磁碟上不同位置。當存取是隨機的，機械臂得不斷實體移動到各個位置——**這正是隨機存取慢的原因**。
 
-Kafka 積極利用這個機制，而不是自己做記憶體管理（很多系統會在應用層維護自己的 in-memory buffer）。好處：
+但如果是循序存取，機械臂不需要到處跳，只要一塊接著一塊往下讀寫，速度就快得多。
 
-1. **JVM GC 壓力小**：Kafka broker 的 heap 相對小，記憶體管理交給 OS 的 Page Cache
-2. **Broker 重啟後 Cache 不消失**：JVM heap 重啟就清空，但 OS Page Cache 在 Kafka process 重啟後依然存在，Consumer 繼續命中 Cache
-3. **Consumer 跟得上 Producer 時幾乎免費**：新消息 Producer 剛寫進磁碟，就進了 Page Cache，Consumer 立刻讀到的是 Cache，不是磁碟 I/O
-
-這解釋了為什麼 Kafka 建議把 broker 記憶體的大半留給 OS（不設定成 JVM heap），而不是像 Redis 那樣把資料全放進 JVM。
-
-## Zero-Copy：消除沒必要的搬運
-
-傳統的「從磁碟讀資料、送出網路」長這樣：
-
-```
-磁碟 → kernel buffer（Page Cache）→ user space buffer → socket buffer → NIC
+```mermaid
+flowchart LR
+    subgraph 隨機存取
+      A1[位置 A] -.機械臂跳.-> A2[位置 C]
+      A2 -.機械臂跳.-> A3[位置 B]
+    end
+    subgraph 循序存取
+      B1[block 1] --> B2[block 2] --> B3[block 3] --> B4[block 4]
+    end
 ```
 
-資料被搬了**4 次**，發生**4 次 context switch**（user space ↔ kernel space 切換）。
+## Append-only log：讓存取模式天生就是循序的
 
-Kafka 使用 `sendfile()` syscall（Linux）或 `transferTo()`（Java NIO）：
+Kafka 善用了這個特性，做法是把 **append-only log** 當成它的主要資料結構。
 
-```
-磁碟 → kernel buffer（Page Cache）→ NIC buffer → NIC
-```
+append-only log 的規則很單純：**新資料一律加到檔案的尾端**。既然只往後追加、不回頭插入或改寫，這個存取模式天生就是循序的——機械臂永遠往同一個方向走。
 
-資料只搬**2 次**，context switch 只有**2 次**。更重要的是，**CPU 不需要搬運資料**——傳輸由 DMA（Direct Memory Access）控制器完成，CPU 只需要發出指令。
+換句話說，Kafka 不是靠更快的硬體取勝，而是靠選對資料結構，把磁碟存取「導向」成它最擅長的循序模式。
 
-在高吞吐量場景下，這個差異非常顯著。當你每秒要送出幾 GB 的資料，省掉的 2 次記憶體複製和 CPU 時間直接反映在吞吐量和 latency 上。
+## 用數字把差距講清楚
 
-## 批次與壓縮是乘數
+循序與隨機的差距到底有多大？
 
-上述所有優化的效益，都在批次處理下被放大：
+在配備一組硬碟陣列的現代硬體上：
 
-- Producer 把多筆訊息打包成一個 batch 再送，一次 syscall 傳送多筆
-- Consumer 一次拉取一個 batch，減少網路來回次數
-- 壓縮在 batch 層面做，compression ratio 高（多筆類似格式的訊息壓縮效果遠好於單筆）
+- **循序寫入**：可以達到每秒數百 MB（hundreds of megabytes per second）
+- **隨機寫入**：則落在每秒數百 KB（hundreds of kilobytes per second）的等級
 
-Kafka 支援 gzip、snappy、lz4、zstd 壓縮。在網路頻寬是瓶頸的情況下，壓縮可以直接決定你能不能達到目標吞吐量。
+循序存取比隨機存取快上**好幾個數量級**。這也是為什麼「磁碟一定比記憶體慢」的說法，在正確的存取模式下並不成立。
 
-## 跟其他 MQ 的設計差別
+## 便宜又大容量：HDD 讓長期保留訊息成為可能
 
-RabbitMQ 和傳統 AMQP 訊息佇列的設計假設訊息被消費後就刪除，並為每個 Consumer 維護獨立佇列狀態。這帶來了複雜的 index 管理，讀寫模式更接近隨機存取。
+用 HDD 還有一個成本上的好處。相較於 SSD，硬碟大約只要**三分之一的價格**，卻能提供**約三倍的容量**。
 
-Kafka 的設計假設訊息要保留一段時間（數天甚至數週），Consumer 用 offset 追蹤自己讀到哪裡，不需要 broker 記錄每個訊息的投遞狀態。這讓 Kafka 的 broker 端實作非常簡單，也讓循序 I/O 的假設成立。
+這給了 Kafka 一大片便宜的磁碟空間，而且——因為存取是循序的——**不必付出效能代價**。結果就是：Kafka 可以用很低的成本，把訊息**長期保留**下來（數天甚至更久）。
 
-簡單說：**Kafka 用 "log + offset" 模型換來了循序存取的效能，代價是不支援訊息被個別刪除**。
+這在 Kafka 出現之前，是訊息系統相當少見的能力。多數傳統訊息佇列假設訊息被消費後就該清掉，而 Kafka 選擇把「保留」當成一等公民——這正是便宜循序儲存所換來的設計自由度。
 
 ## 小結
 
-Kafka 快不是因為用了更快的硬體，而是因為設計讓它在普通硬體上就能達到很高的吞吐量：
+Kafka 的「快」，本質上是**高吞吐**，而它高吞吐的第一個關鍵，是把磁碟存取變成循序的：
 
-1. **循序 I/O**：append-only log 讓磁碟存取變成線性的
-2. **Page Cache**：OS 自動處理記憶體快取，Kafka 不自己管
-3. **Zero-Copy**：`sendfile()` 消除不必要的資料搬運
-4. **批次處理**：把多筆訊息打包，讓每個 syscall 的效益最大化
+1. **先定義快**：Kafka 優化的是吞吐，不是延遲——像一根粗水管。
+2. **循序 I/O**：磁碟慢的是隨機存取；循序存取快上好幾個數量級。
+3. **append-only log**：只往檔案尾端追加，讓存取模式天生就是循序的。
+4. **便宜的 HDD**：低成本、大容量、無效能懲罰，讓長期保留訊息變得划算。
 
-Part 2 會深入 Kafka 的 partition 機制、replication，以及 Consumer Group 如何在水平擴展時保持效能。
+Kafka 高效能還有第二個同樣關鍵的設計決策，會在本系列的後續篇章中展開。
 
 ## 參考資料
 
-- [Kafka 為什麼這麼快？（第一部分）](https://www.youtube.com/shorts/wvLdBJEl-wc)
+- [Why is Kafka fast?（原始影片）](https://www.youtube.com/shorts/wvLdBJEl-wc)
 - [Kafka Design — Apache Kafka Documentation](https://kafka.apache.org/documentation/#design)
-- [Zero-Copy in Kafka — Confluent Blog](https://www.confluent.io/blog/kafka-producer-internals-preparing-event-for-production/)
 - [The Log: What every software engineer should know about real-time data — Jay Kreps](https://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying)

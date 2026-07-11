@@ -8,8 +8,7 @@ tldr: "On May 11, 2026, the TeamPCP group compromised 42 TanStack packages in 6 
 description: "A deep dive into the Mini Shai-Hulud attack: 42 TanStack npm packages compromised in 6 minutes, 170+ total packages affected, 518 million cumulative downloads at risk, combining GitHub Actions cache poisoning with in-memory OIDC token extraction."
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=gwTQLZSIlsU"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260522_235351_941874.wav"
+draft: false
 ---
 
 On May 11, 2026, a worm quietly burrowed into the npm ecosystem. Within 6 minutes, 42 TanStack packages were compromised. This wasn't a zero-day exploit — it was a precisely engineered supply chain attack carrying something no malicious package had ever possessed before: a valid SLSA Build Level 3 provenance attestation.

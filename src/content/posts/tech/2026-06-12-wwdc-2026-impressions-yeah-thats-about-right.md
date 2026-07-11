@@ -1,100 +1,108 @@
 ---
-title: "WWDC 2026 速覽：Siri 重建、macOS 告別 Intel、Liquid Glass 補丁"
-date: 2026-06-12T03:50:52.651Z
-category: tech
-tags: ["wwdc", "apple", "ios", "macos", "siri", "apple-intelligence"]
-lang: zh-TW
-tldr: "WWDC 2026 最大的改變是 Siri 從頭重寫成獨立 App、macOS Golden Gate 宣告 Intel Mac 終結，其他更新在預期之中。"
-description: "WWDC 2026 的開發者大會綜覽：Siri AI 重建用 Google Gemini、iOS 27 Liquid Glass 修補、macOS Golden Gate 為 Apple Silicon 專屬，以及 Apple Intelligence 的新功能。"
-type: explainer
+title: "WWDC 2026 速覽：新 Siri 打安全牌，Apple 這次選擇「把細節做好」"
+date: "2026-06-12T03:50:52.651Z"
+category: "tech"
+tags: ["wwdc","apple","ios","macos","siri","apple-intelligence"]
+type: "explainer"
 original_url: "https://www.youtube.com/watch?v=_gCXmKjDecU"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_202424_219210.mp3"
+draft: false
+tldr: "WWDC 2026 快速帶過各系統更新，主力放在兒少安全與新的 Apple Intelligence／Siri。新 Siri 走保守路線：對話式問答、跨裝置同步，最大賣點是能索引你 iPhone 上的個人資料；但最強的 on-device 模型只跑在 iPhone Air 與 17 Pro。"
+description: "以 WWDC 2026 keynote 的實際內容整理：系統細節打磨、兒少安全、新 Siri 的能力與限制，以及只支援 iPhone Air／17 Pro 的裝置門檻。"
+key_points:
+  - "新 Siri 刻意不做 Google 那種全自動 agentic 操作，寧可停在「幫你加進行事曆」；核心優勢是能讀取裝置上的個人資料。"
+  - "這屆主力是打磨既有系統：更順的動畫、更完整的 Spotlight 索引、AirDrop 快 80%，而非堆疊新視覺。"
+  - "最強的 on-device Siri 模型只支援 iPhone Air 與 iPhone 17 Pro（12GB RAM）。"
 ---
 
-WWDC 2026 在 6 月 8 至 12 日舉行。對多數關注 Apple 平台開發的工程師來說，這屆大會的感覺大概是：「對，就是我們預期的那樣。」Siri 重建了，Liquid Glass 補了洞，Intel Mac 正式被宣告終結。沒有什麼意外，但每件事都是真實的改變。
+今年的 WWDC（Apple Worldwide Developers Conference）給人的印象大概可以濃縮成一句話：「嗯，差不多就是這樣。」沒有讓人驚呼的大招，但也沒有讓人失望的跳票。Apple 這次很快帶過各系統的更新，把 keynote 的重心放在兩件事上：**兒少的信任與安全（Trust and Safety）**，以及大家等最久的**新 Apple Intelligence 與新 Siri**。
 
 ## TL;DR
 
-- **Siri** 從頭重建為獨立 App，背後用 Google Gemini + Private Cloud Compute；功能強大但初期名單制
-- **iOS 27**：Liquid Glass 透明度調整滑桿（修正可讀性問題）、加強家長控制
-- **macOS 27 Golden Gate**：最後一版支援 Intel Mac；往後只有 Apple Silicon
-- **Apple Intelligence**：Image Playground 支援寫實風格圖片、Photos 新增 Extend/Reframe 工具
-- 開發者 beta 即日起；公開 beta 7 月；一般可用 9 月（隨 iPhone 18 Pro）
+- 系統更新（iOS 27、iPadOS 27、watchOS、tvOS，以及新名字叫 **Golden Gate** 的 macOS）大多是「底層打磨」，外觀看起來差不多，但更順、更快。
+- 中段花了不少篇幅講兒少安全：專屬兒童帳號、更細的螢幕使用時間控管、家長可控管可下載的 App、可造訪的網站與可聯絡的對象。
+- 新 Siri 走安全牌：對話式問答、會引用來源、跨裝置同步對話紀錄；能讀你的訊息／照片／行事曆並執行基本動作，但不做全自動的 agentic 操作。
+- 最強的 on-device Siri 模型只支援 **iPhone Air 與 iPhone 17 Pro**（因為只有這兩支有 12GB RAM）。
 
-## 是什麼
+## 這次選擇「把細節做好」
 
-WWDC（Apple Worldwide Developers Conference）每年六月，是 Apple 宣布作業系統更新的主場。今年的主線是 Siri AI 的全面重寫，以及 macOS 正式結束對 Intel 的支援。
+過去幾輪更新（像 Liquid Glass 這類偏視覺、戲劇化的改版）老實說偶爾會有點「粗糙」的感覺——電池變差、效能怪怪的、可讀性之類的小 bug。這次 Apple 沒有一直丟「新功能、新功能、視覺大改」，而是回頭把一些一直需要關注、卻沒被好好照顧的細節梳理過一遍。
 
-## 為什麼重要
+橫跨各系統的打磨包括：
 
-### Siri AI：換心臟，也換了定位
+- 動畫更順、App 開啟更快
+- 微調的 App 圖示、統一的圓角半徑（corner radius）
+- 側邊欄圖示**找回顏色**
+- Liquid Glass 新增一條**透明度／著色滑桿**，讓你自己決定要多透明或多有色（甚至可以調到更透明——大概沒人要求過，但選項就是在那了）
+- Spotlight 索引更完整、更徹底
+- **AirDrop 傳輸快 80%**
 
-新 Siri 不再只是語音助手，它變成一個能存取你的 email、訊息、照片、行事曆、檔案的**個人情境引擎**，整合進系統的每個角落。Spotlight 改名「Search or Ask」，反映這個新定位。
+另外幾個亮點：Vision Pro 終於可以把**你自己拍的全景照**當成環境背景（以前只有 Apple 內建那幾個，像 Mars、Yosemite、Mount Hood）；還有大家喊很久的 **AirPods 自訂 EQ** 終於來了——這在市面上最熱門的耳機上，比別家晚了好幾年才補上。
 
-技術面：Siri AI 的後端是 **Google Gemini**，透過 Private Cloud Compute（Apple 自己的隱私運算架構）運行。Apple 的說法是：你的個人資料不會被用來訓練 Gemini，推理在隔離環境進行。
+這一段感覺像是一堆「順手塞進來、確保有東西可以宣布」的雜項，因為主秀其實是 AI。但如果代價是換來這些早該有的細節，那我覺得很值得。
 
-但有幾個重要限制：
-- 初期**名單制**（waitlist），不是全體用戶立即可用
-- **歐盟不支援**（iOS 27/iPadOS 27 上市時）——數位市場法規監管問題
-- 目前沒有第三方開發者 API；開發者無法把自己的 App 深度整合進 Siri AI
+## 兒少安全：控制權交給家長
 
-對開發者來說，這最後一點值得特別注意。Apple 在 Siri 上投入了大量資源，但開發者能利用的介面仍然有限。
+keynote 中段整段在講兒少安全，核心訊息大致是：對小孩來說，最好的體驗是一支「由家長控制」的自己的裝置。
 
-### macOS 27 Golden Gate：Intel 正式退場
+具體功能包括：
 
-macOS 27 是最後一版支援 Intel Mac 的 macOS。2020 年開始的 Apple Silicon 轉型在 2026 年正式進入終章。
+- **專屬兒童帳號**：家長帳號可控管小孩能下載哪些 App、能造訪哪些網站、能和誰聯絡。
+- **更細的螢幕使用時間**：可以看到小孩一天怎麼分配時間，並用排程器調整他們在特定類型 App 上可以花多少時間。週末看部電影沒問題，但本該上課時間刷三小時 Instagram，就不行。
 
-相容設備：2020 年（含）以後的 Apple Silicon Mac，M1 起。
+正面看，這確實直接回應了家長對內容、網站與 App 存取的擔憂。但也有比較犬儒的解讀：這其實是「幫你小孩也買支 iPhone」的完整版——最好的家長控制，意味著把使用者年齡往下拉到最小，也就意味著未來更多 iPhone 使用者。
 
-如果你還在用 Intel MacBook Pro，這不是馬上強迫升級，但你已經在最後一張安全網上了。
+## 新 Siri：刻意的「安全牌」
 
-功能面：Visual Intelligence 進 Spotlight（用螢幕上的內容做查詢）、統一工具列、全寬側邊欄、AirDrop 加速、更快的網路檔案瀏覽、Messages 同步改善。
+這是大家最期待的部分。整體來說，新 Siri 的能力**幾乎就是我們預期的樣子**——沒有炸裂的驚喜，也沒有明顯的跳票，剛好落在中間。
 
-### iOS 27：Liquid Glass 補洞
+操作上：在 iPhone 可以從 **Dynamic Island 下滑**，或**長按電源鍵**來對它說話。有新的動畫、整體新外觀，還有一個**更有表情的新語音**。
 
-iOS 26 去年推出的 Liquid Glass 設計語言（半透明、流體化 UI）收到大量可讀性投訴。iOS 27 加了一個**透明度調整滑桿**，讓用戶可以在全透明和不透明之間自調。
+叫出來之後會進入一段對話式聊天：
 
-這個改動小，但很務實——與其等用戶投訴兩個版本，直接給選項。
+- 從 Apple 新的**廣泛世界知識庫**取答案
+- 有來源時會**引用出處**，可以點進去看（實際試了，這點不錯）
+- 對話紀錄同步到一個**新的 Siri App**，並跨 Mac、iPad、iPhone 同步；它不會記住你問的每一句，但會保留比較有意思、你可能想回頭看的對話
 
-其他 iOS 27 更新：自訂 AirPods EQ（每個設備個別設定）、更細粒度的家長控制（per-App、per-Website）。
+### 為什麼 Apple 不追全自動
 
-相容設備：iPhone 11 起。
+值得注意的是它**刻意不往「全自動 agentic」的方向走**。幾週前 Google 在 I/O 上展示 Gemini 那種「拍一張演唱會海報，它就幫你買票」的操作——會不會買錯座位、買錯日期、花太多錢、或幻覺出奇怪的東西？Apple 這支選擇**停在安全的那一步**：它就幫你把活動加進行事曆，剩下的你自己來。
 
-### Apple Intelligence：寫實圖片 + Photos 強化
+它真正的差異化優勢不是「更強的模型」，而是**能讀到你 iPhone 上的東西**。GPT 讀不到你的 iMessage、Claude 讀不到你的 Apple 行事曆、Gemini 看不到這些——但 Siri 可以，因為這些個人資訊留在裝置上。它能翻你的訊息、照片、行事曆來回答問題，也能在這些 App 裡執行動作：傳訊息、加行事曆、設提醒——都是最基本的那些。
 
-Image Playground 現在可以生成**寫實風格**圖片（不只是之前的插圖/動畫風格）。
+Siri 也能讀**螢幕上的內容**；相機 App 裡還新增了一個相機模式，其實就是把先前的 visual intelligence 更新後、推給更多人用。可以想像這種「拍一下就辨識」的能力，若之後做智慧眼鏡會特別有用。
 
-Photos App 新工具：
-- **Extend**：把照片邊緣延伸（類似 Adobe Generative Fill）
-- **Reframe**：調整構圖，重新裁切並填補空白
-- **Enhance**：已存在功能的升級
-- **Clean Up**：更好的物件移除偵測
+### 第三方 App 怎麼接？
 
-Home App：自然語言搜尋監視器錄影（「昨天早上 10 點到 11 點在車道的人」），4K iCloud 影片儲存。
+最大的疑問是第三方 App。iMessage、Apple 行事曆這些「自家的」當然能讀，但 WhatsApp 對話、Google 行事曆、你慣用的第三方筆記 App 呢？
+
+目前看來的答案是：只要開發者有啟用 **App Intents**、且 App Store 知道這個 App 是什麼類型，使用者就能**主動指名**呼叫它。它似乎不能成為預設，但你可以明講要用哪個 App。
+
+```mermaid
+flowchart TD
+    A["使用者說：播放 Greg 推薦的那個 podcast"] --> B{有指定 App 嗎?}
+    B -->|沒有| C["用預設 App<br/>Apple Podcasts"]
+    B -->|有，例如 用 Spotify| D{該 App 有啟用<br/>App Intents?}
+    D -->|有| E["在 Spotify 執行相同動作"]
+    D -->|沒有| F["無法代為操作"]
+```
+
+也就是說，你可以說「用 Spotify（或 Pocket Casts）播」，它知道那也是 podcast 播放器，就會在那個 App 幫你做同樣的動作。至於能不能在 TickTick 做地理圍欄的重複任務、能不能讀 WhatsApp 群組——這些還得實際上手才知道，目前 TBD。
+
+另外一個細節：這場 keynote 塞了**大量 live demo**，彷彿在說「我們知道很多人有理由懷疑，上次學到教訓了，這次是真的能動、直接演給你看」。
+
+## 最讓人失望的一張投影片：裝置門檻
+
+整場最掃興的一張，是「哪些裝置能跑最新、最強的 on-device Siri 模型」的清單——答案是**只有 iPhone Air 與 iPhone 17 Pro**，因為只有這兩支配了 **12GB RAM**。
+
+有點好笑的是，iPhone 16 當初號稱是「為 Apple Intelligence 從頭打造」，結果東西還沒真正上，它就已經被排除在最強體驗之外了。
 
 ## 怎麼看這屆 WWDC
 
-標題「Yeah, That's About Right」說的是一種溫吞的滿意。沒有什麼驚喜，但每件宣布的事都是真的有在做。
+一句話總結：**該做的都做了，但也就到此為止。** 新 Siri 是走「正中間、絕不出錯」的路線——不炫技、不冒險，靠的是「它最懂你 iPhone 裡有什麼」這個別人拿不到的優勢。系統這邊則難得回頭把細節補好。沒有讓人驚豔，但每一項宣布的東西看起來都是真的有在做、且務實。
 
-Siri 重建是真實需要的——過去幾年 Siri 落後 Google Assistant 和 OpenAI 的幅度很明顯。用 Gemini 填補是務實選擇，但名單制+歐盟不支援，表示「真正重建完成」的時間點還在後面。
-
-macOS Intel 終結是早已預告的事，此時只是正式確認。
-
-對開發者影響最大的缺席：跨設備開發的統一 API、Siri 的開放整合介面、Vision Pro 的更新。這些大概是 WWDC 2027 的劇本。
-
-## 跟去年的差別
-
-| 項目 | iOS 26 (WWDC 2025) | iOS 27 (WWDC 2026) |
-|------|---------------------|---------------------|
-| 設計語言 | Liquid Glass 推出 | Liquid Glass 透明度調整 |
-| Siri | 基礎 Apple Intelligence | 重建為完整個人情境引擎 |
-| macOS Intel | 繼續支援 | 最後一版 |
-| 圖片生成 | 插圖/動畫風格 | 加入寫實風格 |
+> 註：本文以該場 keynote 的實測分享為依據整理；上手評測（包含新 Siri 的實際行為、第三方 App 支援邊界等）需等真正裝上系統後才能確認。
 
 ## 參考資料
 
-- [WWDC 2026 Impressions: Yeah, That's About Right](https://www.youtube.com/watch?v=_gCXmKjDecU)
-- [Apple WWDC 2026 — developer.apple.com](https://developer.apple.com/wwdc26/)
-- [iOS 27 preview — Apple](https://www.apple.com/ios/ios-27-preview/)
-- [macOS Golden Gate preview — Apple](https://www.apple.com/macos/macos-26-preview/)
+- [WWDC 2026 Impressions: Yeah, That's About Right（原始影片）](https://www.youtube.com/watch?v=_gCXmKjDecU)
+- [Apple WWDC — developer.apple.com](https://developer.apple.com/wwdc26/)

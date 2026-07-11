@@ -8,8 +8,8 @@ tldr: "The scarcest resource in embodied AI isn't compute or algorithms — it's
 description: "A deep dive into how robot data collection factories work, why physical demonstration data is so hard to obtain, and what it means for the future of embodied AI."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=ZvHIuIIZ3Is"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260522_235326_841166.wav"
+draft: false
+audio_url: "/api/tts/r2/tts/tts_20260711_004224_172185.mp3"
 ---
 
 When most people think about what limits AI progress, they imagine compute bottlenecks or algorithmic breakthroughs. In the language model world, that framing is roughly correct. But in robotics, the most pressing constraint has always been something far more mundane: data. Not text scraped from the web, not labeled images from crowdsourcing platforms — but the frame-by-frame recording of a robot arm picking up a strawberry, folding a shirt, or driving a screw into the correct hole. This kind of data is so expensive to produce that it has spawned an entirely distinct industry: the data collection factory.

@@ -8,8 +8,7 @@ tldr: "Qualcomm's core bet isn't on training AI — it's on inference at the edg
 description: "From Snapdragon X Elite to 6G standard-setting, how Qualcomm is carving out a position in the AI era that's distinct from NVIDIA and AMD, and what that means for AI infrastructure and developers."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=eAYx6CHstNw"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_201103_206304.mp3"
+draft: false
 ---
 
 In discussions about AI chips, NVIDIA and AMD capture most of the attention. But one company is pursuing a fundamentally different AI strategy — and it's increasingly worth engineers paying attention to. That's Qualcomm.

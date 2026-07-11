@@ -8,8 +8,8 @@ tldr: "Transformer self-attention is inherently orderless — positional encodin
 description: "A systematic introduction to the four main positional encoding schemes in Transformers: sinusoidal absolute encoding, learnable absolute encoding, relative positional encoding (T5, ALiBi), and the mathematical intuition and engineering advantages of RoPE."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=Ll-wk8x3G_g"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260522_235005_290699.wav"
+draft: false
+audio_url: "/api/tts/r2/tts/tts_20260711_001709_731127.mp3"
 ---
 
 Feed "cat bites dog" and "dog bites cat" into a Transformer — without positional information, these two sentences are identical to the model: just the tokens "cat," "bites," "dog" in some order. Self-attention lets each token attend to all others, but that "fully connected" design loses the concept of sequence order entirely. Positional Encoding was introduced in the original Transformer paper as the fix, but from 2017 to today, the solution to this problem has evolved through several generations.

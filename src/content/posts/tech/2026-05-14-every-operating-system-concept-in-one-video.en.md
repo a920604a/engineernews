@@ -8,8 +8,8 @@ tldr: "An operating system isn't a black box — it's a clear pipeline from UEFI
 description: "Following the arc of Fireship's OS video: from firmware (UEFI/BIOS) and bootloader through Kernel, process management, memory management, IPC, file systems, and system calls — one complete mental model."
 type: explainer
 original_url: "https://www.youtube.com/watch?v=MtxP2pyCvYA"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260522_235246_590501.wav"
+draft: false
+audio_url: "/api/tts/r2/tts/tts_20260711_003623_567596.mp3"
 ---
 
 You use an operating system every day. But do you know what actually happens between pressing the power button and your first process running?

@@ -8,8 +8,7 @@ tldr: "In ten days, Anthropic filed an IPO, called for a global AI pause, launch
 description: "From IPO filing to government-mandated shutdown, Anthropic's June 2026 was the most dramatic ten days in AI industry history."
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=0pgCBV8CTZY"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_202240_933916.mp3"
+draft: false
 ---
 
 If you work in AI, the second week of June 2026 probably kept you up at night. Anthropic managed to simultaneously file for an IPO, co-sign a paper calling for a global AI pause, launch their most powerful model ever, and then watch it get forced offline by the US government—all within ten days.

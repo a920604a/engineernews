@@ -8,8 +8,8 @@ tldr: "DeepSeek V3's 671B-parameter MoE architecture trained on just 2.78M H800 
 description: "A deep dive into DeepSeek V3's MoE architecture, training efficiency breakthroughs, cost advantages, and what it means for the competitive AI landscape."
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=p7K3xfViWCE"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260522_234740_883751.wav"
+draft: false
+audio_url: "/api/tts/r2/tts/tts_20260711_000604_853765.mp3"
 ---
 
 In December 2024, Chinese AI company DeepSeek published a technical report that made a lot of people in the AI research community run the numbers twice: they trained a 671B-parameter model using 2.78 million H800 GPU-hours at a cost of approximately $5.57 million. By comparison, GPT-4's training cost is estimated to exceed $100 million. Comparable performance, roughly one-twentieth the training cost, fully open source. The implications go beyond "cheap AI" — this was a fundamental recalibration of the industry's assumptions about training efficiency.

@@ -1,55 +1,49 @@
-Here is a company that spent fifteen years quietly building what might be the most valuable AI training dataset you've never heard of — and in April 2026, the market noticed.
+In April of 2026, a company called Manycore Tech—known in China as Qunhe—rang the bell on the Hong Kong Stock Exchange. And it did something dramatic: the stock opened up more than 171 percent above its issue price, pushing the market cap past thirty billion Hong Kong dollars. What makes this interesting isn't just the pop. It's that Manycore became the very first of Hangzhou's so-called "Six Dragons" to go public. Those Six Dragons are a cluster of buzzy AI-adjacent startups—the group includes DeepSeek and the robotics maker Unitree, among others. So this was a milestone.
 
-Manycore Tech, the company behind a cloud-based 3D interior design tool called Kujiale, went public on the Hong Kong Stock Exchange and opened one hundred seventy-one percent above its issue price. That's not a typo. Day one, the stock more than doubled, pushing the market cap past thirty billion Hong Kong dollars. And Manycore isn't just any startup — it's the first company from what China's tech press calls the "Hangzhou Six Dragons" to actually IPO. That cohort includes names like DeepSeek and Unitree Robotics. So this listing is being watched carefully.
+Now, if you don't know Manycore, you might know its main product. It's called Kujiale—a cloud-based 3D interior design platform that Chinese home-renovation designers absolutely love. On paper, that sounds like ordinary design software. But the story they told investors going into this IPO wasn't "design software." It was two words: spatial intelligence. Let's unpack what that actually means, and whether the technology holds up.
 
-But here's what's interesting for engineers: this isn't a story about design software. It's a story about data strategy and a concept called spatial intelligence.
+So, spatial intelligence. There's no single textbook definition, but in practice it bundles together four capabilities—all centered on perceiving, modeling, and reasoning about physical, three-dimensional space.
 
-**What spatial intelligence actually means**
+The first is scene understanding. Not just "there's a sofa in this room," but the geometric and semantic relationships: the sofa sits 1.2 meters to the left of the coffee table, and it's facing the TV. It understands how things are arranged.
 
-Spatial intelligence is a cluster of AI capabilities built around perceiving, modeling, and reasoning about three-dimensional physical space. Think of it as four distinct problems stacked together.
+The second is spatial reasoning. This is where you answer questions that require genuine 3D logic. For example: if I move this chair over here, is the walkway still wide enough for a wheelchair to pass? That's not a text question. That's a geometry question.
 
-First, scene understanding — not just detecting that a sofa exists in a room, but knowing it's 1.2 meters to the left of the coffee table, angled toward the TV, with specific dimensions and material properties.
+Third is 3D reconstruction—rebuilding a full three-dimensional model of a space from raw inputs like photos, LiDAR scans, or floor plans.
 
-Second, spatial reasoning — answering questions that require 3D logic. Can a wheelchair navigate from the front door to the kitchen in this floor plan? If I move that chair, does it block the walkway?
+And fourth is navigation and path planning—figuring out a viable route through a 3D environment. That's the beating heart of what mobile robots and AR systems need.
 
-Third, 3D reconstruction — taking photos, floor plans, or sensor scans and rebuilding a complete geometric model of a space.
+Manycore's platform, which they call SpatialVerse, leans mostly on the first and third of those—scene understanding and 3D reconstruction. And in 2025 they wrapped that up into an API product called Aholo, so outside developers can tap into it.
 
-And fourth, navigation and path planning — computing viable routes through environments, which is the core engine behind mobile robots and augmented reality overlays.
+Okay, but here's the real question. Why is 3D scene data suddenly worth so much? And to understand that, you have to understand a gap that anyone following embodied AI already knows about.
 
-Manycore's platform focuses mainly on the first two: scene understanding and reconstruction. They've packaged this into an API called Aholo, released in 2025, so robotics teams, AR developers, and architectural software companies can integrate their spatial intelligence stack without building it from scratch.
+Think about the big language models—your GPT-4-class systems. They were trained on text and 2D images. They can talk about physical space in a linguistic way, sure. But they have no real spatial intuition. No grounding in the actual geometry of the world. Ask them to genuinely reason about how furniture fits in a room, and there's nothing underneath the words.
 
-**Why the data is the real story**
+Now, embodied AI—robots, agents that have to physically move through the world and manipulate objects—those systems need something completely different. They need training data that encodes how real spaces are structured, how objects relate in three dimensions, how physical interactions actually play out. And that kind of data? It's scarce. Really scarce.
 
-Here's the gap that makes this interesting. The large language models we've all been using — the GPT-class, the Claude-class — were trained primarily on text and two-dimensional images. They can discuss physical space in a linguistic sense, but they have no genuine spatial intuition. No grounding in real geometry.
+This is where Manycore's claim gets compelling. They say they hold more than 70 million structured indoor 3D scene models. And here's the key detail: each one was built by a real designer using Kujiale's tools, for a real renovation project. So you get accurate object positions, real dimensions, actual material properties. This isn't messy photogrammetry, and it isn't synthetic scenes churned out by an algorithm. These are real designs tied to real spaces. That combination—massive volume plus semantic richness—that's the moat.
 
-Embodied AI systems — robots that have to navigate a room, manipulate physical objects, understand how furniture relates to doorways — need something fundamentally different. They need training data that captures how real spaces are actually structured in three dimensions, with accurate object positions, sizes, and relationships. And that data is genuinely scarce.
+Let me describe how the whole thing fits together, because there's a clean flow to it.
 
-Manycore claims over seventy million structured indoor 3D scene models. Every single one was built by a real designer using Kujiale's tools for an actual renovation project. These aren't synthetic scenes generated by a computer, and they aren't raw photogrammetry captures. They're semantically rich, professionally authored designs that correspond to real-world spaces — with accurate object dimensions, material properties, and spatial relationships all baked in.
+At the bottom, you have the data layer. That's the Kujiale platform with its 70 million-plus structured 3D scenes, plus all the user design-behavior data—how people actually build these rooms.
 
-That combination of volume and semantic richness is the argument for why this data is hard to replicate.
+That data feeds up into a model layer with three functions. One model handles scene understanding—detecting objects and their spatial relations. Another does generative 3D—automatically suggesting layouts. And a third does spatial question-answering, translating natural language questions into spatial queries.
 
-**How the flywheel was built**
+And then those models feed the application layer. The scene-understanding model powers the external SpatialVerse and Aholo API for outside developers, and it also generates training scenes for embodied AI, and it drives AR and VR scene generation. Meanwhile the generative model powers Kujiale's own AI design assistant. So the same core data flows out in several directions—internal product on one side, external AI infrastructure on the other.
 
-The founder, Huang Xiaohuang, studied computer science at the University of Illinois and spent time as a CUDA developer at NVIDIA before founding Manycore in 2011. His original goal was straightforward: move desktop CAD tools to the browser. Take what AutoCAD does and make it cloud-native.
+That Aholo platform is really the front door for the outside world. It hands robotics teams, AR app builders, and architectural software vendors a set of APIs and SDKs, so they can plug into Manycore's spatial data without having to build their own scene-understanding stack from scratch.
 
-What he actually built, almost by accident, was a data flywheel. More designers on the platform meant more 3D scene data accumulating. Better scene data enabled better AI-assisted design features. Better features attracted more designers. Fifteen years of that loop produced seventy million structured scenes.
+Now, a quick word on the founder, because it explains a lot. His name is Huang Xiaohuang. He came out of Zhejiang University's honors college, got a master's in computer science from the University of Illinois at Urbana-Champaign, and then—here's the telling part—he spent 2010 to 2011 as a software engineer at NVIDIA, working mostly on CUDA. So this is someone deep in GPU computing. He founded Manycore in 2011, and the original goal was almost mundane: take desktop CAD tools—AutoCAD-style design software—and move them into the browser and the cloud.
 
-The platform architecture flows naturally from this. At the base, you have the Kujiale design tool collecting scene data and user behavior. That feeds into models for scene understanding, generative layout suggestions, and spatial question-answering. Those capabilities then surface through the Aholo API to external developers, through AI design assistants inside Kujiale itself, and — increasingly — as training data infrastructure for embodied AI systems.
+And that's the fascinating twist. What looked like a boring "let's put CAD in the cloud" SaaS play was quietly building a data flywheel. More designers on the platform means more 3D scene data. Better scene data enables better AI-assisted design features. And better features pull in even more designers. Round and round. Fifteen years of that spinning is exactly how you end up with 70 million scenes.
 
-**This isn't your standard computer vision AI**
+Let's talk money for a second, because the valuation is doing something specific. Manycore booked revenue of about 755 million RMB in 2024, and 399 million in the first half of 2025—growing around 9 percent year over year. The company isn't profitable yet, though its losses have been narrowing. So if you value it purely on today's SaaS numbers, that huge IPO pop doesn't make sense. The valuation isn't really about the software business. It's a bet—a bet that structured spatial scene data becomes a critical training asset for the next generation of AI. That thesis is what flipped the market's framing from "unprofitable design software" to "scarce AI infrastructure." Same company, totally different story.
 
-It's worth being precise about what makes this technically distinct from classic computer vision work. Traditional CV systems — object detection, image classification — operate on two-dimensional pixel-level questions. Does this image contain a cat? Where in the frame is it?
+And it's worth being precise about how this differs from the computer vision AI you might already know. Classic CV—think YOLO for object detection, or ResNet for image classification—works at the pixel level, in 2D. "Does this image contain a cat?" Spatial intelligence operates a whole level up. The questions sound like: Can a wheelchair get from the entrance to the kitchen in this layout? Does this furniture arrangement make for an ergonomically sane work-from-home setup? Which objects would fall over if I remove this load-bearing element? To answer any of those, you need 3D geometry, semantic understanding of how objects relate, and physical common sense. And none of that just falls out of training on flat 2D images.
 
-Spatial intelligence operates at a higher semantic level entirely. Does this furniture arrangement create a viable work-from-home setup? Which objects would shift if you remove that structural element? These questions require reconstructing 3D geometry, understanding semantic relationships between objects, and applying physical common-sense reasoning. None of that emerges naturally from training on 2D images alone.
+So let me pull together the takeaways.
 
-**The financial picture**
+First, the big pattern worth watching: vertical SaaS companies that spent years quietly accumulating large, structured, domain-specific datasets may end up with far harder-to-copy moats than flashy AI startups built from scratch. Manycore didn't set out to build AI infrastructure—it accidentally built the dataset for it, one designer at a time.
 
-Manycore reported revenue of around 755 million renminbi in 2024, and about 400 million in the first half of 2025. Not yet profitable, but losses are narrowing. The IPO valuation isn't really priced on those SaaS metrics — it's priced on the thesis that structured spatial scene data will become a critical training asset for the next generation of AI, particularly as humanoid robotics and immersive AR hardware mature. The market reframed the company from "unprofitable design software" to "scarce AI infrastructure." That framing is doing a lot of work in that 171% opening gain.
+Second, the whole valuation rests on a reframing. Nothing about the revenue changed. What changed is the market deciding that scarce 3D spatial data is strategic AI infrastructure, not just a design-tool byproduct.
 
-**Three things worth taking away from this**
-
-One: Vertical SaaS companies that accumulated large, structured, domain-specific datasets over years of real-world use may have moats that are genuinely harder to replicate than pure AI startups built from scratch. The data asset compounds with time in a way that compute spend doesn't.
-
-Two: Spatial intelligence is the missing layer between language models and embodied AI. The companies that hold high-quality 3D scene data have a meaningful head start if robotics and AR hardware hit their growth curves.
-
-Three: The Hangzhou Six Dragons framing is worth watching. Manycore went first. DeepSeek and Unitree are presumably next. The pattern of deep technical specialization — pick a hard problem, build data infrastructure around it for years — seems to be the thesis the market is rewarding right now.
+And third, whether that bet pays off is genuinely conditional. It depends on how fast humanoid robotics and immersive AR hardware actually mature. If those technologies arrive, the companies sitting on high-quality 3D scene data get a real head start. If they stall, this is just design software with an expensive story attached. That's the tension baked into this IPO—and it's why the first of the Six Dragons to list did it on the strength of data it's been gathering, almost by accident, for fifteen years.

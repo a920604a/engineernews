@@ -8,8 +8,7 @@ tldr: "The backflip looks impressive, but the real challenge is making a mass-pr
 description: "A deep dive into humanoid robot hardware: actuator choices (electric vs. hydraulic), sensor integration, structural material tradeoffs, and where the current mass-production bottlenecks actually are."
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=DZIhQeFEdXI"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260615_201219_841690.mp3"
+draft: false
 ---
 
 Boston Dynamics' Atlas backflip video amazed the world in 2017. What few people knew: that backflip used hydraulic actuators — extremely high power consumption, complex maintenance, essentially impossible to mass-produce. Seven years later, humanoid robots are genuinely moving toward mass production, but the bottleneck has shifted from "can it move?" to a completely different set of problems.

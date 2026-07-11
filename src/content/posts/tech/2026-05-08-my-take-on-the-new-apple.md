@@ -1,105 +1,73 @@
 ---
-title: "我對 2025 年新款 Apple M4 產品線的看法"
-date: 2026-05-08T02:49:47.988Z
-category: tech
-tags: ["apple", "m4", "macbook-air", "mac-studio", "apple-intelligence"]
-lang: zh-TW
-tldr: "M4 MacBook Air 和 Mac Studio 是紮實的規格升級，但 Apple Intelligence 的 Siri 整合仍然讓人失望——硬體領先，軟體還在追。"
-description: "從工程師角度評析 2025 年 Apple M4 產品線：MacBook Air M4、Mac Studio M4 Max，以及 Apple Intelligence 的實際表現。"
-type: explainer
+title: "Apple 換帥：Tim Cook 交棒給 John Ternus，硬體派重新掌舵"
+date: "2026-05-08T02:49:47.988Z"
+category: "tech"
+tags: ["apple","tim-cook","john-ternus","hardware","apple-intelligence"]
+type: "explainer"
 original_url: "https://www.youtube.com/watch?v=i9TvUGeTltE"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260522_234639_630710.wav"
+draft: false
+key_points:
+  - "Tim Cook 今年卸任 CEO，由硬體工程出身的 John Ternus 於九月接手，並轉任董事會主席。"
+  - "這不是單一人事調動，而是一整批資深高層同時退休、交棒給年輕世代的協調式換血。"
+  - "重點觀察：產品派重新掌舵有機會帶回大膽的硬體，但軟體（Siri、Apple Intelligence）的落後仍待補上。"
+tldr: "Apple 宣布 Tim Cook 卸任、由硬體工程負責人 John Ternus 接任 CEO。這場換帥背後是一整批資深高層同時退休的世代交替，象徵 Apple 從『業務／服務導向』重新回到『產品導向』的可能轉向。"
+description: "從 Tim Cook 交棒給 John Ternus 這場 Apple 高層換血，看 Apple 是否會重新開始做有趣的硬體，以及軟體端還欠缺什麼。"
+audio_url: "/api/tts/r2/tts/tts_20260710_235852_643539.mp3"
 ---
 
-Apple 2025 年上半年的硬體陣容基本上就是一句話：M4 晶片全面普及，Apple Intelligence 正式從 Pro 機型下放到入門級產品。MacBook Air M4 和 Mac Studio M4 Max 是這波更新的核心，規格上都有明確的進步，但 Apple Intelligence 的軟體整合卻讓工程師社群有點失望。這篇文章從技術角度拆解這次更新真正重要的地方。
+Apple 最近最值得關注的，不是什麼新產品，而是幕後正在發生的事。過去一週，Apple 的高層人事變動幾乎洗版了所有科技媒體：Tim Cook 確定將在今年卸下 Apple CEO 一職。我平常不太談企業的 CEO 更迭——因為在這種體量的公司裡，一兩個人的位子挪動通常改變不了什麼——但這一次不太一樣，值得從「接下來我們可能會拿到什麼樣的產品」這個角度來拆解。
 
-## TL;DR
+## 換的不只是 CEO，而是一整批人
 
-- MacBook Air M4：從 8GB 基本款升到 16GB、M4 晶片 10 核 CPU、12MP 鏡頭、售價降至 $999，性價比明顯提升
-- Mac Studio M4 Max：比 M1 Max 版本快 3.5 倍，M3 Ultra 版本可在記憶體內跑超過 6,000 億參數的 LLM
-- Apple Intelligence：Siri 整合改善但仍不穩定，第三方 API 開放有限，開發者還在等
+完整的故事是這樣的：John Ternus 將從九月開始接任 Apple 的 CEO。他先前的職務是硬體工程資深副總裁（Senior VP of Hardware Engineering）。他往上升之後，新的硬體主管會由 Johny Srouji 接手——就是那位在歷次 Apple 發表會上總是待在晶片實驗室、主導 Apple Silicon 的人，原本是硬體技術資深副總裁（Senior VP of Hardware Technologies）。
 
-## 是什麼
+至於 Tim Cook，他不會離開 Apple，而是走經典的退休路線：轉任董事會主席（Chairman of the Board）。
 
-### MacBook Air M4（2025 年 3 月）
+一般來說，公司裡一兩個人換位子不會真的改變方向——這種巨型公司像一艘巨輪，成千上萬人各拿著一支槳，沒有任何單一個人能大幅扭轉整艘船的航向。但如果你過去幾個月有在關注 Apple，會發現這次不只是換一兩個人：有一大批資深高階主管、重要領導者陸續離開，而且大多是退休。這些人多半是任期很長、可預期會在差不多時間退場的 C-suite 高層，然後把方向盤交給 Apple 內部更年輕的一代。
 
-這是第一款搭載 M4 晶片的 MacBook Air，也是第一款把 16GB 記憶體設為標配的入門級 MacBook。M4 採用 10 核 CPU（4 個效能核心 + 6 個效率核心），比 M3 的 8 核增加 25%；GPU 10 核，Neural Engine 16 核。
+現年 65 歲的 Tim Cook，本質上是這一連串、很可能是精心編排的接班安排裡「最後一塊、也最大的一塊骨牌」。
 
-關鍵規格變化：
-- 基本款記憶體：8GB → 16GB（同樣售價）
-- 螢幕鏡頭：1080p → 12MP，加入 Center Stage 自動追蹤
-- 售價：13 吋 $999，15 吋 $1,199（比 M3 時期便宜）
-- 外觀：新增天藍色（Sky Blue），其他維持原樣
+```mermaid
+graph LR
+    A["資深高層陸續退休<br/>交棒給年輕世代"] --> B["Johny Srouji<br/>接任硬體主管"]
+    A --> C["John Ternus<br/>九月接任 CEO"]
+    C --> D["Tim Cook<br/>轉任董事會主席"]
+```
 
-效能基準測試上，Final Cut Pro 剪接一段 4K 影片從 M3 的 3 分 45 秒降到 2 分 58 秒。對大多數用戶來說，M3 到 M4 的升級感可能不明顯，但 M2 甚至 M1 用戶會感受到顯著差異。
+我的解讀是：這感覺像是一整排船槳被協調地朝同一個方向、以同樣的方式轉動，而這一次，似乎真的在改變整艘船的航向。而且我還蠻喜歡它看起來要去的方向。
 
-### Mac Studio M4 Max（2025 年 3 月）
+## 「產品派」與「業務派」的差別
 
-Mac Studio 這次有兩個選項：M4 Max 和 M3 Ultra。
+先給 Tim Cook 該有的肯定。不管你喜不喜歡他，他接下的大概是全科技業最難的一份工作：接在 Steve Jobs 之後。他雖然不是 Steve Jobs，卻用自己的方式做到了——他把供應鏈優化與經營管理的專長帶進 Apple，帶著公司衝上一兆、兩兆、三兆、四兆美元的市值，撐過了 15 年間截然不同的經濟與政治環境。投資人愛他，這一直是他最擅長的地方。
 
-M4 Max 配置：
-- CPU 16 核（12 效能核 + 4 效率核）
-- GPU 40 核
-- 最高 128GB 統一記憶體
-- 記憶體頻寬 410 GB/s
+但這裡有個關鍵區別。Steve Jobs 是我會稱之為「產品人（product guy）」的那種：他是 CEO，也管行銷和策略，是願景家，但公司的舵手真的會鑽進產品的細節裡，去理解產品能做到什麼、什麼讓它變得出色。
 
-M3 Ultra 配置：
-- CPU 32 核
-- GPU 80 核
-- 最高 512GB 統一記憶體
-- 記憶體頻寬 800 GB/s
+Tim Cook 不是產品人，這完全沒關係，他當 CEO 一樣非常成功。但每當他談 Apple，很明顯他不在產品的細節裡。兩年前那場我和他的訪談就是例子——我犯了個錯，試圖跟他深入聊很多產品細節，結果變成一個梗：我基本上是在提醒他 Magic Mouse 的存在，而他得在當下臨時擠出點什麼來回應。你看得出來，那是他很久以來第一次想到那個產品。
 
-Apple 宣稱 M4 Max 版本比 M1 Max 版本快 3.5 倍，M3 Ultra 版本比最強的 Intel 27 吋 iMac 快 6.1 倍。Mac Studio 形體和前代相同，維持那個偏矮的金屬圓柱體，沒有任何外觀變化——如果你不在意樣子，這是工作站等級效能最便宜的入口。
+而 John Ternus 是產品人。這不是隨口一說——他剛從硬體工程副總裁的位子上來，過去一年 Apple 一直帶著他上鏡、為 CEO 的鎂光燈做準備。兩年前我也訪問過他，我們針對 iPhone 的材料來回深談，聊到 Apple 對「可維修性 vs. 耐用性」的具體立場，內容相當細膩。不管你認不認同那個立場，重點是：這個人顯然一直待在產品的細節裡。而現在，他被放到公司裡高得多的位置上。
 
-## 為什麼重要
+## 從近幾年的硬體，看接下來可能的方向
 
-### 記憶體門檻的改變
+要猜 Ternus 掌舵後會怎樣，可以看 Apple 這幾年做得相當好的硬體工程：
 
-把 MacBook Air 基本款從 8GB 升到 16GB 這件事比表面看起來更重要。8GB 的 macOS 系統記憶體在 2024 年已經開始顯得捉襟見肘：跑一個本地 LLM（如 Ollama + llama-3.2-3B）就要佔掉大半資源，多開幾個 Chrome 分頁加上一個 Docker 容器就開始把任務交換到 SSD，長期使用 SSD 壽命。16GB 讓入門級 MacBook Air 真正成為可以日常跑本地 AI 工作負載的機器。
+- 那些 Jony Ive 設計、太薄、有鍵盤問題又會過熱的 MacBook Pro 走了；換上的是 Apple Silicon 世代、其實更厚、續航更長、連接埠更多的 MacBook Pro。
+- 599 美元的 Mac mini 悄悄成為全科技業最划算的產品之一。
+- 最新、最具破壞力的例子是 MacBook Neo：600 美元的價位，直接讓整個 Windows 筆電產業繃緊神經。
 
-### LLM 本地推論的新基準
+這裡補一段業界內幕：自 COVID 之後，Apple 的發表會不再是舞台上的現場簡報，而是預先錄製、打磨得非常精緻的影片。所以每次辦活動、邀大家去 Apple Park，其實是邀大家去看這支預錄影片——跟你在線上看到的直播是同一部。但你可能不知道的是，如果這是早上 10 點的直播，大約在 9:57，Tim Cook 會走到大螢幕前的舞台上，招牌式地道一聲「Good morning」，用大約三分鐘做個開場：沒什麼特別的，就是 CEO 的客套話。
 
-Mac Studio M3 Ultra 的 512GB 統一記憶體是目前消費性電腦中跑本地大型語言模型最實際的選項。Apple 自己說可以在記憶體內跑超過 6,000 億參數的模型——這個規模已經接近 GPT-4 的估計參數量。對 AI 研究者和想要本地跑大模型的工程師來說，這個規格很有意義。
+而在 MacBook Neo 的活動上，說「Good morning」的是 John Ternus——那還是在他被宣布為 CEO 之前的幾週。這顯然是在讓他習慣主持這類場合，同時也象徵著他主導了 Neo 的開發、並親自把它介紹給世界。那場我甚至完全沒看到 Tim Cook。傳聞說九月本來就打算再讓 Ternus 上一次，而現在他當上 CEO，這件事更是十拿九穩。他很可能會像過去 Tim Cook 那樣，成為主持整場 iPhone 發表會的人——今年我們預期會看到 iPhone Fold（折疊 iPhone），而這似乎也是他在主導開發。
 
-## Apple Intelligence 的現實
+我的期待是：這位被賦予更高領導權、身邊也已經聚集了一批人的產品人，能繼續在有趣、有想法的硬體上揮出大棒——就像 MacBook Pro、MacBook Neo，以及折疊 iPhone 那樣。
 
-Apple Intelligence 在 iOS 18 / macOS Sequoia 正式推出，M4 MacBook Air 是第一款「出廠就能用 Apple Intelligence」的入門級 Mac。但實際體驗如何？
+## Tim Cook 時代的成績，與它的天花板
 
-**做到的部分：**
-- 系統層級的 Writing Tools（改寫、摘要、校對）在大多數文字輸入框都能用
-- Siri 可以理解上下文接力提問（問完「幾度」可以接著問「需要帶傘嗎」）
-- Image Playground 和 Genmoji 產生速度快，質量夠用
-- Priority Notifications 確實有用，高重要性通知放前面
+別誤會，Tim Cook 任內也出了不少扎實又有意思的產品：Apple Watch、AirTags，Vision Pro 是一次大膽的嘗試。而 AirPods 大概是最成功的例子——它們是全世界最受歡迎的耳機。
 
-**還沒做好的部分：**
-Siri 的整合是最大的問題。理論上 Siri 應該要能跨 App 執行複雜指令（「把 Instagram 上最近那張照片傳給媽媽」），但實際成功率大概只有五成。語音辨識對英文外的語言（包括中文）的準確率比 ChatGPT 差得多。
+但 Apple、尤其是近年，明顯把重心轉向了各種服務：iCloud、Apple TV、Apple Music、Apple Fitness……為的是從龐大的 iPhone 裝機量裡榨出那甜美的、可持續的訂閱收入。投資人很愛，但我想看到有趣的產品重新回來。
 
-**對開發者的影響：**
-Apple 在 2025 年 10 月的開發者更新中開放了第三方 App 使用裝置端基礎模型——但只是透過 Writing Tools、Image Playground 和 Genmoji 等有限介面。底層模型本身不直接暴露給開發者，Apple 的策略是讓 App 把資料交給 Siri，由 Apple 扮演 AI 聚合器的角色。這讓不少開發者不滿，因為無法直接整合自己的 AI pipeline。
+讓我不太放心的是 Apple 的一種性格：他們似乎「格外害怕失敗的可能」，結果就是嘗試的東西變少了。有很多我想看到 Apple 做的東西，他們就是不做——一台專屬的相機、一台有螢幕的智慧家庭喇叭（而不只是 HomePod）、智慧眼鏡……折疊手機他們據說要跳進去了，但其他很多品類始終沒動。
 
-## 跟其他選項比較
+問題在於，Apple 每推出一項新東西、尤其是新品類，感覺都非做成「宏大、革命性、劃時代」不可，這反而綁住了他們去嘗試更多有趣的東西。
 
-| | MacBook Air M4 | MacBook Pro M4 Pro | Dell XPS 15（AMD Ryzen AI） |
-|--|--|--|--|
-| 起始價 | $999 | $1,999 | ~$1,299 |
-| 基本記憶體 | 16GB | 24GB | 16GB |
-| AI 加速器 | Neural Engine 16 核 | Neural Engine 16 核 | AMD NPU |
-| 散熱 | 無風扇 | 主動散熱 | 主動散熱 |
-| 持續效能 | 有限制 | 無限制 | 中等 |
-
-MacBook Air M4 的無風扇設計意味著在持續高負載下（長時間跑 LLM inference、編譯大型專案）效能會受到熱節流（thermal throttling）限制。如果你的工作需要長時間滿載，MacBook Pro 或 Mac Studio 才是正確選擇。
-
-## 小結
-
-M4 MacBook Air 在 $999 的價格點實現了「夠用的 AI 開發機」，16GB 記憶體和 10 核 CPU 讓它成為目前同價位最均衡的薄型筆電。Mac Studio M4 Max 則是本地 AI 推論工作站的強力選項。
-
-但 Apple Intelligence 的現況提醒我們，硬體和軟體是兩回事。M4 晶片的 Neural Engine 有足夠算力，但 Siri 整合的不穩定性、開放介面的限制，讓 Apple 的 AI 戰略還在追 Google 和 OpenAI 的腳步。2026 年的 iOS 19 和下一代 Siri 更新會是真正的分水嶺。
-
-## 參考資料
-
-- [Apple 官方：Mac Studio 發表](https://www.apple.com/newsroom/2025/03/apple-unveils-new-mac-studio-the-most-powerful-mac-ever/)
-- [XDA Developers：MacBook Air M4 評測](https://www.xda-developers.com/m4-macbook-air-review/)
-- [Apple Insider：Mac Studio 2025 評測](https://appleinsider.com/articles/25/04/01/2025-mac-studio-review-one-clear-purchase-choice-for-most-buyers)
-- [Fello AI：Apple Intelligence 現況分析](https://felloai.com/the-state-of-apple-intelligence-siri-in-october-2025-apples-ai-vision-vs-reality/)
-- [原始影片](https://www.youtube.com/watch?v=i9TvUGeTltE)
+打個比方：如果 Apple 是 YouTuber，他們是那種每六個月才更新一次的人；而 Samsung 和 Goog

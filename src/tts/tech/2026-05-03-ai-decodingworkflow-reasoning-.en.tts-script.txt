@@ -1,47 +1,41 @@
-Here's the script:
+Here's something that trips up almost everyone building with language models. Your app isn't performing well, the answers are wrong or the costs are through the roof, and your first instinct is "I need a bigger model." But most of the time, that's the wrong move — because the problem isn't where you think it is.
 
----
+There are actually three completely separate layers where output quality gets decided. And the fastest way to fix anything is to figure out which layer your problem lives in before you touch anything.
 
-If your LLM application isn't performing the way you want, there's a good chance you're reaching for the wrong fix. And the reason that happens so often is that people treat LLM optimization as one big knob to turn, when actually there are three completely separate layers — each solving a different problem, each optimized differently.
+Let me walk you through all three.
 
-Let's walk through them.
+The first layer is decoding. This is the most overlooked lever of them all. When a model generates text, at every single step it's picking the next word — or token — from a probability distribution across its whole vocabulary. Decoding is just *how* it makes that pick.
 
-**The first layer is decoding.** This is the most overlooked one. When an LLM generates text, it doesn't just pick words — it's sampling from a probability distribution over its entire vocabulary at every single step. How you do that sampling matters a lot.
+The simplest approach is greedy decoding: always grab the highest-probability token. It's fast, it's deterministic, you get the same output every time. The downside? It's prone to getting stuck in local optima. Once it makes a bad choice, there's no going back.
 
-The simplest approach is greedy decoding: always pick the highest probability token. It's fast, deterministic, and reproducible. The downside is it can get stuck — one early wrong choice locks you into a suboptimal path.
+Then there's sampling with temperature. Instead of always taking the top token, you roll the dice weighted by probability. Turn the temperature down low and it behaves almost like greedy. Crank it up high and you get wild, creative, random output. Great for writing tasks — terrible for reasoning, where you want consistency.
 
-Sampling with temperature does the opposite: instead of always taking the most likely token, you sample from the distribution. High temperature makes outputs more creative and varied. Low temperature pulls you back toward greedy. This is great for creative writing, but it's actually bad for reasoning.
+Beam search is more ambitious. It keeps several candidate sequences alive at once, running in parallel, and then picks the sequence with the best overall probability. It finds a more global optimum, which helps on reasoning-heavy work — but the compute cost scales linearly with how many beams you track.
 
-Beam search is the middle ground for reasoning-heavy tasks: instead of committing to one path, you maintain several candidate sequences in parallel, then return the globally best one. It costs more compute, but it finds better answers.
+And then top-k and top-p, or nucleus sampling — these are the guardrails. You restrict sampling to just the top handful of tokens, or the smallest set of tokens that together cross some probability threshold. It's the balance between quality and diversity.
 
-There's a finding from 2025 research that's worth calling out directly: for reasoning models trained with reinforcement learning, temperature zero — meaning pure greedy — significantly outperforms any sampling. That's the opposite of what most people intuitively do when they want better outputs.
+Now here's the finding that flips conventional wisdom on its head. For reinforcement-learning-trained reasoning models, a 2025 result showed that temperature zero — pure greedy — significantly *outperforms* any temperature above zero. That's the exact opposite of what you'd do for creative generation. So if you copied "set temperature to 0.7" from some creative-writing tutorial and slapped it on a math problem, that alone could be sabotaging your accuracy.
 
-**The second layer is workflow.** This is where you, as the developer, decide how to structure the task. The model doesn't change — your architecture does.
+Okay, layer two: workflow. This one lives entirely at the application level, and it's independent of which model you're using. In fact, good workflow design can make a *weaker* model punch way above its weight.
 
-Chain-of-thought prompting is the classic move: instead of asking the model to jump straight to an answer, you prompt it to write out its reasoning steps. This works because errors that would be invisible in a one-shot answer become visible mid-chain, giving the model a chance to catch and correct them. Simple, effective, almost free.
+Chain-of-thought is the classic. Instead of asking for the answer straight up, you ask the model to write out its reasoning steps first. That simple shift gives the model room to catch its own mistakes as it goes. Dead simple, wildly effective for math and logic.
 
-ReAct goes a step further: the model alternates between reasoning and action. It thinks about what it needs, calls a tool — a search engine, a database, a calculator — then continues reasoning from the result. This is the right pattern when the model needs external information it doesn't have in its weights.
+ReAct takes it further by interleaving reasoning with action. The model thinks about what it needs, calls a tool — a search, a calculation, a database query — then picks up reasoning from whatever came back. This is your go-to when the task needs external information the model doesn't carry in its head.
 
-Self-consistency is a heavier-weight technique: generate the same question multiple times with sampling turned up, then take the majority vote across answers. It's expensive — you might run the same query five or ten times — but for high-stakes reasoning tasks, the accuracy gains can justify it.
+Then you've got multi-step and multi-agent workflows, where you break a big job across specialized agents, each owning a piece, and stitch the results together. Good for parallel work or genuinely distinct domains of knowledge.
 
-Multi-agent workflows are the most complex: decompose a task across several specialized agents that each handle a subtask, then aggregate their outputs. Best for tasks that genuinely benefit from parallelism or specialized domain knowledge.
+And self-consistency — this one's clever. You ask the same question multiple times with high temperature, generate a bunch of different answers, and take the majority vote. You're leveraging sampling diversity to boost accuracy. The catch is cost: it multiplies by however many samples you run.
 
-**The third layer is reasoning capability itself** — this is about what the model can intrinsically do, not how you prompt it.
+Layer three is reasoning — the model's *intrinsic* ability to explore, self-correct, and think longer. This is the ceiling that workflow design alone can't break through.
 
-Inference-time scaling is the big one. Instead of training a bigger model, you give the model more thinking time: longer chains of thought, explicit budget tokens for exploration. OpenAI's o-series models, Gemini Thinking, Claude's extended thinking — they all work this way. The returns follow a roughly log-linear curve. Doubling compute doesn't double accuracy, but meaningful gains continue well past the point where scaling the model size stops helping.
+Inference-time scaling is the headline idea here: give the model more thinking time, through longer chains of thought or explicit budget tokens. This is what powers OpenAI's o1 and o3, Gemini Thinking, Claude's extended thinking. And the returns are roughly log-linear — doubling the compute doesn't double your accuracy, but here's the key part: those gains keep coming well past the point where just reaching for a bigger model stops helping.
 
-Early Stopping Chain-of-Thought is a clever efficiency trick: you monitor the reasoning chain, and when the model's answer has been stable for several consecutive steps, you stop early. Research shows this cuts token usage by around 41% while keeping accuracy basically intact. No retraining required. If you're running inference at scale and costs are biting, this is worth knowing about.
+ES-CoT — early-stopping chain-of-thought — is my favorite, because it's the rare technique with *negative* cost. The idea: once the answer has stayed stable for several steps in a row, you just stop reasoning. Research clocked around a 41% reduction in tokens while holding accuracy right up there with full chain-of-thought. No retraining, drop it right in.
 
-And then there's Coconut — Chain of Continuous Thought — which is more experimental but conceptually fascinating. Standard chain-of-thought forces reasoning to happen in natural language tokens. Coconut instead lets the model's internal hidden state serve directly as the input to the next step. Reasoning happens in continuous latent space rather than in words you can read. The theoretical advantage is that it enables something like breadth-first search across reasoning paths, rather than committing to one linear chain. It requires special training and isn't widely deployed yet, but it points at where the research is heading.
+And then there's Coconut — chain of continuous thought — which is the far frontier. Normally a model reasons in words, discrete tokens from its vocabulary. Coconut skips that. It takes the model's last hidden state — a kind of "continuous thought" — and feeds it straight back in as the next input. So the reasoning happens in continuous latent space instead of in language. In theory that lets the model explore multiple reasoning paths at once, breadth-first, rather than locking into one path the way standard chain-of-thought does. Still research-stage, not widely deployed — but it's a fascinating direction.
 
----
+So let me tie the cost picture together, because it matters. Greedy decoding and temperature sampling? Basically free — they're just settings. Chain-of-thought costs a little, just a longer prompt. ReAct is medium, because of the tool calls. Self-consistency is expensive — three to ten times the inference. Inference-time scaling is expensive too, from all that extra output. ES-CoT actually *saves* you money. And Coconut needs special training, so it's not something you deploy today.
 
-So, here are the three things to take away from this.
+Here's what I want you to walk away with. The single most common mistake in LLM optimization is conflating these layers. If your reasoning accuracy is low, you probably don't need a bigger model — your temperature might just be too high, or you're not using chain-of-thought at all. If your costs are too high, you don't need to downgrade — ES-CoT might cut your tokens by forty percent without touching quality.
 
-First: diagnose the layer before you reach for a fix. Low reasoning accuracy doesn't always mean you need a bigger model — it might just mean temperature is too high, or you haven't added chain-of-thought. High inference costs don't always require a model downgrade — early stopping might cut your token usage by 40% without touching anything else.
-
-Second: for reasoning tasks, temperature zero is your default. This surprises a lot of people, but the evidence is clear — sampling hurts reasoning models.
-
-Third: workflow design is underrated. A well-structured chain-of-thought or ReAct loop running on a mid-tier model will often outperform an expensive model being queried naively. The architecture matters as much as the model.
-
-These three layers — decoding, workflow, reasoning — are separate tools. Use the right one for the problem you actually have.
+Three layers: decoding at the token level, workflow at the task level, reasoning at the model-capability level. Diagnose which one your problem lives in *first* — then, and only then, reach for the right tool.

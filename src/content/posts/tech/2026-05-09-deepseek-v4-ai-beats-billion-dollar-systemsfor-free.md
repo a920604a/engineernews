@@ -1,98 +1,99 @@
 ---
-title: "DeepSeek V3 如何以 $5.6M 訓練成本挑戰百億美元系統"
-date: 2026-05-09T08:05:43.493Z
-category: tech
-tags: ["deepseek", "ai", "open-source-models", "moe", "llm"]
-lang: zh-TW
-tldr: "DeepSeek V3 以 671B 參數 MoE 架構、僅 278 萬 H800 GPU 小時的訓練成本，在多項基準測試上達到接近 GPT-4 的表現，API 費用僅是 OpenAI 的十分之一。"
-description: "深入解析 DeepSeek V3 的 MoE 架構、訓練效率突破與成本優勢，以及對 AI 產業競爭格局的影響。"
-type: deep-dive
+title: "DeepSeek 4：用三層壓縮把 1M token context 塞進開源模型"
+date: "2026-05-09T08:05:43.493Z"
+category: "tech"
+tags: ["deepseek","ai","open-source-models","llm","kv-cache"]
+type: "deep-dive"
 original_url: "https://www.youtube.com/watch?v=p7K3xfViWCE"
-draft: true
-audio_url: "/api/tts/r2/tts/tts_20260522_234746_157792.wav"
+draft: false
+tldr: "DeepSeek 4 在開源權重下做到 100 萬 token 的 context window，靠的是三層 KV cache 壓縮把記憶體需求砍掉約 90%；Pro 版本在長文本記憶測試上贏過 Gemini 3.1 Pro，同時算力與價格都大幅下降。"
+description: "從 DeepSeek 4 的 58 頁論文出發，拆解讓它撐起百萬 token context 的三層壓縮技術、Pro/Flash 兩個版本的取捨，以及媒體標題不會告訴你的限制。"
+key_points:
+  - "三層壓縮（摘要、結構、索引）讓 KV cache 記憶體需求下降約 90%，撐起 1M token context window"
+  - "Pro 版本在藏 8 個事實的長文本測試中，回想準確度勝過 Google 旗艦 Gemini 3.1 Pro"
+  - "壓的是 KV cache 不是模型本身；仍需載入完整模型，且是純文字、不支援圖片與音訊"
+audio_url: "/api/tts/r2/tts/tts_20260711_000636_703603.mp3"
 ---
 
-2024 年 12 月，中國 AI 公司 DeepSeek 發布了一篇技術報告，內容讓 AI 研究圈的很多人重新算了一遍數字：他們用 278 萬 H800 GPU 小時訓練了一個 671B 參數的模型，成本約 557 萬美元。相比之下，GPT-4 的訓練成本估計超過 1 億美元。同等效能，約二十分之一的訓練成本，完全開源。這件事的影響不只是「便宜的 AI」，而是整個產業對訓練效率假設的重新校準。
+DeepSeek 4 發布了，隨附一篇 58 頁的研究論文，而且這次幾乎沒有藏私。它是目前我們能免費使用的最大型開源 AI 模型之一，最搶眼的一個數字是：**一個 100 萬 token 的 context window，而且是開源權重**。
 
-## TL;DR
+換算成人話，你可以一次餵給它大約 1,500 頁的密集技術文件，它會全部讀進去。這種等級的長 context，兩年前還是 Google Gemini 拿來震撼全場的招牌功能，現在卻以開源、免費的形式送到我們手上。
 
-DeepSeek V3 是 671B 總參數的 MoE（Mixture of Experts）模型，每個 token 只啟用 37B 參數。透過 MLA（Multi-head Latent Attention）、輔助損失自由負載均衡、多 token 預測等創新，在 2.788M H800 GPU 小時、約 $5.576M 的成本下完成訓練，在多項基準測試達到接近頂尖閉源模型的水準。API 定價約 $0.028 per million input tokens，是 OpenAI 同等規模模型的十分之一。
+## Pro 與 Flash：一個追平前沿，一個追平自己
 
-## 設計哲學
+DeepSeek 4 分成兩個版本：
 
-DeepSeek 的核心問題意識是：AI 訓練的效率上限在哪裡？
+- **Pro**：效果大致追平幾個月前那些「數十億美元等級」的前沿模型。
+- **Flash**：體積小很多，卻在某些場景下能和 Pro 較勁。
 
-主流觀點認為，前沿模型需要海量 GPU 叢集和天文數字預算。OpenAI、Google、Anthropic 的訓練成本每一代都在翻倍。DeepSeek 的研究方向相反——他們問的是「在固定算力預算下，架構設計能做到什麼」。
+更誇張的是算力。隨著輸出的文字越來越長，新的 **Pro 版本比上一代大約省下 3 倍算力**，而較輕量的 **Flash 版本則省下約 10 倍算力**。同樣的能力，用更少的計算就能跑出來。
 
-這個思路體現在幾個具體決策：
-1. **選擇 MoE 而非 Dense**：MoE 讓你有大參數量（表達力強）但推論時不需要全部激活（計算量少）
-2. **在中國可取得的硬體上優化**：H800 是 H100 的出口管制版，記憶體頻寬較低。DeepSeek 必須在這個限制下優化跨節點通訊
-3. **演算法、框架、硬體協同設計**：不假設最好的硬體，而是在現有條件下把系統效率榨到最高
+## 三層壓縮：讓百萬 token 塞得進記憶體
 
-## 核心概念
+真正的魔法在於它怎麼處理 KV cache。KV cache 可以想成模型在推論時的「草稿紙」——你寫進去的 prompt 和塞進去的文件都存在這裡。context 越長，這張草稿紙就越大，記憶體很快就吃不消。DeepSeek 4 用三層壓縮來解這個問題，可以用「讀一本書」的比喻來理解：
 
-### MoE 架構
+**第一層：token-level 壓縮（摘要）。**
+就像讀書時把每一段濃縮成一句話。書還在，但你搜尋起來快多了。這是 token 層級的壓縮，把 KV cache 裡的內容先做一輪濃縮。
 
-DeepSeek V3 的 Transformer 架構中，FFN（前饋網路）層被替換為 MoE 層。每個 MoE 層有 256 個 expert 模組，每個 token 路由到其中 8 個。671B 總參數中，每次 forward pass 只激活約 37B——這讓推論的計算量接近一個 37B 的 dense 模型，但模型容量接近 671B。
+**第二層：Heavily Compressed Attention（結構）。**
+光有摘要還是會累積成一大坨。想知道整本書的大致劇情？看目錄就好——每章一個短名字，你就能一眼掌握全局。論文把這一層描述成 **128 比 1 的壓縮**。
 
-**DeepSeekMoE 的改進**：
-- 在標準 MoE 之上加入「共享 expert」（shared experts），確保某些通用知識不依賴路由
-- 細粒度 expert（256 個而非傳統的 8-16 個），讓路由更精細
+**第三層：Compressed Sparse Attention（索引）。**
+目錄還不夠精準。想找書裡某一場打鬥發生在哪？翻索引——一份「詞彙／片語 → 位置」的清單，直接告訴你打鬥出現在哪幾頁。它幫你定位到最相關的少數幾頁。
 
-### Multi-head Latent Attention（MLA）
+```mermaid
+flowchart LR
+    A["長 context<br/>(~1,500 頁文件)"] --> B["摘要<br/>token-level 壓縮"]
+    B --> C["結構<br/>Heavily Compressed Attention<br/>128:1"]
+    C --> D["索引<br/>Compressed Sparse Attention"]
+    D --> E["KV cache 記憶體 ↓ 約 90%"]
+```
 
-傳統 MHA（Multi-head Attention）的 KV Cache 在長文本下會佔用大量記憶體。MLA 的創新是把 Key 和 Value 投影到低維隱空間（latent space）後再展開，KV Cache 的記憶體佔用大幅下降，推論時的記憶體頻寬需求也跟著降低。
+三層疊起來——摘要、結構、索引——把 KV cache 的記憶體需求砍掉了**約 90%**。等於把 100 個字的東西壓進 10 個字的空間，而且論文宣稱資訊幾乎沒有損失。
 
-這對在記憶體頻寬受限的 H800 上跑長文本推論特別重要。
+一個重要的釐清：**這裡壓縮的是 KV cache，不是模型本身**。你還是得把完整的模型載入進來，別被媒體標題誤導成「可以把整個 DeepSeek Pro 塞進一台烤麵包機」——那是兩回事。
 
-### 輔助損失自由（Auxiliary-Loss-Free）負載均衡
+## 它真的記得住嗎？
 
-MoE 的一個老問題是 expert collapse——路由器傾向於把所有 token 送給少數幾個 expert，導致大多數 expert 沒被充分訓練。傳統解法是加輔助損失函數懲罰不平衡，但這會干擾主要訓練目標。
+壓縮這麼狠，會不會把資訊壓丟？作者用了經典的長文本記憶測試：在越來越長的 context 裡藏進 **8 個事實**，看模型能不能把它們找回來。
 
-DeepSeek V3 提出的方案是在 softmax 路由前加入 token 層面的偏置項，動態調整，不需要額外損失函數，負載均衡效果同樣好，且不影響模型的主任務學習。
+結果是：**Pro 版本的回想表現比 Google 旗艦 Gemini 3.1 Pro 還好**。這對一個開源免費模型來說相當驚人。
 
-### 多 Token 預測（Multi-Token Prediction）
+不過要誠實——就像其他系統一樣，當你越接近 context window 的上限，模型會開始退化：遺忘、飄移、幻覺。**文字塞得越滿，真實度越低**。這條界線要留意。
 
-傳統語言模型一次預測一個下一個 token。DeepSeek V3 引入多 token 預測（預測未來 N 個 token），讓模型在訓練時學習更長程的依存關係，也提升了訓練信號密度。
+## 寫程式很強，但別過度期待
 
-## 跟常見替代方案比較
+DeepSeek 4 在 coding 上表現很好。你可以輕鬆請它產生一段 JavaScript，貼到網頁就能跑；某些情況甚至能直接在 DeepSeek 的視窗裡一鍵執行程式。
 
-| 模型 | 類型 | 激活參數 | 訓練成本估計 | 開源 | API 每 1M input token |
-|------|------|----------|-------------|------|----------------------|
-| DeepSeek V3 | MoE | 37B | ~$5.6M | 是 | $0.028 |
-| GPT-4 | Dense（估計） | ~1T | >$100M | 否 | $10 |
-| Claude 3.5 Sonnet | 未公開 | 未公開 | 未公開 | 否 | $3 |
-| Llama 3.1 405B | Dense | 405B | >$30M（估計） | 是（部分） | 視服務商 |
-| Mistral Large | Dense | 123B | 未公開 | 否 | $3 |
+但它不是萬能。作者本身做 light transport（也就是 ray tracing）研究，拿相關的小題目去試，一般任務沒問題，**碰到比較進階的演算法它仍然無法正確實作**。所以強，但有天花板。
 
-DeepSeek V3 的定價比 Claude Sonnet 便宜約 107 倍，比 GPT-4 便宜約 357 倍，這讓大規模部署的成本結構完全不同。
+## 價格：便宜到數字快失去意義
 
-## 適合/不適合的情境
+如果你有能力自架，硬體本身不便宜；但官方也提供線上存取，而且便宜得誇張：
 
-**適合：**
-- 需要大量 API 呼叫的商業應用（成本優勢最明顯）
-- 程式碼生成、數學推理、長文本處理（V3 強項）
-- 想要本地部署但算力有限（MoE 推論的計算量接近 37B dense 模型）
-- 研究目的（完整技術報告和模型權重開放）
+- **有折扣時**：大約比 Anthropic 的 Claude 便宜 **30 倍**。
+- **沒折扣時**：大約便宜 **8 到 20 倍**。
 
-**不適合：**
-- 需要最嚴格資料隱私的應用（模型來自中國公司，API 部署在中國伺服器）
-- 即時語音互動（非推論速度強項）
-- 需要最高準確率的醫療、法律場景（相比 GPT-4 o1/o3 的推理能力有差距）
+## 別被標題騙了：三個限制
 
-## 整體來說
+媒體標題通常不會提這些，但它們不是小問題：
 
-DeepSeek V3 改變了 AI 訓練的成本參考點。它不是說「百億美元的系統毫無價值」，而是說「特定效能水準不需要百億美元」。
+1. **只支援文字，不是多模態。** 它能吞 1,500 頁文件，但**不能**吃 10 小時音訊或一整部電影——沒有圖片、沒有音訊，用作者的話說「又瞎又聾」。
+2. **連作者自己都沒完全搞懂。** 論文提到有兩個技巧能神奇地穩定訓練，但他們坦承不太確定為什麼有效。這其實是很多研究都會遇到的狀況，這份透明度值得尊重。
+3. **逼近 context 上限就會崩。** 前面提過——越往窗口邊緣推，表現越不穩，使用時要小心。
 
-對產業的影響已經可見：OpenAI、Anthropic、Google 都在加速推出更便宜的模型選項，API 定價在 2025 年持續下滑。DeepSeek 的貢獻不只是一個好用的模型，而是把 MoE 效率優化的研究成果完整開放，讓整個社群可以站在這個基礎上繼續推進。
+## 一個順帶提到的技術：Engram
 
-DeepSeek V4 的技術預覽已在 2026 年 4 月釋出，持續關注。
+論文還用到一個叫 **Engram** 的技術。一般的 AI 幾乎每次都要把每個事實從頭重算一遍；Engram 讓它可以直接「回想」這些已算過的事實，而不是重算。聽起來簡單，實作沒那麼容易。
+
+## 結尾：把「近掃、遠望」用在自己身上
+
+DeepSeek 4 對開源、免費 AI 來說不是一小步。而它的核心思路其實也能借來用在思考上：
+
+想像你在森林裡散步。你想抬頭看眼前的美景，但一抬頭可能就會絆倒；於是你只好盯著腳前的路——看風景，或看腳步，你沒辦法同時做兩件事。解法是什麼？**兩件都做**：近處掃一眼、遠處瞄一眼，一步一看，局部細節配上全局脈絡。
+
+這正是 DeepSeek 4 在做的事——用不同層級的壓縮，同時保有細節與全貌。
 
 ## 參考資料
 
-- [DeepSeek V3 技術報告（arXiv）](https://arxiv.org/abs/2412.19437)
-- [DeepSeek GitHub](https://github.com/deepseek-ai/DeepSeek-V3)
-- [Introl Blog：DeepSeek V3.2 vs GPT-5](https://introl.com/blog/deepseek-v3-2-benchmark-dominance-china-ai-december-2025)
-- [CNBC：DeepSeek V4 預覽](https://www.cnbc.com/2026/04/24/deepseek-v4-llm-preview-open-source-ai-competition-china.html)
-- [BentoML：DeepSeek 模型系列完整指南](https://www.bentoml.com/blog/the-complete-guide-to-deepseek-models-from-v3-to-r1-and-beyond)
-- [原始影片](https://www.youtube.com/watch?v=p7K3xfViWCE)
+- [Two Minute Papers：DeepSeek 4 解析（原始影片）](https://www.youtube.com/watch?v=p7K3xfViWCE)
