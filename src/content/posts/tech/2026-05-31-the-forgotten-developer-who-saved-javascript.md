@@ -12,6 +12,7 @@ key_points:
   - "Underscore.js 提供約 60 個處理陣列與物件的工具函式，補上當時 IE 缺少的 map/reduce/forEach"
   - "CoffeeScript 編譯成 JavaScript，讓開發者不必等標準委員會或瀏覽器廠商就能繞過語言的爛設計"
   - "CoffeeScript 在 Rails 3.1（2011）成為預設前端預處理器，GitHub、Dropbox 等早期新創也採用"
+audio_url: "/api/tts/r2/tts/tts_20260711_081207_265007.mp3"
 ---
 
 2009 年，JavaScript 幾乎是所有工程師心照不宣討厭的語言。

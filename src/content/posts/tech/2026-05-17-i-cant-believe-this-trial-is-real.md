@@ -12,6 +12,7 @@ key_points:
   - "訴訟 discovery 幾乎變成高層私訊外流——郵件、簡訊、私人日記全成呈堂證供。"
 tldr: "2026 年 5 月，Musk v. Altman 在 Oakland 聯邦法院進入結辯。這不是兒童成癮案，而是 Elon Musk 指控 Sam Altman 與 Greg Brockman「偷走一個慈善機構」、把開源非營利變成閉源印鈔機的世紀訴訟。"
 description: "Musk 對 Altman 及 OpenAI、Microsoft 提出高達 1,340 億美元的求償，指控他們違反慈善信託。從 2015 年創辦、Dota 2 勝利、鬧翻出走到 Microsoft 入股，一文看懂這場官司揭露的內幕。"
+audio_url: "/api/tts/r2/tts/tts_20260711_073614_472040.mp3"
 ---
 
 「我做這件事，是因為我熱愛它。」被告 Sam Altman 在證人席上這麼說。而原告 Elon Musk 的說法是：他們偷走了一個本該拯救人類的開源慈善組織，把它變成了一台閉源印鈔機。

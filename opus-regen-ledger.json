@@ -1,6 +1,6 @@
 {
   "cutoff": "2026-06-20",
-  "updatedAt": "2026-07-11T00:43:38.623Z",
+  "updatedAt": "2026-07-11T08:12:30.407Z",
   "items": {
     "career/2026-04-27-alruckqq_pw": {
       "id": "career/2026-04-27-alruckqq_pw",
@@ -18,7 +18,8 @@
       "sourceKind": "YouTube 逐字稿",
       "via": "agentic",
       "regenAt": "2026-06-28T15:46:15.113028",
-      "enAt": "2026-07-04T15:39:09.872Z"
+      "enAt": "2026-07-04T15:39:09.872Z",
+      "ttsAt": "2026-07-11T07:24:52.422Z"
     },
     "career/2026-04-30-ep667-small-talk": {
       "id": "career/2026-04-30-ep667-small-talk",
@@ -863,7 +864,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-02T13:11:55.192Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T07:25:14.892Z"
     },
     "tech/2026-05-17-a-worm-just-ate-its-way-through-the-npm-registry": {
       "id": "tech/2026-05-17-a-worm-just-ate-its-way-through-the-npm-registry",
@@ -885,7 +887,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-02T13:15:54.643Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T07:32:35.091Z"
     },
     "tech/2026-05-17-i-cant-believe-this-trial-is-real": {
       "id": "tech/2026-05-17-i-cant-believe-this-trial-is-real",
@@ -897,7 +900,8 @@
       "failedAt": "2026-07-03T10:10:31.174Z",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-03T10:48:42.961Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T07:36:37.512Z"
     },
     "tech/2026-05-19-i-built-a-fully-automatic-mansplainer": {
       "id": "tech/2026-05-19-i-built-a-fully-automatic-mansplainer",
@@ -1025,7 +1029,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-03T10:11:59.475Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T07:40:09.766Z"
     },
     "tech/2026-05-26-deepminds-insane-ai-breakthroughs-with-ceo-demis-hassabis": {
       "id": "tech/2026-05-26-deepminds-insane-ai-breakthroughs-with-ceo-demis-hassabis",
@@ -1036,7 +1041,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-03T10:13:33.192Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T07:43:10.704Z"
     },
     "tech/2026-05-27-github115aiagentchromiumcli3d": {
       "id": "tech/2026-05-27-github115aiagentchromiumcli3d",
@@ -1077,7 +1083,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-03T10:16:14.661Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T07:53:33.781Z"
     },
     "tech/2026-05-29-the-hidden-tech-behind-an-nba-broadcast": {
       "id": "tech/2026-05-29-the-hidden-tech-behind-an-nba-broadcast",
@@ -1088,7 +1095,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-03T10:18:25.385Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T07:57:22.207Z"
     },
     "tech/2026-05-30-alphafold---the-most-important-ai-breakthrough-ever-made": {
       "id": "tech/2026-05-30-alphafold---the-most-important-ai-breakthrough-ever-made",
@@ -1099,7 +1107,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-03T10:19:47.038Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T08:01:10.534Z"
     },
     "tech/2026-05-30-google-deepmind-ceo-loves-hard-questions-": {
       "id": "tech/2026-05-30-google-deepmind-ceo-loves-hard-questions-",
@@ -1110,7 +1119,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-03T10:20:31.974Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T08:03:48.813Z"
     },
     "tech/2026-05-30-the-truth-about-the-whoop-killer": {
       "id": "tech/2026-05-30-the-truth-about-the-whoop-killer",
@@ -1121,7 +1131,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-03T10:23:08.955Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T08:07:37.513Z"
     },
     "tech/2026-05-31-the-forgotten-developer-who-saved-javascript": {
       "id": "tech/2026-05-31-the-forgotten-developer-who-saved-javascript",
@@ -1132,7 +1143,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-03T10:24:22.760Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T08:12:30.407Z"
     },
     "tech/2026-06-02-a-second-nobel-prize-for-alphafold-alphafold-deepmind-nobelp": {
       "id": "tech/2026-06-02-a-second-nobel-prize-for-alphafold-alphafold-deepmind-nobelp",

@@ -9,6 +9,7 @@ description: "Breaking down the tech behind NBA broadcasts: how Hawk-Eye's 3D tr
 type: explainer
 original_url: "https://www.youtube.com/watch?v=mk_wdHePbtQ"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260711_075609_057147.mp3"
 ---
 
 When you watch an NBA broadcast, that real-time graphic overlay in the upper corner showing player speed, shot angle, and tracking data represents a massive technical stack that has to reliably execute for every single game. From camera signal to your screen, the system's end-to-end latency must stay within broadcast tolerances — while simultaneously meeting the time requirements of referee decisions.

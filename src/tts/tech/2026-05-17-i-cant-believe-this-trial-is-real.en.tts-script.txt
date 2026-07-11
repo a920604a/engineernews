@@ -1,0 +1,37 @@
+On March 25th, 2026, a jury in California did something that had never happened before. They looked at Meta and YouTube, and they said: you are legally liable for a child's addiction to social media. Six million dollars in damages. And here's the thing that makes this more than just a courtroom headline — the jury didn't blame the content. They blamed the design. The algorithm itself became the crime.
+
+Let me set the stage. The core question in this case was deceptively simple. Can a company deliberately build a product to be hard to put down — engineer it, on purpose, to keep you scrolling — and then, when a kid gets hurt, turn around and say, "Well, that was their choice. User autonomy." The jury's answer was a flat no.
+
+The lawsuit pointed at two specific features. First, infinite scroll — a feed with no bottom, no end, no natural place to stop. And second, autoplay — the next video loading automatically before you've even decided you want it. The argument was that these weren't accidents. They were designed to make the experience genuinely difficult to walk away from. And for children and teenagers, whose ability to self-regulate is still under construction, that difficulty isn't a minor annoyance. It's real harm. The jury agreed, and they added punitive damages on top — which is the legal system's way of saying, "Don't do this again."
+
+Now, why does this matter so much? Let me give you the piece that changes everything.
+
+For years, tech companies have hidden behind a shield called Section 230. It's the US law that protects platforms from being sued over content that other people post. Someone says something defamatory on Facebook? That's not Facebook's problem, legally. And that shield has been remarkably effective.
+
+But watch what this verdict did. It didn't ask, "What content is on the platform?" It asked, "How does the platform decide to feed you that content?" Infinite scroll and autoplay aren't things a user uploaded. They're features the company built. And that distinction — content versus mechanism — quietly guts the traditional Section 230 defense. The lawyers found the seam, and they walked right through it.
+
+Here's the other thing. Six million dollars means nothing to Meta or Alphabet. Rounding error. But the six million was never the point. The point is that a jury was willing to say the word "liable" out loud. Because right now, across the United States, there are dozens of similar lawsuits in motion — many of them class actions with thousands of plaintiffs. If this precedent survives appeal, we're not talking about six million anymore. We're talking about a completely different order of magnitude.
+
+And that reframes something fundamental. Product design decisions — your recommendation system's objective function, your notification timing, your UI patterns — those are now potential legal exposure. "Increase time on app" used to be a KPI you'd celebrate in a quarterly review. Now it might be the exact sentence a plaintiff's attorney reads back to you in a deposition.
+
+Let me get into the mechanics, because the two features named here were not chosen at random.
+
+Infinite scroll works by deleting the stopping point. Think about old-fashioned pagination — you finish a page, you hit "next," and in that half-second of clicking, you get a tiny moment to ask yourself, "Do I actually want to keep going?" Infinite scroll erases that moment. There's no friction, no seam, no natural end. Browsing becomes an activity with no finish line.
+
+Autoplay is even more clever, and a little more sinister. Research shows your willpower is at its absolute weakest in the instant a video ends. That's the exact moment you'd normally decide whether to stop. Autoplay makes that decision for you, right in that window of weakness — and unsurprisingly, people continue at far higher rates than if they'd had to actively click "play" on the next one.
+
+Now, both of these features are already controversial for adults. But for kids and teens, whose prefrontal cortex — the part of the brain that handles impulse control — literally isn't finished growing yet, the effect is amplified. You're exploiting a vulnerability that is biological.
+
+And there's a deeper layer here, underneath the interface. The lawsuit implicitly targets the optimization goal of the recommendation algorithm itself. When you tell an algorithm to maximize engagement, it learns, through pure trial and error, what triggers the strongest emotional reactions. And the strongest emotional reactions tend to be the negative ones — anger, anxiety, envy. So the machine, optimizing for a perfectly innocent-sounding metric, drifts toward the content that makes you feel worst. And it aims that at teenagers who are in the middle of figuring out who they even are.
+
+So where does this go from here? A few things I'm watching.
+
+The appeal is certain. Meta and Google will fight this, and whether the verdict survives appellate review will shape every case that follows. Second, legislation — this could accelerate laws around algorithmic design and protecting minors. Europe's Digital Services Act already has provisions like this; the US has a gap, and the pressure on it just went up. Third, compliance-driven design. If "algorithmic liability" matures into a real legal theory, big platforms might have to run safety studies on features before launch — the way pharmaceutical companies do. Imagine a world where you have to prove your feed is safe before you ship it. And finally, contagion — TikTok, Snapchat, and X are all sitting in a much more exposed position today than they were a week ago. Some platforms will start quietly changing their designs. YouTube already has a "take a break" reminder. Whether that's genuine care or legal armor — well, that's the question, isn't it.
+
+So let me leave you with three things to hold onto.
+
+One: the legal target has moved from content to design. For twenty years the shield protected platforms from what users posted. This verdict went after what the company built — and that's a fundamentally new kind of vulnerability.
+
+Two: six million dollars is the opening bid, not the price. The number is trivial; the precedent is not. With thousands of plaintiffs waiting in the wings, the real exposure is enormous if this holds.
+
+And three: engagement is no longer a free metric. The objective function you optimize, the friction you remove, the moment of weakness you exploit — all of it is now on the table, legally. The age of algorithmic product liability just began, and every company that measures success in minutes-on-app is going to feel it.

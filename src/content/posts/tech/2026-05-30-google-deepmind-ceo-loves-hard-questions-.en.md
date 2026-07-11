@@ -9,6 +9,7 @@ description: "Demis Hassabis's research philosophy: why choosing difficult but h
 type: explainer
 original_url: "https://www.youtube.com/shorts/kIvvzCR5NjA"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260711_080303_897472.mp3"
 ---
 
 "I love hard questions."

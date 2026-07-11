@@ -12,6 +12,7 @@ key_points:
   - "Google 把策略押在「agentic Gemini era」：搜尋、Gmail、Android、眼鏡全被重新定位成 AI agent。"
   - "Gemini Flash 3.5 主打速度而非最強智慧；旗艦 Gemini 3.5 Pro 延到夏末才發表。"
   - "TPU 拆成訓練用 TPU-T 與推論用 TPU-I；Antigravity IDE 轉向管理 agent，現場 demo 從零打造 OS 並跑起 Doom。"
+audio_url: "/api/tts/r2/tts/tts_20260711_073945_998336.mp3"
 ---
 
 2026 年 5 月 22 日，Google I/O 落幕。Sundar 與 Demis 在台上描繪了一個野心十足的軟體未來——而那個未來，簡單講就是「Gemini 藏在每一個產品裡」。

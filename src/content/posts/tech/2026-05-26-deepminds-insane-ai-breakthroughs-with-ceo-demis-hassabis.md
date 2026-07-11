@@ -12,6 +12,7 @@ key_points:
   - "Demis 主要把 Gemini 當腦力激盪與 sparring partner，也用它快速抓住陌生研究領域的重點。"
   - "co-scientist 是在 Gemini 上加掛工具與 harness 的微調版本，專門協助生成假設、分析資料、彙整文獻。"
   - "AlphaFold 目前已有超過 300 萬名研究者在使用，衍生出「二階諾貝爾」的想像。"
+audio_url: "/api/tts/r2/tts/tts_20260711_074247_266595.mp3"
 ---
 
 多數關於 DeepMind 的討論都聚焦在 AlphaFold 得諾貝爾獎這種里程碑。但在這場與 Demis Hassabis 的輕鬆對談裡，更有意思的其實是另一個層次的問題：這些模型**在日常裡到底怎麼被用**——包括一般人、也包括 Demis 自己。

@@ -12,6 +12,7 @@ key_points:
   - "三台同時戴：HIIT 時 Whoop 與另外兩台的卡路里估算差了近 45%，準確度仍是共同課題。"
 tldr: "一位飛盤選手把 Whoop 5.0、Fitbit Air、Apple Watch Series 11 同時戴了快兩週，實測『便宜很多的 Fitbit Air 到底能不能取代 Whoop』。"
 description: "以逐字稿為依據，整理 Fitbit Air 與 Whoop 在訂閱模式、外型配件、App 與 AI 教練、功能深度、校準期與準確度上的實測差異。"
+audio_url: "/api/tts/r2/tts/tts_20260711_080712_962489.mp3"
 ---
 
 Whoop 在職業與熱血運動員圈子裡幾乎是無螢幕健身追蹤器的代名詞——一顆輕薄的「puck」塞在細帶子裡，感測器全擠在同一面，戴著 24 小時不拿下來。所以當 Fitbit Air 出現、而且便宜非常多的時候，很多同樣戴 Whoop 的隊友第一個反應就是來問：「它好用嗎？我該換嗎？兩台真的能比嗎？」

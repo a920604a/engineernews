@@ -9,6 +9,7 @@ description: "Deep analysis of Google I/O 2026's core AI strategic shift: from G
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=9OQ5vaYbGV0"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260711_073911_939172.mp3"
 ---
 
 Google I/O always generates a long list of announcements — this year's official summary runs over 100 items. But what's worth reading carefully isn't the feature list. It's the direction all those features point in: Google is moving AI from the application layer to the infrastructure layer.

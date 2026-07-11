@@ -9,6 +9,7 @@ description: "Analyzing Whoop's competitive landscape in 2026: Fitbit Air's no-s
 type: explainer
 original_url: "https://www.youtube.com/watch?v=9GSDvO0LFFE"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260711_080626_881396.mp3"
 ---
 
 "Whoop killer" has appeared constantly in tech media throughout 2025-2026. Every few months a new wearable gets slapped with the label — but Whoop is still running subscriptions, still has loyal users, still maintains a strong brand identity among elite athletes and serious fitness enthusiasts.

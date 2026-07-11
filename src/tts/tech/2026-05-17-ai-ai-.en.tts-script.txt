@@ -1,0 +1,39 @@
+Here's a question that's been floating around AI circles for literally decades: if an AI can improve itself, won't it just keep getting better and better until, one day, it's completely out of our control? You hear it framed as this looming Rubicon we're about to cross.
+
+But here's the thing — that framing is kind of misleading. Because some form of AI self-improvement? It's not coming someday. It's already running, in production, right now. So the more useful question isn't "will AI cross the line." It's: how far is what we have today from an actual runaway loop, where are the real bottlenecks, and how should an engineer actually think about this?
+
+Let me start with the punchline. AI self-improvement isn't one thing — it's a whole spectrum. On one end, you've got "use the AI's outputs to help train the next version of the model." That's mature, that's everywhere. On the far end, you've got "the AI rewrites its own training infrastructure and deploys a stronger successor, all on its own." That end is still heavily locked down — mostly by two problems: can you trust the AI to evaluate itself, and the whole unsolved mess of alignment. Understanding that spectrum is way more valuable than arguing about a magic threshold.
+
+So let's walk up the ladder, because the levels are genuinely different beasts.
+
+Level one is AI-assisted training data generation. This is the mature, boring-in-a-good-way version. Take Anthropic's Constitutional AI: they have Claude score and revise its own outputs against a set of written principles, and then the high-scoring outputs become preference data for reinforcement learning. OpenAI's RLHF pipeline does something similar with AI feedback. This is at massive scale today. But notice the key limit — the AI is improving the *next* version. Not itself, in real time.
+
+Level two is AI-driven architecture search. Things like Neural Architecture Search and AutoML, where the AI hunts for better model configurations. It works. But the search space is still drawn up by human engineers. The AI finds the best answer inside a box we built for it.
+
+Level three — this is the fast-moving frontier — is AI autonomously writing and running code to improve itself. Think Devin, SWE-agent, OpenAI's o3. These systems fix bugs, write tests, optimize algorithms on their own. But crucially, they're improving *tools and code*. Not the core model weights.
+
+And level four is the full loop. The AI modifies its own training pipeline, trains a stronger successor, and that successor repeats the whole process. Most powerful in theory. Most constrained in practice. Basically research-stage.
+
+Now, why does any of this actually matter? Because it's tied directly to the shape of the AI capability curve. Right now, progress mostly comes from outside inputs — more compute, more good data, and smart humans inventing new architectures. If AI can reliably stand in for any of those, the pace could really accelerate. There are three specific leverage points here.
+
+First, evaluation. If AI can reliably judge whether a change made the model better, human engineers get squeezed out of that part of the loop. Second, code. If AI can write and validate training code on its own, research iteration speeds way up. And third, distillation — strong models generating training data for weaker ones, pushing capability downward cheaply. And here's the honest part: all three are happening today. They're just not reliable enough or autonomous enough to close the loop.
+
+So let me describe how the real loop actually works today, because there's one step in the middle that everything hinges on. You start with your current model. It generates a bunch of candidate outputs. An AI evaluator scores them. Then — and this is the load-bearing step — humans sample and review a slice of those scores. That feeds into a preference dataset, you do reinforcement fine-tuning, and out comes a new model. Then you evaluate its capabilities and go around again.
+
+That human review step? Right now, you cannot delete it. And there are two deep reasons why.
+
+The first is the evaluator bottleneck. Asking an AI to evaluate its own outputs is basically asking whether it can reliably recognize output that's *better than itself*. Inside domains it understands well — like scoring how well it followed a set of principles — that's fine. But push toward the frontier of its capability, and the reliability of that self-evaluation falls apart fast. This is exactly why "scalable oversight" is such a central problem in AI safety.
+
+The second reason is reward hacking. And this one's almost a law of nature. Any gap, any loophole in your evaluation function will get found and exploited by the optimization process. The model's score goes up beautifully — while it quietly violates the actual intent behind the metric. The history of reinforcement learning is absolutely littered with these cases. And to close that gap you'd need either a perfect evaluation function, which nobody has, or robust enough human oversight to catch it.
+
+So if you line up the mechanisms by how much human involvement they need — human RLHF is slow, high-reliability, and it's the production standard. Constitutional AI sits in the middle on both speed and human involvement, and it's in production. NAS and AutoML need very little human input and are fast and reliable, but only inside their defined scope. AI-assisted code writing is fast and advancing quickly, but only medium reliability. And the full recursive loop? Very little human involvement, theoretically explosive speed, and reliability that is frankly just... unknown. Research stage.
+
+That's what the Rubicon metaphor is really pointing at — an AI that can *reliably* produce successors stronger than itself with no human in the loop. And today's tech falls short on several fronts at once. Evaluator reliability crumbles right at the capability boundary where you'd need it most. Full training pipelines still need serious human engineering to keep running. And alignment is unsolved — a more capable AI is not automatically a more aligned one. That last point is easy to forget and really important.
+
+So let me leave you with the three things that actually matter here.
+
+One: recursive self-improvement isn't science fiction, and it isn't an imminent threat. It's a spectrum, and the maturity gap between the low levels and the high levels is enormous. You might already be using AI self-improvement — a Constitutional-AI-trained model, a NAS-optimized architecture — without ever calling it that.
+
+Two: the whole thing is gated by two hard problems — trustworthy evaluation and reward hacking. Until those are solved, the human stays in the loop. Not by choice, by necessity.
+
+And three: if you actually want to track where the frontier is, stop watching for the Rubicon moment. Watch two real vectors instead — progress in scalable oversight research, and how autonomous AI-assisted ML tooling is getting. Where those two lines cross tells you far more than any dramatic metaphor ever will.

@@ -1,0 +1,31 @@
+"I love hard questions." Demis Hassabis has said this in interview after interview — and it's easy to hear that as just a personality trait. Some people like puzzles, right? But that's not what's going on here. When Hassabis says he loves hard questions, he's actually describing a research strategy. A deliberate way of choosing what to work on. And it might be the single biggest reason DeepMind keeps landing breakthroughs at the very frontier of science.
+
+So let's unpack the logic, because it's more calculated than it sounds.
+
+Here's the core idea. The highest-value problems are not the easiest ones — but they're also not simply the hardest ones. They're the problems where solving them unlocks a huge amount of downstream progress. Think of it like a lock that opens a hundred other doors. Take AlphaFold. It cracked the protein folding problem — and then hundreds of drug development projects around the world used it to accelerate their own work. Or AlphaGo: it solved Go, and then that same technical approach got applied to materials discovery, to mathematical proof, to algorithm optimization. So the real lesson is this — picking the right problem matters more than solving the problem.
+
+Now, why is this preference actually rare? Because most research institutions are wired to do the opposite. Their incentive systems reward publishing papers, racking up citations, showing measurable progress. And those metrics push you toward "a moderately hard problem I can get results on within a year" — and away from "a foundational problem that might produce nothing for a decade." Hassabis has essentially been fighting that incentive structure the whole time. AlphaGo took years from idea to publication. AlphaFold started back in 2018 and didn't have its breakthrough moment until CASP14 in 2020. That's a long time to sit with uncertainty.
+
+And this is where I want to be clear — this isn't heroism, it's not some romantic story about struggle. It's a return-on-investment calculation. Watch the logic on both sides. The problem with easy questions is that if you can solve them, so can plenty of other people, which means your marginal contribution shrinks toward zero. But a hard, high-leverage problem? Once you solve it, you unlock a whole bunch of other things that were stuck behind it.
+
+Let me give you the concrete cases. Protein folding — extremely difficult, nobody solved it for fifty years. But the payoff of cracking it was accelerating the entire biomedical research enterprise. How many research projects worldwide shaved years off their timelines because of AlphaFold? A lot. Then there's Go — before AlphaGo beat Lee Sedol in 2016, people genuinely believed AI couldn't crack Go within a decade. And the technology that did it — deep reinforcement learning combined with self-play — got transferred directly into how AlphaFold was trained. And more recently, mathematical proof: in 2024, AlphaGeometry and AlphaProof showed AI could handle Olympiad-level math problems. And if AI can assist mathematical research, its reach extends into every single science that leans on mathematics.
+
+So the natural question becomes — how do you actually spot one of these worth attacking? Hassabis has laid out roughly how he thinks about it, and there are three tests.
+
+First, evaluate the leverage. After you solve this thing, how many other problems become solvable, or at least easier? A truly high-leverage solution is usually a methodological breakthrough — a new way of doing things — not just an isolated one-off result.
+
+Second, confirm there's a quantifiable way to measure success. DeepMind gravitates toward problems with objective scoring. Chess has win or lose. Protein folding has a structural accuracy score. Math problems are right or wrong. If there's no objective evaluation function, it's genuinely hard to attack the problem with AI, because the system needs a clear signal of "am I getting better."
+
+And third — and this one's subtle — confirm that nobody's attacking it with the right methods yet. Sometimes a problem is stuck not because it's intrinsically that complex, but because everyone's been using the wrong tools. So if you show up with the right tools — deep RL, Transformers — against a problem that's been jammed for years because of the wrong approach, you can break through way faster than the surface difficulty would suggest.
+
+Now here's a contrast I find really clarifying. In normal engineering, when you hit a problem, what do you do? You decompose it, you simplify it, you find the nearest feasible path forward. And that's correct — that's good engineering practice. But research problem selection runs on a different logic. You find the highest-leverage problem first, and then you worry about feasibility. Because if you've picked the right problem, "infeasible" often just means "temporarily infeasible." When the tools catch up, it opens.
+
+AlphaGo is the perfect example. It was basically impossible in 2013, 2014 — the GPU compute just wasn't there. But when the compute arrived in 2015, 2016, the problem cracked open. And because DeepMind had already committed to the right problem, they were far more prepared than competitors who'd chosen easier things to work on. They were standing at the door when the key finally showed up.
+
+So let me pull the threads together, because there are a few things worth holding onto here.
+
+Takeaway one: "I love hard questions" really means "I choose to spend my time on problems that, once solved, generate massive downstream impact" — instead of chasing quick wins with limited marginal value. It's a leverage bet, not a difficulty bet.
+
+Takeaway two: the practical filter is those three checks — high leverage, an objective way to measure progress, and the suspicion that the problem's only been stuck because people used the wrong tools.
+
+And takeaway three, the part you can actually borrow: in your own work, look for the core bottleneck — the one thing where solving it would unlock a whole pile of other things — and go after that first. Rather than endlessly stacking up easy wins that don't really move anything downstream. Pick the lock that opens the most doors. That's the whole philosophy.
