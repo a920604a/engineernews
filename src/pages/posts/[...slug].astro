@@ -14,6 +14,7 @@ import { getRelatedPosts } from '../../utils/relatedPosts';
 import { getSeriesNav } from '../../utils/seriesNav';
 import { calcReadingTime } from '../../utils/readingTime';
 import { getOgImageUrl } from '../../lib/shareCard';
+import { getPostUrl } from '../../lib/postPaths';
 
 export const prerender = true;
 
@@ -111,9 +112,9 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
         </p>
         <div style="display:flex; justify-content:space-between; gap:12px;">
           {series.prev
-            ? <a href={`/posts/${series.prev.id}`} style="color:var(--accent); text-decoration:none; font-size:13px;">← {series.prev.title}</a>
+            ? <a href={getPostUrl(series.prev.id, 'zh-TW')} style="color:var(--accent); text-decoration:none; font-size:13px;">← {series.prev.title}</a>
             : <span />}
-          {series.next && <a href={`/posts/${series.next.id}`} style="color:var(--accent); text-decoration:none; font-size:13px;">{series.next.title} →</a>}
+          {series.next && <a href={getPostUrl(series.next.id, 'zh-TW')} style="color:var(--accent); text-decoration:none; font-size:13px;">{series.next.title} →</a>}
         </div>
       </div>
     )}

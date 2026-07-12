@@ -4,7 +4,7 @@ date: "2026-04-24T18:57:04.255Z"
 category: "tech"
 tags: ["harness-engineering","llm","ai","machine-learning","deep-learning"]
 type: "explainer"
-series: {"name":"AI Agent 實戰","order":2}
+series: {"name":"Harness Engineering","order":1}
 original_url: "https://www.youtube.com/watch?v=R6fZR_9kmIw"
 draft: false
 key_points:

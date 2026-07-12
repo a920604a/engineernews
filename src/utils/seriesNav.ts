@@ -15,8 +15,9 @@ export function getSeriesNav(post: Post, allPosts: Post[]): SeriesNav | undefine
 
   const { name } = post.data.series;
 
+  // 只挑同語言的同系列文章，避免 zh 頁把 en 版當成 prev/next（URL 會多出 en 尾巴）
   const seriesPosts = allPosts
-    .filter((p) => p.data.series?.name === name && !p.data.draft)
+    .filter((p) => p.data.series?.name === name && !p.data.draft && p.data.lang === post.data.lang)
     .sort((a, b) => (a.data.series!.order) - (b.data.series!.order));
 
   const idx = seriesPosts.findIndex((p) => p.id === post.id);
