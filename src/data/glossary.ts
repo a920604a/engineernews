@@ -194,6 +194,15 @@ export const glossary: Record<string, GlossEntry> = {
   "prompt cache": { zh: "提示快取", context: "快取 prompt 不變前綴（指令、工具定義）的運算結果重用，讓長對話成本從二次方降到線性。" },
   "compaction": { zh: "上下文壓縮", context: "對話逼近 context 上限時把歷史壓成摘要 item 釋放空間，讓 agent 能跑更久。" },
   "zero data retention": { zh: "零資料保留", context: "伺服器不持久化原始對話的合規模式；靠無狀態請求加密摘要維持推理連貫。" },
+  // ── 全站掃描補充：可解釋性 / 模型內部 ──
+  "mechanistic interpretability": { zh: "機制可解釋性", context: "逆向工程神經網路內部運算，找出實作某個功能的具體電路。" },
+  "logit lens": { zh: "logit 透鏡", context: "把中間層 activation 乘 unembedding、看它像哪個 token 的老牌可解釋性工具。" },
+  "activation patching": { zh: "活化替換", context: "把一次 forward 的活化搬到另一次，測某位置對輸出的因果影響。" },
+  "residual stream": { zh: "殘差流", context: "Transformer 各層共用的向量流，attention 與 MLP 輸出都加回這裡。" },
+  "ablation": { zh: "消融", context: "強制把某內部方向或元件歸零，觀察它對輸出的影響。" },
+  "global workspace theory": { zh: "全域工作空間理論", context: "Baars 提出的意識框架：資訊需進入容量有限的共享頻道被廣播才可被取用。" },
+  "ignition": { zh: "點火現象", context: "GWT 預測的閾值式意識爆發：跨閾值後皮層活化非線性擴散。" },
+  "access consciousness": { zh: "取用意識", context: "可被言語化、可被下游系統取用的意識層次，區別於現象意識。" },
   // ── 全站掃描補充：API / 資料 / infra ──
   "rest": { zh: "REST", context: "以 HTTP 動詞操作資源的 API 設計風格，無狀態、易快取。" },
   "graphql": { zh: "GraphQL", context: "讓客戶端精確查詢所需欄位的 API 查詢語言，避免過度抓取。" },
