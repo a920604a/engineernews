@@ -456,7 +456,10 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
   @media (min-width: 1140px) {
     .article-grid {
       display: grid;
-      grid-template-columns: 1fr 240px;
+      /* minmax(0, …) lets the content column shrink below its intrinsic width;
+         without it a wide code block/table blows the grid past its max-width and
+         pushes the TOC/voice-guide sidebar off-screen (horizontal scroll on 13" laptops). */
+      grid-template-columns: minmax(0, 1fr) 240px;
       gap: 56px;
       align-items: start;
       max-width: 1100px;
@@ -465,6 +468,7 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
     .article-body {
       max-width: none;
       margin: 0;
+      min-width: 0;
     }
     .toc-mobile { display: none; }
   }

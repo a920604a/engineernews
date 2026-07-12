@@ -408,7 +408,9 @@ const siteJsonLd = {
       .prose a:hover { color: var(--accent-hover); }
       .prose img { max-width: 100%; border-radius: var(--radius-md); }
       .prose hr { border: none; border-top: 0.5px solid var(--separator); margin: 2.5rem 0; }
-      .prose table { width: 100%; border-collapse: collapse; font-size: 15px; margin: 1.5rem 0; }
+      /* display:block + overflow-x lets a wide table scroll inside its column
+         instead of blowing out the layout on narrow (13") screens */
+      .prose table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; font-size: 15px; margin: 1.5rem 0; }
       .prose th, .prose td { padding: 10px 14px; border: 0.5px solid var(--separator); }
       .prose th { background: var(--glass); font-weight: 700; color: var(--label); }
       .prose tr:hover td { background: var(--glass); }
