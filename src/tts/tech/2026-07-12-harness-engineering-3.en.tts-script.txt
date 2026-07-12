@@ -1,0 +1,67 @@
+If you're not OpenAI and you don't have Codex, how does Harness Engineering actually land on your project? That's the question this final piece is built around. We're going to walk through four things: the recurring failure modes that Agents hit, the context sweet spot you have to respect, the four-pillar framework the industry has quietly converged on, and a three-phase rollout you can literally start this afternoon. Then we'll close with six points of consensus, and three problems no one has cracked yet.
+
+Let's start with the enemy. Anthropic has identified four failure modes that show up no matter which model you use, no matter what harness you've built, no matter what task you throw at it. As soon as you let an Agent run autonomously, these appear.
+
+The first is one-shotting — the Agent tries to finish everything in a single turn. Halfway through, the context window runs out. Next session, it wakes up to a half-finished codebase with no notes, and burns enormous tokens trying to figure out what past-self was doing. It's the Agent equivalent of blacking out and waking up somewhere unfamiliar.
+
+The second is declaring victory too early. Late in the project, the Agent looks around, sees decent progress, and calls it done — even though real functionality is still missing. It picks whatever "feels roughly complete" instead of verifying against the original spec.
+
+The third is closely related — marking features done too early. Unit tests pass, the API returns something on curl, TypeScript compiles, so the Agent flips the flag to done. But there's a huge gap between that and a user actually being able to use the feature.
+
+The fourth is the environment cold-start tax. Every new session, the Agent spends a fortune in tokens just figuring out how to run the project, which port, how the database connects — instead of doing real work.
+
+All four share one root cause: Agents have no structured working memory and no clear completion criteria. The job of Harness design is to solve this at the system level, not paper over it with a slightly better prompt each time.
+
+Now, before we get to the framework, one concept has to click first: more context is not better. This is counterintuitive — surely more information helps? — but every observation points the other direction. Take a 168K context window. Performance starts collapsing around 40% utilization. Below 40% you're in the Smart Zone: focused, accurate reasoning. Above 40% you're in the Dumb Zone: hallucinations, loops, malformed tool calls, garbage code.
+
+And here's the wild part — experiments show that just changing the tool interface format of the Harness can move the same model from single-digit benchmark scores to over 60%. Weights untouched. LangChain reported similar effects — Harness improvements alone moved the same model from 30th to 5th on Terminal Bench 2.0. So before you agonize over Claude versus GPT, look at your Harness. Cramming MCP tools and verbose docs and dialogue history into the Agent doesn't make it smarter — it shoves it straight into the Dumb Zone. Context is a scarce resource. Spend it carefully.
+
+Okay, four pillars. This is what OpenAI, Anthropic, Stripe, and independent teams like Hashimoto's Ghostty work have all converged on, each pillar directly countering one of those failure modes.
+
+Pillar one: Context Architecture. The Agent should get exactly the context it needs — no more, no less. Every team independently discovered that dumping all instructions into one file doesn't scale. What emerged is a three-tier structure. Tier one is session-resident, auto-loaded every time — that's your AGENTS.md, a project overview, a few hundred tokens max. Tier two is on-demand, loaded when specific sub-agents or skills get invoked — specialized contexts, domain knowledge. Tier three is a persistent knowledge base the Agent only queries when it actually needs to — research docs, historical sessions, that error-code manual you use 5% of the time. The insight is simple: not all knowledge deserves to be loaded at session opening.
+
+Pillar two: Agent Specialization. Focused Agents with restricted tools outperform generalist Agents with full permissions. Sounds backwards — isn't a specialized Agent more limited? Two reasons. First, cleaner context means it stays permanently in the Smart Zone. Second, smaller tool permissions mean smaller error blast radius. A read-only Agent can't accidentally delete files. So in practice you split roles: a Research Agent with read-only tools; a Planning Agent, also read-only, that decomposes requirements; an Executor Agent with scoped write permissions; a Reviewer Agent that flags issues; a Debugger Agent that fixes what the reviewer finds; and a Cleanup Agent to fight entropy. Anthropic's C compiler project split roles into compiler core, dedup, performance, and docs. The dedup Agent exists specifically because LLMs love reinventing wheels — you need a dedicated context-manager to stop that.
+
+Pillar three: Persistent Memory. Progress lives on the filesystem, not in the context window. Agents have no real memory — every session starts from zero. So instead of hoping it remembers, force it to write progress into files. Anthropic's pattern is worth copying: a two-stage architecture. An Initialization Agent runs once, producing three artifacts — an init.sh startup script, a progress log, and a structured feature list in JSON. Then every session, the Executor Agent follows a fixed SOP: check the working directory, read the git log and progress file, pull the highest-priority unfinished feature from the JSON, run init.sh to bring up the environment, verify baseline tests, then start work. That single SOP solves the cold-start tax, kills the "declaring victory" problem because there's a checklist to verify against, and prevents one-shotting because each session picks exactly one feature.
+
+One detail worth remembering here — track feature status in JSON, not Markdown. Markdown is too soft; the Agent will happily flip a checkbox from empty to checked without actually doing the work. JSON has that schema-feel; the Agent hesitates before mutating it. Using data-structure rigidity to substitute for prompt softness — that's a classic Harness technique.
+
+Pillar four: Structured Execution. Separate thinking from execution. Understand, plan, execute, verify — four phases, deliberately kept apart. Cloudflare's Boris Tane said it plainly: never let the Agent write code before you've reviewed and approved a written plan. Why? Because reviewing a plan is much faster than reviewing five hundred lines of code. If the spec is right, implementation follows. If the spec is wrong, you catch it before the damage is done. That's why every serious Agent tool — Cline, Claude Code, Aider — ships a Plan Mode versus Act Mode toggle. It's not a gimmick.
+
+Alright, framework's clear. Where do you actually start? Harness Engineering is incremental. Teams that try to build all the infrastructure at once fail. Here's a three-phase path.
+
+Phase one is the information layer, and you can start this afternoon. One job: move project knowledge out of Slack and Google Docs and people's heads, into the git repo. Write a 50 to 100 line AGENTS.md in map mode, then distribute details into structured directories — docs/architecture, docs/conventions, docs/plans. The payoff is immediate — the Agent starts producing on-team-style code because it can finally see your conventions. Critical warning: do not let AGENTS.md exceed 100 lines. You'll be tempted to write every rule into it. Resist. Beyond that, you're violating the 40% rule.
+
+Phase two is the constraint layer — three to five days of work — and this is the real inflection point. Phase one lets the Agent know the rules. Phase two makes it so the Agent can't help but follow them. Translate verbal conventions into linter rules and CI checks. Here's a useful heuristic: if a rule has come up in Code Review more than three times, it should be a linter rule. Handle three to five per week. Soon you'll notice Code Review shifting from arguing about style to discussing actual design. And every linter error message should follow a three-part structure: what's wrong, how to fix it — ideally with a code snippet — and where to read more. Every linter rule you write is essentially a prompt. When you design error messages, treat the Agent as your user, not as a coworker.
+
+Phase three is the automation layer — one to two weeks — and it's a nice-to-have for long-term projects. This is when the Agent starts the app itself, screenshots to verify, queries logs to debug. Three key moves: Git Worktree isolated verification so multiple PRs can run without stepping on each other; a background cleanup Agent doing scheduled doc-gardening, dead-code sweeps, duplicate-implementation detection; and observability wiring, so the Agent can query logs and metrics. Payback period is longer here — appropriate for projects that are stable and committed to long-term maintenance. Don't rush into this for a project you just launched.
+
+Now, six points of industry consensus — multiple independent teams arriving at the same conclusion.
+
+One: the bottleneck is infrastructure, not model intelligence. Before you switch models, examine your Harness. Order-of-magnitude better ROI.
+
+Two: docs are a live feedback loop, not a static artifact. Every line of AGENTS.md should correspond to a past Agent failure. Update the doc every time the Agent errs, so the same error never happens twice. Docs are operating manuals for Agents, not monuments for humans.
+
+Three: separate thinking from execution. Iron law. Never let the Agent write code before you've reviewed a written plan.
+
+Four: more context is not better. Past 40%, you're in the Dumb Zone.
+
+Five: constraints must be enforced mechanically, not merely documented. OpenAI's phrasing is blunt: if it cannot be enforced mechanically, agents will deviate. Linters and CI are standard, not optional.
+
+Six: the engineer's role is shifting from writing code to designing environments and managing work. Code quality has become a system property, not a personal virtue. Discipline lives in the tools and structures, not in the code itself.
+
+Now the honest part — three problems no one has cracked yet.
+
+First: retrofitting brownfield projects. Every publicly reported success story is greenfield, or a Harness built from scratch. For a ten-year-old codebase with inconsistent tests and stale docs, there's no proven methodology. Martin Fowler compared it to turning on strict linting for code that's never been linted — you get drowned in warnings. Possible directions exist — start with one module, do an AI code archaeology pass first, loosen thresholds and tighten gradually — but they're all experimental. This matters because most teams are brownfield.
+
+Second: functional correctness verification. Harness is very good at stopping the Agent from doing wrong things. It's still bad at verifying the Agent did the right thing. Even with browser automation there are visual limits. The Agent can screenshot but it can't feel that a button layout is annoying, or that an animation is janky. Compiler projects have clear correctness standards — either the torture test passes or it doesn't. Generic SaaS doesn't have that luxury.
+
+Third: long-term maintainability of AI-generated code. Greg Brockman raised this one, and no one has a great answer. Agent code accumulates tech debt differently — subtle style inconsistency, formulaic comments, abstraction levels that jump around, tendency to reimplement things. Each item is not a bug. Together they become a codebase that's hard to maintain. Background cleanup Agents help, but they're housekeeping, not root cause. Does Code Review need fundamentally different standards for AI code? Nobody knows yet.
+
+So — three takeaways to land the plane.
+
+First: the bottleneck isn't intelligence, it's infrastructure. If you remember one line from this whole series, let it be that. Fixing the harness is nearly always higher ROI than swapping the model.
+
+Second: context is a scarce resource. The 40% rule, three-tier context architecture, specialized agents — all of it flows from that single premise. Progressive disclosure beats cramming.
+
+And third: as models get stronger, the harness matters more, not less. Anthropic's C compiler project makes this concrete — Opus 4.5 built a usable compiler, 4.6 compiled the Linux kernel, but each capability jump required redesigning the harness. The greater the autonomy you grant, the better the guardrails have to be. In a world where every Agent can write code, knowing what to write and knowing how to make sure it's written right — those are the skills that get scarcer.

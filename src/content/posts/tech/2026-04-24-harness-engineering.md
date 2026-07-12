@@ -4,7 +4,7 @@ date: "2026-04-24T18:57:04.255Z"
 category: "tech"
 tags: ["harness-engineering","llm","ai","machine-learning","deep-learning"]
 type: "explainer"
-series: {"name":"AI Agent 實戰","order":2}
+series: {"name":"Harness Engineering","order":1}
 original_url: "https://www.youtube.com/watch?v=R6fZR_9kmIw"
 draft: false
 key_points:
@@ -13,7 +13,7 @@ key_points:
   - "agents.md / CLAUDE.md 這類自然語言規則是一種 Natural Language Harness，但研究顯示它並非總是有效。"
 tldr: "AI Agent 表現不好，未必是模型笨。從一個 Gemma 4 2B 修 bug 的小實驗出發，說明什麼是 Harness、Harness Engineering 與 Prompt / Context Engineering 的差異，以及 agents.md 這類自然語言規則的效果。"
 description: "用一個小模型修 bug 的實驗，講清楚 Harness 與 Harness Engineering：AI Agent 由語言模型與 Harness 兩部分組成，駕馭手段包含認知框架、能力邊界與工作流程。"
-audio_url: "/api/tts/r2/tts/tts_20260710_091115_736692.mp3"
+audio_url: "/api/tts/r2/tts/tts_20260712_084602_065738.mp3"
 ---
 
 各大公司不斷推出新的語言模型，而這個故事的主軸是：**有時候語言模型不是不夠聰明，它只是缺乏人類的引導。**
@@ -160,6 +160,10 @@ graph TD
 回到開頭的實驗：同一個 Gemma 4 2B，加上幾行通用的工作原則就從「幻想檔案」變成「會探索、會驗證」。這正是 Harness Engineering 想說的事——**一個 AI Agent = 語言模型 + Harness**，當它表現不如預期時，除了換更強或微調過的模型，打造更好的 Harness（用認知框架、能力邊界、工作流程去駕馭它）往往同樣關鍵。
 
 模型不是不夠聰明，它有時只是缺乏人類好好的引導。
+
+---
+
+概念清楚了，接下來的問題是：真正把 Harness Engineering 用在規模化生產上，工程師要做哪些具體的事？[下一篇](../harness-engineering-2/)從 OpenAI 三人團隊五個月產出百萬行程式碼的實驗出發，拆解五個讓 Agent 可靠產出的工程實踐。
 
 ## 參考資料
 
