@@ -5,12 +5,14 @@ category: "tech"
 tags: ["ai", "llm", "interpretability", "anthropic", "paper-analysis"]
 type: "deep-dive"
 lang: "en"
+draft: false
 tldr: "Anthropic proposes J-lens, an interpretability tool that captures the 'verbalizable' representations inside a Transformer, and uses it to show that Claude contains a privileged subspace analogous to the neuroscientific 'global workspace' — a small set of vectors that broadcast, drive reasoning, respond to external steering, and even leak signals during deception and evaluation awareness."
 description: "A deep technical read of Anthropic's 2026 paper 'Verbalizable Representations Form a Global Workspace': how J-lens is computed, how it differs from logit lens, the five functional criteria it was tested against, and the ignition phenomenon and ablation results."
 key_points:
   - "J-lens uses an averaged Jacobian to capture 'what a direction tends to be verbalized as across contexts,' fixing the single-shot blind spot of logit lens."
   - "J-space accounts for at most ~10% of Claude's activation variance, yet its downstream coupling is ~100× denser — the signature of a broadcast workspace."
   - "Ablating the top-10 J-lens vectors barely dents MMLU (98%), but collapses multi-hop reasoning from 70% to 5% — proving only 'consciously-accessed' tasks depend on the workspace."
+audio_url: "/api/tts/r2/tts/tts_20260712_141907_347071.mp3"
 ---
 
 Anthropic's 2026 paper *Verbalizable Representations Form a Global Workspace in Language Models* is one of the most interesting mechanistic interpretability results of the past two years. It doesn't just find one more feature or reverse one more circuit — it proposes **an entire lens for observing 'verbalizable thought' inside a model**, and uses that lens to empirically show that Claude exhibits the functional structure predicted by neuroscience's Global Workspace Theory (GWT).

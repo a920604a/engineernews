@@ -5,12 +5,14 @@ category: "tech"
 tags: ["ai", "llm", "interpretability", "anthropic", "paper-analysis"]
 type: "deep-dive"
 lang: "zh-TW"
+draft: false
 tldr: "Anthropic 提出 J-lens，一種捕捉 Transformer 內部『可語言化』表示的可解釋性工具，並用它證實 Claude 內部存在類似神經科學『全域工作空間』的特權子空間——一小組向量對外廣播、驅動推理、可被使用者調控，也在欺騙與評估感知時洩漏訊號。"
 description: "深入解析 Anthropic 2026 年『Verbalizable Representations Form a Global Workspace』論文的技術細節：J-lens 的計算方式、與 logit lens 的差異、五個功能判準的實驗設計、ignition 現象與消融結果。"
 key_points:
   - "J-lens 用平均 Jacobian 抓『這個方向在各種脈絡下傾向被說成什麼』，補上 logit lens 只看單次投影的盲點。"
   - "Claude 內部 J-space 佔整體活化變異數上限僅約 10%，卻與下游耦合密度高出約 100 倍，符合全域工作空間的廣播特徵。"
   - "消融 top-10 J-lens 向量對 MMLU 幾乎無傷（98%），但多跳推理從 70% 崩到 5%——證實只有『需要意識取用』的任務才依賴工作空間。"
+audio_url: "/api/tts/r2/tts/tts_20260712_142007_730920.mp3"
 ---
 
 Anthropic 在 2026 年釋出的《Verbalizable Representations Form a Global Workspace in Language Models》是這兩年最有意思的 mechanistic interpretability 研究之一。它做的事情，不是又多找一個 feature、又多解一個 circuit，而是提出一整套**看模型內部『可語言化思考』的鏡頭**——並用這面鏡頭實證 Claude 具備了神經科學全域工作空間理論（Global Workspace Theory, GWT）所描述的功能結構。
