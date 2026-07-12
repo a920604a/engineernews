@@ -1,0 +1,39 @@
+Claude Code can open a GitHub pull request, run a query against your Postgres database, search through your Slack channels. Here's the thing though — none of that is something Claude actually knows how to do on its own. Those abilities get plugged in from the outside, through something called MCP, the Model Context Protocol.
+
+MCP is an open protocol that Anthropic released back in November of 2024. And it was built to solve one very specific problem: how do you let an AI agent connect to any external tool without hand-writing custom glue code for every single one?
+
+Here's the analogy I keep coming back to. Think about what USB did for hardware. Before USB, every peripheral had its own weird connector — keyboards, mice, printers, all different. USB said, no, there's one standard port, and everything speaks it. MCP is doing exactly that, but for AI calling tools. One standard interface. Claude Code supports it natively, and it can connect to GitHub, Postgres, Slack, Google Drive, and hundreds of other MCP servers that already exist — or you can build your own with the official SDK. And by 2025, it wasn't just Anthropic. Cursor, Windsurf, more than forty other AI editors adopted it. It became the industry default.
+
+So let's talk about why it's designed this way, because that's where it gets interesting.
+
+Before MCP, wiring a tool into an AI worked like this: for every tool, you'd write a function — OpenAI calls this function calling, Anthropic calls it tool use — you'd define its parameters, and then you'd describe what it does in the system prompt. Fine for one or two tools. But it has a deep structural problem: coupling. Your agent's code has to directly *know* that a GitHub tool exists, that a Postgres tool exists. The tool definitions and the agent logic are all tangled together. Which means every time you add a new tool, you're going back in and editing the core of your agent. That doesn't scale.
+
+MCP flips that around. It externalizes the tools. Each tool lives as its own independent MCP server with a standard interface. When the AI agent starts up, it discovers which servers are available, asks each one "what can you do?", and gets the descriptions back. Then it calls them over the standard protocol. The agent doesn't need to know anything about the tools ahead of time. If it speaks MCP, it can be plugged in. That's the whole philosophy.
+
+Now, how is this actually structured? There are three layers, and it's worth getting these straight because the names sound similar.
+
+At the top you've got the MCP Host — that's the application you're actually using. Claude Code, or Cursor, whatever. Inside that Host is the MCP Client, which is the protocol machinery built into the app; its job is to connect to and juggle multiple servers at once. And then out on the other end are the MCP Servers — each one an independent process that wraps up some specific capability. A server can run locally, right on your machine as a subprocess, or it can be a remote service you reach over the network. Host talks to Client, Client talks to the Servers. That's the chain.
+
+And what can one of these servers actually offer up? Three kinds of things. First, Tools — functions the AI can call, like "read this GitHub PR" or "run this SQL query." Second, Resources — data, whether that's static or live, like the files you currently have open or your database schema. And third, Prompts — pre-built prompt templates the server hands over.
+
+On the connection side, there are three transport modes, and the difference really comes down to local versus remote. The most common one is stdio — that's for local tools, where the client just forks off a subprocess and talks to it directly. Then there's SSE, Server-Sent Events, which is for a remote server streaming data back one direction. And newer, added in 2025, there's HTTP Streamable — also remote, but bidirectional, so data flows both ways.
+
+Let me get concrete about Claude Code specifically. You configure your servers in a settings file — either globally in your home directory, or per-project. And the shape of it is pretty simple: you give each server a name, you tell it what command to run to launch it, and you pass in any environment variables it needs, like an access token for GitHub or a connection string for your database. So hooking up the GitHub server is basically: name it "github," tell it to run the GitHub server package, hand it your personal access token. Done.
+
+But here's a problem that shows up once you get serious about this, and I love how Claude Code handles it. Every MCP server ships with its full tool definitions — the schemas describing every function and every parameter. Connect a bunch of servers at once, and just those definitions start eating up a real chunk of your context window before you've done anything. So Claude Code added something called Tool Search. When your session starts, it only loads the tool *names* and the server descriptions — the lightweight stuff. The detailed schemas? Those get loaded lazily, only when they're actually needed. And the payoff is significant: it cuts context consumption by roughly forty-seven percent. In practice, that means you can wire up twenty MCP servers and your context usage is only a hair more than if you'd connected five. That's the difference between MCP being a neat idea and MCP being something you'd actually run day to day.
+
+Now, MCP isn't the only way to do this, so let's put it next to the alternatives honestly.
+
+Plain function calling — defining tools directly in your code — is simple and direct, no extra server to run. But you're right back to that coupling problem: the definitions are baked into your agent and you can't reuse them across platforms. Then there's something like LangChain's tools — great, complete Python ecosystem, but you're locked into that framework and that language. And at the other extreme, you just call REST APIs directly — maximum flexibility, but now the AI has to understand every API's particular format, with zero standardization to lean on.
+
+MCP's killer advantage over all of these is reusability. Write one GitHub MCP server, and Claude Code can use it, Cursor can use it, Windsurf can use it, every MCP-compatible tool can use it. The person maintaining that tool writes it *once*. That's the network effect that made this thing take off.
+
+So when should you actually reach for MCP? It's a great fit when you need your agent talking to several external systems, when you want the same set of tools working across multiple AI apps, or when you're building complex workflows that stitch several tools together. It's a poorer fit for a quick one-off integration — direct function calling is just faster there — or for a tool that's never going to be shared between apps, or for latency-sensitive work, because spinning up an MCP process does carry some startup overhead.
+
+Alright, let me leave you with the three things worth holding onto.
+
+First: MCP is standardization for AI tool integration. It kills the endless repetition of every AI tool re-implementing the same connection to every external service. That's the core problem it solves, and the fact that Cursor, Windsurf, and forty-plus editors piled in over 2024 and 2025 tells you the industry agreed.
+
+Second: the reason it's worth caring about is reusability. Tools become shared infrastructure — built once, used everywhere that speaks the protocol.
+
+And third, the practical move for you as an engineer: don't overthink it. Go check whether the tools you already lean on — GitHub, Slack, your database — have existing MCP servers. They almost certainly do. Plug in a couple, get a feel for how an agent slots into your actual workflow, and *then* decide whether you ever need to write your own. Start by consuming before you start building. That's where the real understanding comes from.

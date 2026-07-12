@@ -12,6 +12,7 @@ key_points:
   - "TiDAR 由 Nvidia 提出，是 AR＋diffusion 的混合架構，但取樣結果與純自回歸模型完全一致，因此保留 AR 的品質。"
   - "核心洞察：自回歸推論主要是 memory-bound，GPU 常有閒置算力；TiDAR 用 diffusion 把這些算力拿來預先計算，換取速度。"
   - "相較 speculative decoding 與 block diffusion，它幾乎是『免費午餐』——只多花電力／算力，不必承擔那些方法原本的取捨。"
+audio_url: "/api/tts/r2/tts/tts_20260712_005639_383372.mp3"
 ---
 
 語言模型的推論速度，長期卡在一個看似無解的矛盾：自回歸（Autoregressive，AR）模型品質好，但一次只能吐一個 token；擴散（Diffusion）模型可以平行生成、比較快，但品質通常追不上 AR。Nvidia 的這篇 **TiDAR（Think in Diffusion, Talk in Autoregression）** 換了一個角度切入——它不去賭「哪一種範式最後會贏」，而是先問一個更務實的工程問題：**AR 推論的時候，GPU 其實沒被用滿，那些閒置的算力能不能撿回來用？**

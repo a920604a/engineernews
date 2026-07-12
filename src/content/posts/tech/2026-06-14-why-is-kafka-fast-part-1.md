@@ -13,6 +13,7 @@ key_points:
   - "便宜大容量的 HDD 讓 Kafka 能長期保留訊息——這是早期訊息系統少見的能力。"
 tldr: "說 Kafka「快」通常指的是它的高吞吐能力。關鍵設計之一是用 append-only log 把磁碟存取變成循序 I/O，避開隨機尋道；再加上 HDD 便宜又大容量，Kafka 得以低成本長期保留訊息。"
 description: "從原始素材出發，釐清 Kafka「快」到底指什麼，並解析循序 I/O 與 append-only log 為何能讓磁碟存取不再是瓶頸。"
+audio_url: "/api/tts/r2/tts/tts_20260712_005301_154511.mp3"
 ---
 
 每次聽到「Kafka 很快」，第一個該問的問題其實是：**快，是指什麼？**

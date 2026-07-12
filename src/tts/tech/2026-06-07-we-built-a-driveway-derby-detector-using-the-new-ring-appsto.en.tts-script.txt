@@ -1,0 +1,39 @@
+Picture this: you live at the end of a cul-de-sac, and the neighborhood kids love turning your driveway into a playground. You're not trying to spy on anyone — you just want a heads-up when a vehicle rolls in, and you really want to know the difference between "oh, that's just my family's car coming home" and "wait, whose car is that?"
+
+That's the "Driveway Derby" problem. And it turns out to be a perfect little showcase for something Ring quietly opened up in 2024: their Appstore API. For the first time, developers can subscribe to camera events, pull down the actual video clip, and wire in whatever custom logic they want. So let's talk about how you build a driveway detector that only pings you for unfamiliar vehicles.
+
+Here's the core frustration with Ring out of the box: the notifications are just too eager. Any motion at all sets them off — a pedestrian walking by, leaves blowing across the yard, a cat on a midnight stroll. And there's no setting in the official app that says "only notify me when an unrecognized vehicle pulls in." That level of control simply isn't there.
+
+The new API changes that. It lets you do three things: subscribe to a camera's motion detection events, grab the video clip that triggered the event, and then run any post-processing you want in your own service. Pair that with a bit of computer vision, and suddenly you can be very picky about what earns a notification.
+
+Now, it's not all smooth sailing. There are three real challenges. First, the authentication uses OAuth2, which means you need a public HTTPS endpoint — so during local development you're leaning on something like ngrok to expose your machine to the internet. Second, Ring's image download API has rate limits, and they're not shy about throttling you. And third, computer vision gets noticeably worse in low light — and driveways at night are exactly that kind of environment.
+
+Let's walk through the architecture, because it's actually clean. Think of it as a relay race. The Ring camera detects motion and hands that event to the Ring Appstore API. The API fires a webhook — a callback — to your own service. Your service downloads the video clip and passes it to an image analysis step. That analysis spits out a verdict: is this a vehicle or not? Then your decision logic makes the final call. If the conditions are met, it sends you a notification — an email, a Slack message, whatever. If nothing matches, it just quietly ignores it. No alert, no noise.
+
+So how do you actually build each piece?
+
+It starts with paperwork, honestly. You apply to Ring's developer program over at partner.ring.com, describe what your app does, and then wait — anywhere from a few days to a few weeks for review. Once you're approved, Ring hands you a client ID and a client secret. Those are your OAuth2 credentials.
+
+The OAuth2 flow itself is the standard three-step dance. You send the user to Ring's authorization page, requesting specific permissions — the ability to read devices, read events, and read media. The user says "yes, I approve." Ring then calls back to your redirect URL carrying a temporary authorization code. And finally, your server trades that code, along with your client ID and secret, for the real prize: an access token, a refresh token, and an expiration time. Hold onto that refresh token — it matters, and I'll come back to why.
+
+With a valid access token, you subscribe to the camera's events. You tell Ring, essentially, "for this device, notify me on motion and doorbell 'ding' events, and here's the webhook URL where you should send them." That's it — now Ring will start calling you whenever the camera sees something.
+
+The webhook endpoint is where your service catches those calls, and there's an important security step here. Every incoming request carries a signature in its headers. Before you trust anything, you recompute that signature yourself using a shared secret and the raw request body, and you compare the two. If they don't match, you reject the request outright — that stops anyone from spoofing fake events into your system. Once a request checks out and it's a motion event, you do one crucial thing: you hand the video off to a background queue and return immediately. You do not run slow analysis inside the webhook handler itself. Webhooks need to respond fast, so the heavy lifting happens asynchronously.
+
+Then comes the fun part — the actual vehicle detection, using OpenCV. The technique here is called background subtraction. The idea is elegant: the system learns what your driveway looks like when nothing's happening — that's the static background. Then, frame by frame, it compares each new frame against that background and highlights only what's changed, what's moving in the foreground. It finds the outlines of those moving blobs and measures their area.
+
+And area is the key to filtering out junk. Tiny movements — a leaf, an insect, a flickering shadow — get ignored because they fall below a size threshold. Then, to decide if something is actually a vehicle versus, say, a person, it checks for a much larger area. A car or SUV takes up a huge chunk of the frame; a pedestrian doesn't. So the logic boils down to: if any moving object is big enough to plausibly be a vehicle, flag it as one. Simple, but effective.
+
+So how well does this actually work in the real world? The end-to-end latency — from the moment motion is detected to the moment your phone buzzes — runs about three to eight seconds, and most of that is downloading and analyzing the video. For normal-sized vehicles in decent light, detection accuracy lands north of ninety percent. At night, or in harsh backlight, that drops to around seventy percent. But here's the win that really mattered: false positives plummeted. Passing pedestrians, cats, a branch swaying in the wind — none of that triggers a notification anymore. The signal-to-noise ratio went way up.
+
+And the lessons learned are worth holding onto, because they're the kind of thing you only discover by actually shipping this.
+
+Those rate limits on the video download API? They're very real. Fire off too many requests in a short window and you'll get throttled. So design with a queue and retry logic from day one — don't bolt it on later.
+
+On ngrok: it's great for local development, but don't run production on it. The free tier caps your requests and hands you a brand-new URL every time it restarts, which is a recipe for a system that silently breaks.
+
+Lighting is a bigger deal than you'd expect. When a Ring camera flips into night vision, it's outputting grayscale images — no color at all. Your analysis logic has to account for that, or it'll stumble in the dark.
+
+And finally, manage those OAuth2 refresh tokens properly. Access tokens expire. When they do, you use the refresh token to quietly get a new one. Skip that, and one day your whole system just stops working — no error, no crash, it just goes silent. That silent failure is the worst kind, because you won't notice until you actually needed a notification and never got one.
+
+So, three things to walk away with. First: Ring's 2024 Appstore API is the unlock — webhooks plus video access plus your own logic is what makes selective, intelligent notifications even possible. Second: the smarts don't need to be fancy. A classic computer vision trick — background subtraction filtered by object size — is enough to tell a car apart from a cat, and it dramatically cuts the noise. And third: the hard parts aren't the algorithm — they're the operational details. Rate limits, token refreshes, lighting, and stable public endpoints are what separate a fun weekend demo from something that actually runs reliably at the end of your cul-de-sac.

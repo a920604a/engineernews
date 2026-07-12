@@ -9,6 +9,7 @@ description: "WWDC 2026 overview for developers: Siri AI rewrite with Gemini, iO
 type: explainer
 original_url: "https://www.youtube.com/watch?v=_gCXmKjDecU"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260711_142927_699196.mp3"
 ---
 
 WWDC 2026 ran June 8–12. The overall tone: measured expectations, mostly met. Siri got a real rebuild, Liquid Glass got its readability fix, and Intel Macs got their official farewell. No major surprises—but every announced change is real and shipping.

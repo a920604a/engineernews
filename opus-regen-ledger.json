@@ -1,6 +1,6 @@
 {
   "cutoff": "2026-06-20",
-  "updatedAt": "2026-07-11T08:12:30.407Z",
+  "updatedAt": "2026-07-12T02:09:01.248Z",
   "items": {
     "career/2026-04-27-alruckqq_pw": {
       "id": "career/2026-04-27-alruckqq_pw",
@@ -876,7 +876,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-02T13:13:25.280Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-12T02:09:01.247Z"
     },
     "tech/2026-05-17-ai-ai-": {
       "id": "tech/2026-05-17-ai-ai-",
@@ -1155,7 +1156,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-03T10:49:41.898Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T13:16:16.545Z"
     },
     "tech/2026-06-02-what-happens-after-a-1000000x-ai-compute-leap-jeff-dean": {
       "id": "tech/2026-06-02-what-happens-after-a-1000000x-ai-compute-leap-jeff-dean",
@@ -1166,7 +1168,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-03T10:50:59.556Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T13:19:40.798Z"
     },
     "tech/2026-06-03-ai-3": {
       "id": "tech/2026-06-03-ai-3",
@@ -1197,7 +1200,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-03T10:52:22.912Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T13:22:46.165Z"
     },
     "tech/2026-06-04-codexhermesagent": {
       "id": "tech/2026-06-04-codexhermesagent",
@@ -1218,7 +1222,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-03T10:55:22.745Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T13:28:57.738Z"
     },
     "tech/2026-06-05-dissecting-the-body-of-robots-mass-production-and-supply-cha": {
       "id": "tech/2026-06-05-dissecting-the-body-of-robots-mass-production-and-supply-cha",
@@ -1229,7 +1234,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-03T10:59:47.183Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T13:36:11.430Z"
     },
     "tech/2026-06-06-10ai": {
       "id": "tech/2026-06-06-10ai",
@@ -1261,7 +1267,8 @@
       "failedAt": "2026-07-03T22:59:53.034Z",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-04T02:30:34.349Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T13:39:39.524Z"
     },
     "tech/2026-06-07-mcp-in-claude-code": {
       "id": "tech/2026-06-07-mcp-in-claude-code",
@@ -1273,7 +1280,8 @@
       "failedAt": "2026-07-04T02:34:06.144Z",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-04T07:57:43.316Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T13:43:09.317Z"
     },
     "tech/2026-06-07-we-built-a-driveway-derby-detector-using-the-new-ring-appsto": {
       "id": "tech/2026-06-07-we-built-a-driveway-derby-detector-using-the-new-ring-appsto",
@@ -1284,7 +1292,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-03T16:45:12.448Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T13:47:55.089Z"
     },
     "tech/2026-06-08-openai-postgresql-8-": {
       "id": "tech/2026-06-08-openai-postgresql-8-",
@@ -1306,7 +1315,8 @@
       "failedAt": "2026-07-03T23:00:16.020Z",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-04T02:35:36.786Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T14:18:56.177Z"
     },
     "tech/2026-06-10-github117claude-design-ai-ai-skill-ai-": {
       "id": "tech/2026-06-10-github117claude-design-ai-ai-skill-ai-",
@@ -1328,7 +1338,8 @@
       "failedAt": "2026-07-04T08:00:37.964Z",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-04T08:18:04.814Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T14:22:17.871Z"
     },
     "tech/2026-06-11--ai": {
       "id": "tech/2026-06-11--ai",
@@ -1350,7 +1361,8 @@
       "failedAt": "2026-07-03T23:00:25.923Z",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-04T02:38:34.136Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T14:26:53.887Z"
     },
     "tech/2026-06-12-wwdc-2026-impressions-yeah-thats-about-right": {
       "id": "tech/2026-06-12-wwdc-2026-impressions-yeah-thats-about-right",
@@ -1362,7 +1374,8 @@
       "failedAt": "2026-07-03T23:00:31.695Z",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-04T02:40:29.921Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T14:30:46.318Z"
     },
     "tech/2026-06-13-5-new-phone-updates-giveaway-update": {
       "id": "tech/2026-06-13-5-new-phone-updates-giveaway-update",
@@ -1374,7 +1387,8 @@
       "failedAt": "2026-07-03T23:00:35.608Z",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-04T02:41:49.391Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T14:33:48.531Z"
     },
     "tech/2026-06-13-claude-opus-48-lying-machine-no-more": {
       "id": "tech/2026-06-13-claude-opus-48-lying-machine-no-more",
@@ -1386,7 +1400,8 @@
       "failedAt": "2026-07-03T23:00:39.506Z",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-04T02:43:18.363Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-11T14:37:44.306Z"
     },
     "tech/2026-06-14-anthropic-begged-the-world-to-stop-ai-then-shipped-this": {
       "id": "tech/2026-06-14-anthropic-begged-the-world-to-stop-ai-then-shipped-this",
@@ -1398,7 +1413,8 @@
       "failedAt": "2026-07-03T23:00:44.116Z",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-04T02:44:48.219Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-12T00:43:42.349Z"
     },
     "tech/2026-06-14-behind-the-scenes-how-i-make-the-videos": {
       "id": "tech/2026-06-14-behind-the-scenes-how-i-make-the-videos",
@@ -1410,7 +1426,8 @@
       "failedAt": "2026-07-03T23:28:03.143Z",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-04T02:46:01.704Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-12T00:46:42.179Z"
     },
     "tech/2026-06-14-how-to-run-llms-locally-great-for-learning-and-privacy": {
       "id": "tech/2026-06-14-how-to-run-llms-locally-great-for-learning-and-privacy",
@@ -1422,7 +1439,8 @@
       "failedAt": "2026-07-03T23:28:15.561Z",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-04T02:47:22.737Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-12T00:50:17.308Z"
     },
     "tech/2026-06-14-why-is-kafka-fast-part-1": {
       "id": "tech/2026-06-14-why-is-kafka-fast-part-1",
@@ -1434,7 +1452,8 @@
       "failedAt": "2026-07-04T02:47:27.945Z",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-04T08:01:46.998Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-12T00:53:26.422Z"
     },
     "tech/2026-06-15-writing-maintainable-code-with-dependency-injection": {
       "id": "tech/2026-06-15-writing-maintainable-code-with-dependency-injection",
@@ -1455,7 +1474,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-04T08:03:40.780Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-12T00:57:03.109Z"
     },
     "tech/2026-06-16-titans-learning-to-memorize-at-test-time-paper-analysis": {
       "id": "tech/2026-06-16-titans-learning-to-memorize-at-test-time-paper-analysis",
@@ -1466,7 +1486,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-04T08:05:16.219Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-12T01:00:57.810Z"
     },
     "tech/2026-06-17-aiagent": {
       "id": "tech/2026-06-17-aiagent",
@@ -1507,7 +1528,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-04T08:08:24.516Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-12T01:06:40.031Z"
     },
     "tech/2026-06-19-the-most-interesting-displays-in-the-world": {
       "id": "tech/2026-06-19-the-most-interesting-displays-in-the-world",
@@ -1518,7 +1540,8 @@
       "track": "regen-b",
       "sourceKind": "YouTube 逐字稿",
       "regenAt": "2026-07-04T08:10:21.388Z",
-      "enAt": "2026-07-09T21:33:40.166702"
+      "enAt": "2026-07-09T21:33:40.166702",
+      "ttsAt": "2026-07-12T01:09:05.927Z"
     }
   }
 }

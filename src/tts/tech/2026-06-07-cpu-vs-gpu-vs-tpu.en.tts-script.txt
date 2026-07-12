@@ -1,0 +1,39 @@
+Picking the wrong processor for an AI workload isn't just a technical footnote — at scale, it's the difference between a reasonable cloud bill and lighting money on fire. Back before the AI boom, hardware choices were easy. CPU for almost everything, GPU if you needed graphics. Now? You've also got to know when a TPU makes sense, and — here's the counterintuitive part — when running on a GPU is actually *slower* than a plain CPU.
+
+Let me give you the whole picture in one breath, then we'll unpack it.
+
+A CPU has a handful of very powerful cores. It's brilliant at sequential logic and complicated decision-making. A GPU flips that: thousands of weak little cores, all doing the same math at the same time. And a TPU is Google's custom chip, built for one thing — the matrix multiplication at the heart of neural networks — and it's pushed that one thing to the extreme, beating GPUs on both speed and energy efficiency for the right jobs.
+
+So let's start with the CPU. Think Intel Xeon, AMD EPYC. The whole design goal is to let each core rip through any arbitrary sequence of instructions as fast as physically possible. And to pull that off, CPUs do some genuinely clever things.
+
+First, out-of-order execution. The chip doesn't stubbornly run your instructions in the exact order you wrote them. If the data's ready, it'll reach ahead and do future work early. Second, branch prediction. When your code hits an if-else, the CPU *guesses* which way it'll go and starts running down that path before it even knows the answer. Guess right, you save a ton of time. Guess wrong, you roll back and pay a penalty — and fun fact, this is exactly the mechanism that Spectre and Meltdown exploited. And third, the cache hierarchy — those L1, L2, L3 caches that keep data hugging close to the core. Why does that matter? Because reaching all the way out to main memory is roughly a hundred times slower than hitting L1. A hundred times.
+
+All of this makes the CPU a monster at complex control flow — web servers, database queries, tangled business logic. But when the job is "do this same simple calculation a million times at once," you run into a wall: a CPU only has maybe eight to sixty-four cores. That's your bottleneck.
+
+So where does a CPU shine for AI? Small models doing fast, real-time inference — one request at a time. All the pre- and post-processing, like tokenization and data cleaning. And honestly, for small transformer models, CPU inference is sometimes right there with a GPU in speed, and dramatically cheaper.
+
+Now the GPU. Its design philosophy is the mirror image of the CPU. Instead of a few genius cores, you get thousands of simple ones, all executing the same operation simultaneously. An NVIDIA H100 packs nearly seventeen thousand CUDA cores, plus a whole set of dedicated Tensor Cores on top. Each one is bad at complex logic — but for regular, predictable math like matrix multiplication, that army of cores delivers throughput a CPU can't touch.
+
+That makes GPUs perfect for deep learning training, which is just matrix multiplication at enormous scale. For batch inference, where big batches keep all those cores busy. For scientific computing — fluid dynamics, molecular simulations. And of course graphics rendering, which is what they were born to do.
+
+But here's where people get burned. If you're serving individual real-time requests — batch size of one — a GPU can actually be *slower* than a CPU. Why? Because the time spent shuffling data over to the GPU and back is longer than the computation itself. You paid the shipping cost for a tiny package. The other trap is control-flow-heavy code, lots of branching if-else logic. GPUs use what's called a SIMT architecture, and when different cores want to take different branches — what's called branch divergence — performance falls off a cliff.
+
+There's a simple decision tree here. Is your task heavy on complex control flow? Go CPU. If not — does it run in large batches? Big batches, go GPU. Small batches? A CPU might just be cheaper.
+
+Which brings us to the TPU — Tensor Processing Unit. Google's been building these in-house since 2016. It is not a general-purpose accelerator. It's purpose-built for the single most common operation in training and inference: matrix multiplication.
+
+The secret sauce is something called a systolic array. Picture a normal GPU doing matrix math — every compute unit is constantly reading data from memory, doing its bit, writing back. A systolic array does something more elegant: the data *flows through* a grid of compute units, passing from one to the next, and each unit does its little piece of the calculation as the data streams past. No constant trips back to memory. And that slashes the memory bandwidth pressure that usually bottlenecks these workloads.
+
+So TPUs are fantastic for large-scale training — Google trains PaLM and Gemini on TPU Pods. Great for batch inference on JAX or TensorFlow. Great for dense matrix models with simple control flow. The catches? No native PyTorch support — you go through XLA compilation. It's poor at small-batch, branch-heavy models. And you can't buy one; it's Google Cloud rental only.
+
+Now let's talk money, because this is the part most articles skip. Rough Google Cloud numbers, and prices move, but for orientation:
+
+A plain eight-vCPU CPU instance runs you under forty cents an hour — good for small-model inference and pre/post-processing. A T4 GPU, somewhere around thirty-five to seventy cents an hour, solid for medium models. An A100, you're looking at roughly three to three-and-a-half dollars an hour, that's your large-model training and inference tier. An H100, the newest big gun, six to ten dollars an hour. And a TPU v4 sits around three-twenty an hour, for large-scale JAX and TensorFlow training.
+
+But here's the thing that actually determines your bill: utilization. If your expensive GPU is only running at thirty percent, you are literally paying for seventy percent of nothing. The very first number to go check is the GPU utilization field in `nvidia-smi`. Before you optimize anything else, look at whether you're even using what you're renting.
+
+So how do you map all this to real scenarios? For online inference with tight latency needs: small services can often live on a CPU, or a modest T4. For low-latency large-model serving, reach for an A100 or H100 — but verify that utilization number. For training large models: JAX or TensorFlow, TPU v4 or v5 on Google Cloud is your sweet spot; PyTorch, go with H100 clusters.
+
+And don't sleep on local development. Apple Silicon — the M-series chips — has this unified memory architecture where the CPU and GPU share the same memory pool, and it's surprisingly strong for medium-sized model inference. And a consumer RTX 4090 can match A100 training efficiency for anything that fits in its VRAM, at a tiny fraction of the cost.
+
+So let me leave you with the three things that actually matter. One: these chips aren't better or worse, they're *different shapes* — CPU for complex logic, GPU for massive parallel sameness, TPU for matrix math taken to the extreme. Two: the GPU is not automatically the AI answer. For single small requests, it can lose to a CPU, and a chip running at thirty percent utilization is burning your budget. And three: the real skill isn't knowing the hardware specs — it's recognizing which computation pattern your workload actually is, and matching to that. Don't reach for a GPU just because "GPUs run AI." Match the shape of the work to the shape of the chip, and the cost takes care of itself.

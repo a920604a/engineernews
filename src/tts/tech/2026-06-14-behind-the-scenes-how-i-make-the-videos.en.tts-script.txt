@@ -1,0 +1,37 @@
+If you've ever watched a tech YouTuber drop a polished ten-minute explainer every single week and thought, "How on earth does one person keep that up?"—the answer, once you see it up close, looks a lot less like magic and a lot more like software engineering. Think about it: picking a topic is basically backlog management. Writing the script is a design doc. Editing is code review. The only difference is that at the end, you're shipping a video instead of a pull request.
+
+So let's walk through the whole pipeline.
+
+Here's the number that surprises most people: that ten-minute video takes somewhere between eleven and twenty-two hours to make. Topic selection, research, scripting, recording, editing, publishing—all of it. AI tools have shaved off maybe twenty to thirty percent of that time, mostly in the research and subtitle stages. But—and this matters—the human judgment never left the loop. It just moved to different spots.
+
+Let's start at the top: picking the topic. The filter a good tech channel uses is one simple question: "Can I explain this clearly, in under ten minutes, to an engineer who actually cares about it?" Where do the ideas come from? ArXiv preprints and the technical blogs from AI labs like Anthropic, OpenAI, and DeepMind. GitHub Trending, the Hacker News front page. Your own engineering headaches. And the comment sections of your older videos—which are basically a free feature-request queue.
+
+And here's the strategic part: evergreen beats news, almost every time. A video explaining how Kafka's architecture works keeps pulling in views for three years. A video about some specific product launch? It fades in about two weeks—unless that product turns out to be historically significant.
+
+Next comes research, and this is the longest phase by far. A ten-minute video usually needs four to eight hours of reading. And not skim-the-docs reading—you have to go deep enough that you can answer the tricky questions people throw in the comments, not just parrot the official documentation.
+
+The modern workflow leans on AI here. You'll use something like Claude or ChatGPT for a first-pass synthesis: take a paper, get its main claims laid out as a structured list, flag the points you're unsure about, and then—this is the key move—verify those specific points against the primary sources yourself. Because here's the trap: the AI synthesis cannot be trusted wholesale. It'll sometimes fill in the gaps with confident-sounding "common knowledge" that simply isn't in the source material. That verification step is not optional. Ever.
+
+Then you write the script—and for a ten-minute video, that's roughly fifteen hundred to eighteen hundred words. But here's the thing that trips up a lot of writers making the jump to video: spoken language and written language are not the same thing. When someone reads an article, they can scroll back up. A listener can't. So a good script finishes each idea completely before moving on—it never assumes you still remember something it mentioned two minutes ago.
+
+The standard structure goes like this. First, the hook—the opening fifteen seconds, where the viewer decides whether to stick around. Then a one-sentence definition of what you're covering. Then: why should you care—the actual use case. Then the core breakdown, three to five concepts. And finally the "so what"—the takeaway they walk away with. AI can help you draft fast here, but the hook and the "so what" still get written by hand. Those are where your personal perspective actually shows up.
+
+Now, recording. The single most-asked question is "what camera do you use?" And the honest answer is: lighting and audio matter more than the camera. A modest Sony ZV-E10 with a good key light and a decent condenser mic will absolutely beat a top-end A7S III filmed in a dark, echoey room. The camera is almost never the bottleneck.
+
+The formats break down into a few types. Talking head—straight to camera—and a little pro tip there: record standing at a sit-stand desk, because your voice quality is noticeably better standing than slumped in a chair for an hour. Then screen recordings, using OBS or QuickTime, for code walkthroughs and tool demos. And B-roll, which is mostly just more screen recordings or free stock footage—real location shoots are expensive and rarely worth it. Oh, and one relief: recording a ten-minute video generates thirty to fifty minutes of raw footage with all the retakes. You do not need to nail the whole thing in one perfect take. Use a teleprompter, or just memorize it section by section.
+
+Editing is next, and the reigning standard in tech YouTube is DaVinci Resolve—the free version covers basically everything most creators need. After that it's Final Cut Pro for the Mac crowd, then Adobe Premiere, though Premiere's subscription cost pushes a lot of people toward DaVinci.
+
+The editing flow: rough cut first—strip out the mistakes, the long pauses, the filler. Then audio processing—noise reduction, using DaVinci's built-in Fairlight tools or a browser tool like Adobe Podcast. Then subtitles, and this is where AI has been transformative: Whisper-based tools generate accurate captions in minutes, and you just hand-fix the handful of errors. Then you drop in the B-roll and screen recordings, apply a color grade for consistency, and add your intro and outro. The two things AI changed the most? Subtitles—from hours down to minutes—and audio noise reduction, now basically automated. But the editorial judgment in the cut itself? Still very much manual.
+
+Quick word on thumbnails, because they punch way above their weight. Thumbnails drive click-through rate, and click-through rate is what the algorithm uses to decide how far your video travels. A great video with a bad thumbnail just gets buried. The rules are blunt: big text, high contrast, include a human face because faces grab attention faster than icons. Keep the text to five words or fewer—anything longer is illegible on a phone. And the acid test: it has to be recognizable at a quarter of its size on a phone screen.
+
+Then publishing. Your title and the first two lines of your description decide whether people can even find you in search. The title has to thread a needle—contain the search keywords, make someone want to click, but not be clickbait. Those first two description lines, the ones visible before "Show more," need your topic keywords right there. Chapter timestamps genuinely improve how long people watch. And timing matters: for a Taiwan-based channel, Wednesday or Thursday morning tends to land well—it catches the local commute and also hits early evening the day before on the US West Coast.
+
+So, three things to take with you.
+
+One: the total cost is real—eleven to twenty-two hours for ten finished minutes, and research alone can eat up to eight of those. This is a craft, not a quick hit.
+
+Two: AI has genuinely compressed the grunt work—research synthesis, subtitles, noise cleanup—by twenty to thirty percent. But it never removed the human judgment. It just relocated it. The verification, the hook, the "so what," the actual cut—those still require a person.
+
+And three: the whole thing rhymes with engineering. Manage your backlog, write your design doc, do your review, ship. The deliverable happens to be a video—but the discipline underneath is one any engineer would recognize.

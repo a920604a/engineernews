@@ -9,6 +9,7 @@ description: "From CASP competitions to the Nobel Prize, how AlphaFold used deep
 type: explainer
 original_url: "https://www.youtube.com/shorts/MOviZKtFeHM"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260711_131527_180648.mp3"
 ---
 
 In 2024, the Nobel Prize in Chemistry went to David Baker, Demis Hassabis, and John Jumper for their breakthrough contributions to protein structure prediction and design. Hassabis and Jumper represent DeepMind's AlphaFold team. In the AI research community, almost nobody was surprised.

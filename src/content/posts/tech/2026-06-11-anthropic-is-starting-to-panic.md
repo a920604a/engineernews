@@ -12,6 +12,7 @@ key_points:
   - "就算不走天網劇本，還有兩種爛結局：自動化死亡螺旋，或 AI 其實根本沒那麼強"
 tldr: "Anthropic 這週同時做了兩件互相矛盾的事：申請兆元估值 IPO，以及呼籲全球一起踩煞車暫停 AI。本文整理這個矛盾背後的三種可能結局。"
 description: "從 The Code Report 出發，整理 Anthropic 申請 IPO 同週喊全球暫停 AI 的矛盾，以及遞迴自我改善、AI Layoff Trap、Wall-E 情境三種可能的走向。"
+audio_url: "/api/tts/r2/tts/tts_20260711_142625_913567.mp3"
 ---
 
 如果你在 AI 圈工作，2026 年 6 月初這一週大概讓你有點錯亂。Anthropic 一方面正式成為這場 AI 競賽的頭號玩家——估值超越 OpenAI，並申請要在今年稍晚以「兆元級」規模公開上市（IPO）；另一方面，他們卻拋出一個聽起來很瘋狂的提議：也許我們該停一下，暫停所有 AI 開發，因為 AI 正危險地逼近**遞迴自我改善（recursive self-improvement）**。

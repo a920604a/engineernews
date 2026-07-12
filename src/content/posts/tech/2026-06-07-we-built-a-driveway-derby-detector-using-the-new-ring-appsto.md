@@ -12,6 +12,7 @@ key_points:
   - "Ring App Store 開放 partner API，可註冊 webhook 訂閱 motion / vehicle / package 等攝影機事件"
   - "後端拿到事件後下載影片片段，跑 YOLO 定位車輛，靠像素位移 + 校正值換算車速"
   - "把攝影機變成可程式化平台，延伸應用包含車道安全告警、零售人流分析、倉儲堆高機超速偵測"
+audio_url: "/api/tts/r2/tts/tts_20260711_134731_835303.mp3"
 ---
 
 這次不做平常的系統設計主題，而是把一台 Ring 攝影機改造成車道的迷你偵測器。

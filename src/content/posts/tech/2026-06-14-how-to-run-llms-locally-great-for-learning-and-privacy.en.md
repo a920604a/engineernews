@@ -9,6 +9,7 @@ description: "Complete guide to running LLMs locally with Ollama: installation, 
 type: how-to
 original_url: "https://www.youtube.com/watch?v=U8lGbSaCCYI"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260712_004907_695940.mp3"
 ---
 
 Three reasons to run an LLM locally: **privacy** (sensitive data stays on your machine), **learning** (interact with model behavior directly, no API abstraction layer), and **cost** (hardware is upfront; inference is free after).

@@ -12,6 +12,7 @@ key_points:
   - "llama.cpp 是最底層的推論引擎，也定義了 GGUF 格式，是其他工具的共同基礎"
   - "Ollama 適合快速原型、LM Studio 適合圖形化探索、vLLM／SGLang 適合正式上線服務"
   - "Apple M 系列晶片的統一記憶體讓 MLX LM 能載入 PC 需要多張 GPU 才跑得動的大模型"
+audio_url: "/api/tts/r2/tts/tts_20260712_004954_060775.mp3"
 ---
 
 開源模型像 Qwen、Kimi、GLM 家族現在已經強到一個程度：很多情境下，你不一定需要一個託管的 API。你可以直接在自己的筆電上跑這些模型，這樣一來，沒有任何人會看到你的對話或資料。

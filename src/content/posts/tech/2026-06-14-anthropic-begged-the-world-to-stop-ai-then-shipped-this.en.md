@@ -9,6 +9,7 @@ description: "Fable 5 went from launch to government-mandated shutdown in four d
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=1PBRhm5ZnjU"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260712_004249_287387.mp3"
 ---
 
 "We call on the world to pause." — Anthropic, June 4, 2026

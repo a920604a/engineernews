@@ -1,0 +1,29 @@
+On June 8th, 2026, Tim Cook walked onto the WWDC stage one last time as Apple's CEO. Everybody in that room knew it. Come September first, he steps into the role of Executive Chairman and hands the keys to John Ternus. Apple didn't make a big theatrical moment out of it — but the weight was there, hanging over the whole keynote.
+
+So let's get to the headline, because it's a big one. Apple just embedded Google's Gemini model into Siri. Yes — Google, a longtime rival — now sits at the core of Apple's assistant. And that single move transforms Apple Intelligence from a scattered bag of features into a real, cross-app AI layer that runs across your whole device.
+
+Here's what the new Siri can actually do. It handles back-and-forth conversation, so it remembers what you just said. And it pulls context from across your apps. Picture this: you ask about your afternoon meeting with someone, and Siri quietly reads your Mail, your Calendar, and your Messages to give you a real answer. It also ships as its own standalone app now, while staying woven into the system everywhere.
+
+Craig Federighi summed up Apple's pitch in one line: "Data is only used to execute your request." And that tells you exactly where Apple is placing its bet. They're not claiming they have the smartest model — they're claiming they have the most private architecture. Privacy is the product.
+
+Now, the rest of the Apple Intelligence updates. These feel a lot more grounded than the dreamy promises from a year ago. There's Spatial Reframing, which lets you tweak a photo's composition and perspective after you've already taken it. There's Extend, where the AI generates new background to stretch a photo beyond its original edges. Smart replies now reference both Mail and Messages together. And you can build Shortcuts just by describing what you want in plain language — no more fiddling with manual setup.
+
+On the operating system side: iOS 27 pushes compatibility all the way back to the iPhone 11, which is unusually generous for Apple. The AI additions include a rebuilt Spotlight, AI-powered search inside Photos and Mail, and system-wide dictation that punctuates for you automatically. And macOS jumps out of the Sequoia era into a new family called Golden Gate.
+
+One fun little breadcrumb — references to a foldable iPhone showed up in the iOS 27 beta. Nothing official, no announcement, but developers are already digging through the code.
+
+Now, let's read the tea leaves on Cook's exit, because it's genuinely interesting. John Ternus, the man taking over, didn't appear on stage at all. Not once. If Apple were actively grooming him in public as the heir apparent, you'd expect a moment. So this could mean one of two things: either Cook got a clean, uninterrupted farewell — his stage — or Ternus's strategic vision just isn't ready to be spoken out loud yet.
+
+And that Gemini deal? That might be Cook's most consequential AI decision, period. Putting a direct competitor's model at the heart of Siri takes CEO-level conviction. It's a bold, almost uncomfortable choice. Which makes the biggest open question this: what does Ternus do with that relationship? Does he lean in, or pull back?
+
+Let me dig into the technical stakes for a second, because there's real substance here. Apple's model strategy is now crystal clear — they are not trying to win the foundation-model race. They've decided that privacy plus deep system integration is a stronger, more durable moat than building the world's best language model. That's a philosophical bet, not just a product one.
+
+But cross-app context is genuinely hard to pull off. Reading across Mail, Calendar, and Messages means building fine-grained permission layers and carefully fencing off what data the AI can touch. And Apple splits the work between on-device processing and something they call Private Cloud Compute — and where that line falls determines the real ceiling on how capable this thing can be.
+
+Which points to the core tension: mobile hardware can only run so large a model, but people's expectations for AI keep climbing fast. Apple's answer is this hybrid, edge-plus-cloud approach. And here's the elegant, slightly painful irony — privacy is both their shield and their constraint. The very thing that protects you also limits how far they can push.
+
+So what should you keep an eye on going forward? First, Ternus's first WWDC, probably WWDC27 — will the AI story sound different under him? Second, the exact boundaries of Gemini inside Siri — which requests stay on your device, which get sent to Google, and how honestly Apple explains that split. Third, that foldable iPhone lurking in the beta. And fourth, internationalization — most of these features are English-only right now, so the timeline for Chinese and other languages is a real open question.
+
+Let me leave you with the three things that matter most. One: Apple has quietly conceded the model-quality race and is betting everything on privacy architecture as its moat — Gemini inside Siri is the loudest proof. Two: this was Tim Cook's farewell, and John Ternus's near-total absence from the stage is a signal worth watching, whichever way you read it. And three: the whole strategy lives or dies on that edge-cloud balance — privacy is Apple's greatest strength and its tightest leash, all at once.
+
+Apple's AI story isn't finished. It's mid-pivot. And the most interesting chapter starts the day Ternus takes over.

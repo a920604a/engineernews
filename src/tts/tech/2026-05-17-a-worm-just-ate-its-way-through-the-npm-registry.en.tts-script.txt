@@ -1,0 +1,45 @@
+On May 11th, 2026, something unprecedented happened in the npm ecosystem. A supply chain worm burrowed through 42 TanStack packages — that's React Query, TanStack Router, TanStack Table, and related libraries — all compromised within 6 minutes. By the time anyone detected it, over 170 packages across npm and PyPI had been affected, with a combined download history of more than half a billion times.
+
+But here's what made this attack uniquely terrifying: the malicious packages came with legitimate SLSA Build Level 3 provenance. That's a digital signature essentially saying, "This was built by a trustworthy, auditable process." Except it wasn't. This was the first time a malicious package cluster pulled off something the security community thought shouldn't be possible — spoofing the very attestation designed to prevent supply chain attacks.
+
+## How They Did It
+
+The attackers, a group called TeamPCP, didn't need to break into TanStack's servers. Instead, they exploited a structural flaw in how GitHub Actions workflows are configured.
+
+Most open-source projects use a workflow trigger called `pull_request_target`. It's convenient — it lets you automatically run tests or apply labels on incoming pull requests. The problem? It runs in the context of the main branch with full access to secrets and authentication tokens. If you're not careful, you've essentially handed external contributors a key to your publishing pipeline.
+
+The attack started with a malicious pull request. When GitHub Actions triggered the workflow, the attackers used cache poisoning — they injected malicious code into the build cache. That code then executed in the trusted environment, where it had access to something critical: OIDC tokens. These are the credentials GitHub Actions uses to prove to npm, "Yes, this is really the TanStack maintainer publishing a new version."
+
+Here's where it gets creative. The attackers didn't grab these tokens from environment variables like a normal attacker might. They read them directly from `/proc/pid/mem` — that's the Linux in-memory filesystem. From the machine's perspective, they were just another process looking at another process's memory. Difficult to defend against without major architectural changes.
+
+With a valid OIDC token in hand, they could publish packages to npm under the TanStack identity. And then the worm kicked in. The malicious code didn't just sit in one package — it propagated laterally through dependency chains, reinfecting package after package. Forty-two TanStack packages fell in six minutes.
+
+## Why This Is Serious
+
+Five hundred and eighteen million downloads isn't some abstract number. In modern development, every build reinstalls dependencies. Every CI pipeline, every developer's machine during a fresh checkout — they all pulled down those malicious versions. We're not talking about a handful of affected projects. We're talking about potentially thousands of development environments and build servers running attacker code.
+
+The SLSA provenance weaponization is the deeper problem. SLSA is a framework built by Google and the security community specifically to stop this kind of thing. Build Level 3 means you can audit the entire build process. You can verify that the code is actually what it claims to be.
+
+Except now the attackers have proven that you can have a perfectly valid, auditable build process and still end up with malicious code. The signature is real. The audit trail is legitimate. The process was compromised at the moment it mattered most — when the token was extracted and used. This breaks a fundamental assumption: "If the signature is valid, the code is trustworthy."
+
+The worm behavior itself changes the threat model. Traditional supply chain attacks are passive. You publish a malicious package and wait for people to download it. You might have weeks or months before detection. Mini Shai-Hulud compressed that window to minutes, with automatic, active propagation. No human team can respond at that speed. Detection systems have to be automatic, and they have to work in real time.
+
+## The Technical Details
+
+The `pull_request_target` workflow design was intended for simple, low-risk tasks — applying labels, running lightweight checks. Somewhere along the way, people started using it for actual builds and publishes because it was convenient. That convenience became a liability.
+
+The in-memory token extraction is particularly interesting because it's not new. Linux has always allowed processes to peek at other processes' memory if they have the right permissions. In shared execution environments like GitHub Actions, where multiple tasks might run on the same runner, this is a known attack vector. What's new is seeing it weaponized at this scale in a supply chain context.
+
+The self-propagating aspect is the innovation that separates this from previous attacks. The malicious code didn't just sit idle in the compromised packages. It actively searched for opportunities to spread further, modifying code during the build process to inject itself into downstream packages. That's worm behavior, and it fundamentally accelerates the attack timeline.
+
+## What Comes Next
+
+GitHub and npm will almost certainly implement stronger controls. Publish rate limiting, anomaly detection based on unusual publishing patterns, stricter validation of OIDC tokens — these are all likely responses.
+
+The SLSA framework will need to evolve. Right now it certifies the integrity of the build process itself. After Mini Shai-Hulud, the community needs to ask harder questions: Was the person who triggered this build authorized to do so? Are there unexplained environment accesses? Did the process behave outside its normal parameters? The signature alone isn't enough anymore.
+
+And frankly, we should expect copycats. Mini Shai-Hulud proved that worm-based supply chain attacks are feasible. Once a technique is demonstrated to work at scale, others will adapt it, refine it, and apply it elsewhere.
+
+## The Takeaway
+
+Three things to lock in your mind: First, GitHub Actions `pull_request_target` needs to be locked down tight — limited to essential tasks only, never builds or publishes. Second, even cryptographic signatures and formal security frameworks can be weaponized if the underlying system has gaps. You need defense in depth. And third, the speed of modern attacks means you can't rely on human detection anymore. Your safety net has to be automation, and it has to be fast.

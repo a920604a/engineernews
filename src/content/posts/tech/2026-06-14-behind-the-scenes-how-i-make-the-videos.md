@@ -12,6 +12,7 @@ key_points:
   - "FlameLink 本質是架在 Firebase 上的 content-as-a-service；同樣的邏輯也能用 Firestore / Realtime DB 自己刻一套 CMS"
 tldr: "一場「幕後如何做影片」直播的重點整理：技術 YouTuber 的選題靈感從社群與 web 生態而來，並談到日常工作習慣與用 Firebase 自建內容系統的想法。"
 description: "從一場創作者直播拆解技術影片的幕後：靈感來源、社群訊號、tabs/spaces 的取捨，以及 FlameLink 與 Firebase 自建 CMS 的思路。"
+audio_url: "/api/tts/r2/tts/tts_20260712_004619_419772.mp3"
 ---
 
 很多人好奇「這種每週講一個技術主題的 YouTube 影片，背後到底怎麼運作」。這篇整理自一場創作者的直播——他原本要一路示範完整的影片製作流程，開場則先回答了觀眾的幾個問題，順帶把「靈感從哪來」「平常怎麼工作」交代得相當具體。以下把這段幕後對話整理成重點。

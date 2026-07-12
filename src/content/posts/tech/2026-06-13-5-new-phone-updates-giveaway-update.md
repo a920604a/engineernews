@@ -12,6 +12,7 @@ key_points:
   - "25 支手機盒沒有 shrink-wrap，是因為 dbrand 拆封幫每支手機貼皮後再裝回。"
   - "外盒看起來一片空白，是刻意把印有 IMEI 的外套翻面，避免得獎者資訊外流。"
   - "這是 Twitter / Instagram 上的 giveaway，要提防冒充官方、謊稱你中獎的詐騙。"
+audio_url: "/api/tts/r2/tts/tts_20260711_143323_900808.mp3"
 ---
 
 這集直播標題叫「phone updates」，其實包含兩件事：手機相關的更新消息，以及一場 giveaway 的後續說明。而這場送出一大批手機的 giveaway，剛結束沒多久就在網路上引來一個質疑：這是假的嗎？

@@ -9,6 +9,7 @@ description: "Deep dive into Titans: Learning to Memorize at Test Time — how a
 type: deep-dive
 original_url: "https://www.youtube.com/watch?v=v67plFw1nMw"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260712_010002_457508.mp3"
 ---
 
 Sequence models face a fundamental tension on long-context tasks: Transformers are expressive but scale quadratically with sequence length; State Space Models (SSMs like Mamba) are efficient but store all context in a fixed-size hidden state that limits memory capacity. Google DeepMind's paper "Titans: Learning to Memorize at Test Time" attacks this tension head-on, proposing a neural memory module that keeps learning — via gradient descent — while running inference.

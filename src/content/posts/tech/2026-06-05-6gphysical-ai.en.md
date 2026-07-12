@@ -9,6 +9,7 @@ description: "From Snapdragon X Elite to 6G standard-setting, how Qualcomm is ca
 type: explainer
 original_url: "https://www.youtube.com/watch?v=eAYx6CHstNw"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260711_132657_280134.mp3"
 ---
 
 In discussions about AI chips, NVIDIA and AMD capture most of the attention. But one company is pursuing a fundamentally different AI strategy — and it's increasingly worth engineers paying attention to. That's Qualcomm.

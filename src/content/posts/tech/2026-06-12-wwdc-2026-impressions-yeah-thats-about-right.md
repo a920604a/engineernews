@@ -12,6 +12,7 @@ key_points:
   - "新 Siri 刻意不做 Google 那種全自動 agentic 操作，寧可停在「幫你加進行事曆」；核心優勢是能讀取裝置上的個人資料。"
   - "這屆主力是打磨既有系統：更順的動畫、更完整的 Spotlight 索引、AirDrop 快 80%，而非堆疊新視覺。"
   - "最強的 on-device Siri 模型只支援 iPhone Air 與 iPhone 17 Pro（12GB RAM）。"
+audio_url: "/api/tts/r2/tts/tts_20260711_143021_758811.mp3"
 ---
 
 今年的 WWDC（Apple Worldwide Developers Conference）給人的印象大概可以濃縮成一句話：「嗯，差不多就是這樣。」沒有讓人驚呼的大招，但也沒有讓人失望的跳票。Apple 這次很快帶過各系統的更新，把 keynote 的重心放在兩件事上：**兒少的信任與安全（Trust and Safety）**，以及大家等最久的**新 Apple Intelligence 與新 Siri**。

@@ -12,6 +12,7 @@ key_points:
   - "Fable 5 與受控存取的 Mythos 5 是同一底層模型，差別只有一層監看每則 query 的 classifier「口罩」"
   - "定價 $50/百萬 output token，是 Opus 4.8（$25）的兩倍；付費方案 6/22 前限時可用，之後只能按 token 計費"
   - "碰到 cybersecurity / 生物 / 化學 / 模型蒸餾的請求會被攔下、改由 Opus 4.8 回答，順帶擋掉對手蒸餾"
+audio_url: "/api/tts/r2/tts/tts_20260712_004316_505181.mp3"
 ---
 
 上週，Anthropic 站上舞台，懇求全球的 AI 實驗室一起在前沿 AI 開發上裝一個「協調式的煞車踏板」——因為他們擔心模型正危險地逼近**遞迴自我改善（recursive self-improvement）**。

@@ -27,6 +27,7 @@ description: "Deep dive into Kafka's performance fundamentals: why sequential I/
 type: explainer
 original_url: "https://www.youtube.com/shorts/wvLdBJEl-wc"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260712_005233_564854.mp3"
 ---
 
 Kafka deliberately writes data to disk, yet it's one of the fastest message queues in production. This seems contradictory—isn't disk far slower than memory?

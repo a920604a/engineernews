@@ -12,6 +12,7 @@ key_points:
   - "Titans 讓模型在測試時記憶：把長文本切段，用記憶把前段資訊帶到後段，突破 transformer 的 context window 限制。"
   - "核心問題是 transformer 只能注意到 context window 內的內容，像影片理解這類長任務塞不進單一視窗。"
   - "分析者的保留：概念很酷，但論文中不少『memory』其實是舊點子（如 Transformer-XL 式的跨段狀態傳遞）換了名稱。"
+audio_url: "/api/tts/r2/tts/tts_20260712_010034_338397.mp3"
 ---
 
 這篇整理來自對 Google Research 論文 **《Titans: Learning to Memorize at Test Time》** 的一段影片分析。這篇論文被當作他們 NeurIPS 發表的一部分推出，還有專門的部落格文章與社群討論，聲勢不小——分析者一開頭就坦白說，自己也是被行銷吸引才點進來看的。看完之後他的結論是：這是一篇好論文，但其中大概是「一半是真的很酷的新東西、一半是把腳踩在行銷油門上」。

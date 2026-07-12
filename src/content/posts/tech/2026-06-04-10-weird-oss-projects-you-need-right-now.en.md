@@ -9,6 +9,7 @@ description: "10 open-source projects that solve specific developer pain points:
 type: listicle
 original_url: "https://www.youtube.com/watch?v=qPuzWFvRajk"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260711_132149_413141.mp3"
 ---
 
 Your GitHub stars list probably has a bunch of "use this later" repos you've never actually opened. These aren't those. Each one solves a very specific pain point, and most of them are things you'll reach for within three days of installing them.

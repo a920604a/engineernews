@@ -1,0 +1,41 @@
+"Bought a phone, and two years later the updates just... stopped." If you've owned an Android device, you know that complaint. It's been baked into the ecosystem for over a decade. But here's the thing — 2025 into 2026 is showing real, honest change. Several of the big phone makers are finally treating long-term software support as a promise, not just a line in a marketing deck.
+
+Let me give you the quick lay of the land before we dig in.
+
+Google's Pixel 9 now comes with seven years of OS updates and seven years of security patches — that became the new bar back in 2024. Samsung's Galaxy S25 matched that seven-year commitment, and just as importantly, it's pushing out One UI updates dramatically faster than it used to. OnePlus has pulled itself back from the brink with a stable OxygenOS again — four years of OS updates, five years of security. And then there are the value picks: Nothing Phone punches way above its price tier on update speed, and Motorola's Edge offers some of the longest support in its price range — three years of OS, four of security.
+
+So what actually changed? Let's start with Google.
+
+Beginning with the Pixel 8 back in 2023, Google committed to seven years of both OS updates and security patches, and the Pixel 9 carries that forward. Think about what that means for someone who bought a Pixel 9 in 2024 — in theory, they're covered on security straight through 2031. That's not a phone, that's a long-term relationship.
+
+How do they pull it off? Two pieces. First, the Tensor G4 chip — because Google designs its own silicon, there's no waiting on an outside vendor. Second, something called Project Mainline. This is the clever part. Instead of every little system component needing a full over-the-air update, Google can push updates to a lot of those components directly through the Play Store. So core pieces of the system get patched almost like updating an app.
+
+Now, if you're a developer, this cuts both ways. When people are still running an older Android version out in 2031, there's less pressure to raise your minimum SDK. But the flip side — fewer users sitting on the very newest API levels, and for a lot longer. You've got to plan for that spread.
+
+Next up, Samsung — and this is genuinely the redemption arc of the bunch. Historically, Samsung was one of the slowest big names out there. Google would drop a new Android version, and Galaxy flagships might not see it for six to eight months. Painful. But look at the Galaxy S25: Android 16 landed in June 2025, and Samsung had the One UI update out within about three months. That's a real leap. And they matched that seven-year support pledge too, starting with the S24 line.
+
+Then there's OnePlus, which had a rough stretch. Back in 2021 and 2022, after the OPPO merger, their software strategy kind of fell apart. OxygenOS — the thing fans loved for being clean and fast — started looking nearly identical to OPPO's ColorOS. The core fanbase was not happy. But with the OnePlus 12 and 13, they consciously walked it back. They re-differentiated OxygenOS, leaned back into faster updates and that closer-to-stock Android feel. The commitment now: four years of Android version updates, five years of security patches.
+
+Okay — so why does any of this actually matter? Let's talk money first, because it's simpler than people think.
+
+It comes down to total cost of ownership. A seven-hundred-dollar Pixel 9 that lasts seven years works out to about a hundred dollars a year. Now compare a four-hundred-dollar mid-ranger that only gets two years of support — that's two hundred a year. The cheaper phone is actually the more expensive phone. Long support windows completely rewrite the value math.
+
+For developers, the ripple effects are bigger. One is fragmentation. If people can hang onto a five-year-old device and still get security updates, you might find yourself supporting Android 14 and Android 18 at the same time. Less pressure to bump your minimum SDK — but also fewer users on the shiny latest APIs.
+
+And here's a crucial catch: read the fine print on these "seven-year" claims. Usually seven years means seven years of security patches, but fewer years of actual new Android versions. It might really be four years of new OS versions and seven years of security. So verify what "seven years" means for the specific device — don't assume.
+
+Also, keep that Project Mainline idea in mind. Because Google can change system behavior — things like how permissions are handled — through Play services without a full OS update, your app's environment can shift even when the user hasn't "updated" anything. Watch for behavior changes regardless.
+
+Now let's get technical for a minute — what actually determines whether an update ships fast or slow? Three big factors.
+
+First, the chip vendor. After Google releases the Android source, phone makers need low-level support from their chipmaker — Qualcomm, MediaTek, whoever — the so-called board support package. Historically, that's the single biggest source of delay. And this is exactly why Pixel is quick: Google builds its own Tensor chips, so there's no vendor to wait on.
+
+Second, how heavily the maker skins Android. Samsung's One UI is deeply, deeply customized — far more than OxygenOS — so integrating each new Android release takes longer. Nothing OS, by contrast, is a light touch, so it ships fast.
+
+Third, carriers. If you bought your phone through a carrier, that update often has to pass extra carrier testing and certification before it goes out. Unlocked phones bought straight from the manufacturer usually get updates noticeably sooner than the carrier versions.
+
+So what should we keep an eye on going forward? Android 17 is expected in the fourth quarter of 2026 — the real test is whether each maker's update cadence actually holds up when it lands. We'll also find out whether these seven-year promises truly deliver in years five and six, or whether they quietly apply to flagships only. And there's a genuinely open question about whether the Tensor chips can sustain seven years of real-world performance. Time will answer that one.
+
+Let me leave you with the three things worth remembering. One: the seven-year commitment is real and it's spreading — Pixel started it, Samsung matched it, and that fundamentally changes how long a phone stays worth owning. Two: always check what "seven years" actually covers, because security patches and new OS versions are not the same promise. And three: update speed isn't magic — it comes down to who makes the chip, how heavy the software skin is, and whether a carrier is standing in the middle. Google wins on speed mostly because it controls the whole stack.
+
+The bottom line? For the first time in a long time, buying Android with the long game in mind is a real, defensible choice.

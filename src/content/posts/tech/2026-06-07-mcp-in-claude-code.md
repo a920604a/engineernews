@@ -13,6 +13,7 @@ key_points:
   - "加上一台 MCP server，Claude 就能用到它暴露的所有工具，而且有數千個公開 server 可直接接。"
 tldr: "Claude Code 本身只能讀檔案、跑 bash；MCP 這個開放協定讓你把 Figma、Slack 等外部工具接進來——加一台 MCP server，Claude 就拿到它暴露的全部工具，還有數千個現成的公開 server 可用。"
 description: "Claude Code 靠 MCP（Model Context Protocol）連接外部工具：什麼是 MCP、加一台 server 會發生什麼、以及公開 server 生態的意義。"
+audio_url: "/api/tts/r2/tts/tts_20260711_134243_356790.mp3"
 ---
 
 Claude Code 開箱能做兩件事：**讀取檔案**、**執行 bash 指令**。這已經足夠讓它在你的專案裡打轉——看程式碼、跑測試、改檔案。

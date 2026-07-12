@@ -9,6 +9,7 @@ description: "From IPO filing to government-mandated shutdown, Anthropic's June 
 type: newsjacking
 original_url: "https://www.youtube.com/watch?v=0pgCBV8CTZY"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260711_142520_185995.mp3"
 ---
 
 If you work in AI, the second week of June 2026 probably kept you up at night. Anthropic managed to simultaneously file for an IPO, co-sign a paper calling for a global AI pause, launch their most powerful model ever, and then watch it get forced offline by the US government—all within ten days.

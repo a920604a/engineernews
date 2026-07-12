@@ -13,6 +13,7 @@ key_points:
   - "搭配網卡的 DMA，OS cache 到網卡的那次複製甚至不需要 CPU 介入。"
 tldr: "Kafka 高效能的第二根支柱是 zero copy：透過 sendfile 系統呼叫，讓資料從 OS cache 直接送到網卡，省下多餘的記憶體複製與 system call。"
 description: "從逐字稿還原 Kafka zero copy 的真正機制——非 zero copy 的四次複製、sendfile 系統呼叫，以及 DMA 如何讓 CPU 完全不必參與資料搬移。"
+audio_url: "/api/tts/r2/tts/tts_20260711_142152_978963.mp3"
 ---
 
 [第一部分](./2026-06-14-why-is-kafka-fast-part-1.md)談的是 Kafka 效能的第一根支柱：sequential I/O（循序讀寫）。這一篇要講第二個設計選擇——**效率（efficiency）**，也就是 Kafka 如何盡可能消除資料搬移時的多餘複製。

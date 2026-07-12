@@ -9,6 +9,7 @@ description: "Google DeepMind's Jeff Dean analyzes the real technical drivers be
 type: explainer
 original_url: "https://www.youtube.com/watch?v=yz6I23VRbdg"
 draft: false
+audio_url: "/api/tts/r2/tts/tts_20260711_131846_611766.mp3"
 ---
 
 Jeff Dean co-founded Google Brain and now serves as a research director at Google DeepMind, continuing to push the frontier of AI research. In a recent public talk, he took a closer look at a claim that sounds like marketing copy but has genuine technical substance: AI computing power has increased by a million-fold over the past decade. What does that actually mean for the future?

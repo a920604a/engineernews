@@ -12,6 +12,7 @@ key_points:
   - "Nvidia 悄悄丟出 CUDA Oxide，讓你用純 Rust 寫 GPU kernel、直接編到 PTX"
 tldr: "一支 The Code Report 影片盤點了一批「完全沒必要、卻美得莫名其妙」的開源專案：3D 旋轉老鼠游標的終端機、跑在 Tor 上的終端機電話、把上網變成 80 年代科幻恐怖片的擋廣告器、用 Rust 寫 CUDA 的 Nvidia 官方工具，還有把任何歌曲變成 Game Boy 芝麻音的合成器。"
 description: "整理自 The Code Report（2026/5/26）的一批冷門開源專案：Ratty、Terminal Phone、They Live 風格擋廣告器、CUDA Oxide、Wario Synth。"
+audio_url: "/api/tts/r2/tts/tts_20260711_132221_492534.mp3"
 ---
 
 打開 GitHub 動態，畫面幾乎被 AI 佔滿——AI agent 在審查另一個 AI agent 的 pull request，最多星星的 repo 其實只是一堆教你怎麼跟機器人講話的 markdown 檔。但在這層「AI 廢水」底下，還是有一群真人在做著瘋狂、漂亮、而且深度沒必要的軟體。

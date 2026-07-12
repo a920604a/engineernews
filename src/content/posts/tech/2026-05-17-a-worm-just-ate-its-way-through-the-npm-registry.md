@@ -12,6 +12,7 @@ key_points:
   - "TanStack 的發布 workflow 用了 pull_request_target，讓 fork 來的 PR 也能以主 repo 權限執行，把惡意檔案寫進 CI 共享快取。"
   - "後續無關的 PR 合併時觸發惡意檔案，從快取偷走 npm publish token，6 分鐘內投毒 84 個 TanStack 套件，最終擴散到 169 個套件、373 個惡意版本，並跳到 PyPI。"
   - "惡意程式帶 dead man's switch：偵測到你要清理時反而砍掉 home 資料夾，還偽造 Claude Code GitHub app 簽章的 commit 來混淆維護者。"
+audio_url: "/api/tts/r2/tts/tts_20260712_020839_324029.mp3"
 ---
 
 幾天前，開源維護者最大的惡夢成真了。在短短 6 分鐘內，一批每週合計下載量超過 5,000 萬次的套件被供應鏈攻擊攻陷——而且過程中沒有人被釣魚、沒有密碼外洩、也沒有 token 被直接偷走。更糟的是，這些被投毒的套件是經過**簽署、驗證，並透過 npm 的 trusted publishing 機制發布的**。而 trusted publishing 這套機制，正是為了防範這類攻擊而設計、被官方推薦了將近兩年的做法。
