@@ -7,7 +7,7 @@ description: Fact-layer verification for a post under src/content/posts/<categor
 
 發文前的**事實層**審查。看的不是格式或風格，而是「寫的是不是真的」。
 
-這個專案大量內容來自 YouTube 爬蟲 + LLM 生成（`crawl.ts` 用 llama-3.1-70b）。模型訓練資料截止 + 影片轉述，會讓文章自信地寫出**過時或捏造的版本號、API 名稱、定價、benchmark 數字**。這個 skill 專抓那些。
+這個專案有大量歷史內容源自 LLM 生成。模型訓練資料截止會讓文章自信地寫出**過時或捏造的版本號、API 名稱、定價、benchmark 數字**。這個 skill 專抓那些。
 
 **只報告，永不 auto-fix**——是真錯還是只是換個說法，由使用者決定。
 

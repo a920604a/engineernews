@@ -59,27 +59,11 @@ sync-prod:
 # 刪除並重建 D1 資料庫與向量索引，適合從零初始化環境
 rebuild: d1-rebuild vec-rebuild
 
-# ── 內容抓取與攝取 ────────────────────────────────────────────────────────────
-
-# 在本地端執行爬蟲：從 YouTube 等來源抓取新影片並產生 Markdown 檔案
-crawl:
-	pnpm crawl
+# ── 內容攝取 ──────────────────────────────────────────────────────────────────
 
 # 在本地端執行對話攝取（用法：make ingest FILE=path/to/file.txt）
 ingest:
 	pnpm ingest $(FILE) --yes
-
-# 批次重寫所有爬蟲文章（dry-run，只列出清單）
-rewrite:
-	pnpm rewrite
-
-# 批次重寫所有爬蟲文章（實際寫入，需 CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID）
-rewrite-write:
-	pnpm rewrite:write
-
-# 重寫單篇（用法：make rewrite-post FILE=src/content/posts/tech/xxx.md）
-rewrite-post:
-	pnpm rewrite:write -- --file=$(FILE)
 
 # 掃描所有文章並修復 Mermaid 語法錯誤（需 CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID）
 fix-mermaid:
@@ -130,10 +114,6 @@ delete-post:
 
 # ── 遠端 GitHub Actions 觸發 ─────────────────────────────────────────────────
 
-# 透過 GitHub CLI 觸發遠端爬蟲 workflow（需先 gh auth login）
-remote-crawl:
-	gh workflow run crawl.yml
-
 # 透過 GitHub CLI 觸發遠端部署與 D1 同步 workflow
 remote-deploy:
 	gh workflow run deploy.yml
@@ -143,6 +123,6 @@ remote-deploy:
 	vec-rebuild \
 	sync sync-prod \
 	rebuild \
-	crawl ingest remote-crawl remote-deploy \
+	ingest remote-deploy \
 	fix-mermaid tts-all tts-all-prod tts-post reset-audio \
 	delete-post-dry delete-post

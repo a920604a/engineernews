@@ -19,22 +19,6 @@ flowchart TD
 
 > D1 sync 只在 `src/content/` 或 `scripts/sync-to-d1.ts` 有變更時執行，避免沒有內容變動的部署也消耗 D1 / Vectorize API。
 
-### crawl.yml — YouTube 爬蟲排程
-
-```mermaid
-flowchart TD
-  Cron[平日 08:00/17:00 TST\n週末每 6 小時\n或 workflow_dispatch] --> Install[pnpm install + pip install yt-dlp]
-  Install --> Crawl[pnpm crawl:prod\n每次 1 支影片\n產 zh-TW + en 草稿]
-  Crawl --> Check{有新文章?}
-  Check -- 是 --> Commit[git commit + push\nauthor: a920604a]
-  Check -- 否 --> End[結束]
-  Commit --> Build[pnpm build]
-  Build --> Deploy[wrangler pages deploy dist]
-  Commit --> DeployCI[push 另會觸發 deploy.yml\n負責 D1 + Vectorize sync]
-```
-
-爬蟲 workflow 會在有新文章時自行 build/deploy；同一個 push 也會觸發 `deploy.yml`，由 `deploy.yml` 負責內容同步到 D1 + Vectorize。
-
 ### fix-mermaid.yml — 每天 UTC 01:00
 
 ```mermaid
@@ -53,7 +37,6 @@ flowchart TD
 
 CI 產生的 commit author 固定為 `a920604a`：
 
-- **CI**：crawl.yml 中明確設定 `git config user.name "a920604a"`
 - **CI**：fix-mermaid.yml 中明確設定 `git config user.name "a920604a"`
 
 本地 commit 訊息請遵守 `docs/writing.md` 的 `post(<category>): <標題摘要>` 格式。
@@ -79,7 +62,7 @@ pnpm preview      # 預覽靜態輸出
 |--------|------|
 | `CLOUDFLARE_API_TOKEN` | 需有 D1、Pages、Vectorize、Workers AI 權限 |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare Account ID |
-| `TTS_API_URL` | 選填；crawl workflow 若設定則可預合成 TTS |
+| `TTS_API_URL` | 選填；ingest 若設定則可預合成 TTS |
 
 在 Cloudflare Pages 的環境變數 / secrets 設定：
 

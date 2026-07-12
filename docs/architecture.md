@@ -24,13 +24,8 @@ graph TD
     User[使用者]
   end
 
-  subgraph External[外部來源]
-    YT[YouTube / 字幕]
-  end
-
   subgraph GHA[GitHub Actions]
     DeployCI[deploy.yml]
-    CrawlCI[crawl.yml cron]
   end
 
   subgraph CF[Cloudflare]
@@ -53,7 +48,7 @@ graph TD
     subgraph WAI[Workers AI]
       BGE[bge-m3\nembedding]
       Qwen[qwen1.5-14b\nRAG chat]
-      Llama[llama-3.1-8b / 70b\ningest / crawl]
+      Llama[llama-3.1-8b\ningest metadata]
     end
   end
 
@@ -65,8 +60,6 @@ graph TD
   ViewsAPI --> D1
   AdminAPI --> D1
 
-  CrawlCI --> YT --> Llama
-  CrawlCI -->|git push| DeployCI
   DeployCI --> Pages
   DeployCI --> BGE & D1 & Vec
 ```
@@ -81,7 +74,6 @@ graph TD
 | 靜態關鍵字搜尋 | [pipelines/search.md](pipelines/search.md) | Pagefind，build-time，無 API |
 | OG 圖片生成 | [pipelines/og-image.md](pipelines/og-image.md) | satori + resvg-wasm + R2 快取 |
 | 語音播放（TTS） | [pipelines/tts.md](pipelines/tts.md) | edge_tts + R2 快取，支援 MediaSource streaming |
-| YouTube 爬蟲 | [crawl.md](crawl.md) | crawl.ts、sources.ts、GitHub Actions 排班 |
 | 手動發文 / Sync | [ingest.md](ingest.md) | ingest.ts、sync-to-d1.ts |
 
 ---
@@ -170,7 +162,6 @@ erDiagram
 | `@cf/baai/bge-m3` | 多語言 embedding（1024 維） | `/api/search`、`sync-to-d1.ts` |
 | `@cf/qwen/qwen1.5-14b-chat-awq` | RAG 回答串流 | `/api/search` |
 | `@cf/meta/llama-3.1-8b-instruct` | Ingest metadata 擷取 | `scripts/ingest.ts` |
-| `@cf/meta/llama-3.1-70b-instruct` | Crawl 全文摘要 + Mermaid | `scripts/crawl.ts` |
 | `@cf/myshell-ai/melotts` | 中文 TTS fallback | `/api/tts/cache`、`src/lib/tts.ts` |
 | `@cf/deepgram/aura-2-en` | 英文 TTS fallback | `/api/tts/cache`、`src/lib/tts.ts` |
 

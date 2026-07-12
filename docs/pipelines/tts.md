@@ -33,13 +33,13 @@ TTS 服務以 `edge_tts`（Microsoft Edge TTS）為主要引擎，透過本地 F
 
 ---
 
-## Pipeline 1：爬蟲 / Ingest 時自動合成
+## Pipeline 1：Ingest 時自動合成
 
 文章生成後立即嘗試合成，結果寫入 frontmatter。
 
 ```mermaid
 sequenceDiagram
-  participant Script as crawl.ts / ingest.ts
+  participant Script as ingest.ts
   participant TTS as TTS Server
   participant R2 as Cloudflare R2
   participant MD as .md frontmatter
@@ -167,8 +167,8 @@ flowchart TD
 
 | 來源 | 引擎 | 格式 | 範例 |
 |------|------|------|------|
-| crawl / ingest（Edge TTS） | Edge TTS | `tts/tts_{timestamp}.wav` | `tts/tts_20260427_091500_123456.wav` |
-| crawl / ingest（CF AI） | CF Workers AI | `tts/{slug}.mp3` | `tts/2026-04-26-github-actions.mp3` |
+| ingest（Edge TTS） | Edge TTS | `tts/tts_{timestamp}.wav` | `tts/tts_20260427_091500_123456.wav` |
+| ingest（CF AI） | CF Workers AI | `tts/{slug}.mp3` | `tts/2026-04-26-github-actions.mp3` |
 | 讀者觸發 cache（Edge TTS） | Edge TTS | `tts/{slug}.wav` | `tts/2026-04-26-github-actions.wav` |
 | 讀者觸發 cache（CF AI） | CF Workers AI | `tts/{slug}.mp3` | `tts/2026-04-26-github-actions.mp3` |
 | tts-all（Edge TTS） | Edge TTS | `tts/{slug}.wav` | `tts/2026-04-26-github-actions.wav` |

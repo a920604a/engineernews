@@ -38,10 +38,10 @@ CF AI 合成的音訊 SHALL 以 `.mp3` 格式存入 R2，R2 key 為 `tts/{slug}.
 - **THEN** 系統 SHALL 記錄錯誤警告，跳過 TTS，不中斷主流程
 
 ### Requirement: Node.js Scripts Use CF AI REST API
-在 Node.js 腳本環境（`crawl.ts`、`tts-all.ts`）中，SHALL 透過 Cloudflare REST API 呼叫 CF AI，使用環境變數 `CLOUDFLARE_ACCOUNT_ID` 與 `CLOUDFLARE_API_TOKEN`。
+在 Node.js 腳本環境（`ingest.ts`、`tts-all.ts`）中，SHALL 透過 Cloudflare REST API 呼叫 CF AI，使用環境變數 `CLOUDFLARE_ACCOUNT_ID` 與 `CLOUDFLARE_API_TOKEN`。
 
 #### Scenario: CI 環境批次合成
-- **WHEN** `crawl.ts` 在 GitHub Actions 中執行，Edge TTS health check 失敗
+- **WHEN** `tts-all.ts` 在 GitHub Actions 中執行，Edge TTS health check 失敗
 - **THEN** 系統 SHALL 使用 CF REST API 合成音訊，`CLOUDFLARE_API_TOKEN` 和 `CLOUDFLARE_ACCOUNT_ID` 由 GitHub Secrets 提供
 
 #### Scenario: Token 未設定

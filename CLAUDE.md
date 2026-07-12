@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Engineer News** is a bilingual (繁體中文 / English) personal technical blog built on Astro + Cloudflare Workers. Its core mission is automated content ingestion — converting engineering conversations, notes, and YouTube videos into structured, searchable Technical Chinese articles. The tagline is "技術決策即文件" (Technical decisions as documentation).
+**Engineer News** is a bilingual (繁體中文 / English) personal technical blog built on Astro + Cloudflare Workers. Its core mission is manual content ingestion — converting engineering conversations and notes into structured, searchable Technical Chinese articles. The tagline is "技術決策即文件" (Technical decisions as documentation).
 
 ## Common Commands
 
@@ -26,7 +26,6 @@ make d1-migrate       # Apply pending SQL migrations
 ### Content Pipelines
 ```bash
 make ingest FILE=...  # Ingest conversation/notes file → Markdown post
-make crawl            # Run YouTube crawler (local mode)
 make tts-all          # Generate TTS audio for all posts without audio
 make tts-post FILE=...# Generate TTS for a specific post
 make fix-mermaid      # Auto-fix Mermaid diagram syntax errors in posts
@@ -34,7 +33,6 @@ make fix-mermaid      # Auto-fix Mermaid diagram syntax errors in posts
 
 ### Remote Triggers (GitHub Actions)
 ```bash
-make remote-crawl     # Trigger GitHub Actions crawl workflow
 make remote-deploy    # Trigger GitHub Actions deploy workflow
 ```
 
@@ -42,8 +40,8 @@ make remote-deploy    # Trigger GitHub Actions deploy workflow
 
 ### Content Flow
 ```
-Conversation / YouTube video
-  → scripts/ingest.ts or scripts/crawl.ts (LLM extraction + Markdown generation)
+Conversation / notes
+  → scripts/ingest.ts (LLM extraction + Markdown generation)
   → git commit + push
   → GitHub Actions deploy.yml
       → Astro build + Pagefind index
@@ -64,7 +62,6 @@ Conversation / YouTube video
 
 **Scripts** (`scripts/`):
 - `ingest.ts` — Redacts secrets, calls llama-3.1-8b for metadata, writes frontmatter + content
-- `crawl.ts` — Fetches 9 YouTube channels (configured in `scripts/sources.ts`), uses llama-3.1-70b for zh-TW summaries
 - `sync-to-d1.ts` — Scans `.md` files, splits into chunks, embeds via bge-m3, upserts to D1 + Vectorize
 - `tts-all.ts` — Synthesizes audio, uploads to R2, updates post frontmatter with `audio_url`
 - `fix-mermaid.ts` — Validates and LLM-repairs broken Mermaid blocks
@@ -73,7 +70,7 @@ Conversation / YouTube video
 - **D1** (SQLite): `posts`, `projects`, `doc_chunks`, `page_views`, `logs`, `search_logs`, `settings`
 - **Vectorize**: `engineer-news-index` (384-dim cosine, bge-m3)
 - **R2**: OG images and TTS audio (`engineer-news-og-images/og-images/` and `tts/`)
-- **Workers AI**: bge-m3 (embed), qwen-14b (RAG chat), llama-3.1-8b (ingest metadata), llama-3.1-70b (crawl summaries)
+- **Workers AI**: bge-m3 (embed), qwen-14b (RAG chat), llama-3.1-8b (ingest metadata)
 
 **Config files**:
 - `astro.config.mjs` — Astro + Cloudflare adapter + i18n routing
@@ -128,6 +125,5 @@ Example: `post(tech): Cloudflare D1 batch timeout 踩坑記錄`
 
 ## CI/CD
 
-- **crawl.yml** — Scheduled daily (UTC 02:00 = Taiwan 10:00); crawls YouTube, commits new posts
 - **deploy.yml** — Triggered on push; builds Astro, runs `sync-to-d1.ts`, deploys to Cloudflare Pages
 - **fix-mermaid.yml** — Manual trigger to repair broken Mermaid diagrams

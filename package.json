@@ -10,11 +10,7 @@
     "sync": "tsx scripts/sync-to-d1.ts",
     "sync:prod": "tsx scripts/sync-to-d1.ts --prod",
     "ingest": "tsx scripts/ingest.ts",
-    "crawl": "tsx scripts/crawl.ts",
-    "crawl:prod": "tsx scripts/crawl.ts --prod",
     "fix-mermaid": "tsx scripts/fix-mermaid.ts",
-    "rewrite": "tsx scripts/rewrite-posts.ts",
-    "rewrite:write": "tsx scripts/rewrite-posts.ts --write",
     "delete-post": "tsx scripts/delete-post.ts",
     "check:glossary": "node scripts/check-glossary-coverage.mjs"
   },

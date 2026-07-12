@@ -1,6 +1,6 @@
 # Engineer News
 
-技術決策即文件 — 將工程師的對話與筆記轉化為結構化、可搜尋的技術部落格，並自動從 YouTube 頻道爬取學習內容。
+技術決策即文件 — 將工程師的對話與筆記轉化為結構化、可搜尋的技術部落格。
 
 ## 概覽
 
@@ -10,7 +10,6 @@ Astro + Cloudflare Pages Functions/D1/Vectorize 架構的個人技術部落格�
 - 全文搜尋（`/search`，Pagefind 靜態索引）
 - AI 語義搜尋（`/ai-search`，Vectorize + Workers AI embedding）
 - 對話攝取（`pnpm ingest`）— 一行指令將工程對話轉成文章
-- YouTube 爬蟲（平日 08:00/17:00、週末每 6 小時）— 抓字幕、生成 zh-TW/en 草稿
 - 文章 TTS（Edge TTS 優先，Workers AI fallback，R2 快取）
 - Review/Admin API（`/review`、`/admin`，需 `ADMIN_TOKEN`）
 - Cloudflare D1（儲存文章、chunks、views、search/logs、settings）
@@ -50,12 +49,6 @@ git push
 
 frontmatter 格式與寫作規範：`docs/writing.md`
 
-## 自動爬蟲
-
-GitHub Actions 依 `.github/workflows/crawl.yml` 執行：平日台灣時間 08:00、17:00，週末每 6 小時。爬蟲會從當天排班的 YouTube 頻道抓取最新影片字幕，用 Workers AI 生成繁體中文與英文草稿；每次找到一支新影片後就產出一組 `.md` / `.en.md` 並結束。
-
-來源設定：`scripts/sources.ts`（新增頻道只需加一筆設定）
-
 ## 環境設定
 
 在 `.env` 設定（不提交 git）：
@@ -78,17 +71,15 @@ Cloudflare Pages 端另需設定：
 |------|------|
 | `make dev` | 啟動本地開發伺服器 |
 | `pnpm ingest <file> --yes` | 全自動攝取對話並發布 |
-| `pnpm crawl:prod` | 手動觸發爬蟲 |
 | `pnpm sync:prod` | 手動同步所有文章至 D1 + Vectorize |
 | `make rebuild` | 重建 D1 表結構 + Vectorize index |
 | `make d1-clear` | 清空 D1 資料（保留表結構） |
 | `make tts-all-prod` | 批次補齊文章 `audio_url`，上傳遠端 R2 |
-| `make remote-crawl` | 透過 GitHub CLI 觸發遠端爬蟲 workflow |
+| `make remote-deploy` | 透過 GitHub CLI 觸發遠端部署 workflow |
 
 ## 文件
 
 - `docs/architecture.md` — 系統架構、資料流、D1 Schema
 - `docs/deployment.md` — CI/CD 流程、Secrets 設定
-- `docs/ingest.md` — 對話攝取與爬蟲工具詳解
-- `docs/crawl.md` — YouTube 爬蟲排班、去重、產文策略
+- `docs/ingest.md` — 對話攝取工具詳解
 - `docs/writing.md` — 文章格式、分類與 commit 規範

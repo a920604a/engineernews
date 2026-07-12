@@ -1,4 +1,4 @@
-# 內容 Pipeline：Ingest、Crawl、Sync
+# 內容 Pipeline：Ingest、Sync
 
 ---
 
@@ -7,7 +7,6 @@
 | 來源 | 工具 | 觸發方式 |
 |------|------|---------|
 | 工程對話 / 筆記 | `scripts/ingest.ts` | 手動執行 |
-| YouTube 頻道 | `scripts/crawl.ts` | GitHub Actions cron（平日 08:00/17:00、週末每 6 小時） |
 
 ---
 
@@ -62,69 +61,6 @@ sequenceDiagram
 ### 使用的 AI 模型
 
 `@cf/meta/llama-3.1-8b-instruct` — 輸出 `{ title, tldr, tags, category }` JSON
-
----
-
-## crawl.ts — YouTube 爬蟲
-
-自動從 `scripts/sources.ts` 中當天排班、`enabled: true` 的 YouTube 頻道擷取最新影片，生成繁體中文與英文草稿。
-
-### 執行方式
-
-```bash
-pnpm crawl          # 本地（不寫 Vectorize）
-pnpm crawl:prod     # 遠端（含 Vectorize embedding）
-```
-
-每次執行最多處理 **1 支**新影片，產出 zh-TW 與 en 各一篇草稿。
-
-### 流程
-
-```mermaid
-flowchart TD
-  Cron["GitHub Actions cron<br/>平日 08:00/17:00 TST<br/>週末每 6 小時"] --> DayFilter[依 today + days 過濾頻道]
-  DayFilter --> Shuffle[隨機排序頻道]
-  Shuffle --> Loop[for each 頻道]
-  Loop --> List["yt-dlp 列出最新 5 支影片"]
-  List --> Filter[過濾已處理（掃描檔名 videoId + original_url）]
-  Filter --> Pick[取第 1 支新影片]
-  Pick --> Sub["yt-dlp 下載字幕<br/>zh-TW > zh-Hant > zh > en"]
-  Sub -->|有字幕| Trim[parseVtt + 截斷至 8000 chars]
-  Sub -->|無字幕| Fallback[title + description]
-  Trim --> Enrich{內容不足?}
-  Fallback --> Enrich
-  Enrich -->|是| Jina[jina.ai 補充搜尋資料]
-  Enrich -->|否| LLM
-  Jina --> LLM["Workers AI llama-3.1-70b<br/>metadata + zh-TW 文章 + Mermaid"]
-  LLM --> Validate{Mermaid 有效?}
-  Validate -->|否| Fix["LLM 修正 Mermaid 語法"]
-  Fix --> Translate[翻譯英文 metadata + 文章]
-  Validate -->|是| Translate
-  Translate --> Write["寫入 YYYY-MM-DD-slug.md<br/>與 YYYY-MM-DD-slug.en.md<br/>draft: true"]
-  Write --> Commit["git commit + push<br/>author: a920604a"]
-  Commit --> Deploy[觸發 deploy.yml]
-```
-
-### 來源設定
-
-頻道清單維護在 `scripts/sources.ts`（`SOURCES` 陣列，`enabled: true` 且 `days` 包含今天才會被爬取）。完整策略見 `docs/crawl.md`。
-
-### Crawled 文章 Frontmatter
-
-```yaml
----
-title: "LLM 生成"
-date: "ISO 8601"
-category: "tech|product|learning|creative|life"
-tags: [...]
-lang: "zh-TW"
-tldr: "一句話摘要"
-description: "SEO 摘要"
-type: "how-to|explainer|listicle|deep-dive|debug|case-study|comparison|research|newsjacking"
-original_url: "https://youtube.com/watch?v=..."
-draft: true
----
-```
 
 ---
 
@@ -199,8 +135,6 @@ git diff HEAD~1 -- src/content/ scripts/sync-to-d1.ts
 |------|------|
 | `pnpm ingest <file>` | 互動模式攝取 |
 | `pnpm ingest <file> --yes` | 全自動攝取 + push |
-| `pnpm crawl` | 本地爬蟲 |
-| `pnpm crawl:prod` | 遠端爬蟲（含向量） |
 | `pnpm sync` | 同步至本地 D1 |
 | `pnpm sync:prod` | 同步至遠端 D1 + Vectorize |
 | `make fix-mermaid` | 掃描所有文章，修復 Mermaid 語法錯誤 |
