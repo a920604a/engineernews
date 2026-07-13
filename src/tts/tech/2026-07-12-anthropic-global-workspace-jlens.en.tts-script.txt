@@ -1,0 +1,69 @@
+Anthropic just dropped a 2026 paper called *Verbalizable Representations Form a Global Workspace in Language Models*, and honestly, it's one of the most interesting mechanistic interpretability results I've seen in the last couple of years. This isn't another "we found one more feature" story. It's a whole new lens for watching verbalizable thought happen inside a Transformer — and using that lens, they show Claude actually exhibits the functional structure that neuroscience predicts for a global workspace.
+
+I'm going to skip the consciousness philosophy entirely. Pure technical mechanics. If you already know logit lens, activation patching, and feature circuits, this should give you enough to decide whether you want to reproduce it yourself.
+
+So let's start with why J-lens deserves its own name. And to see that, you need to know where logit lens falls short.
+
+Logit lens is simple. You grab an activation from the residual stream at some intermediate layer, multiply by the unembedding matrix, and see which vocab token that direction currently looks most like. It tells you, at this instant, at this position, what does the model internally look like it's about to say. The problem — activations get shoved around by context on every forward pass. The same direction can point at different tokens in different sentences. Single-point observations are noisy.
+
+J-lens — the J is for Jacobian — reframes the question. Instead of asking "which token does this direction look like right now," it asks how much linearized influence does this direction have, averaged across contexts, on the model's probability of outputting a given token. Concretely, for every vocab token, at each layer, they compute the Jacobian — the partial derivative of that token's probability with respect to the hidden state — across about a thousand pretraining-like prompts, and average. The output is a big matrix where each vector represents how a token tends to get routed to the output.
+
+The contrast: logit lens is instantaneous and noisy, drifts with context. J-lens is averaged, smoothed, gives you stable concept vectors. Logit lens says what does this activation look like right now. J-lens says what can this direction be said as.
+
+Or put more sharply — J-lens captures directions inside the model that have reportability. Not the instantaneous projection of any single activation, but reportability itself. And that maps almost exactly onto GWT's definition of access consciousness — information that can be verbalized and accessed by multiple downstream systems.
+
+Now, when you sweep J-lens across all layers, a structural pattern jumps out. The directions J-lens can effectively capture are concentrated in a middle-layer band, and they account for only a small slice of total activation variance. Anthropic calls this subspace J-space.
+
+Using Claude Sonnet 4.5 as the reference, and scaling layers to a 100-layer axis: layers zero through about thirty-three are sensory layers, dealing with tokens and syntax. J-lens barely surfaces anything abstract there. Layers thirty-eight through ninety-two — that's the J-space proper. Abstract concepts surface, get broadcast, drive downstream reasoning. And ninety-two to one hundred are motor layers, already aligned toward the output token distribution.
+
+Three numbers about J-space are worth burning into memory.
+
+First, variance share. J-space accounts for at most around ten percent of total activation variance. It's small.
+
+Second, concurrent sparsity. Even though the J-lens vocabulary covers over fifty thousand tokens, only about ten to twenty-five J-lens vectors are simultaneously active at any moment.
+
+Third — and this is the crux — coupling density. J-lens directions compose with downstream weights roughly one hundred times more densely than non-J-space directions.
+
+Read that third one again. J-space isn't loud on its own. The downstream just listens to it much harder. That is exactly GWT's definition of a broadcast channel. Written once, read by many.
+
+But finding a special subspace wouldn't be enough on its own. The really publication-worthy part is that Anthropic designed five experiments to verify J-space actually behaves like a workspace should.
+
+Experiment one — verbal report. Take a concept vector from J-lens, say "soccer," swap it in the residual stream for another, say "rugby," and see if the model's next verbal output switches. It does. The model starts talking about rugby. J-space contents causally determine verbal output. It's not just correlation.
+
+Experiment two — directed modulation. Give Claude a task transcribing unrelated text, and add an instruction: while transcribing, think about citrus fruits. Read J-lens at the transcription positions — "orange" and "lemon" clearly dominate. Meaning users can write directly into the workspace, and the write doesn't affect surface output. That also makes J-space a natural place to watch for a hidden thought channel.
+
+Experiment three — internal reasoning. This is my favorite. Ask the model, how many legs does the animal that spins webs have. Correct answer is eight. When you sweep J-lens layer by layer, the concept "spider" lights up a median of about seventeen percent earlier in relative layer depth than the final answer "eight" — expressed as a percentile of layers, not absolute layer count. And the model never actually says "spider." Then the causal check — swap the spider vector at that position for ant, and the answer becomes six. Textbook mediating-variable experiment. J-space carries the intermediate steps of a reasoning chain, not just an echo of the output.
+
+Experiment four — flexible generalization. Inject the "France" J-lens vector at some position, then test multiple downstream tasks — capital, language, continent. Same vector feeds three different downstream operations, all return correct answers. Format-agnostic broadcast content. Any downstream module can consume it.
+
+Experiment five — selectivity. This one flips the question. Which tasks don't depend on J-space. Ablate the top ten J-lens vectors and measure damage. MMLU general knowledge — basically no effect. Grammaticality checks — basically no effect. But TriviaQA fact retrieval collapses from full performance down to about forty percent. And multi-hop reasoning — this one is dramatic — drops from seventy percent to about five percent. Just gone.
+
+These numbers are approximated from the paper's figure twenty-four, which is more qualitative than a clean table, but the pattern is unmistakable. It cleanly separates tasks that need conscious access from purely automatic pipelines. Shallow pattern matching never routes through J-space. The moment you need to chain multiple steps or hold an intermediate result internally, J-space becomes the bottleneck.
+
+Now, the other striking finding. Ignition.
+
+In neuroscience, ignition is when a sensory stimulus crosses a threshold and triggers a sudden, non-linear spread of activity across cortex. It's considered a hallmark of conscious access. Anthropic's experimental setup — feed the model an embedding halfway between two countries, say a linear mix of France and Germany. Then track how J-lens activation on the France direction and the Germany direction evolves layer by layer.
+
+In the early layers, the France and Germany directions stay mixed, in proportion to the input. Linear. Boring. But near layer thirty-eight — right at the entry to the workspace — there's a non-linear threshold flip. The concept collapses to one pole. Either France or Germany. Not the mixture anymore. And it stays collapsed through the later layers, driving downstream reasoning as a single clean concept.
+
+This is the all-or-none conscious broadcast that GWT has been predicting for decades, observed for the first time as a functional analogue inside an LLM. And the mechanistic interpretability implication is important — the middle layers are not a smooth continuous evolution of representation. There is a clear phase transition. That's why ablating or patching at certain layers hits so much harder than at others.
+
+Zooming out. Placing J-lens next to the existing toolbox — logit lens, activation patching, sparse autoencoder features, attribution graphs — it fills in an angle nobody had.
+
+First, it adds reportability as a dimension. SAE features aren't necessarily verbalizable. J-lens filters on linearized effect on output probability, so you naturally select for directions strongly coupled with verbal output. Which is exactly what you want for safety research — because what we want to monitor is often precisely the internal states the model could say but chose not to.
+
+Second, it gives you a measurable signal for when the model is thinking. That selectivity result is the first quantification of which tasks need the workspace and which don't. Future capability evaluations could use J-space usage as an internal indicator of how hard a task actually is for the model, rather than only external benchmark scores.
+
+Third, it's real empirical input on the feedforward-versus-recurrent debate in consciousness theory. Earlier GWT versions emphasized that temporal recurrent loops were necessary for conscious access. Anthropic's results suggest — at least at the functional level — network depth can substitute for temporal recurrence. Transformers have no recurrence, and they still realize broadcast, bottleneck, and ignition. That might be a genuine contribution back to consciousness theory.
+
+Now, some limits before you go try to reproduce this.
+
+J-lens is vocabulary-restricted. Only single-token concepts. Anthropic estimates about ten percent of important concepts are multi-token, and those get missed. The averaging over a thousand prompts smears out context-specific usage — if you want to study how concept X shows up in this specific prompt, wrong tool. There's an early-layer blind spot — J-lens shows no signal in early layers, and we can't yet tell whether that means there's nothing verbalizable there or whether the projection just can't see it. And it doesn't replace SAEs. SAEs give you a full dictionary of sparse features. J-lens only picks up directions aligned with the vocabulary. They complement each other.
+
+Alright, three takeaways.
+
+One — J-lens adds a coordinate axis that mechanistic interpretability didn't have before, verbalizability, and uses it to carve the Transformer into three functional bands with a densely-coupled middle-layer subspace that behaves like a broadcast channel.
+
+Two — five carefully designed experiments show that subspace exhibits the specific functional signatures GWT predicts — causal effect on verbal output, external write-ability, mediating internal reasoning, one-write-many-read generalization, and a phase-transition ignition dynamic near the workspace entry.
+
+And three — the most immediate practical opening for engineers is monitoring the gap between what the model is saying internally and what it outputs. Anthropic already shows leaking signals in prompt injection, data fabrication, and evaluation awareness scenarios. Whether this turns into a production-grade runtime monitor over the next year is very much worth watching.
