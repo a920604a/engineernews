@@ -1,0 +1,89 @@
+過去這兩年，RAG 從一條「線性 pipeline」演化成「帶迴圈的推理系統」。如果把工業界的痛點折進去，這條演化線可以清楚拆成五個階段：Naive、Advanced、Modular、Graph，還有 Agentic。真正的轉折點，是控制權從 pipeline 移到 agent 手上——這是一次從 System 1 到 System 2 的躍遷。而我自己的部落格 engineer-news，用 Cloudflare D1、Vectorize、bge-m3 加 qwen-14b 跑 RAG，放到這條光譜上，剛好卡在最左邊——Naive RAG 的邊緣。這種對照，反而給了整段演化故事一個錨點，也順便成了一份「個人站接下來該補什麼」的清單。
+
+先給你一把量尺。想快速讀懂這兩年的演化，就問一個問題：大腦，也就是 Reasoning，伸進迴圈的深度有多深？
+
+Naive RAG 是一發入魂的 Retrieve-then-Read，大腦完全不碰檢索決策。Advanced RAG 在檢索前後加料，前面幫你改寫 query，後面幫你重排結果，大腦優化兩端。Modular RAG 開始把 RAG 拆成模組，用 Router 判斷這個 query 該走哪條路。Graph RAG 用知識圖譜解決跨文件關聯，大腦既參與圖的建構、也參與查詢時的走圖。最後 Agentic RAG，模型自己控制搜尋策略，決定要不要再搜、搜什麼、什麼時候停。
+
+一句話總結：RAG 正從快思考的 pipeline，走向慢思考的 looped reasoning。
+
+我們一站一站看。
+
+第一階段，Naive RAG，就是 Retrieve-then-Read 的基本盤。2020 年 Facebook AI 那篇 NeurIPS 論文奠定範式：query 和文件各自被編碼進同一個向量空間，MIPS 搜出 Top-K，然後生成模型接著寫答案。工業界通常只採用推理範式——LangChain 加向量庫加固定 prompt，把 LLM 的知識過期和幻覺問題從零推到一。
+
+但 Naive RAG 的痛點很直接：召回率就是天花板。Top-K 沒撈到對的文件，或撈進一堆雜訊，答案就爛掉。而向量檢索本身有兩個結構性弱點：專有名詞、型號、代碼這種東西，向量天生不擅長；而且一個 chunk 壓成一個向量，本質是整段語義的壓縮，先天沒辦法做精確字面匹配。
+
+第二階段，Advanced RAG，主題是精度。工業界很快意識到 Naive RAG 太弱，開始在檢索周邊堆技巧。三個經典手法。
+
+第一個是 Hybrid Search，混合檢索。向量檢索管語義，加上 30 年老工具 BM25 管關鍵字。BM25 本來要被時代淘汰，RAG 反而把它救活了——因為向量沒辦法保證精確召回，而 BM25 就是為關鍵字匹配而生。IBM Research 2024 年的 BlendedRAG 更進一步，主張向量、稀疏向量、全文檢索三路混合才是召回的天花板，三條路各有專長、彼此無法替代。
+
+第二個是 Reranker，重排序。傳統的雙塔模型把 query 跟文件各自編碼再算距離，快但粗；Cross-Encoder 把兩者拼在一起丟進 BERT，能捕捉 token 之間的細膩互動，慢但精。經典工作是 BAAI 的 BGE-Reranker。工程模式很固定：向量先粗排 Top-50，Cross-Encoder 精排 Top-5，只有這 5 篇進 LLM。多幾百毫秒延遲，排序品質質變。到 2024 年底，MTEB 排行榜前段被 LLM-based Reranker 佔領，但推理成本翻倍，於是出現折衷的 Late Interaction Reranker，也就是 ColBERT 家族——在索引時存下每個 token 的向量，查詢時做 token 對 token 的相似度加總，品質接近 Cross-Encoder，還能塞進資料庫裡跑。
+
+第三個是 Query Rewriting，特別是 HyDE 這招很聰明。CMU 提出的做法是：先讓 LLM 幻想一個假答案，然後拿這個假答案去做向量搜尋。為什麼有效？因為使用者的問題和文件的敘述方式常常完全不同——你問「怎麼修 D1 batch timeout」，文件卻寫「當 SQLite 交易超過 30 秒，Cloudflare Workers runtime 會中止它」。這兩句話在向量空間裡不會靠近。但 LLM 幻想出來的答案，說話方式跟文件很像，兩者的 embedding 就會落在附近。用假答案搜，比用原始 query 搜還準。
+
+Advanced RAG 的整體姿態一句話：靠周邊技巧榨壓召回天花板。但主幹還是線性 pipeline，大腦只在兩端優化，還沒進入決策迴圈。
+
+第三階段，Modular RAG，動態路由登場。當業務複雜起來——一次請求可能要查內部知識庫、可能要查網頁、可能要打 API——線性 RAG 就撐不住了。回應方式是把 RAG 拆成模組，Search、Memory、Routing、Tool 各自獨立，前面加一個 Router 依照 query 意圖分派。
+
+經典工作是 Stanford NLP 的 DSPy，把 RAG 當程式問題看待。Signatures 宣告輸入輸出、Modules 是可組合積木、Teleprompter 自動優化 prompt 跟 few-shot 範例。結果就是不再手調 prompt，框架像編譯原始碼一樣，直接編譯出最佳組合。Prompt Engineering 演化成 Prompt Compilation。
+
+工業界最典型的例子是 ChatGPT Plugins、文心一言的工具路由——使用者問今天北京天氣，Router 判斷意圖，路由到氣象 API，結果填回 prompt。看起來只是多了個 if-else，但這個 if-else 從工程師手上移到了 LLM 手上。這是「大腦進入迴圈」的第一個質變時刻。
+
+第四階段，Graph RAG，全局理解。前面三階段處理的都是「碎片」，每個 chunk 各自為政，回答不了「總結整本書的觀點」「這些公司有什麼共同點」——這種叫 Global Query。
+
+微軟 2024 年的論文 From Local to Global 是分水嶺。核心流程是：源文件先讓 LLM 抽取實體跟關係，然後跑 Leiden 演算法做社群偵測，形成階層式社群；LLM 預先為每個社群寫摘要；查詢時對這些社群摘要做 Map-Reduce，每個社群各答一次再匯總。
+
+它解決的是 RAG 的另一個結構性痛點——語義鴻溝。搜尋系統一直有這個問題：查詢跟文件講法不一樣、直接匹配會漏。RAG 用完整問句取代關鍵字，鴻溝更大。GraphRAG 的做法是離線階段就讓 LLM 通讀全文、抽實體、建圖、寫社群摘要，把跨文件關聯固化下來；查詢時等於是走在這些預先寫好的摘要上。
+
+微軟開源之後，出現了一整光譜的變種，主打降 token 成本。Fast GraphRAG 砍掉社群摘要，改用 personalized PageRank 在圖上遊走取子圖；LightRAG 把整個社群層去掉；LazyGraphRAG 更極端，連 LLM 抽取都不用，用小模型加共現統計建社群，只有查詢時才生成摘要。HippoRAG 借用神經科學的海馬迴索引理論，用 personalized PageRank 模擬人類的隨機遊走式記憶。KAG 是螞蟻集團的做法，方向相反——重可解釋性，需要人工整理知識圖譜，主攻金融跟風控這種需要說清楚「為什麼」的場景。
+
+Graph RAG 的舒適圈是「強跨文件關聯」加「需要全局理解」的任務。金融風控要查一個黑產團夥，文字 RAG 只能找到某個帳戶違規，Graph RAG 順著關係網一路找出整個關聯帳戶群。企業知識管理跨團隊跨專案的關聯、情報分析裡實體之間的關係網，都是它的主場。但它不擅長什麼？單篇長文的細節問答——那是 chunking 加 rerank 的舒適圈，硬套 Graph RAG 就是過度工程。
+
+第五階段，Agentic RAG，System 2 推理。前面四階段本質上還在做「填空題」——檢索、填 context、生成。Agentic RAG 開始做「應用題」，它不是 pipeline，而是一個 loop。
+
+三個定義性特徵：自主規劃，模型自己決定搜什麼、搜幾次、什麼時候停；自我糾錯，搜錯了自己重來；過程監督，推理鏈每一步都能被評分。
+
+依自主性深度，Phase 5 內部又能分三層。
+
+第一層是顯式糾錯。痛點是傳統 RAG 盲目相信檢索結果，導致「檢索錯了、幻覺就跟著錯」。這一層的解法是打補丁——外掛一個評估器。中科大跟 Google 的 CRAG 加了一個輕量 Evaluator，把檢索結果三分類：正確就精煉後生成、錯誤就丟掉並強制觸發網搜、模糊就結合模型自身知識。Self-RAG 則訓練模型輸出 Reflection Token，讓它一邊生成一邊自問「這句話有依據嗎？相關嗎？」讓自我反思變成生成過程的一部分。這一層是目前工業界最便宜的 Agentic 型態，不需要強化學習，Prompt Engineering 加分類器就行。
+
+第二層是用強化學習做推理。痛點是靠 prompt 或規則驅動的搜尋很快就撞牆。模型能不能像 AlphaGo 一樣，自己學怎麼搜？Google Cloud AI 的 Search-R1 把 DeepSeek-R1 那套引進 RAG——模型在 think 過程中主動吐出 search token，把工具呼叫變成推理鏈的一部分。它用結果獎勵，不標註中間步驟，只看最終答對還是答錯，靠 GRPO、PPO 大規模訓練。多輪搜尋、篩證據、驗證反思這些策略，全都是訓練出來的。人大跟清華的 Search-o1 針對另一個問題——「檢索回來的東西太長太雜」——引入 Reason-in-Documents 模組，先在隔離空間裡推理去噪、抽出核心邏輯鏈，再餵給主模型，避免 context 爆炸。
+
+第三層是過程監督。痛點是 Search-R1 的結果監督，探索空間太大、收斂慢，而且長鏈容易出現 Reward Hacking——模型學會「看起來像在搜尋」而不是「真的搜對」。切換成過程級控制。小紅書跟天大的 DecEx-RAG 把 RAG 建模成嚴格的馬可夫決策過程，拆成兩個解耦模組：決策模組像指揮官，每步輸出「該不該終止、該不該檢索」；執行模組像作業員，負責生成具體 query 或答案。它用 Rollouts 給每個中間節點評分，分數太低就即時剪枝，不再浪費算力。
+
+三層各一句話：Search-R1「讓它跌倒中學」，探索空間大、收斂慢；DecEx-RAG「一步一步教」，探索效率高，資料效率提升 6 倍。你會發現 Phase 5 內部這三層，本身就是一部微型的 RAG 演化——CRAG 跟 Self-RAG 解決「敢用檢索」，Search-R1 跟 o1 解決「會用檢索」，DecEx-RAG 解決「高效用檢索」。
+
+拉遠看，整條演化線的主軸是：從靜態到動態、從無腦到有腦。舊 RAG 是 System 1，追毫秒延遲，撿到什麼算什麼；當前的 Agentic RAG 是 System 2，願意花 5 到 10 秒甚至更久去思考、多次搜尋、自我反思，換來答案品質。
+
+三個延伸推論。第一，Test-time Compute 是下一個戰場。LLM 過去比的是參數量跟預訓練損失——訓練時算力；Agentic RAG 把戰場推到「你願意在推理時花多少算力做推理」。DeepSeek-R1、o1 已經示範過，Agentic RAG 是這個範式在檢索場景的落地。
+
+第二，Long Context 不會取代 RAG。Gemini 1.5 Pro 開出百萬 token 之後，一度有人問「還需要 RAG 嗎」。答案很清楚：需要。Long Context 解決的是「大海撈針」，但解不了三件事：知識即時更新，模型訓練完知識就凍結了，RAG 是唯一的活水；TB、PB 級語料，百萬 token 塞不下企業級資料；還有成本，每次都塞百萬 token，帳單會很難看。未來的架構會是 Long Context LLM 加 Agentic RAG——LLM 提供推理跟局部長 context，RAG 提供可擴展、可更新的知識存取。
+
+第三，過程監督資料是新的護城河。DecEx-RAG 提到的過程監督資料——也就是「人類如何透過反覆搜尋解決複雜問題」的軌跡——會是新資產。誰握有這種資料，誰就在 Agentic 時代領先。這也是為什麼 OpenAI 收購 Rockset、Anthropic 重注 Computer Use——大家都在搶第一手的過程軌跡。
+
+好，回頭看自己的站。engineer-news 跑 Astro 加 Cloudflare Workers，打開檢索相關的檔案對照五階段：切塊是段落合併、1000 字上限，純長度切，Naive;embedding 用 bge-m3，Naive;檢索是單一向量通道、topK 8，Naive;沒有 rerank，缺 Advanced;混合搜尋只有向量空搜時的 SQL LIKE 兜底，勉強算半個 Advanced;沒有 query rewriting；生成用 qwen 14b 或 llama 70b；沒有 Router、沒有 agent loop、沒有圖譜。
+
+search API 的流程說白了就三步：bge-m3 embed query、Vectorize 拿 top 8、把 chunks 跟 posts join 起來去重丟進 prompt、qwen 生成。「問這篇文章」多了個小巧思，跳過向量檢索，直接把單篇文章的所有 chunk 按順序組成 context 丟給 Llama 70B。這算是「意圖識別後路由到專門 pipeline」——Modular RAG 的種子——但只有這一個特例。
+
+換句話說，這個站就卡在 Naive RAG 的邊緣，連完整的 Advanced RAG 都還沒補齊。
+
+那接下來要補什麼？論文光譜看下去，GraphRAG 跟 Agentic RAG 都很誘人，但對個人站來說，真正該按的 ROI 順序是這樣：
+
+第一優先，BGE-Reranker。對 top 8 結果做重排，實作就是多一次 Workers AI 呼叫——Workers AI 剛好有 bge-reranker-base——幾百毫秒換排序品質的質變。一個晚上就能上，效果立刻感受到，絕對優先。
+
+第二，BM25 混合檢索。Cloudflare D1 就是 SQLite，SQLite 內建的 FTS5 直接拿來當關鍵字通道。工作量比 reranker 大，但能解決專有名詞、產品名、版本號這種向量天生不擅長的查詢。
+
+第三，HyDE。embed 之前先讓 LLM 幻想個假答案，實作極簡，特別適合短又模糊的查詢，像「D1 timeout 怎麼解」。
+
+第四，Contextual Retrieval，Anthropic 的招——用 LLM 幫每個 chunk 生成一段簡短的上下文摘要，跟原文拼在一起再 embed，用來縮語義鴻溝。同步時要多一次 LLM 呼叫，效果扎實。
+
+第五，GraphRAG 跟 Agentic RAG，還不用。文章才 150 篇上下，跨文件關聯還很弱；Agentic 迴圈的 token 成本、延遲跟除錯複雜度，還沒到值得投入的門檻。
+
+背後的原則是：個人站的 RAG 演化該追隨資料量跟使用者複雜度，不是論文光譜。GraphRAG 適合 TB 級跨團隊資料，Agentic RAG 適合開放領域的深度研究，硬套在「一個個人技術站」上就是過度工程。
+
+InfiniFlow——也就是 RAGFlow 團隊——2024 年年終回顧有一句話說得很好：RAG 是一套非常複雜的系統，它沒有像 LLM 那樣吸引到洪水般的資本，但在真實使用場景裡不僅不可或缺，還複雜得離譜。
+
+RAG 這個名字取得好——它代表的是一個架構模式，不是產品、也不是應用。就像過去的資料庫，對外介面極簡——SELECT——內部卻極其複雜：優化器、索引、B-tree、交易隔離、MVCC。RAG 的對外介面同樣極簡——「問一個問題、給一個答案」——但內部把切塊、embedding、混合檢索、重排、知識圖譜、agent loop、記憶全部包在裡面。RAG 就是 LLM 時代的資料庫。
+
+三個核心 takeaway。第一，RAG 這兩年真正的演化主軸，不是加了多少技巧，而是「大腦伸進迴圈的深度」——從線性 pipeline 走到帶迴圈的 System 2 推理，控制權從工程師手上移到 agent 手上。第二，Long Context 和 RAG 不是替代關係，未來架構會是 Long Context LLM 加 Agentic RAG，兩邊各司其職；而過程監督資料，會是 Agentic 時代真正的護城河。第三，個人站的 RAG 演化該對齊自己的資料量，不是對齊論文——engineer-news 現在該做的不是追 Graph 或 Agent，而是先把 Reranker、BM25、HyDE 這三塊 Advanced RAG 的地基補齊。
+
+下一次動這個站，我會先從 Reranker 開始。

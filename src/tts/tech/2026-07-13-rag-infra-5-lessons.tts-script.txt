@@ -1,0 +1,63 @@
+上一集我們用五階段全景，把 RAG 這兩年的演進看了一輪，那是拉高鏡頭看趨勢。這一集要拉近，看一件更具體的事——如果你今天真的要蓋一個 RAG 系統，你會面對哪些工程決策。
+
+素材主要來自 InfiniFlow，也就是 RAGFlow 團隊 2024 年底那篇年度總結。我把它整理成五個 infra 功課，每一個都對照 engineer-news 這個站的現況，看哪些欠、哪些不欠、該先補哪個。
+
+上一集我說本站落在 Naive RAG 的邊界，這一集就是那句話的展開清單。
+
+先講功課一，文件入口的品質，也就是 Document Intelligence。
+
+RAG 有一個很殘酷的前提——資料入口的品質，決定最終品質。Garbage In, Garbage Out 在 RAG 場景就變成 Quality In, Quality Out。
+
+企業裡大部分的資料，不是純文字，是 PDF、PPT、Word、圖文混排的雜誌。早期 LLMOps 那套 LangChain 加向量庫加純文字 chunker，只能處理純文字，這就把 RAG 的商業價值天花板壓得很低。
+
+過去這類問題叫 Document Intelligence，底下有一堆子任務——布局辨識、表格結構、公式辨識、流程圖辨識，每個都有專用模型。RAG 把它們整合起來，形成廣義 OCR，當作 RAG 的入口。方法上分兩代。第一代是 CNN 加傳統視覺，像 PaddleOCR、DeepDoc、MinerU、Docling，可以跑 CPU、成本低，但泛化差，每個場景都要單獨訓，被戲稱為雕花。第二代是 Encoder-Decoder Transformer，像 Meta 的 Nougat、GOT-OCR 2.0，用生成式模型統一處理，泛化強，但需要 GPU。這條路跟 VLM 架構高度相似，2025 年很可能就收斂成統一的多模態文件解析模型。
+
+對照 engineer-news 呢？這個站只吃 Markdown，作者手寫或 AI 整理過的 Markdown，完全繞過 OCR。所以這個功課對我來說是 N/A，不欠。但反過來說，這也限制了它能吃的資料類型——如果之後想擴展到 PDF 論文、投影片、白板照片，就得補這一層。現階段優先度極低。
+
+功課二，Chunking 從長度切分走向上下文化。
+
+Naive Text Chunking 就是按字數硬切，這是我現在的做法。sync-to-d1 裡的 chunkText 函式，邏輯就是把段落合併到大約一千字上限就切，就這樣。
+
+這種切法有一個結構性痛點——chunk 內部沒有全文語境。舉個例子，一篇文章講 D1 batch timeout 的解法，其中一段寫「在 wrangler.jsonc 加上這個設定即可」。這段 chunk 拿出來單獨看，完全不知道在講什麼 D1、什麼 timeout、什麼設定。查詢的時候要命中這段，非常難。
+
+2024 年 Chunking 這一層有一連串進化。Jina 的 Late Chunking，先對整份文檔編碼，在最後 mean pooling 之前才切邊界，讓 chunk 邊界之前所有 token 都能看到上下文。但它要求 embedding 模型走 mean pooling，我用的 bge-m3 是 CLS pooling，直接搭不上。dsRAG 是 LLM 為每個 chunk 補一段 auto-context。Anthropic 的 Contextual Retrieval，概念類似 dsRAG——讓 LLM 幫每個 chunk 生成一小段專屬的上下文說明，跟原文一起 embed。這個做法效果好、實作直觀，已經是 2024 下半年的事實標準之一。還有 Meta-Chunking、Mix-of-Granularity 這些學術路線。
+
+整體結論很清楚——單純調 chunk 大小的收益已經到頂了。真正有價值的是給 chunk 補上下文標籤，這件事只有 LLM 能做，成本可以接受，因為是 sync 階段一次性投入。
+
+對照本站，這是明確缺口。最直接的補法就是走 Contextual Retrieval——sync 的時候，每個 chunk 呼叫一次 llama-3.1-8b 或更小的模型，生成大約五十到一百字的上下文摘要，跟原文串接後再 embed。sync 成本翻倍，但因為離線只做一次，划算。
+
+功課三，混合搜尋——向量、稀疏向量、BM25 三路。
+
+2024 年 IBM Research 的 BlendedRAG 論證了一件事——向量加稀疏向量加 BM25，三路混合就是召回品質的上限，比任何單路或兩路都好。
+
+為什麼一定要三路？向量負責語意召回，擅長「意思相近但用詞不同」，但天生沒辦法處理精確查詢，比如「2024 年 3 月我們公司財務計畫」，很可能召回其他時間段的內容。稀疏向量像 SPLADE，是預訓練模型輸出的固定維度稀疏向量，可以看成標準化的關鍵字擴展，通用查詢不錯，但遇到 domain-specific 詞彙、型號、代號、內部術語就會漏，因為那些詞不在預訓練詞彙裡。BM25 是三十年前的老演算法，對精確關鍵字匹配最直接，稀疏向量取代不了它。三路各有所長，不是誰替代誰。
+
+工程上真正難的不是「支援 BM25」，而是「支援合格的 BM25」——短語查詢需要倒排索引存位置、動態剪枝避免 OR 查詢爆炸、中文分詞、詞權重、停用詞。Elasticsearch 是黃金標準，RAGFlow 一開始就選 ES 當唯一後端就是這個理由。純向量資料庫像 Milvus、Qdrant 宣稱支援 BM25 的越來越多，但真正做到位的很少。
+
+對照本站，我用的 D1 是 SQLite，SQLite 有一個非常好用的內建全文索引——FTS5，支援 tokenizer、短語查詢、rank function。要補 BM25 這一路，步驟是——sync 時多建一張 posts_fts 虛擬表，索引 title、tldr、content；搜尋 API 再加一路 FTS5 查詢；最後用 Reciprocal Rank Fusion 把向量路和 BM25 路合起來。工作量比 Reranker 大，但這是「有沒有 hybrid search」的分水嶺。稀疏向量那一路暫時可以先不做，Cloudflare 生態沒有現成的 SPLADE 服務。
+
+功課四，Tensor Reranker，也就是延遲交互模型。
+
+Reranker 這一年也在快速演化，分成三代。Cross-Encoder，像 BGE-Reranker，把 query 和 doc 拼起來丟進 BERT，捕捉 token 交互，品質高、成本適中，目前主流。LLM-based Reranker，直接用 7B 級 LLM 打分，品質更好，成本翻倍。第三代是 Late Interaction，也叫 Tensor Reranker，ColBERT 系列——索引階段就把每個 token 的 embedding 存下來，一份文件用一個 tensor 表示，查詢時只算 query token 和 doc token 兩兩相似度再累加。
+
+Tensor Reranker 有一個工程優勢——它可以放進資料庫層做。查詢階段沒有 LLM 推理，只有 tensor 內積，很快。這意味著粗排結果不用嚴格控制到五到十個，可以擴大到幾百上千個做 rerank，補救粗排品質不佳。Vespa 是最早工程化 tensor 的資料庫，Infinity 也在 2024 年中補上。
+
+對照本站，Cloudflare Workers AI 目前有 bge-reranker-base，是 Cross-Encoder，Tensor Reranker 這一層沒有原生支援。所以我的實務路徑是——短期先加 Cross-Encoder，這已經是巨大進步；長期等 Cloudflare 推出 ColBERT 系列，或自架 embedding service。以現在 150 篇文章的規模，Tensor Reranker 投入產出比不高，優先度低。
+
+功課五，GraphRAG 與語意鴻溝。
+
+上一集已經把 GraphRAG 的光譜講過，這裡只補三個工程觀察。第一，RAPTOR 是 GraphRAG 之前的過渡——先做文本聚類、LLM 為每個聚類生成摘要，摘要跟原文一起餵給搜尋系統，它已經在解決「跨 chunk 的宏觀提問」問題，只是沒有明確圖結構。第二，SiReRAG 提出雙軸召回，文本之間有兩個維度——相似度和相關性；RAPTOR 走相似度側，GraphRAG 走相關性側，SiReRAG 合起來。這個切分很清晰，之後的 Graph-RAG 變種都可以放到這個座標系裡看。第三，HybridRAG 有個 schema 洞見——一個功能完備的資料庫不需要圖資料庫來實作 GraphRAG，邊、實體、社群摘要，這些都是文字，只要一張具備全文索引加向量索引的表就能承載，多加一個 type 欄位區分類型即可。這也是為什麼 RAGFlow 繼續用 Elasticsearch，而不加 Neo4j。
+
+對本站來說這是重要提示——如果哪天真的要做 GraphRAG，D1 一張表就夠了。但這階段暫時不做。GraphRAG 適用的是「跨文件關聯強、需要全域理解」，對 150 篇個人技術文不成立。要等資料量上千、或者讀者開始問「這個站對某某主題整體是什麼觀點」，才值得投入。
+
+兩個番外快速講一下。Mem0 只定義了一組 memory 管理 API 就爆紅，說明 memory 這個 primitive 需求很強，但 Memory infra 本身已經很成熟——真正稀缺的是怎麼把 Memory 跟 Reasoning 結合，這是 2025 年的熱區，但對個人站來說是三五年後的問題。多模態這邊，VLM 兩年內從識別日常用品進化到理解企業級多模態文檔，ColPali 開創了跳過 OCR、直接對圖片生成 tensor embedding 的路線，但那是跟第一代 CNN OCR 比的，跟第二代 Encoder-Decoder OCR 比，兩條路會並行很久。
+
+最後把五個功課排一下優先順序。
+
+最高優先，Reranker——先上 Cross-Encoder，不用等 Tensor。Workers AI 已經有 bge-reranker-base，一個晚上能加，效果立即可見。並列最高，Contextual Retrieval——sync 階段離線做，一次性投入，直接補「語意鴻溝」最基礎的一層。第二層，BM25 三路混合，走 SQLite FTS5——專有名詞救援必備，工作量中等。第三層，Document Intelligence——目前只吃 Markdown，暫時 N/A。最後，GraphRAG、Agentic RAG、Tensor Reranker，資料量和需求都沒到。
+
+排序背後的原則是——先做「單次修改能永久改善」的功課，比如 Chunking 和 Reranker；再做「需要持續投入才有回報」的功課，比如 Hybrid Search 要維護 FTS5 索引；最後才是「需要架構級改動」的功課，比如 GraphRAG。
+
+收個尾。給你帶走三件事。
+
+第一，RAG 的品質天花板不在你選了哪個 embedding 模型，而在文件入口、Chunking、混合搜尋、Reranker、GraphRAG 這五塊地基有沒有分別做好。第二，對一個 150 篇規模的個人站，最划算的兩件事是——上 Cross-Encoder Reranker，和幫每個 chunk 補上下文摘要。這兩件都能離線做、一次投入。第三，InfiniFlow 那句話值得反覆咀嚼——RAG 不是一個簡單的應用，它是以搜尋為中心，把各類資料、基礎組件、大小模型協同起來的複雜系統。想像力再遠，都要從腳下這幾塊磚開始鋪。

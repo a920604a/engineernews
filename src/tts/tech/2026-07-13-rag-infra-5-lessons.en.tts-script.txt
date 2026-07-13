@@ -1,0 +1,69 @@
+The last piece we did was a big zoom-out — the five-stage panorama of how RAG has evolved over two years. This one goes the other direction. We're zooming all the way in, right down to the engineering decisions you actually have to make if you want to build a working RAG system. Most of the material comes from InfiniFlow — the team behind RAGFlow — and their late-2024 year-in-review. I've boiled it down into five infrastructure lessons, and I'm going to check each one against my own site, engineer-news, as we go.
+
+Quick recap: last time I concluded that this site sits right at the edge of what's called Naive RAG. Today we're going to unpack that sentence into a very concrete checklist.
+
+Lesson one — document ingestion quality. Or as the field calls it, Document Intelligence.
+
+Here's the golden rule. Whether you're feeding pure text or a PDF stuffed with tables, formulas and flowcharts to a language model, input quality caps output quality. Garbage in, garbage out — in RAG, that becomes quality in, quality out.
+
+And the awkward truth is, most enterprise data is not plain text. It's PDFs, PowerPoints, Word docs, magazines with mixed text and images. Early LLMOps stacks — LangChain plus a vector database plus a plain-text chunker — only handled clean text, which basically caps how good your RAG can get.
+
+There are two generations of solution here. First generation is the traditional computer-vision approach — things like PaddleOCR, RAGFlow's DeepDoc, MinerU, Docling. CPU-friendly, cheap, but they don't generalize well. Every new document type needs its own model. Second generation is Encoder-Decoder Transformers — Meta's Nougat, GOT-OCR 2.0, and friends. One generative model handles many document types, generalizes much better, but you need a GPU. And the architecture looks a lot like a vision-language model, so in 2025 I expect these to converge into unified multimodal document parsers.
+
+For my site? Engineer-news only takes Markdown — either hand-written or AI-normalized — so I bypass OCR entirely. This lesson is basically not applicable. The flip side, though, is that I can't ingest PDF papers, slides, or whiteboard photos. If I ever want to, this whole layer comes back into play. For now, priority: very low.
+
+Lesson two — chunking. Moving from length-splitting to context-augmented chunking.
+
+Naive chunking is just "split by character count." That's exactly what my site does today. My sync script merges paragraphs together until they hit about a thousand characters, then cuts. That's it. Simple, but it has a structural pain point — the chunks lack the article's overall context.
+
+Here's what I mean. Imagine an article about "solving a Cloudflare D1 batch timeout," and one paragraph says "just add this setting in wrangler.jsonc." Pull that paragraph out on its own and you have no idea which D1, which timeout, or which setting the author is talking about. A query for "D1 batch timeout" will struggle to hit that chunk, because the chunk itself doesn't contain those words.
+
+2024 brought a wave of fixes. Jina's Late Chunking encodes the whole document with the embedding model before deciding boundaries, so every token gets to "see" context. There's dsRAG, which uses an LLM to write an auto-context for every chunk. Anthropic's Contextual Retrieval is the same idea — an LLM writes a short context blurb, you glue it onto the original text, then embed the combined thing. That last one is direct, effective, and has basically become the de-facto standard for context-augmented chunking since late 2024. There are also approaches like Meta-Chunking and Mix-of-Granularity that use LLMs to pick chunk boundaries by logical coherence.
+
+The bottom line: fiddling with chunk size has plateaued. The real gain is tagging chunks with context. Only LLMs can do that well, and the cost is fine, because it's a one-time offline job at sync time.
+
+For my site, this is a clear gap. The most direct fix is Contextual Retrieval — at sync time, call a small model like llama-3.1-8b once per chunk, generate a fifty-to-a-hundred-character context blurb, glue it onto the chunk, then embed. My sync cost roughly doubles, but it's offline, and I only pay it once.
+
+Lesson three — hybrid search. And by hybrid, I don't mean two lanes. I mean three.
+
+IBM Research put out a paper called BlendedRAG in 2024 that proved something important. Vector plus sparse vector plus BM25 — three lanes together — is the recall ceiling. It beats any single lane. It beats any two-lane combo.
+
+Why do you need all three? Vector search handles semantic recall — great when the wording is different but the meaning is the same. But it's bad at precise matches. Search for "our company's March 2024 financial plan" and it'll happily return the February one too. Sparse vectors like SPLADE are basically standardized keyword expansion — a pretrained model outputs a fixed sparse representation. Good on general queries, weak on domain-specific terms the pretraining never saw, like model numbers or internal codes. And BM25 — a thirty-year-old algorithm — is still the most direct answer for exact keyword matching. Sparse vectors can't replace it. Three lanes, each specialized. Nothing is redundant.
+
+Now the hard engineering question isn't "do you support BM25," it's "do you support proper BM25." Proper means phrase queries with position information in the inverted index. Dynamic pruning so OR queries don't explode. And for Chinese, real segmentation — bigram tokenization, term weights, stop-word filtering. Elasticsearch is the gold standard here, which is why RAGFlow picked ES as its only backend from day one. It's also a big part of why OpenAI acquired Rockset in June 2024 — Rockset is cloud-native and offers close-to-ES full-text search. Plenty of pure vector databases claim BM25 support now, but very few actually deliver phrase queries plus dynamic pruning plus CJK tokenization.
+
+For my site — I'm on D1, which is SQLite under the hood. And SQLite ships a really useful built-in full-text index called FTS5 that supports tokenizers, phrase queries, and rank functions. So to add BM25, I create a virtual table at sync time indexing title, TL;DR, and content. Add a BM25 lane to my search endpoint. Then merge the vector results and the BM25 results using Reciprocal Rank Fusion. It's more work than adding a reranker, but this is the watershed between "has hybrid search" and "doesn't." Sparse vectors can wait, because Cloudflare's stack doesn't ship a SPLADE service anyway.
+
+Lesson four — reranking. And specifically, the rise of the tensor reranker.
+
+Rerankers evolved fast this year, in three generations. First, Cross-Encoders like BGE-Reranker — you concatenate the query and the document into BERT and let the tokens interact. High quality, moderate cost, this is today's mainstream. Second, LLM-based rerankers, like gte-Qwen2-7B — a seven-billion-parameter LLM scores directly. Better quality but roughly doubled inference cost. Third, late interaction, or tensor rerankers — the ColBERT family. You store per-token embeddings at index time — one tensor per document — and at query time, you just sum up pairwise similarities between query tokens and document tokens.
+
+Tensor rerankers have a huge engineering advantage — they can live inside the database. Query-time inference is just dot products. So your coarse-ranking result set doesn't have to be capped tight at five or ten items — it can expand to hundreds, even thousands. Which means even if the coarse ranking was sloppy, the reranker can rescue it. Vespa was the first database to engineer real tensor support; RAGFlow's own Infinity added it mid-2024. And on the model side, ColBERT, ColBERT v2, JaColBERT for Japanese, jina-colbert-v2 for multilingual — all shipping fast.
+
+For my site — Cloudflare Workers AI currently ships bge-reranker-base, which is a Cross-Encoder. Tensor reranker, no native support. So short-term, I add the Cross-Encoder — that alone is a huge upgrade. Long-term, either Cloudflare ships the ColBERT family, or I self-host. Given I only have 150 articles, tensor reranker ROI is low, so priority: low.
+
+Lesson five — GraphRAG, and the semantic gap it's trying to close.
+
+The previous post already walked through the whole spectrum — Microsoft GraphRAG, LightRAG, LazyGraphRAG, HippoRAG, KAG. Here I want to add three engineering observations.
+
+First, RAPTOR is really a pre-GraphRAG transition. You cluster the text, have an LLM summarize each cluster, then feed both the summaries and the originals into the index. It's already tackling cross-chunk macroscopic questions, just without an explicit graph. RAGFlow adopted RAPTOR mid-year as a GraphRAG stand-in.
+
+Second, SiReRAG proposes a nice two-axis framing. Text has two dimensions — similarity, meaning semantic distance, and relatedness, meaning entity or relation association. RAPTOR sits on the similarity axis, GraphRAG sits on the relatedness axis, SiReRAG merges them. It's a clean way to think about it, and most Graph-RAG variants fit somewhere on that coordinate system.
+
+Third, and this is the one I love — HybridRAG's schema insight. A fully featured database doesn't actually need a graph database to do GraphRAG. Edges, entities, community summaries — they're all text. One table, full-text index plus vector index, and a column called "type" to distinguish what kind of row it is. Done. This is exactly why RAGFlow stuck with Elasticsearch and Infinity instead of bolting on Neo4j. Which is a useful reminder for my site — if I ever want GraphRAG on D1, one table is enough.
+
+For my site — not yet. GraphRAG shines when you have strong cross-document association and need global understanding. A hundred and fifty personal tech articles don't clear that bar. Once the corpus hits thousands, or readers start asking "what does this site think about topic X overall," then the investment starts to make sense.
+
+Two quick asides before I wrap up. On Agentic and Memory — Mem0 got a big star bump just by defining a Memory API. That's evidence memory as a primitive is genuinely in demand. But the memory infrastructure itself is already mature — real-time filter plus search. The scarce piece is combining memory with reasoning. That's the hot space for 2025, but it's three to five years away for a personal site. On multimodal RAG — vision-language models went from "recognize a cat" to "understand enterprise multimodal documents" in two years. ColPali pioneered skipping OCR entirely and generating tensor embeddings directly from images. Paired with a tensor reranker, you get end-to-end multimodal RAG. The paper recommends dropping OCR, but that's compared to first-generation OCR — versus second-generation Encoder-Decoder OCR, both routes fit different scenarios and will coexist for a while.
+
+Now — my ranked priority list for the site. Top of the list, three stars each — Reranker, starting with the Cross-Encoder, skipping tensor for now. Workers AI already ships bge-reranker-base; it's an evening's work for immediate impact. Also three stars — Contextual Retrieval for chunking, because it's offline at sync time, one-shot investment, and it directly closes the most basic semantic gap. Two stars — BM25 hybrid search via SQLite's FTS5. Essential for proper nouns, moderate effort. One star — Document Intelligence, since I only ingest Markdown right now. Crossed out — GraphRAG, Agentic RAG, Tensor Reranker. The corpus and query complexity just haven't crossed the threshold yet.
+
+The principle underneath that ordering — do the "one-time change, permanent gain" work first, like chunking and reranker. Then the "keeps costing to maintain" work, like hybrid search, which needs FTS5 index upkeep. And finally the "architectural change" work like GraphRAG.
+
+So, three takeaways to walk away with.
+
+One — RAG quality isn't decided by which embedding model you picked. It's decided by whether these five lessons — ingestion, chunking, hybrid search, reranking, and knowledge graphs — have each been done well. It's a whole-stack collaboration.
+
+Two — order matters. Do the offline, one-shot changes first. Contextual Retrieval at sync time, plus a Cross-Encoder reranker. Those two together are probably the single biggest upgrade any Naive RAG can make in a weekend.
+
+And three — architecture doesn't have to grow to match ambition. HybridRAG showed that GraphRAG doesn't need a graph database. FTS5 shows BM25 doesn't need Elasticsearch. Before you add a new system, check if the one you have can carry the extra weight. Very often, it can. RAG is like the databases of old — the interface is trivial, the internals are absurd. The next step for engineer-news is filling in this checklist, one box at a time.
