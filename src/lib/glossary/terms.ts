@@ -166,6 +166,28 @@ const RICH_TERMS: GlossaryEntry[] = [
     context: '在本機跑 LLM（Ollama、llama.cpp）時最常遇到。',
     context_en: 'Most relevant when running LLMs locally (Ollama, llama.cpp).',
   },
+  {
+    term: 'greenfield',
+    aliases: ['greenfield project', '綠地專案'],
+    zh: '綠地專案',
+    definition: '從零開始、沒有既有系統包袱的新專案，設計自由度最高。',
+    definition_en: 'A project built from scratch with no legacy system to accommodate — maximum design freedom.',
+    advanced: '架構、技術選型、規範可以一次定齊；缺點是還沒有真實使用者驗證，容易過度設計或選錯抽象。Harness Engineering、微服務、DDD 這類方法在綠地上最容易落地。',
+    advanced_en: 'Architecture, stack choices, and conventions can be set cleanly upfront — but without real usage feedback, teams often over-engineer or pick the wrong abstractions. Approaches like Harness Engineering, microservices, and DDD land most easily on greenfield.',
+    context: '新產品、新服務、或內部工具從零重寫的情境。',
+    context_en: 'New products, new services, and internal-tool rewrites from scratch.',
+  },
+  {
+    term: 'brownfield',
+    aliases: ['brownfield project', '棕地專案'],
+    zh: '棕地專案',
+    definition: '對既有系統做的改造、擴充或現代化；必須在不打破現況的前提下推進。',
+    definition_en: 'Modernizing, extending, or refactoring an existing system without breaking what already works.',
+    advanced: '典型限制包含技術債、隱性依賴、缺少測試、部署路徑僵化；常見策略是絞殺榕（strangler fig）、模組化切分、先補測試再重構。大多數團隊真實面對的都是棕地，而不是綠地。',
+    advanced_en: 'Typical constraints: tech debt, hidden dependencies, missing test coverage, rigid deploy paths. Common strategies include the strangler fig pattern, modular carve-outs, and adding tests before refactoring. Most teams actually work in brownfield, not greenfield.',
+    context: 'Legacy 系統重構、大版本升級、把 AI Agent 導入既有 codebase 的情境。',
+    context_en: 'Legacy refactors, major upgrades, and rolling AI agents into an existing codebase.',
+  },
 ];
 
 function toLightweight(term: string, e: { zh: string; context?: string }): GlossaryEntry {

@@ -10,7 +10,7 @@ description: "系統整理 Harness Engineering 的落地框架：Agent 常見失
 audio_url: "/api/tts/r2/tts/tts_20260712_085833_533268.mp3"
 ---
 
-[前兩篇](../harness-engineering/)談了 Harness Engineering 的概念，以及 OpenAI 用 Codex 打造百萬行程式碼產品的五個工程實踐。這篇轉換視角，從**業界的橫向對比**出發，回答一個更實際的問題：
+[前兩篇](/posts/tech/2026-04-24-harness-engineering)談了 Harness Engineering 的概念，以及 OpenAI 用 Codex 打造百萬行程式碼產品的五個工程實踐。這篇轉換視角，從**業界的橫向對比**出發，回答一個更實際的問題：
 
 > **如果我不是 OpenAI、沒有 Codex，這套方法論怎麼落到我自己的專案上？**
 

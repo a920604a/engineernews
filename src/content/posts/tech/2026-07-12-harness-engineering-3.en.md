@@ -11,7 +11,7 @@ description: "A systematic map of Harness Engineering rollout: common Agent fail
 audio_url: "/api/tts/r2/tts/tts_20260712_085716_089169.mp3"
 ---
 
-The [first two posts](../harness-engineering/) covered the concept of Harness Engineering and the five engineering practices from OpenAI's million-line Codex project. This post shifts the lens to **industry-wide comparison** to answer a more practical question:
+The [first two posts](/en/posts/tech/2026-04-24-harness-engineering) covered the concept of Harness Engineering and the five engineering practices from OpenAI's million-line Codex project. This post shifts the lens to **industry-wide comparison** to answer a more practical question:
 
 > **If I'm not OpenAI and I don't have Codex, how does this methodology land on my own project?**
 

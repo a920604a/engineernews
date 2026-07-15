@@ -11,7 +11,7 @@ description: "From OpenAI's Codex million-line experiment, we unpack five engine
 audio_url: "/api/tts/r2/tts/tts_20260712_085122_138363.mp3"
 ---
 
-[Part 1](../harness-engineering/) laid out the **concept** of Harness Engineering: an AI Agent = language model + Harness, and when an Agent underperforms, the problem isn't necessarily the model — it may just be a poorly designed harness.
+[Part 1](/en/posts/tech/2026-04-24-harness-engineering) laid out the **concept** of Harness Engineering: an AI Agent = language model + Harness, and when an Agent underperforms, the problem isn't necessarily the model — it may just be a poorly designed harness.
 
 But concepts are one thing. What does "designing the harness" actually look like? What do engineers concretely do? This post starts with a real, scaled-up experiment and examines what Harness Engineering looks like in a production environment.
 
@@ -305,7 +305,7 @@ What does this shift mean for engineers' careers? Both a challenge and an opport
 
 ---
 
-The concept and OpenAI's benchmark case are both clear now. The next question: **if I'm not OpenAI and I don't have Codex, how does this methodology land on my project?** [The next post](../harness-engineering-3/) shifts to an industry-wide lens: the four typical Agent failure modes, the 40% context sweet spot, the four-pillar framework that has emerged across teams, and a three-phase rollout roadmap from "start this afternoon" to "fully automated in two weeks."
+The concept and OpenAI's benchmark case are both clear now. The next question: **if I'm not OpenAI and I don't have Codex, how does this methodology land on my project?** [The next post](/en/posts/tech/2026-07-12-harness-engineering-3) shifts to an industry-wide lens: the four typical Agent failure modes, the 40% context sweet spot, the four-pillar framework that has emerged across teams, and a three-phase rollout roadmap from "start this afternoon" to "fully automated in two weeks."
 
 ## References
 

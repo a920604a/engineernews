@@ -163,7 +163,7 @@ graph TD
 
 ---
 
-概念清楚了，接下來的問題是：真正把 Harness Engineering 用在規模化生產上，工程師要做哪些具體的事？[下一篇](../harness-engineering-2/)從 OpenAI 三人團隊五個月產出百萬行程式碼的實驗出發，拆解五個讓 Agent 可靠產出的工程實踐。
+概念清楚了，接下來的問題是：真正把 Harness Engineering 用在規模化生產上，工程師要做哪些具體的事？[下一篇](/posts/tech/2026-07-12-harness-engineering-2)從 OpenAI 三人團隊五個月產出百萬行程式碼的實驗出發，拆解五個讓 Agent 可靠產出的工程實踐。
 
 ## 參考資料
 

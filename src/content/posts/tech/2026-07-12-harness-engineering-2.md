@@ -10,7 +10,7 @@ description: "從 OpenAI Codex 百萬行程式碼實驗，拆解五個讓 AI Age
 audio_url: "/api/tts/r2/tts/tts_20260712_085242_210416.mp3"
 ---
 
-[上一篇](../harness-engineering/)講清楚了 Harness Engineering 的**概念**：AI Agent = 語言模型 + Harness，當 Agent 表現不佳時，問題不一定在模型，而可能在馬具設計得不夠好。
+[上一篇](/posts/tech/2026-04-24-harness-engineering)講清楚了 Harness Engineering 的**概念**：AI Agent = 語言模型 + Harness，當 Agent 表現不佳時，問題不一定在模型，而可能在馬具設計得不夠好。
 
 但概念歸概念，「設計馬具」到底長什麼樣子？工程師具體要做哪些事？這篇從 OpenAI 一個規模化的實驗開始，看 Harness Engineering 在真實生產環境中的具體形狀。
 
@@ -303,7 +303,7 @@ OpenAI 在博文結尾寫了一句話，很值得抄下來：
 
 ---
 
-概念和 OpenAI 這個標竿案例都清楚了，接下來的問題是：**如果我不是 OpenAI，也沒有 Codex，這套方法論怎麼落到我的專案上？** [下一篇](../harness-engineering-3/)從業界視角出發，整理 Agent 的四種典型翻車姿勢、上下文的 40% 甜蜜區間、業界收斂出的四大支柱框架，以及從「今天下午就能開始」到「兩週後全自動化」的三階段落地路線圖。
+概念和 OpenAI 這個標竿案例都清楚了，接下來的問題是：**如果我不是 OpenAI，也沒有 Codex，這套方法論怎麼落到我的專案上？** [下一篇](/posts/tech/2026-07-12-harness-engineering-3)從業界視角出發，整理 Agent 的四種典型翻車姿勢、上下文的 40% 甜蜜區間、業界收斂出的四大支柱框架，以及從「今天下午就能開始」到「兩週後全自動化」的三階段落地路線圖。
 
 ## 參考資料
 
