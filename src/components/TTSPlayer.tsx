@@ -53,6 +53,15 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [ttsError, setTtsError] = useState<string | null>(null);
+  const [hoverTime, setHoverTime] = useState<number | null>(null);
+  const [hoverLeft, setHoverLeft] = useState(0);
+
+  const SPEED_MIN = 0.5;
+  const SPEED_MAX = 2.0;
+  const adjustSpeed = (delta: number) => {
+    const next = Math.round((playbackSpeed + delta) * 10) / 10;
+    setPlaybackSpeed(Math.min(SPEED_MAX, Math.max(SPEED_MIN, next)));
+  };
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -301,6 +310,33 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const handleTrackHover = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    setHoverTime(ratio * duration);
+    setHoverLeft(ratio * rect.width);
+  };
+  const handleTrackLeave = () => setHoverTime(null);
+
+  const SpeedStepper: React.FC<{ compact?: boolean }> = ({ compact: c }) => (
+    <div className={`speed-stepper ${c ? 'speed-stepper-mini' : ''}`}>
+      <button
+        type="button"
+        onClick={() => adjustSpeed(-0.1)}
+        disabled={playbackSpeed <= SPEED_MIN + 1e-6}
+        aria-label="降低速度"
+      >−</button>
+      <span className="speed-stepper-value">{playbackSpeed.toFixed(1)}×</span>
+      <button
+        type="button"
+        onClick={() => adjustSpeed(0.1)}
+        disabled={playbackSpeed >= SPEED_MAX - 1e-6}
+        aria-label="提高速度"
+      >+</button>
+    </div>
+  );
+
   if (!isVisible) return null;
 
   // ── Compact mini bar (mobile fixed bottom) ──────────────────────────
@@ -324,29 +360,30 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
 
         <div className="tts-mini-track">
           <span className="tts-mini-title">{title}</span>
-          <input
-            type="range"
-            min="0" max="100" step="0.1"
-            value={progress || 0}
-            onChange={handleSeek}
-            className="tts-mini-range"
-            style={{ '--progress': `${progress}%` } as React.CSSProperties}
-          />
+          <div
+            className="tts-track-wrapper"
+            onMouseMove={handleTrackHover}
+            onMouseLeave={handleTrackLeave}
+          >
+            {hoverTime !== null && (
+              <div className="tts-hover-tip" style={{ left: `${hoverLeft}px` }}>
+                {formatTime(hoverTime)}
+              </div>
+            )}
+            <input
+              type="range"
+              min="0" max="100" step="0.1"
+              value={progress || 0}
+              onChange={handleSeek}
+              className="tts-mini-range"
+              style={{ '--progress': `${progress}%` } as React.CSSProperties}
+            />
+          </div>
         </div>
 
         <span className="tts-mini-time">{formatTime(currentTime)}</span>
 
-        <select
-          value={playbackSpeed}
-          onChange={e => setPlaybackSpeed(parseFloat(e.target.value))}
-          className="tts-mini-speed"
-        >
-          <option value="0.75">0.75×</option>
-          <option value="1">1×</option>
-          <option value="1.25">1.25×</option>
-          <option value="1.5">1.5×</option>
-          <option value="2">2×</option>
-        </select>
+        <SpeedStepper compact />
 
         {audioUrl && (
           <audio
@@ -409,11 +446,34 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
             font-size: 11px; font-weight: 600; color: var(--label-tertiary);
             font-variant-numeric: tabular-nums; flex-shrink: 0;
           }
-          .tts-mini-speed {
-            appearance: none; background: transparent; border: 0.5px solid var(--separator);
-            border-radius: 6px; padding: 3px 8px; font-size: 11px; color: var(--label-secondary);
-            cursor: pointer; flex-shrink: 0;
+          .tts-track-wrapper { position: relative; width: 100%; }
+          .tts-hover-tip {
+            position: absolute; bottom: 100%; transform: translateX(-50%);
+            margin-bottom: 6px; padding: 2px 6px; font-size: 10px; font-weight: 600;
+            background: var(--label); color: var(--bg-primary);
+            border-radius: 4px; pointer-events: none; white-space: nowrap;
+            font-variant-numeric: tabular-nums; z-index: 5;
           }
+          @media (hover: none), (pointer: coarse) { .tts-hover-tip { display: none; } }
+          .speed-stepper {
+            display: inline-flex; align-items: center; gap: 2px; flex-shrink: 0;
+            border: 0.5px solid var(--separator); border-radius: 6px;
+            padding: 2px 4px; background: transparent;
+          }
+          .speed-stepper button {
+            width: 20px; height: 20px; border: none; background: transparent;
+            color: var(--label-secondary); cursor: pointer; padding: 0;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 600; line-height: 1; border-radius: 4px;
+          }
+          .speed-stepper button:not(:disabled):hover { background: var(--fill-secondary); color: var(--label); }
+          .speed-stepper button:disabled { opacity: 0.3; cursor: default; }
+          .speed-stepper-value {
+            font-size: 11px; font-weight: 600; color: var(--label);
+            font-variant-numeric: tabular-nums; min-width: 32px; text-align: center;
+          }
+          .speed-stepper-mini .speed-stepper-value { min-width: 28px; font-size: 10px; }
+          .speed-stepper-mini button { width: 18px; height: 18px; font-size: 12px; }
         `}} />
       </div>
     );
@@ -429,19 +489,7 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
             <span className="tts-title">智能語音導讀</span>
           </div>
           <div className="tts-actions">
-            <div className="select-wrapper">
-              <select
-                value={playbackSpeed}
-                onChange={(e) => setPlaybackSpeed(parseFloat(e.target.value))}
-                className="minimal-select"
-              >
-                <option value="0.75">0.75×</option>
-                <option value="1">1.0×</option>
-                <option value="1.25">1.25×</option>
-                <option value="1.5">1.5×</option>
-                <option value="2">2.0×</option>
-              </select>
-            </div>
+            <SpeedStepper />
           </div>
         </div>
 
@@ -462,7 +510,16 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
           </button>
 
           <div className="player-track">
-            <div className="track-sliders">
+            <div
+              className="tts-track-wrapper track-sliders"
+              onMouseMove={handleTrackHover}
+              onMouseLeave={handleTrackLeave}
+            >
+              {hoverTime !== null && (
+                <div className="tts-hover-tip" style={{ left: `${hoverLeft}px` }}>
+                  {formatTime(hoverTime)}
+                </div>
+              )}
               <input
                 type="range"
                 min="0" max="100" step="0.1"
@@ -527,6 +584,14 @@ export const TTSPlayer: React.FC<TTSPlayerProps> = ({
         .range-input:hover::-webkit-slider-thumb { transform: scale(1.2); }
         .loading-spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        .tts-track-wrapper { position: relative; width: 100%; }
+        .tts-hover-tip { position: absolute; bottom: 100%; transform: translateX(-50%); margin-bottom: 6px; padding: 3px 6px; font-size: 10px; font-weight: 600; background: var(--label); color: var(--bg-primary); border-radius: 4px; pointer-events: none; white-space: nowrap; font-variant-numeric: tabular-nums; z-index: 5; }
+        @media (hover: none), (pointer: coarse) { .tts-hover-tip { display: none; } }
+        .speed-stepper { display: inline-flex; align-items: center; gap: 2px; flex-shrink: 0; border: 0.5px solid var(--separator); border-radius: 6px; padding: 2px 4px; background: transparent; }
+        .speed-stepper button { width: 22px; height: 22px; border: none; background: transparent; color: var(--label-secondary); cursor: pointer; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; line-height: 1; border-radius: 4px; }
+        .speed-stepper button:not(:disabled):hover { background: var(--fill-secondary); color: var(--label); }
+        .speed-stepper button:disabled { opacity: 0.3; cursor: default; }
+        .speed-stepper-value { font-size: 11px; font-weight: 600; color: var(--label); font-variant-numeric: tabular-nums; min-width: 34px; text-align: center; }
       `}} />
     </div>
   );
