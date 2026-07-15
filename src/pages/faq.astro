@@ -1,0 +1,132 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPostUrl } from '../lib/postPaths';
+
+export const prerender = false;
+
+const { DB } = Astro.locals.runtime.env;
+
+type Row = {
+  id: number;
+  post_id: string;
+  query: string;
+  answer: string;
+  created_at: string;
+  title: string | null;
+  category: string | null;
+};
+
+let rows: Row[] = [];
+try {
+  const result = await DB.prepare(
+    `SELECT q.id, q.post_id, q.query, q.answer, q.created_at,
+            p.title, p.category
+     FROM post_qa q
+     LEFT JOIN posts p ON p.id = q.post_id
+     WHERE q.lang = 'zh-TW' AND q.quality_score = 1
+       AND q.answer IS NOT NULL AND q.answer != ''
+     ORDER BY q.created_at DESC
+     LIMIT 500`
+  ).all<Row>();
+  rows = result.results ?? [];
+} catch {
+  rows = [];
+}
+
+const grouped = new Map<string, { title: string; category: string; items: Row[] }>();
+for (const row of rows) {
+  const key = row.post_id;
+  if (!grouped.has(key)) {
+    grouped.set(key, {
+      title: row.title ?? row.post_id,
+      category: row.category ?? '',
+      items: [],
+    });
+  }
+  grouped.get(key)!.items.push(row);
+}
+const groups = Array.from(grouped.entries()).map(([postId, g]) => ({ postId, ...g }));
+---
+
+<BaseLayout title="讀者常問 F&Q">
+  <section style="padding-top: 40px; padding-bottom: 64px;">
+    <h1 style="font-size:28px; font-weight:900; margin:0 0 8px;">讀者常問 F&Q</h1>
+    <p style="font-size:14px; color:var(--label-secondary); margin:0 0 32px; max-width: 640px;">
+      整理自讀者用「問這篇文章」提出的問題，經人工審核後採用。每則回答基於當篇文章內容產生。
+    </p>
+
+    {groups.length === 0 && (
+      <p style="font-size:14px; color:var(--label-tertiary);">目前還沒有已核定的 Q&A。</p>
+    )}
+
+    <div class="faq-groups">
+      {groups.map(g => (
+        <section class="faq-group">
+          <header class="faq-group-head">
+            <a class="faq-group-title" href={getPostUrl(g.postId, 'zh-TW')}>{g.title}</a>
+            {g.category && <span class="faq-group-cat">{g.category}</span>}
+          </header>
+          <ul class="faq-items">
+            {g.items.map(item => (
+              <li class="faq-item">
+                <details>
+                  <summary>{item.query}</summary>
+                  <div class="faq-answer" set:html={item.answer.replace(/</g, '&lt;').replace(/\n/g, '<br>')}></div>
+                  <p class="faq-meta">
+                    <time>{item.created_at.slice(0, 10)}</time>
+                    · <a href={getPostUrl(g.postId, 'zh-TW')}>看原文 →</a>
+                  </p>
+                </details>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+  </section>
+
+  <style>
+    .faq-groups { display: flex; flex-direction: column; gap: 32px; }
+    .faq-group {
+      background: var(--bg-secondary);
+      border: 0.5px solid var(--separator);
+      border-radius: 12px;
+      padding: 20px 22px;
+    }
+    .faq-group-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+    .faq-group-title {
+      font-size: 16px; font-weight: 800; color: var(--label);
+      text-decoration: none; letter-spacing: -0.01em;
+    }
+    .faq-group-title:hover { color: var(--accent); }
+    .faq-group-cat {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--label-tertiary); border: 0.5px solid var(--separator);
+      border-radius: 4px; padding: 2px 6px;
+    }
+    .faq-items { list-style: none; padding: 0; margin: 0; }
+    .faq-item {
+      border-top: 0.5px solid var(--separator);
+      padding: 8px 0;
+    }
+    .faq-item:first-child { border-top: none; }
+    .faq-item summary {
+      cursor: pointer; font-size: 14px; font-weight: 600; color: var(--label);
+      padding: 6px 4px; line-height: 1.55;
+      list-style: none;
+    }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary::before {
+      content: '+'; display: inline-block; width: 18px;
+      color: var(--label-tertiary); font-weight: 700;
+    }
+    .faq-item details[open] summary::before { content: '−'; color: var(--accent); }
+    .faq-answer {
+      padding: 4px 4px 8px 22px; font-size: 14px; line-height: 1.7; color: var(--label);
+    }
+    .faq-meta {
+      margin: 4px 0 6px 22px; font-size: 11px; color: var(--label-tertiary);
+    }
+    .faq-meta a { color: var(--accent); text-decoration: none; }
+  </style>
+</BaseLayout>

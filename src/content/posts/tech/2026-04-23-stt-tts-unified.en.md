@@ -2,6 +2,7 @@
 title: "STT-TTS Unified: A Pure-CPU, Zero-API-Key Platform Integrating Speech Synthesis and Recognition"
 date: "2026-04-23T06:56:03.000Z"
 category: "tech"
+lang: en
 tags: ["python","typescript","react","fastapi","docker"]
 type: "case-study"
 github: "https://github.com/a920604a/stt-tts-unified"

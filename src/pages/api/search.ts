@@ -352,6 +352,46 @@ async function writeTrace(
   }
 }
 
+async function writePostQa(
+  db: D1Database,
+  row: { postId: string; lang: string; query: string; sourcesJson: string }
+): Promise<number | null> {
+  try {
+    const result = await db.prepare(
+      `INSERT INTO post_qa (post_id, lang, query, sources_json)
+       VALUES (?, ?, ?, ?) RETURNING id`
+    ).bind(row.postId, row.lang, row.query, row.sourcesJson).first<{ id: number }>();
+    return result?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function finalisePostQa(
+  db: D1Database,
+  id: number,
+  patch: { answer?: string; llmOk?: boolean; error?: string; durationMs?: number }
+): Promise<void> {
+  try {
+    await db.prepare(
+      `UPDATE post_qa SET
+         answer = COALESCE(?, answer),
+         llm_ok = COALESCE(?, llm_ok),
+         error = COALESCE(?, error),
+         duration_ms = COALESCE(?, duration_ms)
+       WHERE id = ?`
+    ).bind(
+      patch.answer ?? null,
+      patch.llmOk === undefined ? null : (patch.llmOk ? 1 : 0),
+      patch.error ?? null,
+      patch.durationMs ?? null,
+      id,
+    ).run();
+  } catch {
+    // non-critical, ignore
+  }
+}
+
 function parseSseChunk(chunk: Uint8Array): string {
   const text = new TextDecoder().decode(chunk);
   let result = '';
@@ -409,6 +449,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         excerpt: truncate(article.content, 220), score: 1,
         lang: article.lang, category: article.category, chunkId: postId,
       };
+      const sourcesJson = JSON.stringify([source]);
       const prompt = buildArticlePrompt(parsed.query, parsed.lang, article);
       const answerStream = await AI.run(ASK_MODEL, {
         messages: [{ role: 'user', content: prompt }],
@@ -418,11 +459,55 @@ export const POST: APIRoute = async ({ request, locals }) => {
       const headers = new Headers();
       headers.set('Content-Type', 'text/event-stream; charset=utf-8');
       headers.set('Cache-Control', 'no-cache, no-transform');
-      headers.set('x-rag-sources', JSON.stringify([source]));
+      headers.set('x-rag-sources', sourcesJson);
       headers.set('x-rag-lang', parsed.lang);
+
+      // Tee stream: 一路回 client，一路 side-channel 累積 answer 寫回 post_qa
+      if (answerStream instanceof ReadableStream) {
+        const [clientStream, traceStream] = (answerStream as ReadableStream<Uint8Array>).tee();
+        ctx.waitUntil((async () => {
+          const rowId = await writePostQa(DB, { postId, lang: parsed.lang, query: parsed.query, sourcesJson });
+          if (rowId === null) return;
+
+          const reader = traceStream.getReader();
+          let accumulated = '';
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              accumulated += parseSseChunk(value);
+            }
+          } catch { /* cancelled */ } finally { reader.releaseLock(); }
+
+          await finalisePostQa(DB, rowId, {
+            answer: accumulated || undefined,
+            llmOk: Boolean(accumulated),
+            durationMs: Date.now() - t0,
+          });
+        })());
+        return new Response(clientStream, { headers });
+      }
+
+      // 非 stream fallback：直接回，log 只記 query 不含 answer
+      ctx.waitUntil((async () => {
+        await writePostQa(DB, { postId, lang: parsed.lang, query: parsed.query, sourcesJson });
+      })());
       return new Response(answerStream as BodyInit, { headers });
     } catch (error) {
       log.error('ask-this-post failed', error);
+      const errMsg = error instanceof Error ? error.message : String(error);
+      const postId = body.postId?.trim() ?? '';
+      ctx.waitUntil((async () => {
+        const rowId = await writePostQa(DB, {
+          postId,
+          lang: parsed.lang,
+          query: parsed.query,
+          sourcesJson: '[]',
+        });
+        if (rowId !== null) {
+          await finalisePostQa(DB, rowId, { llmOk: false, error: errMsg, durationMs: Date.now() - t0 });
+        }
+      })());
       const msg = parsed.lang === 'en'
         ? 'Sorry, something went wrong answering that. Please try again.'
         : '抱歉，回答時出了點問題，請再試一次。';

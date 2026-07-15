@@ -7,7 +7,7 @@ lang: en
 type: "deep-dive"
 draft: false
 series:
-  name: "RAG"
+  name: "RAG 系統架構"
   order: 2
 key_points:
   - "InfiniFlow's 2024 year-in-review distills into 5 infra lessons: document parsing, chunk contextualization, three-lane hybrid search, tensor reranker, and GraphRAG."

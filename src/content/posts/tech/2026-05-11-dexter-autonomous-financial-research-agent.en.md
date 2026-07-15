@@ -2,6 +2,7 @@
 title: "Dexter: An Autonomous Financial Research Agent That Plans and Self-Validates"
 date: "2026-05-11T10:30:00.000Z"
 category: "tech"
+lang: en
 tags: ["ai","llm","fintech","open-source"]
 type: "case-study"
 github: "https://github.com/virattt/dexter"

@@ -2,6 +2,7 @@
 title: "Nutrition Guard: A Zero-Monthly-Cost Multi-Condition Dietary Risk Engine"
 date: "2026-04-23T06:56:03.000Z"
 category: "product"
+lang: en
 tags: ["typescript","react","firebase","cloudflare","ai"]
 type: "case-study"
 github: "https://github.com/a920604a/nutrition-risk-engine"

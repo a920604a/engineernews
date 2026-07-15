@@ -5,6 +5,7 @@ category: "tech"
 tags: ["harness-engineering","llm","ai","machine-learning","deep-learning"]
 type: "explainer"
 series: {"name":"Harness Engineering","order":1}
+lang: en
 original_url: "https://www.youtube.com/watch?v=R6fZR_9kmIw"
 draft: false
 key_points:

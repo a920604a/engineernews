@@ -2,6 +2,7 @@
 title: "OpenStock: An AGPL-Licensed Open-Source Stock Market Dashboard — Self-Hostable, Forever Free"
 date: "2026-05-11T10:00:00.000Z"
 category: "tech"
+lang: en
 tags: ["fintech","open-source","next-js"]
 type: "case-study"
 github: "https://github.com/Open-Dev-Society/OpenStock"

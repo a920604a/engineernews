@@ -6,7 +6,7 @@ tags: ["ai","llm","rag","chunking","reranker","hybrid-search","cloudflare","syst
 type: "deep-dive"
 draft: false
 series:
-  name: "RAG"
+  name: "RAG 系統架構"
   order: 2
 key_points:
   - "InfiniFlow 2024 年度總結可以濃縮成 5 個 infra 功課：文件解析、Chunking 上下文化、三路混合搜尋、Tensor Reranker、GraphRAG。"

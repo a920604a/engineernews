@@ -656,6 +656,160 @@ function SearchTracesDetail({ token }: { token: string }) {
   );
 }
 
+type PostQaRow = {
+  id: number;
+  post_id: string;
+  lang: string;
+  query: string;
+  answer: string | null;
+  sources_json: string | null;
+  llm_ok: number;
+  error: string | null;
+  duration_ms: number | null;
+  quality_score: number;
+  created_at: string;
+};
+type PostQaPage = { rows: PostQaRow[]; total: number; limit: number; offset: number };
+
+function PostQaDetail({ token }: { token: string }) {
+  const [rows, setRows] = useState<PostQaRow[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [filter, setFilter] = useState('');
+  const [postFilter, setPostFilter] = useState('');
+  const [scoreFilter, setScoreFilter] = useState<'' | '-1' | '0' | '1'>('');
+  const [expanded, setExpanded] = useState<number | null>(null);
+  const [quality, setQuality] = useState<Record<number, number>>({});
+
+  const fetchRows = useCallback((q = '', post = '', score: '' | '-1' | '0' | '1' = '') => {
+    setLoading(true);
+    const params = new URLSearchParams({ token });
+    if (q) params.set('q', q);
+    if (post) params.set('post_id', post);
+    if (score) params.set('score', score);
+    fetch(`/api/admin/post-qa?${params.toString()}`)
+      .then(r => r.json() as Promise<PostQaPage>)
+      .then(d => { setRows(d.rows); setTotal(d.total); })
+      .catch(e => setErr((e as Error).message))
+      .finally(() => setLoading(false));
+  }, [token]);
+
+  useEffect(() => { fetchRows(); }, [fetchRows]);
+
+  const applyFilters = (nextQ = filter, nextPost = postFilter, nextScore: '' | '-1' | '0' | '1' = scoreFilter) => {
+    fetchRows(nextQ, nextPost, nextScore);
+  };
+
+  const setScore = async (id: number, score: number) => {
+    const current = quality[id] ?? rows.find(r => r.id === id)?.quality_score ?? -1;
+    const next = current === score ? -1 : score;
+    setQuality(prev => ({ ...prev, [id]: next }));
+    await fetch(`/api/admin/post-qa?token=${encodeURIComponent(token)}&id=${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ quality_score: next }),
+    });
+  };
+
+  const deleteRow = async (id: number) => {
+    if (!confirm('確定刪除這筆 Q&A？')) return;
+    await fetch(`/api/admin/post-qa?token=${encodeURIComponent(token)}&id=${id}`, { method: 'DELETE' });
+    setRows(prev => prev.filter(r => r.id !== id));
+    setTotal(t => Math.max(0, t - 1));
+  };
+
+  const currentScore = (row: PostQaRow) => quality[row.id] ?? row.quality_score;
+  const qualityIcon = (row: PostQaRow) => {
+    const score = currentScore(row);
+    if (score === 1) return '✓';
+    if (score === 0) return '✗';
+    return '–';
+  };
+  const qualityColor = (row: PostQaRow) => {
+    const score = currentScore(row);
+    if (score === 1) return '#30d158';
+    if (score === 0) return '#ff453a';
+    return 'var(--label-tertiary)';
+  };
+
+  if (err) return <Err msg={err} />;
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap' }}>
+        <input
+          value={filter}
+          onChange={e => { setFilter(e.target.value); applyFilters(e.target.value); }}
+          placeholder="過濾問題..."
+          style={{ flex: '1 1 200px', minWidth: 0, padding: '8px 12px', borderRadius: '8px', border: '0.5px solid var(--separator)', background: 'var(--bg-tertiary)', color: 'var(--label)', fontSize: '14px', outline: 'none' }}
+        />
+        <input
+          value={postFilter}
+          onChange={e => { setPostFilter(e.target.value); applyFilters(filter, e.target.value); }}
+          placeholder="post_id 例：tech/2026-07-12-..."
+          style={{ flex: '1 1 220px', minWidth: 0, padding: '8px 12px', borderRadius: '8px', border: '0.5px solid var(--separator)', background: 'var(--bg-tertiary)', color: 'var(--label)', fontSize: '13px', outline: 'none', fontFamily: 'monospace' }}
+        />
+        <select
+          value={scoreFilter}
+          onChange={e => { const v = e.target.value as '' | '-1' | '0' | '1'; setScoreFilter(v); applyFilters(filter, postFilter, v); }}
+          style={{ padding: '8px 10px', borderRadius: '8px', border: '0.5px solid var(--separator)', background: 'var(--bg-tertiary)', color: 'var(--label)', fontSize: '13px' }}
+        >
+          <option value="">全部</option>
+          <option value="1">✓ 已公開</option>
+          <option value="-1">– 未評</option>
+          <option value="0">✗ 隱藏</option>
+        </select>
+        <span style={{ fontSize: '13px', color: 'var(--label-secondary)', whiteSpace: 'nowrap' }}>
+          {loading ? '載入中…' : `${total} 筆`}
+        </span>
+      </div>
+
+      <div style={{ maxHeight: '620px', overflowY: 'auto' }}>
+        {rows.map(row => (
+          <Fragment key={row.id}>
+            <div
+              onClick={() => setExpanded(expanded === row.id ? null : row.id)}
+              style={{ display: 'grid', gridTemplateColumns: '100px 1fr 60px 90px 40px', gap: '0 8px', padding: '8px 4px', borderBottom: '1px solid rgba(255,255,255,0.05)', alignItems: 'center', cursor: 'pointer' }}
+            >
+              <span style={{ fontSize: '11px', color: 'var(--label-secondary)', fontFamily: 'monospace' }}>{row.created_at.slice(0, 16).replace('T', ' ')}</span>
+              <div style={{ overflow: 'hidden' }}>
+                <span style={{ fontSize: '13px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.query}</span>
+                <span style={{ fontSize: '11px', color: 'var(--label-tertiary)', fontFamily: 'monospace' }}>{row.post_id}</span>
+              </div>
+              <span style={{ fontSize: '13px', color: qualityColor(row), textAlign: 'center' }}>{qualityIcon(row)}</span>
+              <div style={{ display: 'flex', gap: '4px' }}>
+                <button onClick={e => { e.stopPropagation(); setScore(row.id, 1); }} title="公開" style={{ padding: '2px 6px', borderRadius: '5px', border: '0.5px solid var(--separator)', background: currentScore(row) === 1 ? '#30d158' : 'transparent', color: currentScore(row) === 1 ? '#fff' : '#30d158', cursor: 'pointer', fontSize: '12px' }}>✓</button>
+                <button onClick={e => { e.stopPropagation(); setScore(row.id, 0); }} title="隱藏" style={{ padding: '2px 6px', borderRadius: '5px', border: '0.5px solid var(--separator)', background: currentScore(row) === 0 ? '#ff453a' : 'transparent', color: currentScore(row) === 0 ? '#fff' : '#ff453a', cursor: 'pointer', fontSize: '12px' }}>✗</button>
+                <button onClick={e => { e.stopPropagation(); deleteRow(row.id); }} title="刪除" style={{ padding: '2px 6px', borderRadius: '5px', border: '0.5px solid var(--separator)', background: 'transparent', color: 'var(--label-tertiary)', cursor: 'pointer', fontSize: '12px' }}>🗑</button>
+              </div>
+              <span style={{ fontSize: '12px', color: 'var(--label-tertiary)', textAlign: 'right' }}>{row.answer ? '▾' : ''}</span>
+            </div>
+
+            {expanded === row.id && (
+              <div style={{ padding: '12px 16px', background: 'var(--bg-tertiary)', borderBottom: '1px solid var(--separator)', fontSize: '14px', lineHeight: 1.7 }}>
+                <p style={{ margin: '0 0 8px', fontSize: '11px', color: 'var(--label-secondary)' }}>
+                  {row.llm_ok ? '✓ LLM 成功' : '⚠ LLM 未成功'} · {row.duration_ms ?? '—'}ms · {row.lang} · <a href={`/posts/${row.post_id}`} style={{ color: 'var(--accent)' }}>看文章 →</a>
+                </p>
+                {row.answer ? (
+                  <div className="chat-md">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{row.answer}</ReactMarkdown>
+                  </div>
+                ) : (
+                  <span style={{ color: 'var(--label-tertiary)' }}>{row.error ? `❌ ${row.error}` : '無回答（可能是舊記錄或串流未完成）'}</span>
+                )}
+              </div>
+            )}
+          </Fragment>
+        ))}
+        {!loading && rows.length === 0 && (
+          <p style={{ padding: '32px', textAlign: 'center', color: 'var(--label-tertiary)', fontSize: '13px' }}>沒有符合條件的 Q&A。</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function SearchLogsDetail({ token }: { token: string }) {
   const [rows, setRows] = useState<SearchLog[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -1259,7 +1413,7 @@ const SUB_TABS: Record<string, { id: string; label: string }[]> = {
 };
 
 // 子 view 內的輕量切換（避免再多一層 subtab）
-const SEARCH_VIEWS = [{ id: 'logs', label: 'Logs' }, { id: 'traces', label: 'Traces' }];
+const SEARCH_VIEWS = [{ id: 'logs', label: 'Logs' }, { id: 'traces', label: 'Traces' }, { id: 'postqa', label: '問這篇 F&Q' }];
 const STORAGE_VIEWS = [{ id: 'vectorize', label: 'Vectorize' }, { id: 'r2', label: 'R2' }];
 
 const DEFAULT_SUB: Record<MainTab, string> = {
@@ -1459,6 +1613,7 @@ export default function AdminDashboard() {
               <SubTabBar tabs={SEARCH_VIEWS} active={searchView} onChange={setSearchView} />
               {searchView === 'logs' && <SearchLogsDetail token={token} />}
               {searchView === 'traces' && <SearchTracesDetail token={token} />}
+              {searchView === 'postqa' && <PostQaDetail token={token} />}
             </>
           )}
 

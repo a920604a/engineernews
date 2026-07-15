@@ -10,6 +10,7 @@ import PostPrevNext from '../../../components/PostPrevNext.astro';
 import { useTranslations } from '../../../i18n/utils';
 import { TTSPlayer } from '../../../components/TTSPlayer';
 import { AskThisPost } from '../../../components/AskThisPost';
+import { PostFaq } from '../../../components/PostFaq';
 import { ReadingModeBar } from '../../../components/ReadingModeBar';
 import { BilingualView } from '../../../components/BilingualView';
 import { InteractionBar } from '../../../components/InteractionBar';
@@ -163,6 +164,9 @@ const dateStr = post.data.date.toLocaleDateString('en-US', { year: 'numeric', mo
     <ReadingModeBar client:load hasZh={!!(enScript && zhScript)} />
     <div class="prose article-view"><Content /></div>
     <div id="article-end-sentinel"></div>
+
+    <!-- Reader FAQ (curated Q&As from ask-this-post, admin-approved only) -->
+    <PostFaq client:visible postId={post.id} lang="en" />
 
     <!-- Ask this article (RAG scoped to this post only) -->
     <AskThisPost client:visible postId={post.id} lang="en" />

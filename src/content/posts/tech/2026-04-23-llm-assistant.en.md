@@ -2,6 +2,7 @@
 title: "arXiv Knowledge Assistant: Automated Paper Retrieval and a Bilingual RAG Q&A Platform"
 date: "2026-04-23T06:56:03.000Z"
 category: "tech"
+lang: en
 tags: ["python","typescript","react","fastapi","docker","postgresql","prometheus","grafana","ai"]
 type: "case-study"
 github: "https://github.com/a920604a/llm-assistant"

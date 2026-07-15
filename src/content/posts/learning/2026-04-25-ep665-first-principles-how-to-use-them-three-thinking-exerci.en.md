@@ -2,6 +2,7 @@
 title: "Can't Actually Apply First Principles? Three Exercises to Turn It Into a Daily Thinking Habit"
 date: "2026-04-25T18:57:43.111Z"
 category: "learning"
+lang: en
 tags: ["first-principles","critical-thinking","decision-making","career","personal-growth","learning"]
 type: "explainer"
 original_url: "https://www.youtube.com/watch?v=hToO6daVuSw"

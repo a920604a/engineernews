@@ -6,7 +6,7 @@ tags: ["ai", "llm", "rag", "cloudflare"]
 lang: en
 series:
   name: "RAG 系統架構"
-  order: 2
+  order: 3
 tldr: "PageIndex swaps the vector DB for a hierarchical tree index plus an LLM Agent that reasons over it, and it shines on long structured documents (98.7% on FinanceBench). This site's Hybrid RAG instead runs vector search with a keyword fallback on the Cloudflare edge — a completely different set of tradeoffs."
 description: "A deep look at VectifyAI/PageIndex's vectorless RAG architecture, fully compared against this site's bge-m3 + Cloudflare Vectorize implementation — analyzing the design philosophy, ideal use cases, and tradeoffs of each approach."
 github: https://github.com/VectifyAI/PageIndex

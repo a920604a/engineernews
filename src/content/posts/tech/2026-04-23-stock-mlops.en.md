@@ -2,6 +2,7 @@
 title: "Stock MLOps: Building an End-to-End ML System for Stock Price Prediction"
 date: "2026-04-23T06:56:03.000Z"
 category: "tech"
+lang: en
 tags: ["python","react","docker","postgresql","redis","mlflow","prometheus","grafana","cicd"]
 type: "case-study"
 github: "https://github.com/a920604a/stock-mlops"

@@ -7,7 +7,7 @@ lang: en
 type: "explainer"
 draft: false
 series:
-  name: "RAG"
+  name: "RAG 系統架構"
   order: 1
 key_points:
   - "RAG completed a five-stage evolution (Naive → Advanced → Modular → Graph → Agentic) in two years, essentially by pulling reasoning deeper into the retrieval loop."

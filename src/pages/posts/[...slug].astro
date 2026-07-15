@@ -8,6 +8,7 @@ import PostPrevNext from '../../components/PostPrevNext.astro';
 import { useTranslations } from '../../i18n/utils';
 import { TTSPlayer } from '../../components/TTSPlayer';
 import { AskThisPost } from '../../components/AskThisPost';
+import { PostFaq } from '../../components/PostFaq';
 import { InteractionBar } from '../../components/InteractionBar';
 import { CommentSection } from '../../components/CommentSection';
 import { getRelatedPosts } from '../../utils/relatedPosts';
@@ -151,6 +152,9 @@ const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', mo
     <!-- Content -->
     <div class="prose"><Content /></div>
     <div id="article-end-sentinel"></div>
+
+    <!-- 讀者常問（admin 已核定的 Q&A，client-side fetch，沒有審核過就不 render） -->
+    <PostFaq client:visible postId={post.id} lang="zh-TW" />
 
     <!-- 問這篇（讀完不想全找答案時，直接問本文） -->
     <AskThisPost client:visible postId={post.id} lang="zh-TW" />

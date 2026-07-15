@@ -6,7 +6,7 @@ tags: ["ai","llm","rag","graph-rag","agentic-rag","system-design","cloudflare"]
 type: "explainer"
 draft: false
 series:
-  name: "RAG"
+  name: "RAG 系統架構"
   order: 1
 key_points:
   - "RAG 兩年內完成 Naive → Advanced → Modular → Graph → Agentic 五階段演進，本質是把大腦（Reasoning）持續拉進檢索迴圈。"
