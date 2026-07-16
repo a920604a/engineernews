@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { DAILY_LIMIT, readUsage, writeUsage } from '../lib/quota';
 
 interface RagSource {
   citation: number;
@@ -14,40 +15,25 @@ interface RagSource {
   chunkId: string;
 }
 
+type Scope = 'post' | 'site';
+
 interface Message {
   role: 'user' | 'assistant';
   content: string;
   sources?: RagSource[];
+  scope?: Scope;
 }
 
 interface Props {
   lang: 'zh-TW' | 'en';
   onClose: () => void;
+  postId?: string;
+  postTitle?: string;
+  initialQuery?: string;
+  initialScope?: Scope;
 }
 
-const DAILY_LIMIT = 10;
-const USAGE_KEY = 'chat_daily_usage';
-
-function getTodayStr(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function readUsage(): number {
-  try {
-    const raw = localStorage.getItem(USAGE_KEY);
-    if (!raw) return 0;
-    const { count, date } = JSON.parse(raw) as { count: number; date: string };
-    return date === getTodayStr() ? count : 0;
-  } catch {
-    return 0;
-  }
-}
-
-function writeUsage(count: number): void {
-  localStorage.setItem(USAGE_KEY, JSON.stringify({ count, date: getTodayStr() }));
-}
-
-const SUGGESTED: Record<string, string[]> = {
+const SUGGESTED_SITE: Record<string, string[]> = {
   'zh-TW': [
     '什麼是 RAG？和傳統搜尋有什麼不同？',
     'AI Agent 是什麼？適合解決哪些問題？',
@@ -59,6 +45,19 @@ const SUGGESTED: Record<string, string[]> = {
     'What are AI Agents best used for?',
     'What are good use cases for Cloudflare Workers?',
     'When should you fine-tune a model vs. prompt engineer?',
+  ],
+};
+
+const SUGGESTED_POST: Record<string, string[]> = {
+  'zh-TW': [
+    '幫我總結重點',
+    '這篇的取捨是什麼？',
+    '有什麼實際應用場景？',
+  ],
+  en: [
+    'Summarize the key takeaway',
+    'What are the tradeoffs?',
+    'Real-world use cases?',
   ],
 };
 
@@ -90,19 +89,24 @@ function injectCitationLinks(text: string, sources: RagSource[]): string {
   });
 }
 
-export default function ChatWidget({ lang, onClose }: Props) {
+export default function ChatWidget({ lang, onClose, postId, postTitle, initialQuery, initialScope }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [usedCount, setUsedCount] = useState(0);
+  const [scope, setScope] = useState<Scope>(initialScope ?? (postId ? 'post' : 'site'));
   const abortRef = useRef<AbortController | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const autoSentRef = useRef<string | null>(null);
 
   const isEn = lang === 'en';
-  const suggested = SUGGESTED[lang] ?? SUGGESTED['zh-TW'];
+  const suggested = scope === 'post'
+    ? (SUGGESTED_POST[lang] ?? SUGGESTED_POST['zh-TW'])
+    : (SUGGESTED_SITE[lang] ?? SUGGESTED_SITE['zh-TW']);
   const remaining = Math.max(0, DAILY_LIMIT - usedCount);
   const isLimitReached = remaining === 0;
+  const canScopePost = Boolean(postId);
 
   useEffect(() => {
     setUsedCount(readUsage());
@@ -134,17 +138,22 @@ export default function ChatWidget({ lang, onClose }: Props) {
     writeUsage(newCount);
     setUsedCount(newCount);
 
-    setMessages((prev) => [...prev, { role: 'user', content: trimmed }]);
+    const activeScope: Scope = scope === 'post' && postId ? 'post' : 'site';
+    setMessages((prev) => [...prev, { role: 'user', content: trimmed, scope: activeScope }]);
     setInput('');
     setIsLoading(true);
 
-    setMessages((prev) => [...prev, { role: 'assistant', content: '', sources: [] }]);
+    setMessages((prev) => [...prev, { role: 'assistant', content: '', sources: [], scope: activeScope }]);
 
     try {
       const res = await fetch('/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: trimmed, lang }),
+        body: JSON.stringify(
+          activeScope === 'post'
+            ? { query: trimmed, lang, postId }
+            : { query: trimmed, lang }
+        ),
         signal: controller.signal,
       });
 
@@ -254,7 +263,14 @@ export default function ChatWidget({ lang, onClose }: Props) {
     } finally {
       setIsLoading(false);
     }
-  }, [lang, isLoading]);
+  }, [lang, isLoading, scope, postId]);
+
+  useEffect(() => {
+    if (!initialQuery) return;
+    if (autoSentRef.current === initialQuery) return;
+    autoSentRef.current = initialQuery;
+    void send(initialQuery);
+  }, [initialQuery, send]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -266,14 +282,51 @@ export default function ChatWidget({ lang, onClose }: Props) {
       {/* Header */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '12px 16px', borderBottom: '0.5px solid var(--separator)', flexShrink: 0,
+        padding: '12px 16px', borderBottom: '0.5px solid var(--separator)', flexShrink: 0, gap: '8px',
       }}>
-        <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--label)' }}>
-          {isEn ? 'Ask Engineer News' : '問 Engineer News'}
-        </span>
+        {canScopePost ? (
+          <div role="tablist" aria-label={isEn ? 'Scope' : '範圍'} style={{
+            display: 'flex', gap: '2px', padding: '2px',
+            background: 'var(--bg-tertiary)', borderRadius: '999px',
+            border: '0.5px solid var(--separator)', flexShrink: 0,
+          }}>
+            <button
+              role="tab"
+              aria-selected={scope === 'post'}
+              onClick={() => setScope('post')}
+              style={{
+                padding: '3px 10px', borderRadius: '999px', border: 'none',
+                background: scope === 'post' ? 'var(--accent)' : 'transparent',
+                color: scope === 'post' ? '#fff' : 'var(--label-secondary)',
+                fontSize: '11.5px', fontWeight: 600, cursor: 'pointer',
+                transition: 'background 0.15s, color 0.15s',
+              }}
+            >
+              {isEn ? 'This post' : '問這篇'}
+            </button>
+            <button
+              role="tab"
+              aria-selected={scope === 'site'}
+              onClick={() => setScope('site')}
+              style={{
+                padding: '3px 10px', borderRadius: '999px', border: 'none',
+                background: scope === 'site' ? 'var(--accent)' : 'transparent',
+                color: scope === 'site' ? '#fff' : 'var(--label-secondary)',
+                fontSize: '11.5px', fontWeight: 600, cursor: 'pointer',
+                transition: 'background 0.15s, color 0.15s',
+              }}
+            >
+              {isEn ? 'Whole site' : '問整站'}
+            </button>
+          </div>
+        ) : (
+          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--label)' }}>
+            {isEn ? 'Ask Engineer News' : '問 Engineer News'}
+          </span>
+        )}
         <span style={{
           fontSize: '11px', color: isLimitReached ? '#ff5f57' : 'var(--label-tertiary)',
-          fontVariantNumeric: 'tabular-nums',
+          fontVariantNumeric: 'tabular-nums', flexShrink: 0,
         }}>
           {isLimitReached
             ? (isEn ? 'Daily limit reached' : '今日次數已用完')
@@ -281,11 +334,28 @@ export default function ChatWidget({ lang, onClose }: Props) {
         </span>
         <button onClick={onClose} aria-label="Close" style={{
           background: 'none', border: 'none', cursor: 'pointer',
-          color: 'var(--label-secondary)', fontSize: '18px', lineHeight: 1, padding: '2px 6px', borderRadius: '6px',
+          color: 'var(--label-secondary)', fontSize: '18px', lineHeight: 1, padding: '2px 6px', borderRadius: '6px', flexShrink: 0,
         }}>
           ✕
         </button>
       </div>
+
+      {/* Current-post pill — only when post scope active */}
+      {canScopePost && scope === 'post' && postTitle && (
+        <div style={{
+          padding: '8px 16px', borderBottom: '0.5px solid var(--separator)', flexShrink: 0,
+          fontSize: '11.5px', color: 'var(--label-tertiary)',
+          display: 'flex', alignItems: 'center', gap: '6px',
+        }}>
+          <span style={{ opacity: 0.7 }}>{isEn ? 'Grounded in:' : '正在討論：'}</span>
+          <span style={{
+            color: 'var(--label-secondary)', fontWeight: 500,
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}>
+            {postTitle}
+          </span>
+        </div>
+      )}
 
       {/* Messages */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>

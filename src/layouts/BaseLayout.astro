@@ -14,9 +14,11 @@ interface Props {
   jsonLd?: object;
   ogImage?: string;
   layout?: 'default' | 'article';
+  postId?: string;
+  postTitle?: string;
 }
 
-const { title, description, jsonLd, ogImage, layout = 'default' } = Astro.props;
+const { title, description, jsonLd, ogImage, layout = 'default', postId, postTitle } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
@@ -599,7 +601,7 @@ const siteJsonLd = {
     <div id="reading-progress"></div>
 
     <CommandCenter client:load />
-    <ChatFloating lang={lang} client:load />
+    <ChatFloating lang={lang} postId={postId} postTitle={postTitle} client:load />
 
     <header class="site-header" data-pagefind-ignore>
       <div class="nav-inner">

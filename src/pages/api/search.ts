@@ -51,10 +51,10 @@ type SearchResult = {
 };
 
 const EMBEDDING_MODEL = '@cf/baai/bge-m3';
-const CHAT_MODEL = '@cf/qwen/qwen1.5-14b-chat-awq';
-// 「問這篇」單篇 grounded Q&A 用更強的模型：指令遵循與「只引用本文、不亂編」更可靠。
-// Llama 3.3 70B（fp8-fast）已驗證在本帳號可用，較 qwen1.5-14b 是世代級提升。
-const ASK_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
+// 全站 RAG 與「問這篇」單篇 grounded Q&A 統一使用 llama-3.3-70b：
+// 指令遵循、只引用來源、不亂編的可靠度都顯著優於 qwen1.5-14b。
+const CHAT_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
+const ASK_MODEL = CHAT_MODEL;
 const MAX_MATCHES = 8;
 const MAX_SOURCES = 5;
 

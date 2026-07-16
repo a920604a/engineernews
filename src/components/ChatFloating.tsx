@@ -3,7 +3,15 @@ import ChatWidget from './ChatWidget';
 
 interface Props {
   lang: 'zh-TW' | 'en';
+  postId?: string;
+  postTitle?: string;
 }
+
+export type OpenChatDetail = {
+  postId?: string;
+  query?: string;
+  scope?: 'post' | 'site';
+};
 
 const BTN_SIZE = 52;
 const POPUP_W = 360;
@@ -62,10 +70,16 @@ function useDraggable(size: { w: number; h: number }) {
   return { pos, didDragRef, onPointerDown, onPointerMove, onPointerUp };
 }
 
-export default function ChatFloating({ lang }: Props) {
+export default function ChatFloating({ lang, postId, postTitle }: Props) {
   const [isOpen, setIsOpen] = useState(false);
+  const [pendingQuery, setPendingQuery] = useState<string | undefined>(undefined);
+  const [pendingScope, setPendingScope] = useState<'post' | 'site' | undefined>(undefined);
   const isMobile = useIsMobile();
-  const close = useCallback(() => setIsOpen(false), []);
+  const close = useCallback(() => {
+    setIsOpen(false);
+    setPendingQuery(undefined);
+    setPendingScope(undefined);
+  }, []);
 
   const btn = useDraggable({ w: BTN_SIZE, h: BTN_SIZE });
   const popup = useDraggable({ w: POPUP_W, h: POPUP_H });
@@ -82,6 +96,24 @@ export default function ChatFloating({ lang }: Props) {
   useEffect(() => {
     if (!isMobile && isOpen) close();
   }, [isMobile]);
+
+  // Listen for external "open-chat" event (e.g. AskThisPost primer chips)
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<OpenChatDetail>).detail ?? {};
+      if (typeof detail.query === 'string' && detail.query.trim()) {
+        setPendingQuery(detail.query.trim());
+      }
+      if (detail.scope === 'post' || detail.scope === 'site') {
+        setPendingScope(detail.scope);
+      } else if (detail.postId) {
+        setPendingScope('post');
+      }
+      setIsOpen(true);
+    };
+    window.addEventListener('open-chat', handler as EventListener);
+    return () => window.removeEventListener('open-chat', handler as EventListener);
+  }, []);
 
   const handleBtnPointerUp = (e: React.PointerEvent<HTMLButtonElement>) => {
     btn.onPointerUp(e);
@@ -174,7 +206,16 @@ export default function ChatFloating({ lang }: Props) {
           </div>
 
           <div style={{ flex: 1, overflow: 'hidden' }}>
-            {isOpen && <ChatWidget lang={lang} onClose={close} />}
+            {isOpen && (
+              <ChatWidget
+                lang={lang}
+                onClose={close}
+                postId={postId}
+                postTitle={postTitle}
+                initialQuery={pendingQuery}
+                initialScope={pendingScope}
+              />
+            )}
           </div>
         </div>
       ) : (
@@ -224,7 +265,16 @@ export default function ChatFloating({ lang }: Props) {
           </div>
 
           <div style={{ flex: 1, overflow: 'hidden' }}>
-            {isOpen && <ChatWidget lang={lang} onClose={close} />}
+            {isOpen && (
+              <ChatWidget
+                lang={lang}
+                onClose={close}
+                postId={postId}
+                postTitle={postTitle}
+                initialQuery={pendingQuery}
+                initialScope={pendingScope}
+              />
+            )}
           </div>
         </div>
       )}

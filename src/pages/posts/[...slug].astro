@@ -57,7 +57,7 @@ const jsonLd = {
 const dateStr = post.data.date.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' });
 ---
 
-<BaseLayout title={post.data.title} description={post.data.description} jsonLd={jsonLd} layout="article" ogImage={ogImage}>
+<BaseLayout title={post.data.title} description={post.data.description} jsonLd={jsonLd} layout="article" ogImage={ogImage} postId={post.id} postTitle={post.data.title}>
   <!-- Full-bleed Hero Banner -->
   <header class="post-hero" data-category={post.data.category} style={`--cat-color: var(--cat-${post.data.category}, var(--cat-default, var(--accent)));`}>
     <!-- OG Background Layer -->
